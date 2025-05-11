@@ -1,0 +1,392 @@
+.watches-page {
+  padding: 2rem 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 200px);
+}
+
+.watches-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 0 1.5rem;
+}
+
+.watches-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.watches-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.watches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 0 1.5rem;
+}
+
+.watch-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.watch-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.watch-image {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.watch-image img {
+  width: 100%;
+  height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.watch-card:hover .watch-image img {
+  transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  width: 900px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: scale(0.95);
+  animation: scaleIn 0.3s ease forwards;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-main-content {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+@keyframes scaleIn {
+  to { transform: scale(1); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 60vh;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-caption {
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.modal-caption h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.modal-caption p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Complementary Cars Section */
+.complementary-cars {
+  padding: 1.5rem;
+}
+
+.complementary-cars h4 {
+  color: var(--text-color);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.complementary-cars h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: var(--primary-color);
+}
+
+.car-images-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.car-images-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.car-image-container {
+  aspect-ratio: 4/3;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.car-image-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.car-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.car-image-container:hover .car-image {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .car-images-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .modal-image {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .car-images-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .car-image-container {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+  }
+  
+  .modal-caption {
+    padding: 1rem;
+  }
+  
+  .modal-caption h3 {
+    font-size: 1.3rem;
+  }
+  
+  .modal-caption p {
+    font-size: 1rem;
+  }
+
+  .close-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+}
+
+.watch-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.watch-card:hover .watch-overlay {
+  opacity: 1;
+}
+
+.price {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.watch-details {
+  padding: 1.5rem;
+}
+
+.watch-details h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+  color: var(--text-color);
+}
+
+.watch-details .model {
+  color: var(--text-secondary);
+  margin: 0 0 1.2rem 0;
+  font-size: 0.95rem;
+}
+
+.inquiry-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inquiry-btn:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .watches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .watches-header h1 {
+    font-size: 2rem;
+  }
+  
+  .watches-header p {
+    font-size: 1rem;
+  }
+  
+  .watches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .watch-image {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watches-header {
+    margin-bottom: 2rem;
+  }
+  
+  .watches-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .watches-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+  
+  .watch-card {
+    max-width: 100%;
+  }
+}
