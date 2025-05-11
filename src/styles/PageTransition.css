@@ -1,0 +1,25 @@
+.page-wrapper {
+  width: 100%;
+  min-height: 50vh;
+  will-change: opacity, transform;
+  overflow: hidden;
+}
+
+/* Ensure the page transitions blend smoothly with the RESZEN8 branding */
+.page-enter {
+  opacity: 0;
+}
+
+.page-enter-active {
+  opacity: 1;
+  transition: opacity 400ms, transform 400ms;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 400ms, transform 400ms;
+}

@@ -1,0 +1,97 @@
+.landing-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #000000;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-page:hover {
+  background-color: #111111;
+}
+
+.landing-page::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+  transform: rotate(0deg);
+  animation: rotate 30s linear infinite;
+  z-index: 1;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.logo-container {
+  text-align: center;
+  animation: float 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: #FFA500;
+  margin: 0;
+  letter-spacing: 0.5rem;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+  position: relative;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  text-shadow: 0 0 30px rgba(255, 165, 0, 0.8);
+}
+
+.click-prompt {
+  color: #FFFFFF;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+
+.logo-container:hover .click-prompt {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: 3rem;
+  }
+  
+  .click-prompt {
+    font-size: 0.9rem;
+  }
+}
