@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="nav-brand">
-          <NavLink to="/home">
+          <NavLink to="/">
             RESZEN8
           </NavLink>
         </div>
@@ -63,6 +63,31 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li>
+              <NavLink to="/apparel" className={getNavLinkClass}>
+                Apparel
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/wellness-tools" className={getNavLinkClass}>
+                Wellness Tools
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/digital-goods" className={getNavLinkClass}>
+                Digital Goods
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/guided-meditations" className={getNavLinkClass}>
+                Guided Meditations
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/accessories" className={getNavLinkClass}>
+                Accessories
+              </NavLink>
+            </li>
+            <li>
               <NavLink to="/contact" className={getNavLinkClass}>
                 Contact
               </NavLink>
@@ -72,11 +97,18 @@ const Navbar: React.FC = () => {
           <div className="nav-right">
             <ul className="auth-links">
               {currentUser ? (
-                <li>
-                  <button onClick={handleLogout} className="nav-button">
-                    Logout
-                  </button>
-                </li>
+                <>
+                  <li>
+                    <NavLink to="/members" className="members-cta">
+                      Members Area
+                    </NavLink>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="nav-button">
+                      Logout
+                    </button>
+                  </li>
+                </>
               ) : (
                 <>
                   <li>

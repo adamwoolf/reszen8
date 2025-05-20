@@ -3,9 +3,52 @@
   overflow-x: hidden;
   min-height: calc(100vh - 180px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  padding: 0;
+  padding: 2rem 0 0;
+}
+
+.mission-statement {
+  width: 100%;
+  padding: 4rem 0;
+  background-color: #000000;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mission-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.mission-statement h2 {
+  font-size: 2.5rem;
+  color: #FFA500; /* Orange color to match your theme */
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.mission-text {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.mission-tagline {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #FFA500; /* Orange color to match your theme */
+  font-style: italic;
+  letter-spacing: 0.5px;
+  margin-top: 1.5rem;
 }
 
 .carousel-container {
@@ -13,6 +56,13 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 0;
+}
+
+.tiles-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 /* Animations */
@@ -30,14 +80,38 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .home-page {
-    padding: 0;
+    padding: 1rem 0 0;
+  }
+  
+  .mission-statement {
+    padding: 2rem 0;
+  }
+  
+  .mission-content {
+    padding: 0 1.5rem;
+  }
+  
+  .mission-statement h2 {
+    font-size: 1.75rem;
+  }
+  
+  .mission-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .mission-tagline {
+    font-size: 1.1rem;
   }
   
   .carousel-container {
-    width: 100vw;
-    max-width: none;
+    width: 100%;
     margin: 0 -1rem;
     padding: 0;
+  }
+  
+  .tiles-wrapper {
+    align-items: flex-start;
   }
 }
 
@@ -67,5 +141,32 @@
   .cta-button {
     padding: 0.8rem 2rem;
     font-size: 1rem;
+  }
+  
+  .mission-statement {
+    padding: 1.5rem 0;
+  }
+  
+  .mission-content {
+    padding: 0 1rem;
+  }
+  
+  .mission-statement h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .mission-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .mission-tagline {
+    font-size: 1rem;
+    margin-top: 1.25rem;
+  }
+  
+  .carousel-container {
+    padding: 0;
   }
 }

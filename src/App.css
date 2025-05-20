@@ -3,13 +3,13 @@
   --primary-color: #FFA500;
   --secondary-color: #FF8C00;
   --accent-color: #FF8C00;
-  --text-color: #555555;
-  --text-secondary: #666666;
-  --bg-color: #FFFFFF;
-  --bg-secondary: #F8F8F8;
-  --bg-tertiary: #F0F0F0;
-  --border-color: #E0E0E0;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --text-color: #FFFFFF;
+  --text-secondary: #CCCCCC;
+  --bg-color: #000000;
+  --bg-secondary: #121212;
+  --bg-tertiary: #1A1A1A;
+  --border-color: #333333;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   --border-radius: 12px;
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
@@ -28,7 +28,7 @@ body {
   font-family: var(--font-stack);
   line-height: 1.6;
   color: var(--text-color);
-  background-color: var(--bg-color);
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -46,21 +46,16 @@ body::after {
   top: -50%;
   left: -50%;
   background: radial-gradient(circle, rgba(255, 165, 0, 0.07) 0%, rgba(255, 255, 255, 0) 70%);
-  transform: rotate(0deg);
-  animation: rotateGlow 60s linear infinite;
   z-index: -1;
   pointer-events: none;
-}
-
-@keyframes rotateGlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #000000;
+  color: var(--text-color);
 }
 
 /* Header and Navbar Styles */
@@ -188,6 +183,8 @@ a:hover {
   margin-top: 70px; /* Adjust based on header height */
   box-sizing: border-box;
   overflow-x: hidden;
+  background-color: #000000;
+  color: var(--text-color);
 }
 
 /* Page Transitions */
@@ -249,7 +246,11 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 1rem;
   line-height: 1.2;
-  color: var(--text-secondary);
+  color: var(--text-color);
+}
+
+p, li, a, span, div {
+  color: var(--text-color);
 }
 
 /* Photo Gallery */
@@ -342,7 +343,7 @@ h1, h2, h3, h4, h5, h6 {
 .auth-container button {
   padding: 0.8rem;
   background-color: var(--primary-color);
-  color: white;
+  color: #000000;
   border: none;
   border-radius: var(--border-radius);
   font-size: 1rem;
@@ -427,7 +428,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .signup-btn {
   background-color: var(--primary-color);
-  color: white !important;
+  color: #000000;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   margin-left: 0.5rem;
@@ -437,4 +438,175 @@ h1, h2, h3, h4, h5, h6 {
 .signup-btn:hover {
   background-color: var(--secondary-color);
   color: white;
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #000000;
+  color: #ffffff;
+  text-align: center;
+  padding: 1.5rem 0;
+  width: 100%;
+  border-top: 1px solid #333333;
+  margin-top: auto;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+button, .btn, .button {
+  background-color: var(--primary-color);
+  color: #000000;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover, .btn:hover, .button:hover {
+  background-color: var(--secondary-color);
+}
+
+input, textarea, select {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.card, .container, section, .section {
+  background-color: #000000;
+  color: var(--text-color);
+}
+
+.main-content,
+.page,
+.section,
+.container,
+.content {
+  background-color: #000000;
+  color: var(--text-color);
+  flex: 1;
+  width: 100%;
+}
+
+input,
+textarea,
+select {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+section,
+article,
+aside,
+header,
+footer,
+main {
+  background-color: #000000;
+  color: var(--text-color);
+}
+
+.card,
+.panel,
+.box {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+button,
+.btn,
+.button {
+  background-color: var(--primary-color);
+  color: #000000;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover,
+.btn:hover,
+.button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 1rem;
+}
+
+.mt-3 {
+  margin-top: 1.5rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 1rem;
+}
+
+.mb-3 {
+  margin-bottom: 1.5rem;
 }

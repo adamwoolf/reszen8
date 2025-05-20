@@ -45,7 +45,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
 }
@@ -68,7 +68,7 @@
   max-width: 600px;
   line-height: 1.6;
   color: #FFFFFF;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .explore-button {
@@ -83,6 +83,7 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-top: auto;
 }
 
 .explore-button:hover {
@@ -129,10 +130,12 @@
 .carousel-dots {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   gap: 0.5rem;
   z-index: 10;
   position: relative;
+  bottom: 0;
+  width: 100%;
 }
 
 .dot {
@@ -161,9 +164,9 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .pillars-carousel {
-    max-width: 100%;
-    width: 100vw;
-    margin: 1rem -1rem;
+    max-width: 90vw;
+    width: 90vw;
+    margin: 1rem auto;
     padding: 1rem 0;
   }
 
@@ -179,6 +182,7 @@
   .pillar-content {
     padding: 1.5rem 10px;
     height: auto;
+    min-height: 350px;
     max-width: 100%;
     margin: 0 auto;
   }
@@ -191,6 +195,16 @@
   .pillar-content p {
     font-size: 1rem;
     margin-bottom: 1.5rem;
+  }
+  
+  /* Hide navigation buttons on mobile */
+  .carousel-button {
+    display: none;
+  }
+  
+  /* Add more spacing on mobile between text and CTA */
+  .explore-button {
+    margin-top: 3rem;
   }
 
   .carousel-button {

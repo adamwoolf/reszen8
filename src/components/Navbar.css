@@ -1,38 +1,37 @@
 .navbar {
-  background-color: #000000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  background-color: transparent;
+  box-shadow: none;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
   transition: all 0.3s ease;
+  border-bottom: none;
 }
 
 .navbar.scrolled {
-  background-color: rgba(0, 0, 0, 0.9);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  background-color: #000000 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: none !important;
+  border-bottom: 1px solid #333333;
 }
 
 .navbar-container {
-  width: 100%;
-  margin: 0;
-  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
-  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .nav-sections {
   display: flex;
   align-items: center;
-  gap: 2rem;
   flex: 1;
-  justify-content: space-between;
-  position: relative;
+  justify-content: center;
 }
 
 .nav-right {
@@ -78,8 +77,8 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 2rem;
-  height: 100%;
+  gap: 1.5rem;
+  justify-content: center;
   align-items: center;
 }
 
@@ -156,14 +155,78 @@
   margin-left: 0.5rem;
 }
 
+.members-cta {
+  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  color: #000000 !important;
+  padding: 0.5rem 1.2rem !important;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-weight: 600 !important;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.members-cta::after {
+  display: none;
+}
+
+.members-cta:hover {
+  background: linear-gradient(135deg, #FF8C00, #FF6B00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+  color: #000000;
+}
+
+.members-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(255, 140, 0, 0.4);
+}
+
 .auth-button:hover {
   background-color: #FF8C00;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
 }
 
-.nav-button::after {
-  display: none;
+.auth-link {
+  color: #FFA500 !important;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.auth-link:hover {
+  text-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+}
+
+/* Nav Button */
+.nav-button {
+  background: transparent;
+  color: #FFA500 !important;
+  border: 1px solid #FFA500;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.nav-button:hover {
+  background: rgba(255, 165, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-button:active {
+  transform: translateY(0);
 }
 
 /* User Menu */
@@ -189,62 +252,6 @@
 .user-icon {
   font-size: 1.5rem;
   color: #FFA500;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: #000000;
-  border: 1px solid #333333;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  min-width: 200px;
-  padding: 0.5rem 0;
-  margin-top: 0.5rem;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.user-menu:hover .dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  color: #FFFFFF;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-}
-
-.dropdown-item:hover {
-  background-color: rgba(255, 165, 0, 0.15);
-  color: #FFA500;
-}
-
-.auth-link {
-  color: #FFA500 !important;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.auth-link:hover {
-  text-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
 }
 
 /* Mobile Menu */
@@ -339,21 +346,12 @@
     margin: 1rem 0 0;
     width: 100%;
   }
+}
 
-  .dropdown-menu {
-    position: static;
-    box-shadow: none;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    display: none;
-    margin-top: 0;
-    padding: 0;
-  }
-
-  .user-menu:hover .dropdown-menu,
-  .user-menu:focus-within .dropdown-menu {
-    display: block;
+/* Mobile styles */
+@media (max-width: 768px) {
+  .dropdown {
+    width: 100%;
   }
 }
 

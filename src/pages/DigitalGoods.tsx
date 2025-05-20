@@ -41,14 +41,14 @@ const DigitalGoods: React.FC = () => {
             <div className="tier">
               <div className="tier-header">
                 <h3>Monthly</h3>
-                <p className="price">$14.99</p>
+                <p className="price">£14.99</p>
               </div>
               <button className="cta-button">Subscribe</button>
             </div>
             <div className="tier featured">
               <div className="tier-header">
                 <h3>Annual</h3>
-                <p className="price">$119.99</p>
+                <p className="price">£119.99</p>
               </div>
               <p className="saving">Save 33%</p>
               <button className="cta-button">Subscribe</button>

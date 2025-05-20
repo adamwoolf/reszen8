@@ -8,10 +8,8 @@ import PageTransition from './components/PageTransition';
 import LandingPage from './pages/LandingPage';
 import Home from './pages/Home';
 import AboutMe from './pages/AboutMe';
-import Weather from './pages/Weather';
 import Photos from './pages/Photos';
 import Contact from './pages/Contact';
-import Watches from './pages/Watches';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MembersArea from './pages/MembersArea';
@@ -48,10 +46,8 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/home" element={<Layout><PageTransition><Home /></PageTransition></Layout>} />
         <Route path="/about" element={<Layout><PageTransition><AboutMe /></PageTransition></Layout>} />
-        <Route path="/weather" element={<Layout><PageTransition><Weather /></PageTransition></Layout>} />
         <Route path="/photos" element={<Layout><PageTransition><Photos /></PageTransition></Layout>} />
         <Route path="/contact" element={<Layout><PageTransition><Contact /></PageTransition></Layout>} />
-        <Route path="/watches" element={<Layout><PageTransition><Watches /></PageTransition></Layout>} />
         <Route path="/login" element={<Layout><PageTransition><Login /></PageTransition></Layout>} />
         <Route path="/signup" element={<Layout><PageTransition><Signup /></PageTransition></Layout>} />
         <Route path="/members" element={<Layout><PageTransition><PrivateRoute><MembersArea /></PrivateRoute></PageTransition></Layout>} />

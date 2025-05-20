@@ -1,0 +1,206 @@
+/* Members Area Styles */
+.members-area {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.user-email {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Trial Banner */
+.trial-banner {
+  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+}
+
+.trial-banner h2 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.time-block {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  min-width: 80px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.time-value {
+  display: block;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.time-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.trial-message {
+  font-size: 1.2rem;
+  margin: 1.5rem 0;
+  line-height: 1.6;
+}
+
+/* Buttons */
+.upgrade-button {
+  background: white;
+  color: #FF8C00;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Premium Banner */
+.premium-banner {
+  background: #4CAF50;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.premium-banner h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Membership Features */
+.membership-features {
+  background: #f9f9f9;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.membership-features h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.membership-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.membership-features li {
+  padding: 0.8rem 0;
+  font-size: 1.1rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+}
+
+.membership-features li:before {
+  content: '✓';
+  color: #4CAF50;
+  font-weight: bold;
+  margin-right: 0.8rem;
+  font-size: 1.2rem;
+}
+
+/* Logout Button */
+.logout-button {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 2rem auto 0;
+}
+
+.logout-button:hover {
+  background: #eee;
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .members-area {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .countdown-timer {
+    gap: 0.8rem;
+  }
+  
+  .time-block {
+    min-width: 60px;
+    padding: 0.8rem 0.5rem;
+  }
+  
+  .time-value {
+    font-size: 1.8rem;
+  }
+  
+  .time-label {
+    font-size: 0.8rem;
+  }
+  
+  .trial-banner {
+    padding: 1.5rem 1rem;
+  }
+  
+  .trial-banner h2 {
+    font-size: 1.5rem;
+  }
+  
+  .trial-message {
+    font-size: 1rem;
+  }
+  
+  .membership-features ul {
+    grid-template-columns: 1fr;
+  }
+}

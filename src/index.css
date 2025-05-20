@@ -1,18 +1,22 @@
 /* Base Styles */
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --accent-color: #e74c3c;
-  --text-color: #ffffff;
-  --text-secondary: #bdc3c7;
-  --bg-color: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --bg-tertiary: #3d3d3d;
-  --border-color: #444;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+  --primary-color: #FFA500;
+  --secondary-color: #FF8C00;
+  --accent-color: #FF8C00;
+  --text-color: #FFFFFF;
+  --text-secondary: #CCCCCC;
+  --bg-color: #000000;
+  --bg-secondary: #121212;
+  --bg-tertiary: #1A1A1A;
+  --border-color: #333333;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --border-radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 *,
 *::before,
@@ -22,9 +26,13 @@
   padding: 0;
 }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
+html,
+body,
+#root {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #000000;
+  color: var(--text-color);
 }
 
 body {
@@ -32,13 +40,54 @@ body {
   font-family: var(--font-stack);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  background-color: #000000;
   color: var(--text-color);
-  background-color: var(--bg-color);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  place-items: center;
+  line-height: 1.6;
+}
+
+/* Ensure all main content areas have black background */
+.main-content,
+.app,
+.page,
+.section,
+.container,
+.content {
+  background-color: #000000;
+  color: var(--text-color);
+}
+
+/* Update form elements for dark theme */
+input,
+textarea,
+select {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Ensure all sections and articles have black background */
+section,
+article,
+aside,
+header,
+footer,
+main {
+  background-color: #000000;
+  color: var(--text-color);
+}
+
+/* Make sure all divs inherit the black background */
+div {
+  background-color: inherit;
+}
+
+/* Update card styles */
+.card,
+.panel,
+.box {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
 h1, h2, h3, h4, h5, h6 {

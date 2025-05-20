@@ -10,6 +10,7 @@
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid #333333;
+  margin-top: 30px;
 }
 
 .category-header h1 {
@@ -38,6 +39,7 @@
   display: flex;
   flex-direction: column;
   gap: 4rem;
+  padding-top: 30px;
 }
 
 .category-intro {
@@ -85,6 +87,7 @@
   .feature-grid > *:last-child:nth-child(2n+1) {
     grid-column: 1;
   }
+
 }
 
 .feature-item {
@@ -319,7 +322,6 @@
   line-height: 1.5;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .category-header h1 {
     font-size: 2.5rem;

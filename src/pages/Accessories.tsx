@@ -41,21 +41,21 @@ const Accessories: React.FC = () => {
               <div className="product-image"></div>
               <h3>Intention Bracelet</h3>
               <p>Handcrafted from sustainable materials with an adjustable design</p>
-              <p className="price">$28.00</p>
+              <p className="price">£28.00</p>
               <button className="cta-button">Coming Soon</button>
             </div>
             <div className="product-card">
               <div className="product-image"></div>
               <h3>Reflection Journal</h3>
               <p>100% recycled paper with prompts for daily mindfulness practice</p>
-              <p className="price">$24.00</p>
+              <p className="price">£24.00</p>
               <button className="cta-button">Coming Soon</button>
             </div>
             <div className="product-card">
               <div className="product-image"></div>
               <h3>Meditation Timer</h3>
               <p>Minimalist design with gentle sound options for practice transitions</p>
-              <p className="price">$36.00</p>
+              <p className="price">£36.00</p>
               <button className="cta-button">Coming Soon</button>
             </div>
           </div>
