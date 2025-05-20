@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import CartIcon from './CartIcon';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -87,43 +88,45 @@ const Navbar: React.FC = () => {
                 Accessories
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/contact" className={getNavLinkClass}>
-                Contact
-              </NavLink>
-            </li>
           </ul>
 
           <div className="nav-right">
-            <ul className="auth-links">
-              {currentUser ? (
-                <>
-                  <li>
-                    <NavLink to="/members" className="members-cta">
-                      Members Area
-                    </NavLink>
-                  </li>
-                  <li>
-                    <button onClick={handleLogout} className="nav-button">
-                      Logout
-                    </button>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <NavLink to="/login" className="auth-link">
-                      Log in
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink to="/signup" className="auth-button">
-                      Join
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
+            <div className="flex items-center space-x-4">
+              <ul className="auth-links flex items-center space-x-4">
+                {/* Cart Icon */}
+                <li className="flex items-center">
+                  <CartIcon />
+                </li>
+                
+                {currentUser ? (
+                  <>
+                    <li>
+                      <NavLink to="/members" className="members-cta">
+                        Members Area
+                      </NavLink>
+                    </li>
+                    <li>
+                      <button onClick={handleLogout} className="nav-button">
+                        Logout
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <NavLink to="/login" className="auth-link">
+                        Log in
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/signup" className="auth-button">
+                        Join
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </div>
 
             <button
               className="mobile-menu-button"

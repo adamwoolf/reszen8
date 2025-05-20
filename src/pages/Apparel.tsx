@@ -1,5 +1,38 @@
 import React from 'react';
+import AddToCartButton from '../components/AddToCartButton';
 import './CategoryPage.css';
+
+// Sample product data - in a real app, this would come from an API
+const products = [
+  {
+    id: 'prod_1',
+    name: 'Mindful Hoodie',
+    price: 89.99,
+    description: 'Ultra-soft hoodie made from organic cotton blend, perfect for meditation and relaxation.',
+    image: 'https://via.placeholder.com/300x300?text=Mindful+Hoodie',
+  },
+  {
+    id: 'prod_2',
+    name: 'Zen Joggers',
+    price: 64.99,
+    description: 'Comfortable joggers designed for both movement and meditation.',
+    image: 'https://via.placeholder.com/300x300?text=Zen+Joggers',
+  },
+  {
+    id: 'prod_3',
+    name: 'Serenity T-Shirt',
+    price: 34.99,
+    description: 'Breathable t-shirt made from sustainable bamboo fabric.',
+    image: 'https://via.placeholder.com/300x300?text=Serenity+T-Shirt',
+  },
+  {
+    id: 'prod_4',
+    name: 'Balance Leggings',
+    price: 59.99,
+    description: 'High-waisted leggings with four-way stretch for ultimate comfort.',
+    image: 'https://via.placeholder.com/300x300?text=Balance+Leggings',
+  },
+];
 
 const Apparel: React.FC = () => {
   return (
@@ -12,34 +45,62 @@ const Apparel: React.FC = () => {
       <section className="category-content">
         <div className="category-intro">
           <p>Our apparel collection is crafted with intention, using sustainable materials that respect both your body and the planet. Each piece is designed to accompany you through meditation, movement, and moments of mindfulness.</p>
-          <p>We believe that what you wear influences how you feel. That's why our clothing combines ethical production with exceptional comfort, allowing you to focus on your practice without distraction.</p>
         </div>
 
-        <div className="feature-grid">
-          <div className="feature-item">
-            <h3>Mindful Materials</h3>
-            <p>Ethically sourced organic cotton, bamboo blends, and recycled fabrics that are gentle on sensitive skin.</p>
-          </div>
-          <div className="feature-item">
-            <h3>Comfort-First Design</h3>
-            <p>Relaxed fits and breathable fabrics to support movement and stillness in equal measure.</p>
-          </div>
-          <div className="feature-item">
-            <h3>Sustainable Production</h3>
-            <p>Low-impact dyes and water-conserving manufacturing processes that minimize environmental footprint.</p>
-          </div>
-          <div className="feature-item">
-            <h3>Versatile Pieces</h3>
-            <p>Transition seamlessly from yoga to daily life with pieces that adapt to your lifestyle.</p>
-          </div>
-        </div>
-
-        <div className="coming-soon">
-          <h2>Collection Coming Soon</h2>
-          <p>Our first apparel collection is in production and will be available for purchase in Summer 2025. Join our mailing list to be the first to know when it launches.</p>
-          <button className="cta-button">Sign Up for Updates</button>
+        <div className="products-grid">
+          {products.map((product) => (
+            <div key={product.id} className="product-card">
+              <div className="product-image">
+                <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
+                <p className="text-gray-600 mb-4">${product.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-500 mb-4">{product.description}</p>
+                <AddToCartButton product={product} className="w-full" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
+
+      <style jsx>{`
+        .products-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 2rem;
+          margin-top: 2rem;
+        }
+        
+        .product-card {
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          overflow: hidden;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .product-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-image {
+          width: 100%;
+          height: 0;
+          padding-bottom: 100%;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .product-image img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      `}</style>
     </div>
   );
 };

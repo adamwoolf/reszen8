@@ -10,28 +10,35 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.3.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-transition-group": "^4.4.12",
     "firebase": "^11.7.1",
     "framer-motion": "^12.10.5",
+    "install": "^0.13.0",
+    "npm": "^11.4.0",
     "openai": "^4.98.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",
-    "react-transition-group": "^4.4.5"
+    "react-transition-group": "^4.4.5",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "@vitejs/plugin-react": "^3.1.0",
+    "@vitejs/plugin-react": "^4.4.1",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "typescript": "^4.9.5",
-    "vite": "^4.5.0"
+    "vite": "^6.3.5"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
@@ -19,44 +19,55 @@ import WellnessTools from './pages/WellnessTools';
 import DigitalGoods from './pages/DigitalGoods';
 import Meditations from './pages/Meditations';
 import Accessories from './pages/Accessories';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner';
+import FloatingCTA from './components/FloatingCTA';
+import NotFound from './pages/NotFound';
 import './App.css';
 
 // Layout component that wraps all pages except LandingPage
 const Layout = ({ children }: { children: React.ReactNode }) => (
-  <>
-    <header>
+  <ErrorBoundary>
+    <div className="app-container">
       <Navbar />
-    </header>
-    <main className="main-content">
-      {children}
-    </main>
-    <footer className="footer">
-      <p>&copy; {new Date().getFullYear()} RESZEN8. All rights reserved.</p>
-    </footer>
-  </>
+      <main className="main-content">
+        <PageTransition>
+          <Suspense fallback={<LoadingSpinner />}>
+            {children}
+          </Suspense>
+        </PageTransition>
+      </main>
+      <FloatingCTA />
+    </div>
+  </ErrorBoundary>
 );
 
 // AnimatedRoutes component to handle page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
-
+  
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/home" element={<Layout><PageTransition><Home /></PageTransition></Layout>} />
-        <Route path="/about" element={<Layout><PageTransition><AboutMe /></PageTransition></Layout>} />
-        <Route path="/photos" element={<Layout><PageTransition><Photos /></PageTransition></Layout>} />
-        <Route path="/contact" element={<Layout><PageTransition><Contact /></PageTransition></Layout>} />
-        <Route path="/login" element={<Layout><PageTransition><Login /></PageTransition></Layout>} />
-        <Route path="/signup" element={<Layout><PageTransition><Signup /></PageTransition></Layout>} />
-        <Route path="/members" element={<Layout><PageTransition><PrivateRoute><MembersArea /></PrivateRoute></PageTransition></Layout>} />
-        <Route path="/ai-chat" element={<Layout><PageTransition><AIChat /></PageTransition></Layout>} />
-        <Route path="/apparel" element={<Layout><PageTransition><Apparel /></PageTransition></Layout>} />
-        <Route path="/wellness-tools" element={<Layout><PageTransition><WellnessTools /></PageTransition></Layout>} />
-        <Route path="/digital-goods" element={<Layout><PageTransition><DigitalGoods /></PageTransition></Layout>} />
-        <Route path="/guided-meditations" element={<Layout><PageTransition><Meditations /></PageTransition></Layout>} />
-        <Route path="/accessories" element={<Layout><PageTransition><Accessories /></PageTransition></Layout>} />
+        <Route path="/home" element={<Layout><Home /></Layout>} />
+        <Route path="/about" element={<Layout><AboutMe /></Layout>} />
+        <Route path="/photos" element={<Layout><Photos /></Layout>} />
+        <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/members" element={<PrivateRoute><Layout><MembersArea /></Layout></PrivateRoute>} />
+        <Route path="/ai-chat" element={<PrivateRoute><Layout><AIChat /></Layout></PrivateRoute>} />
+        <Route path="/apparel" element={<Layout><Apparel /></Layout>} />
+        <Route path="/wellness-tools" element={<Layout><WellnessTools /></Layout>} />
+        <Route path="/digital-goods" element={<Layout><DigitalGoods /></Layout>} />
+        <Route path="/guided-meditations" element={<Layout><Meditations /></Layout>} />
+        <Route path="/accessories" element={<Layout><Accessories /></Layout>} />
+        <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+        <Route path="/order-success" element={<Layout><OrderSuccess /></Layout>} />
+        <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </AnimatePresence>
   );
@@ -64,13 +75,13 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <div className="app">
+    <Router>
       <AuthProvider>
-        <Router>
+        <ErrorBoundary>
           <AnimatedRoutes />
-        </Router>
+        </ErrorBoundary>
       </AuthProvider>
-    </div>
+    </Router>
   );
 }
 
