@@ -35,7 +35,7 @@
     display: block;
     background: transparent;
     border: none;
-    color: #FFA500;
+    color: #ffa500;
     font-size: 1.5rem;
     cursor: pointer;
     z-index: 200;
@@ -68,13 +68,13 @@
   .nav-links.active {
     right: 0;
   }
-  
+
   .nav-links li {
     margin: 1.5rem 0;
     width: 100%;
     text-align: center;
   }
-  
+
   .nav-links li a {
     font-size: 1.2rem;
     font-weight: 500;
@@ -82,10 +82,10 @@
     width: 100%;
     display: block;
   }
-  
+
   .nav-links li a:hover,
   .nav-links li a.active {
-    color: #FFA500 !important;
+    color: #ffa500 !important;
     background-color: rgba(255, 165, 0, 0.05);
   }
 
@@ -157,7 +157,7 @@
 .nav-brand a:active {
   font-size: 2rem;
   font-weight: 800;
-  color: #FFA500 !important;
+  color: #ffa500 !important;
   text-decoration: none;
   letter-spacing: -0.5px;
   transition: all 0.3s ease;
@@ -168,7 +168,7 @@
 }
 
 .nav-brand a:hover {
-  color: #FF8C00 !important;
+  color: #ff8c00 !important;
   transform: scale(1.05);
 }
 
@@ -189,7 +189,7 @@
 
 .nav-link {
   text-decoration: none;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 500;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -201,24 +201,24 @@
 
 .nav-icon {
   font-size: 1.2rem;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-right: 0.5rem;
   transition: color 0.3s ease;
 }
 
 .nav-link:hover .nav-icon,
 .nav-link.active .nav-icon {
-  color: #FFA500;
+  color: #ffa500;
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #FFA500;
+  background-color: #ffa500;
   transition: width 0.3s ease;
 }
 
@@ -229,7 +229,8 @@
 
 .nav-link:hover,
 .nav-link.active {
-  color: #FFA500;
+  color: #ffa500;
+  text-decoration: none;
 }
 
 .auth-links {
@@ -243,7 +244,7 @@
 }
 
 .auth-button {
-  background-color: #FFA500;
+  background-color: #ffa500;
   color: #000000 !important;
   padding: 0.5rem 1.2rem !important;
   border-radius: 50px;
@@ -256,7 +257,7 @@
 }
 
 .members-cta {
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
   color: #000000 !important;
   padding: 0.5rem 1.2rem !important;
   border-radius: 50px;
@@ -278,7 +279,7 @@
 }
 
 .members-cta:hover {
-  background: linear-gradient(135deg, #FF8C00, #FF6B00);
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
   color: #000000;
@@ -290,27 +291,27 @@
 }
 
 .auth-button:hover {
-  background-color: #FF8C00;
+  background-color: #ff8c00;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
 }
 
 .auth-link {
-  color: #FFA500 !important;
+  color: #ffa500 !important;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .auth-link:hover {
-  color: #FF8C00 !important;
+  color: #ff8c00 !important;
 }
 
 /* Nav Button */
 .nav-button {
   background: transparent;
-  color: #FFA500 !important;
-  border: 1px solid #FFA500;
+  color: #ffa500 !important;
+  border: 1px solid #ffa500;
   padding: 0.5rem 1.2rem;
   border-radius: 50px;
   font-size: 1rem;
@@ -351,26 +352,7 @@
 
 .user-icon {
   font-size: 1.5rem;
-  color: #FFA500;
-}
-
-/* Cart Icon Styles */
-.cart-icon-container .h-5 {
-  height: 1.5rem;
-  width: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.cart-icon-container .absolute {
-  font-size: 0.6rem;
-  height: 1.25rem;
-  width: 1.25rem;
-  top: -0.5rem;
-  right: -0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #1a1a1a;
+  color: #ffa500;
 }
 
 /* Dark mode support */
@@ -378,20 +360,20 @@
   .navbar.scrolled {
     background-color: rgba(30, 30, 30, 0.9);
   }
-  
+
   .dropdown-menu {
     background: var(--bg-secondary);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
-  
+
   .dropdown-item {
     color: var(--text-color);
   }
-  
+
   .dropdown-item:hover {
     background-color: rgba(108, 99, 255, 0.2);
   }
-  
+
   @media (max-width: 992px) {
     .nav-links {
       background: var(--bg-secondary);

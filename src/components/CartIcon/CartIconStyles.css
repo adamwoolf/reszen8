@@ -1,0 +1,21 @@
+.cart-icon-container .absolute {
+  font-size: 0.6rem;
+  height: 1.25rem;
+  width: 1.25rem;
+  top: -0.5rem;
+  right: -0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1a1a1a;
+  display: flex;
+  align-items: center;
+}
+
+.cart-icon-count {
+  font-size: 0.7rem;
+}
+
+.cart-icon {
+  font-size: 1rem;
+}
