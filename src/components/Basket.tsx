@@ -47,7 +47,7 @@ const Basket = () => {
             )}
             <div className={styles.itemDetails}>
               <h3 className={styles.productName}>{item.product.name}</h3>
-              <p className={styles.price}>${item.product.price.toFixed(2)}</p>
+              <p className={styles.price}>£{item.product.price.toFixed(2)}</p>
               <div className={styles.quantityControl}>
                 <button
                   onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
@@ -68,7 +68,7 @@ const Basket = () => {
             </div>
             <div className={styles.itemTotal}>
               <p className={styles.totalPrice}>
-                ${(item.product.price * item.quantity).toFixed(2)}
+                £{(item.product.price * item.quantity).toFixed(2)}
               </p>
               <button
                 onClick={() => removeItem(item.product.id)}
@@ -84,7 +84,7 @@ X
       <div className={styles.checkoutSection}>
         <div className={styles.totalContainer}>
           <span className={styles.totalLabel}>Total:</span>
-          <span className={styles.totalAmount}>${totalPrice().toFixed(2)}</span>
+          <span className={styles.totalAmount}>£{totalPrice().toFixed(2)}</span>
         </div>
         <Link
           to="/checkout"

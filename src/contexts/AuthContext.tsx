@@ -1,18 +1,20 @@
-import { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged,
-  setPersistence,
-  browserSessionPersistence,
-  browserLocalPersistence,
-  type User,
-  type UserCredential,
-  type AuthError
+  onAuthStateChanged, 
+  type User as FirebaseUser,
+  type UserCredential
 } from 'firebase/auth';
 import { auth } from '../firebase';
+
+interface User {
+  uid: string;
+  email: string | null;
+  emailVerified: boolean;
+  // Add other user properties as needed
+}
 
 interface AuthContextType {
   currentUser: User | null;
@@ -41,89 +43,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
-  const signup = useCallback(async (email: string, password: string): Promise<UserCredential> => {
-    try {
-      setLoading(true);
-      clearError();
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      setCurrentUser(userCredential.user);
-      return userCredential;
-    } catch (error) {
-      const authError = error as AuthError;
-      const errorMessage = authError.message || 'Failed to create an account';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [clearError]);
-
-  const login = useCallback(async (email: string, password: string, rememberMe: boolean = false): Promise<void> => {
-    try {
-      setLoading(true);
-      clearError();
-      
-      // Set persistence based on rememberMe
-      await setPersistence(
-        auth, 
-        rememberMe ? browserLocalPersistence : browserSessionPersistence
-      );
-      
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setCurrentUser(userCredential.user);
-    } catch (error) {
-      const authError = error as AuthError;
-      let errorMessage = 'Failed to log in';
-      
-      switch (authError.code) {
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-          errorMessage = 'Invalid email or password';
-          break;
-        case 'auth/too-many-requests':
-          errorMessage = 'Too many failed attempts. Please try again later.';
-          break;
-        default:
-          errorMessage = authError.message || errorMessage;
+  // Handle user state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        const user: User = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          emailVerified: firebaseUser.emailVerified,
+          // Add any additional user properties you need
+        };
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
       }
-      
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
       setLoading(false);
-    }
-  }, [clearError]);
+    });
 
-  const logout = useCallback(async (): Promise<void> => {
+    return () => unsubscribe();
+  }, []);
+
+  const signup = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true);
       clearError();
-      await signOut(auth);
-      setCurrentUser(null);
-    } catch (error) {
-      const authError = error as AuthError;
-      setError(authError.message || 'Failed to log out');
+      return await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to create an account';
+      setError(errorMessage);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [clearError]);
+  }, []);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        setCurrentUser(user);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Auth state error:', error);
-        setError('Authentication error occurred');
-        setLoading(false);
-      }
-    );
+  const login = useCallback(async (email: string, password: string, rememberMe = false) => {
+    try {
+      setLoading(true);
+      clearError();
+      await signInWithEmailAndPassword(auth, email, password);
+      // Note: onAuthStateChanged will update the currentUser
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to log in';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    return () => unsubscribe();
+  const logout = useCallback(async () => {
+    try {
+      setLoading(true);
+      await signOut(auth);
+      // Note: onAuthStateChanged will update the currentUser
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to log out';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const value = {
@@ -138,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : null}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }

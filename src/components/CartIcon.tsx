@@ -6,11 +6,11 @@ const CartIcon = () => {
   const itemCount = useBasketStore((state) => state.itemCount());
 
   return (
-    <div className="relative">
+    <div className="cart-icon-container relative">
       <Link 
-        to="/checkout" 
+        to="/basket" 
         className="text-gray-700 hover:text-gray-900 flex items-center"
-        aria-label="Go to checkout"
+        aria-label="View basket"
       >
         <ShoppingCartIcon className="h-5 w-5" />
         {itemCount > 0 && (

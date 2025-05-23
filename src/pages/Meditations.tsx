@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './CategoryPage.css';
 
 const Meditations: React.FC = () => {
@@ -55,7 +56,9 @@ const Meditations: React.FC = () => {
           </div>
           <div className="access-all">
             <p>Access our complete library of over 200 guided meditations with a RESZEN8 Digital Membership</p>
-            <button className="cta-button">Explore Membership Options</button>
+            <Link to="/memberships" className="cta-button">
+              Explore Membership Options
+            </Link>
           </div>
         </div>
       </section>

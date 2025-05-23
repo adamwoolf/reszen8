@@ -18,7 +18,6 @@
   position: relative;
   z-index: 2;
   margin-bottom: 2rem;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .mission-content {

@@ -1,63 +1,180 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AddToCartButton from '../components/AddToCartButton';
+import SizeDropdownSelector from '../components/SizeDropdownSelector';
 import './CategoryPage.css';
 
 // Sample product data - in a real app, this would come from an API
 const products = [
+  // Apparel Products
   {
     id: 'prod_1',
     name: 'Mindful Hoodie',
-    price: 89.99,
+    price: 39.99,
     description: 'Ultra-soft hoodie made from organic cotton blend, perfect for meditation and relaxation.',
-    image: 'https://via.placeholder.com/300x300?text=Mindful+Hoodie',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   },
   {
     id: 'prod_2',
     name: 'Zen Joggers',
-    price: 64.99,
+    price: 28.99,
     description: 'Comfortable joggers designed for both movement and meditation.',
-    image: 'https://via.placeholder.com/300x300?text=Zen+Joggers',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   },
   {
     id: 'prod_3',
     name: 'Serenity T-Shirt',
-    price: 34.99,
+    price: 24.99,
     description: 'Breathable t-shirt made from sustainable bamboo fabric.',
-    image: 'https://via.placeholder.com/300x300?text=Serenity+T-Shirt',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   },
   {
     id: 'prod_4',
     name: 'Balance Leggings',
-    price: 59.99,
+    price: 38.99,
     description: 'High-waisted leggings with four-way stretch for ultimate comfort.',
-    image: 'https://via.placeholder.com/300x300?text=Balance+Leggings',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   },
+  // Accessories Products
+  {
+    id: 'acc_1',
+    name: 'Intention Bracelet',
+    price: 18.00,
+    description: 'Handcrafted from sustainable materials with an adjustable design.',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+  },
+  {
+    id: 'acc_2',
+    name: 'Reflection Journal',
+    price: 22.50,
+    description: 'Premium journal with guided prompts for daily mindfulness practice.',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+  },
+  {
+    id: 'acc_3',
+    name: 'Meditation Cushion',
+    price: 54.99,
+    description: 'Ergonomic cushion filled with buckwheat hulls for optimal support.',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+  },
+  {
+    id: 'acc_4',
+    name: 'Essential Oil Diffuser',
+    price: 32.99,
+    description: 'Whisper-quiet diffuser with color-changing LED lights for a calming atmosphere.',
+    image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
+  }
 ];
 
+type SizeQuantity = {
+  size: string;
+  quantity: number;
+};
+
 const Apparel: React.FC = () => {
+  const [selectedSizes, setSelectedSizes] = useState<{[key: string]: SizeQuantity[]}>({});
+  const [showSizePrompt, setShowSizePrompt] = useState<{[key: string]: boolean}>({});
+
+  const handleSizeQuantityChange = (productId: string, sizes: SizeQuantity[]) => {
+    setSelectedSizes(prev => ({
+      ...prev,
+      [productId]: sizes
+    }));
+    
+    // Reset the size prompt when sizes are selected
+    if (showSizePrompt[productId] && sizes.length > 0) {
+      setShowSizePrompt(prev => ({
+        ...prev,
+        [productId]: false
+      }));
+    }
+  };
+
+  const handleSizeRequired = (productId: string) => {
+    setShowSizePrompt(prev => ({
+      ...prev,
+      [productId]: true
+    }));
+    
+    // Auto-hide the prompt after 3 seconds
+    setTimeout(() => {
+      setShowSizePrompt(prev => ({
+        ...prev,
+        [productId]: false
+      }));
+    }, 3000);
+    
+    // Scroll the product into view if needed
+    const productElement = document.getElementById(`product-${productId}`);
+    if (productElement) {
+      productElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const getTotalQuantity = (productId: string) => {
+    return (selectedSizes[productId] || []).reduce(
+      (total, item) => total + item.quantity, 
+      0
+    );
+  };
+
   return (
     <div className="category-page">
       <header className="category-header">
         <h1>RESZEN8 Apparel</h1>
-        <p className="subtitle">Premium comfort wear designed for your wellness journey</p>
+        <p className="subtitle">Premium apparel and accessories designed for your wellness journey</p>
       </header>
 
       <section className="category-content">
         <div className="category-intro">
-          <p>Our apparel collection is crafted with intention, using sustainable materials that respect both your body and the planet. Each piece is designed to accompany you through meditation, movement, and moments of mindfulness.</p>
+          <p>Complete your wellness toolkit with our thoughtfully designed accessories and apparel. From journals to jewelry, each item blends beauty and function to support mindfulness throughout your day. Our sustainable comfort wear is crafted to accompany you through meditation, movement, and everyday wellness.</p>
         </div>
 
         <div className="products-grid">
           {products.map((product) => (
-            <div key={product.id} className="product-card">
+            <div 
+              key={product.id} 
+              id={`product-${product.id}`}
+              className="product-card relative"
+            >
+              {showSizePrompt[product.id] && product.sizes && (
+                <div className="absolute -top-2 left-0 right-0 transform -translate-y-full">
+                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-2 text-sm rounded">
+                    <p>Please select at least one size and quantity</p>
+                  </div>
+                </div>
+              )}
               <div className="product-image">
                 <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
               </div>
-              <div className="p-4">
+              <div className="p-4 flex flex-col h-full">
                 <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                <p className="text-gray-600 mb-4">${product.price.toFixed(2)}</p>
+                <p className="text-gray-600 mb-2">£{product.price.toFixed(2)}</p>
                 <p className="text-sm text-gray-500 mb-4">{product.description}</p>
-                <AddToCartButton product={product} className="w-full" />
+                
+                {product.sizes && (
+                  <div className="mb-4">
+                    <SizeDropdownSelector
+                      sizes={product.sizes}
+                      selectedSizes={selectedSizes[product.id] || []}
+                      onSizeQuantityChange={(sizes) => 
+                        handleSizeQuantityChange(product.id, sizes)
+                      }
+                    />
+                  </div>
+                )}
+                
+                <div className="mt-auto">
+                  <AddToCartButton 
+                    product={product} 
+                    className="w-full max-w-[200px] mx-auto block"
+                    selectedSizes={selectedSizes[product.id] || []}
+                    onSizeRequired={() => handleSizeRequired(product.id)}
+                  />
+                </div>
               </div>
             </div>
           ))}

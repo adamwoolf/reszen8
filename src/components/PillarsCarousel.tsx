@@ -39,6 +39,12 @@ const pillars: Pillar[] = [
     title: 'Accessories',
     description: 'Complementary items to complete your wellness toolkit',
     path: '/accessories'
+  },
+  {
+    id: 6,
+    title: 'Memberships',
+    description: 'Exclusive access to premium content, products, and experiences',
+    path: '/memberships'
   }
 ];
 

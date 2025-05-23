@@ -3,6 +3,7 @@ import './Contact.css';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     phone: '',
     message: ''
@@ -18,11 +19,9 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
     console.log('Form submitted:', formData);
-    // You can add your form submission logic here
     alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ email: '', phone: '', message: '' });
+    setFormData({ name: '', email: '', phone: '', message: '' });
   };
 
   return (
@@ -32,6 +31,19 @@ const Contact: React.FC = () => {
         <p className="contact-intro">Have questions or feedback? We'd love to hear from you!</p>
         
         <form onSubmit={handleSubmit} className="contact-form">
+          <div className="form-group">
+            <label htmlFor="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="John Doe"
+            />
+          </div>
+          
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <input

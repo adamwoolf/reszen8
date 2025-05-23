@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { BasketProvider } from './contexts/BasketContext';
 import Navbar from './components/Navbar';
 import PageTransition from './components/PageTransition';
 import LandingPage from './pages/LandingPage';
@@ -21,25 +21,41 @@ import Meditations from './pages/Meditations';
 import Accessories from './pages/Accessories';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import Memberships from './pages/Memberships';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TestPaymentPage from './pages/TestPaymentPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import FloatingCTA from './components/FloatingCTA';
+import Footer from './components/Footer';
 import NotFound from './pages/NotFound';
+import Basket from './pages/Basket';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser } = useAuth();
+  return currentUser ? <>{children}</> : <Navigate to="/login" />;
+};
 
 // Layout component that wraps all pages except LandingPage
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
-    <div className="app-container">
+    <div className="app-container flex flex-col min-h-screen">
       <Navbar />
-      <main className="main-content">
+      <main className="main-content flex-grow">
         <PageTransition>
           <Suspense fallback={<LoadingSpinner />}>
             {children}
           </Suspense>
         </PageTransition>
       </main>
+      <Footer />
       <FloatingCTA />
+      <ToastContainer aria-label={"toast"} position="bottom-right" autoClose={3000} />
     </div>
   </ErrorBoundary>
 );
@@ -58,15 +74,34 @@ const AnimatedRoutes = () => {
         <Route path="/contact" element={<Layout><Contact /></Layout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/members" element={<PrivateRoute><Layout><MembersArea /></Layout></PrivateRoute>} />
-        <Route path="/ai-chat" element={<PrivateRoute><Layout><AIChat /></Layout></PrivateRoute>} />
+        
+        {/* Protected Routes */}
+        <Route path="/members" element={
+          <ProtectedRoute>
+            <Layout><MembersArea /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/ai-chat" element={
+          <ProtectedRoute>
+            <Layout><AIChat /></Layout>
+          </ProtectedRoute>
+        } />
+        
+        {/* Public Routes */}
         <Route path="/apparel" element={<Layout><Apparel /></Layout>} />
         <Route path="/wellness-tools" element={<Layout><WellnessTools /></Layout>} />
         <Route path="/digital-goods" element={<Layout><DigitalGoods /></Layout>} />
-        <Route path="/guided-meditations" element={<Layout><Meditations /></Layout>} />
+        <Route path="/meditations" element={<Layout><Meditations /></Layout>} />
         <Route path="/accessories" element={<Layout><Accessories /></Layout>} />
         <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+        <Route path="/basket" element={<Layout><Basket /></Layout>} />
         <Route path="/order-success" element={<Layout><OrderSuccess /></Layout>} />
+        <Route path="/memberships" element={<Layout><Memberships /></Layout>} />
+        <Route path="/terms-and-conditions" element={<Layout><TermsAndConditions /></Layout>} />
+        <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+        <Route path="/test-payment" element={<Layout><TestPaymentPage /></Layout>} />
+        
+        {/* 404 Route */}
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </AnimatePresence>
@@ -75,13 +110,13 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <Router>
+    <BasketProvider>
       <AuthProvider>
-        <ErrorBoundary>
+        <Router>
           <AnimatedRoutes />
-        </ErrorBoundary>
+        </Router>
       </AuthProvider>
-    </Router>
+    </BasketProvider>
   );
 }
 

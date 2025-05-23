@@ -69,23 +69,28 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li>
+              <NavLink to="/accessories" className={getNavLinkClass}>
+                Accessories
+              </NavLink>
+            </li>
+            <li>
               <NavLink to="/wellness-tools" className={getNavLinkClass}>
-                Wellness Tools
+                Wellness
               </NavLink>
             </li>
             <li>
               <NavLink to="/digital-goods" className={getNavLinkClass}>
-                Digital Goods
+                Digital
               </NavLink>
             </li>
             <li>
               <NavLink to="/guided-meditations" className={getNavLinkClass}>
-                Guided Meditations
+                Meditations
               </NavLink>
             </li>
             <li>
-              <NavLink to="/accessories" className={getNavLinkClass}>
-                Accessories
+              <NavLink to="/memberships" className={getNavLinkClass}>
+                Memberships
               </NavLink>
             </li>
           </ul>
@@ -93,50 +98,61 @@ const Navbar: React.FC = () => {
           <div className="nav-right">
             <div className="flex items-center space-x-4">
               <ul className="auth-links flex items-center space-x-4">
-                {/* Cart Icon */}
                 <li className="flex items-center">
                   <CartIcon />
                 </li>
                 
                 {currentUser ? (
-                  <>
-                    <li>
-                      <NavLink to="/members" className="members-cta">
-                        Members Area
-                      </NavLink>
-                    </li>
-                    <li>
-                      <button onClick={handleLogout} className="nav-button">
+                  <li className="relative group">
+                    <button className="nav-link flex items-center">
+                      {currentUser.email}
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+                      <NavLink to="/members" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Account</NavLink>
+                      <button 
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      >
                         Logout
                       </button>
-                    </li>
-                  </>
+                    </div>
+                  </li>
                 ) : (
                   <>
                     <li>
-                      <NavLink to="/login" className="auth-link">
-                        Log in
+                      <NavLink to="/login" className={getNavLinkClass}>
+                        Login
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink to="/signup" className="auth-button">
-                        Join
+                      <NavLink to="/signup" className="nav-link signup-btn">
+                        Sign Up
                       </NavLink>
                     </li>
                   </>
                 )}
               </ul>
             </div>
-
-            <button
-              className="mobile-menu-button"
-              onClick={toggleMobileMenu}
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? '✕' : '☰'}
-            </button>
           </div>
         </div>
+
+        <button 
+          className="mobile-menu-button" 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+            )}
+          </svg>
+        </button>
       </div>
     </nav>
   );

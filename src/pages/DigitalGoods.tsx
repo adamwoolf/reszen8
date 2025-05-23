@@ -1,7 +1,51 @@
 import React from 'react';
+import { useBasketStore } from '../store/basketStore';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import './CategoryPage.css';
 
+type SubscriptionTier = {
+  id: string;
+  name: string;
+  price: number;
+  type: 'monthly' | 'annual';
+  description: string;
+};
+
 const DigitalGoods: React.FC = () => {
+  const navigate = useNavigate();
+  const { addItem } = useBasketStore();
+
+  const subscriptionTiers: SubscriptionTier[] = [
+    {
+      id: 'digital-monthly',
+      name: 'Monthly Digital Membership',
+      price: 14.99,
+      type: 'monthly',
+      description: 'Full access to all digital resources, billed monthly.'
+    },
+    {
+      id: 'digital-annual',
+      name: 'Annual Digital Membership',
+      price: 119.99,
+      type: 'annual',
+      description: 'Full access to all digital resources, billed annually. Save 33% compared to monthly.'
+    }
+  ];
+
+  const handleSubscribe = (tier: SubscriptionTier) => {
+    addItem({
+      id: tier.id,
+      name: tier.name,
+      price: tier.price,
+      description: tier.description
+    });
+    
+    toast.success(`${tier.name} added to basket!`);
+    // Optionally navigate to checkout
+    // navigate('/checkout');
+  };
+
   return (
     <div className="category-page">
       <header className="category-header">
@@ -38,21 +82,23 @@ const DigitalGoods: React.FC = () => {
           <h2>RESZEN8 Digital Membership</h2>
           <p>Our all-access digital subscription gives you unlimited access to our complete library of digital resources, including exclusive content not available elsewhere. Members receive new content monthly and can join our online community of like-minded practitioners.</p>
           <div className="subscription-tiers">
-            <div className="tier">
-              <div className="tier-header">
-                <h3>Monthly</h3>
-                <p className="price">£14.99</p>
+            {subscriptionTiers.map((tier) => (
+              <div key={tier.id} className={`tier ${tier.type === 'annual' ? 'featured' : ''}`}>
+                <div className="tier-header">
+                  <h3>{tier.type === 'annual' ? 'Annual' : 'Monthly'}</h3>
+                  <p className="price">£{tier.price.toFixed(2)}</p>
+                </div>
+                {tier.type === 'annual' && (
+                  <p className="saving">Save 33%</p>
+                )}
+                <button 
+                  className="cta-button"
+                  onClick={() => handleSubscribe(tier)}
+                >
+                  Subscribe
+                </button>
               </div>
-              <button className="cta-button">Subscribe</button>
-            </div>
-            <div className="tier featured">
-              <div className="tier-header">
-                <h3>Annual</h3>
-                <p className="price">£119.99</p>
-              </div>
-              <p className="saving">Save 33%</p>
-              <button className="cta-button">Subscribe</button>
-            </div>
+            ))}
           </div>
         </div>
       </section>
