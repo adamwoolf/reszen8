@@ -64,6 +64,35 @@ export default function MembersArea() {
           <p>Thank you for being a part of the RESZEN8 community. Here you'll find exclusive content, member benefits, and tools to enhance your mindfulness journey.</p>
         </div>
 
+        {isTrialActive && (
+          <div className="trial-banner">
+            <h3>Your Free Trial</h3>
+            <p>Your trial period ends in: {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m</p>
+            <div className="button-group">
+              <Link to="/memberships" className="cta-button">
+                Upgrade Now
+              </Link>
+              <Link to="/memberships" className="cta-button secondary">
+                Manage Membership
+              </Link>
+              <Link to="/apparel" className="cta-button tertiary">
+                Why not grab some RESZEN8 Merch!
+              </Link>
+            </div>
+          </div>
+        )}
+        
+        {!isTrialActive && (
+          <div className="account-actions">
+            <Link to="/memberships" className="cta-button">
+              Manage Membership
+            </Link>
+            <Link to="/apparel" className="cta-button tertiary">
+              Why not grab some RESZEN8 Merch!
+            </Link>
+          </div>
+        )}
+
         <div className="feature-grid">
           <div className="feature-item">
             <h3>Your Membership</h3>
@@ -80,35 +109,6 @@ export default function MembersArea() {
           <div className="feature-item">
             <h3>Your Activity</h3>
             <p>Track your progress, save your favorite sessions, and set personal mindfulness goals.</p>
-          </div>
-        </div>
-
-        {isTrialActive && (
-          <div className="trial-banner">
-            <h3>Your Free Trial</h3>
-            <p>Your trial period ends in: {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m</p>
-            <Link to="/memberships" className="cta-button">
-              Upgrade Now
-            </Link>
-          </div>
-        )}
-
-        <div className="membership-details">
-          <h2>Your Membership Includes:</h2>
-          <ul className="benefits-list">
-            <li>✓ Unlimited access to guided meditations</li>
-            <li>✓ Exclusive member-only content</li>
-            <li>✓ Member-only discounts on products</li>
-            <li>✓ Early access to new features & events</li>
-          </ul>
-          
-          <div className="account-actions">
-            <button className="logout-button" onClick={logout}>
-              Sign Out
-            </button>
-            <Link to="/memberships" className="cta-button">
-              Manage Membership
-            </Link>
           </div>
         </div>
       </section>

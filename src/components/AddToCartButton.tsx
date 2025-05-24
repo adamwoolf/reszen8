@@ -21,6 +21,7 @@ type AddToCartButtonProps = {
   selectedSizes: SizeQuantity[];
   disabled?: boolean;
   onSizeRequired?: () => void;
+  children?: React.ReactNode;
 };
 
 const AddToCartButton = ({ 
@@ -28,7 +29,8 @@ const AddToCartButton = ({
   className = '', 
   selectedSizes = [],
   disabled = false,
-  onSizeRequired
+  onSizeRequired,
+  children
 }: AddToCartButtonProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -93,11 +95,11 @@ const AddToCartButton = ({
           ? 'Adding to basket...' 
           : isAdded 
             ? 'Added' 
-            : totalItems > 1 
+            : children || (totalItems > 1 
               ? `Add ${totalItems} items to Cart`
               : totalItems === 1
                 ? 'Add to Cart (1 item)'
-                : 'Select size and quantity'}
+                : 'Select size and quantity')}
       </button>
       
       {showSizePrompt && (

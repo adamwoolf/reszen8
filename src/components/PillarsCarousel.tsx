@@ -18,18 +18,12 @@ const pillars: Pillar[] = [
   },
   {
     id: 2,
-    title: 'Digital Goods',
-    description: 'Digital resources to enhance your daily practice',
-    path: '/digital-goods'
-  },
-  {
-    id: 3,
-    title: 'Guided Meditations',
+    title: 'Meditation Hub',
     description: 'Expert-led sessions for all experience levels',
     path: '/guided-meditations'
   },
   {
-    id: 4,
+    id: 3,
     title: 'Memberships',
     description: 'Exclusive access to premium content, products, and experiences',
     path: '/memberships'

@@ -86,31 +86,6 @@
   box-shadow: 0 6px 16px rgba(255, 165, 0, 0.3);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .membership-tabs {
-    flex-wrap: wrap;
-    border-radius: 12px;
-    padding: 0.5rem;
-  }
-  
-  .tab-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .membership-tabs {
-    gap: 0.5rem;
-  }
-  
-  .tab-button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-}
-
 /* Membership Grid */
 .membership-grid {
   display: grid;
@@ -265,6 +240,28 @@
   border-color: #FFB52E;
 }
 
+/* Coming Soon Tag */
+.coming-soon-tag {
+  display: inline-block;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 /* FAQ Section */
 .membership-faq {
   max-width: 1000px;
@@ -315,25 +312,26 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .membership-grid {
-    grid-template-columns: 1fr;
+  .membership-tabs {
+    flex-wrap: wrap;
+    border-radius: 12px;
+    padding: 0.5rem;
   }
   
-  .membership-header h3 {
-    font-size: 1.3rem;
+  .tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
   }
-  
-  .price {
-    font-size: 2rem;
-  }
-  
+}
+
+@media (max-width: 480px) {
   .membership-tabs {
     gap: 0.5rem;
   }
   
   .tab-button {
-    padding: 0.4rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
   }
 }
 

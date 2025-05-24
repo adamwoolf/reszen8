@@ -13,7 +13,7 @@ const Home: React.FC = () => {
             Our mission is to provide tools and resources that help you find your center, reduce stress, and enhance your overall well-being in today's fast-paced world.
           </p>
           <p className="mission-tagline">
-            Breathe. Balance. Be Present.
+            Stillness. Strength. Presence.
           </p>
         </div>
       </section>

@@ -168,12 +168,23 @@ const Apparel: React.FC = () => {
                 )}
                 
                 <div className="mt-auto">
-                  <AddToCartButton 
-                    product={product} 
-                    className="w-full max-w-[200px] mx-auto block"
-                    selectedSizes={selectedSizes[product.id] || []}
-                    onSizeRequired={() => handleSizeRequired(product.id)}
-                  />
+                  {['acc_1', 'acc_2', 'acc_3', 'acc_4'].includes(product.id) ? (
+                    <AddToCartButton 
+                      product={product} 
+                      className="w-full max-w-[200px] mx-auto block"
+                      selectedSizes={[{ size: 'One Size', quantity: 1 }]}
+                      onSizeRequired={() => handleSizeRequired(product.id)}
+                    >
+                      Add to basket
+                    </AddToCartButton>
+                  ) : (
+                    <AddToCartButton 
+                      product={product} 
+                      className="w-full max-w-[200px] mx-auto block"
+                      selectedSizes={selectedSizes[product.id] || []}
+                      onSizeRequired={() => handleSizeRequired(product.id)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
