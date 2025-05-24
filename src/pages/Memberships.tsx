@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBasketStore } from '../store/basketStore';
 import './Memberships.css';
 
-type MembershipType = 'all' | 'digital' | 'guided' | 'premium';
-
 type MembershipTier = {
   id: string;
   name: string;
-  type: 'digital' | 'guided' | 'premium';
+  type: 'digital' | 'premium';
   price: number;
   billing: 'monthly' | 'annual';
   description: string;
@@ -19,14 +17,13 @@ type MembershipTier = {
 const Memberships: React.FC = () => {
   const navigate = useNavigate();
   const { addItem } = useBasketStore();
-  const [selectedType, setSelectedType] = useState<MembershipType>('all');
 
   const membershipTiers: MembershipTier[] = [
     {
       id: 'digital-monthly',
-      name: 'Digital Membership',
+      name: 'Digital Hub - Monthly',
       type: 'digital',
-      price: 14.99,
+      price: 24.99,
       billing: 'monthly',
       description: 'Unlimited access to all digital resources',
       features: [
@@ -38,27 +35,12 @@ const Memberships: React.FC = () => {
       ]
     },
     {
-      id: 'guided-monthly',
-      name: 'Guided Meditation',
-      type: 'guided',
-      price: 19.99,
-      billing: 'monthly',
-      description: 'Access to guided meditation sessions',
-      features: [
-        'Unlimited guided sessions',
-        'New meditations weekly',
-        'Sleep stories',
-        'Progress tracking',
-        'Download for offline use'
-      ]
-    },
-    {
       id: 'premium-annual',
-      name: 'Premium Membership',
+      name: 'Digital Hub - Yearly',
       type: 'premium',
-      price: 199.99,
+      price: 255.00,
       billing: 'annual',
-      description: 'Complete wellness package',
+      description: 'Unlimited access to all digital resources & a 15% reduction on monthly membership',
       features: [
         'Everything in Digital & Guided',
         'Live Q&A sessions',
@@ -67,28 +49,8 @@ const Memberships: React.FC = () => {
         'Priority customer support',
         'Save 33% vs monthly'
       ]
-    },
-    {
-      id: 'guided-annual',
-      name: 'Guided Meditation',
-      type: 'guided',
-      price: 159.99,
-      billing: 'annual',
-      description: 'Access to guided meditation sessions',
-      features: [
-        'Unlimited guided sessions',
-        'New meditations weekly',
-        'Sleep stories',
-        'Progress tracking',
-        'Download for offline use',
-        'Save 33% vs monthly'
-      ]
     }
   ];
-
-  const filteredTiers = selectedType === 'all' 
-    ? membershipTiers 
-    : membershipTiers.filter(tier => tier.type === selectedType);
 
   const handleSubscribe = (tier: MembershipTier) => {
     addItem({
@@ -107,37 +69,8 @@ const Memberships: React.FC = () => {
         <p className="subtitle">Find the perfect plan for your wellness journey</p>
       </header>
 
-      <div className="membership-tabs-container">
-        <div className="membership-tabs">
-          <button 
-            className={`tab-button ${selectedType === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedType('all')}
-          >
-            All Memberships
-          </button>
-          <button 
-            className={`tab-button ${selectedType === 'digital' ? 'active' : ''}`}
-            onClick={() => setSelectedType('digital')}
-          >
-            Digital
-          </button>
-          <button 
-            className={`tab-button ${selectedType === 'guided' ? 'active' : ''}`}
-            onClick={() => setSelectedType('guided')}
-          >
-            Guided
-          </button>
-          <button 
-            className={`tab-button ${selectedType === 'premium' ? 'active' : ''}`}
-            onClick={() => setSelectedType('premium')}
-          >
-            Premium
-          </button>
-        </div>
-      </div>
-
       <div className="membership-grid">
-        {filteredTiers.map((tier) => (
+        {membershipTiers.map((tier) => (
           <div key={tier.id} className={`membership-card ${tier.mostPopular ? 'featured' : ''}`}>
             {tier.mostPopular && <div className="popular-badge">Most Popular</div>}
             <div className="membership-header">

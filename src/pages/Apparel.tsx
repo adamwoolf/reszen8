@@ -62,9 +62,9 @@ const products = [
   },
   {
     id: 'acc_4',
-    name: 'Essential Oil Diffuser',
+    name: 'Meditation Mat',
     price: 32.99,
-    description: 'Whisper-quiet diffuser with color-changing LED lights for a calming atmosphere.',
+    description: 'Premium non-slip mat designed for comfortable and stable meditation sessions.',
     image: 'https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg',
   }
 ];
@@ -124,13 +124,13 @@ const Apparel: React.FC = () => {
   return (
     <div className="category-page">
       <header className="category-header">
-        <h1>RESZEN8 Apparel</h1>
-        <p className="subtitle">Premium apparel and accessories designed for your wellness journey</p>
+        <h1>Apparel & Accessories</h1>
+        <p className="subtitle">Our apparel & accessories collection features thoughtfully designed items that enhance your relaxation practice and bring mindfulness into everyday moments. Each piece combines aesthetic appeal with practical function, creating objects that are as beautiful as they are useful.</p>
       </header>
 
       <section className="category-content">
         <div className="category-intro">
-          <p>Complete your wellness toolkit with our thoughtfully designed accessories and apparel. From journals to jewelry, each item blends beauty and function to support mindfulness throughout your day. Our sustainable comfort wear is crafted to accompany you through meditation, movement, and everyday wellness.</p>
+          <p>At RESZEN8, we carefully curate tools that enhance your mindfulness practice and support your journey to balance. Each item is selected for its quality, effectiveness, and alignment with our philosophy of intentional living.</p>
         </div>
 
         <div className="products-grid">

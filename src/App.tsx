@@ -15,10 +15,7 @@ import Signup from './pages/Signup';
 import MembersArea from './pages/MembersArea';
 import AIChat from './pages/AIChat';
 import Apparel from './pages/Apparel';
-import WellnessTools from './pages/WellnessTools';
-import DigitalGoods from './pages/DigitalGoods';
 import Meditations from './pages/Meditations';
-import Accessories from './pages/Accessories';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import Memberships from './pages/Memberships';
@@ -89,10 +86,7 @@ const AnimatedRoutes = () => {
         
         {/* Public Routes */}
         <Route path="/apparel" element={<Layout><Apparel /></Layout>} />
-        <Route path="/wellness-tools" element={<Layout><WellnessTools /></Layout>} />
-        <Route path="/digital-goods" element={<Layout><DigitalGoods /></Layout>} />
-        <Route path="/meditations" element={<Layout><Meditations /></Layout>} />
-        <Route path="/accessories" element={<Layout><Accessories /></Layout>} />
+        <Route path="/guided-meditations" element={<Layout><Meditations /></Layout>} />
         <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
         <Route path="/basket" element={<Layout><Basket /></Layout>} />
         <Route path="/order-success" element={<Layout><OrderSuccess /></Layout>} />

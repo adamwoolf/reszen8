@@ -163,6 +163,10 @@
 
 .membership-header {
   padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .membership-header h3 {
@@ -170,6 +174,7 @@
   color: #FFFFFF;
   margin-bottom: 0.5rem;
   font-weight: 700;
+  width: 100%;
 }
 
 .price {
@@ -177,6 +182,10 @@
   font-weight: 800;
   color: #FFA500;
   margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .billing {
@@ -199,17 +208,20 @@
 .features {
   padding: 0 1.5rem;
   margin: 1.5rem 0;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  text-align: center;
 }
 
 .feature-item {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  line-height: 1.4;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #E0E0E0;
+  justify-content: center;
+}
+
+.feature-item svg {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
 }
 
 .check-icon {
@@ -220,11 +232,12 @@
   flex-shrink: 0;
 }
 
-/* Buttons */
 .subscribe-button {
-  margin: 0 1.5rem 1.5rem;
   margin-top: auto;
-  width: calc(100% - 3rem);
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 2rem;
   font-weight: 600;
