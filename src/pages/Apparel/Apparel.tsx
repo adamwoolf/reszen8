@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import AddToCartButton from "../components/AddToCartButton";
-import SizeDropdownSelector from "../components/SizeDropdownSelector";
-import "./CategoryPage.css";
-import { useBasketStore } from "../store/basketStore";
+import "../CategoryPage.css";
+import "./ApparelStyles.css";
+import { useBasketStore } from "../../store/basketStore";
 
 // Sample product data - in a real app, this would come from an API
 const products = [
@@ -80,46 +79,6 @@ const Apparel: React.FC = () => {
   const [showSizePrompt, setShowSizePrompt] = useState<{ [key: string]: boolean }>({});
   const { items, addItem, removeItem, updateQuantity } = useBasketStore();
 
-  // const handleSizeQuantityChange = (productId: string, sizes: SizeQuantity[]) => {
-  //   setSelectedSizes((prev) => ({
-  //     ...prev,
-  //     [productId]: sizes,
-  //   }));
-
-  //   // Reset the size prompt when sizes are selected
-  //   if (showSizePrompt[productId] && sizes.length > 0) {
-  //     setShowSizePrompt((prev) => ({
-  //       ...prev,
-  //       [productId]: false,
-  //     }));
-  //   }
-  // };
-
-  const handleSizeRequired = (productId: string) => {
-    setShowSizePrompt((prev) => ({
-      ...prev,
-      [productId]: true,
-    }));
-
-    // Auto-hide the prompt after 3 seconds
-    setTimeout(() => {
-      setShowSizePrompt((prev) => ({
-        ...prev,
-        [productId]: false,
-      }));
-    }, 3000);
-
-    // Scroll the product into view if needed
-    const productElement = document.getElementById(`product-${productId}`);
-    if (productElement) {
-      productElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
-
-  // const getTotalQuantity = (productId: string) => {
-  //   return (selectedSizes[productId] || []).reduce((total, item) => total + item.quantity, 0);
-  // };
-
   const addToBasket = (product, size, i) => {
     const productWithSize = {
       ...product,
@@ -137,16 +96,23 @@ const Apparel: React.FC = () => {
     if (!item && plusOrMin === "plus") {
       addToBasket(product, size, i);
     } else if (item) {
-      console.log(item);
       const newQ = plusOrMin === "plus" ? item.quantity + 1 : item.quantity - 1;
       if (newQ < 1 && plusOrMin === "min") return removeItem(product.id, size);
-      console.log(newQ);
-
       updateQuantity(product.id, size, newQ);
     }
   };
 
   const renderDropdown = (product) => {
+    if (!product.sizes) {
+      const numInBasket = items.find((item) => item.product.id === product.id)?.quantity;
+      return (
+        <div className='product-select-item'>
+          <button onClick={() => handleQuantityChange(product, null, 1, "min")}>{"-"}</button>
+          <span>Add to basket {numInBasket && `(${numInBasket})`}</span>
+          <button onClick={() => handleQuantityChange(product, null, 1, "plus")}>{"+"}</button>{" "}
+        </div>
+      );
+    }
     return (
       <div onChange={(e) => e.preventDefault()}>
         <div>select size and quantity</div>
@@ -156,7 +122,7 @@ const Apparel: React.FC = () => {
           return (
             <div value={size} className='product-select-item' key={size}>
               <button onClick={() => handleQuantityChange(product, size, i, "min")}>{"-"}</button>
-              <span style={{ margin: "0 40px" }}>
+              <span>
                 {" "}
                 {size} {numInBasket && `(${numInBasket})`}
               </span>{" "}
@@ -206,90 +172,11 @@ const Apparel: React.FC = () => {
                 <p className='text-gray-600 mb-2'>£{product.price.toFixed(2)}</p>
                 <p className='text-sm text-gray-500 mb-4'>{product.description}</p>
                 {renderDropdown(product)}
-                {/* {product.sizes && (
-                  <div className="mb-4">
-                    <SizeDropdownSelector
-                      sizes={product.sizes}
-                      selectedSizes={selectedSizes[product.id] || []}
-                      onSizeQuantityChange={(sizes) => 
-                        handleSizeQuantityChange(product.id, sizes)
-                      }
-                    />
-                  </div>
-                )} */}
-
-                {/* <div className='mt-auto'>
-                  <AddToCartButton
-                    product={product}
-                    className='w-full max-w-[200px] mx-auto block'
-                    selectedSizes={selectedSizes[product.id] || []}
-                    onSizeRequired={() => handleSizeRequired(product.id)}
-                  />
-                </div> */}
-                {/* )} */}
-
-                <div className='mt-auto'>
-                  {["acc_1", "acc_2", "acc_3", "acc_4"].includes(product.id) ? (
-                    <AddToCartButton
-                      product={product}
-                      className='w-full max-w-[200px] mx-auto block'
-                      selectedSizes={[{ size: "One Size", quantity: 1 }]}
-                      onSizeRequired={() => handleSizeRequired(product.id)}
-                    >
-                      Add to basket
-                    </AddToCartButton>
-                  ) : (
-                    <AddToCartButton
-                      product={product}
-                      className='w-full max-w-[200px] mx-auto block'
-                      selectedSizes={selectedSizes[product.id] || []}
-                      onSizeRequired={() => handleSizeRequired(product.id)}
-                    />
-                  )}
-                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
-
-      <style jsx>{`
-        .products-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-
-        .product-card {
-          border: 1px solid #e5e7eb;
-          border-radius: 0.5rem;
-          overflow: hidden;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .product-image {
-          width: 100%;
-          height: 0;
-          padding-bottom: 100%;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .product-image img {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-      `}</style>
     </div>
   );
 };

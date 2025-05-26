@@ -52,8 +52,8 @@ const Basket = () => {
           </div>
 
           <div className=''>
-            {items.map((item) => (
-              <div key={item.product.id} className='basket-item'>
+            {items.map((item, i) => (
+              <div key={item.product.id + i} className='basket-item'>
                 <div className='p-6 h-full flex flex-col'>
                   <div className='flex-grow'>
                     <h3 className='text-lg font-semibold text-gray-900 mb-2'>
@@ -84,7 +84,7 @@ const Basket = () => {
                             handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
                           }}
                         >
-                          <FaMinus className='button-icon' />
+                          -
                         </button>
                         <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
                         <button
@@ -95,14 +95,14 @@ const Basket = () => {
                             handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
                           }}
                         >
-                          <FaPlus className='button-icon' />
+                          +
                         </button>
                         <button
                           type='button'
                           className='remove-button'
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeItem(item.product.id);
+                            removeItem(item.product.id, item.product.size);
                           }}
                         >
                           <FaTrash size={15} />

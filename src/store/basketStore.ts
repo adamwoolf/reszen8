@@ -52,6 +52,8 @@ export const useBasketStore = create<BasketStore>()(
         set((state) => {
           console.log(state.items);
           console.log(size);
+          console.log(productId);
+
           const itemToDelete = state.items.find((item) => item.product.id === productId && item.product.size === size);
           console.log(itemToDelete);
           return {

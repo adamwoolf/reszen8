@@ -62,34 +62,10 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <NavLink to='/apparel' className={getNavLinkClass}>
-                Apparel
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/accessories' className={getNavLinkClass}>
-                Accessories
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/wellness-tools' className={getNavLinkClass}>
-                Wellness
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/digital-goods' className={getNavLinkClass}>
-                Digital
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/guided-meditations' className={getNavLinkClass}>
-                Meditations
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/apparel' className={getNavLinkClass}>
                 Apparel & Accessories
               </NavLink>
             </li>
+
             <li>
               <NavLink to='/guided-meditations' className={getNavLinkClass}>
                 Meditation Hub
