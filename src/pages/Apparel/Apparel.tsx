@@ -1,73 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../CategoryPage.css";
 import "./ApparelStyles.css";
 import { useBasketStore } from "../../store/basketStore";
-
-// Sample product data - in a real app, this would come from an API
-const products = [
-  // Apparel Products
-  {
-    id: "prod_1",
-    name: "Mindful Hoodie",
-    price: 39.99,
-    description: "Ultra-soft hoodie made from organic cotton blend, perfect for meditation and relaxation.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-  },
-  {
-    id: "prod_2",
-    name: "Zen Joggers",
-    price: 28.99,
-    description: "Comfortable joggers designed for both movement and meditation.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-  },
-  {
-    id: "prod_3",
-    name: "Serenity T-Shirt",
-    price: 24.99,
-    description: "Breathable t-shirt made from sustainable bamboo fabric.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-  },
-  {
-    id: "prod_4",
-    name: "Balance Leggings",
-    price: 38.99,
-    description: "High-waisted leggings with four-way stretch for ultimate comfort.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-  },
-  // Accessories Products
-  {
-    id: "acc_1",
-    name: "Intention Bracelet",
-    price: 18.0,
-    description: "Handcrafted from sustainable materials with an adjustable design.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-  },
-  {
-    id: "acc_2",
-    name: "Reflection Journal",
-    price: 22.5,
-    description: "Premium journal with guided prompts for daily mindfulness practice.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-  },
-  {
-    id: "acc_3",
-    name: "Meditation Cushion",
-    price: 54.99,
-    description: "Ergonomic cushion filled with buckwheat hulls for optimal support.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-  },
-  {
-    id: "acc_4",
-    name: "Meditation Mat",
-    price: 32.99,
-    description: "Premium non-slip mat designed for comfortable and stable meditation sessions.",
-    image: "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg",
-  },
-];
+import { getStoreItems } from "../../contentful";
 
 type SizeQuantity = {
   size: string;
@@ -78,6 +13,20 @@ const Apparel: React.FC = () => {
   const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: SizeQuantity[] }>({});
   const [showSizePrompt, setShowSizePrompt] = useState<{ [key: string]: boolean }>({});
   const { items, addItem, removeItem, updateQuantity } = useBasketStore();
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    getStoreItems().then((data) => {
+      setProducts(
+        data.map((item) => {
+          return {
+            ...item.fields,
+            sizes: item?.fields?.sizes?.sizes,
+            id: item.sys.id,
+          };
+        })
+      );
+    });
+  }, []);
 
   const addToBasket = (product, size, i) => {
     const productWithSize = {
@@ -103,6 +52,7 @@ const Apparel: React.FC = () => {
   };
 
   const renderDropdown = (product) => {
+    console.log(product);
     if (!product.sizes) {
       const numInBasket = items.find((item) => item.product.id === product.id)?.quantity;
       return (
@@ -165,7 +115,11 @@ const Apparel: React.FC = () => {
                 </div>
               )}
               <div className='product-image'>
-                <img src={product.image} alt={product.name} className='w-full h-64 object-cover' />
+                <img
+                  src={product.image || "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg"}
+                  alt={product.name}
+                  className='w-full h-64 object-cover'
+                />
               </div>
               <div className='p-4 flex flex-col h-full'>
                 <h3 className='text-xl font-semibold mb-2'>{product.name}</h3>
