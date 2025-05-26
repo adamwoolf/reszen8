@@ -22,6 +22,7 @@ import Memberships from './pages/Memberships';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TestPaymentPage from './pages/TestPaymentPage';
+import Sitemap from './pages/Sitemap';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import FloatingCTA from './components/FloatingCTA';
@@ -93,6 +94,7 @@ const AnimatedRoutes = () => {
         <Route path="/memberships" element={<Layout><Memberships /></Layout>} />
         <Route path="/terms-and-conditions" element={<Layout><TermsAndConditions /></Layout>} />
         <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+        <Route path="/sitemap" element={<Layout><Sitemap /></Layout>} />
         <Route path="/test-payment" element={<Layout><TestPaymentPage /></Layout>} />
         
         {/* 404 Route */}
