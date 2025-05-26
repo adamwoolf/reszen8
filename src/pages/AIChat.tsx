@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { auth } from '../firebase';
 import { Navigate } from 'react-router-dom';
 import { FaPaperPlane, FaRobot, FaUser } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,12 +57,15 @@ const AIChat: React.FC = () => {
     setError('');
 
     try {
-      // Use the fetch API to call your backend endpoint
+      console.log('Sending message to /api/chat');
+      const token = await auth.currentUser?.getIdToken();
+      console.log('Auth token:', token ? 'Token exists' : 'No token');
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await currentUser?.getIdToken()}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
           messages: [
@@ -72,20 +76,27 @@ const AIChat: React.FC = () => {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to get response');
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || 'Failed to get response');
+      }
       
       const data = await response.json();
+      console.log('API Response:', data);
       
       const aiMessage: Message = {
         role: 'assistant',
-        content: data.response || "I'm sorry, I couldn't process your request.",
+        content: data.response || data.message || "I'm sorry, I couldn't process your request.",
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (err) {
-      console.error('Error:', err);
-      setError('Failed to get response. Please try again.');
+      console.error('Error in handleSubmit:', err);
+      setError(err instanceof Error ? err.message : 'Failed to get response. Please try again.');
     } finally {
       setIsLoading(false);
     }

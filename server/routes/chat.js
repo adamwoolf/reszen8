@@ -1,10 +1,11 @@
 const express = require('express');
 const { OpenAI } = require('openai');
 const router = express.Router();
+require('dotenv').config(); // Add this line to load environment variables
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY, // Use environment variable
 });
 
 // Test route
@@ -47,3 +48,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
