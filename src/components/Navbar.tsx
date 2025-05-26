@@ -94,33 +94,19 @@ const Navbar: React.FC = () => {
 
           <div className='nav-right'>
             <div className='flex items-center space-x-4'>
-              <ul className='auth-links flex items-center space-x-4'>
+              <ul className='auth-links'>
                 <li className='flex items-center'>
                   <CartIcon />
                 </li>
 
                 {currentUser ? (
-                  <li className='relative group'>
-                    <button className='nav-link flex items-center'>
-                      {currentUser.email}
-                      <svg
-                        className='w-4 h-4 ml-1'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-                      </svg>
-                    </button>
-                    <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block'>
+                  <li className='user-items'>
+                    <span className='user-address'>{currentUser.email}</span>
+                    <div className=''>
                       <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
                         My Account
                       </NavLink>
-                      <button
-                        onClick={handleLogout}
-                        className='block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
-                      >
+                      <button className='user-address' onClick={handleLogout}>
                         Logout
                       </button>
                     </div>

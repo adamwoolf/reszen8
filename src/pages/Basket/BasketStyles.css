@@ -1,0 +1,39 @@
+.quantity-button {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px;
+}
+.quantity-button:first-of-type {
+  margin-left: 0;
+}
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+}
+
+.basket-item {
+  margin: 40px 0;
+  background-color: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.remove-button {
+  width: 30px;
+  height: 30px;
+  margin-left: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.basket-item-controls {
+  display: flex;
+}

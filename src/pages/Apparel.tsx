@@ -121,7 +121,6 @@ const Apparel: React.FC = () => {
   // };
 
   const addToBasket = (product, size, i) => {
-    console.log("adding", product, size);
     const productWithSize = {
       ...product,
       size,
@@ -133,11 +132,15 @@ const Apparel: React.FC = () => {
 
   const handleQuantityChange = (product, size, i, plusOrMin) => {
     const item = items.find((item) => item.product.id === product.id && item.product.size === size);
-    if (!item) {
+
+    if (!item?.quantity && plusOrMin === "min") return;
+    if (!item && plusOrMin === "plus") {
       addToBasket(product, size, i);
-    } else {
+    } else if (item) {
+      console.log(item);
       const newQ = plusOrMin === "plus" ? item.quantity + 1 : item.quantity - 1;
-      if (newQ < 1) return removeItem(product.id, size);
+      if (newQ < 1 && plusOrMin === "min") return removeItem(product.id, size);
+      console.log(newQ);
 
       updateQuantity(product.id, size, newQ);
     }

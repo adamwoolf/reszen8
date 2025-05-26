@@ -51,8 +51,11 @@ export const useBasketStore = create<BasketStore>()(
       removeItem: (productId, size) =>
         set((state) => {
           console.log(state.items);
+          console.log(size);
+          const itemToDelete = state.items.find((item) => item.product.id === productId && item.product.size === size);
+          console.log(itemToDelete);
           return {
-            items: state.items.filter((item) => item.product.id !== productId && item.product.size !== size),
+            items: state.items.filter((item) => item !== itemToDelete),
           };
         }),
 

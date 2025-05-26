@@ -243,8 +243,15 @@
   flex-direction: row;
 }
 
+.user-items {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .auth-button {
-  background-color: #ffa500;
+  /* background-color: #ffa500;
   color: #000000 !important;
   padding: 0.5rem 1.2rem !important;
   border-radius: 50px;
@@ -253,11 +260,11 @@
   font-weight: 500 !important;
   border: none;
   cursor: pointer;
-  margin-left: 1rem;
+  margin-left: 1rem; */
 }
 
 .members-cta {
-  background: linear-gradient(135deg, #ffa500, #ff8c00);
+  /* background: linear-gradient(135deg, #ffa500, #ff8c00);
   color: #000000 !important;
   padding: 0.5rem 1.2rem !important;
   border-radius: 50px;
@@ -271,7 +278,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 0.95rem; */
+}
+
+.user-address {
+  color: orange;
+  height: auto;
+  background-color: transparent;
+  text-align: right;
+  padding-right: 4px;
 }
 
 .members-cta::after {

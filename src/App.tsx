@@ -30,7 +30,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import FloatingCTA from "./components/FloatingCTA";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
-import Basket from "./pages/Basket";
+import Basket from "./pages/Basket/Basket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";

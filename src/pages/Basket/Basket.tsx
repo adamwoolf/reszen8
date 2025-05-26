@@ -1,7 +1,8 @@
 import React from "react";
-import { useBasketStore } from "../store/basketStore";
+import { useBasketStore } from "../../store/basketStore";
 import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import "./BasketStyles.css";
 
 interface BasketItem {
   id: string;
@@ -50,74 +51,68 @@ const Basket = () => {
             <h2 className='text-lg font-medium text-gray-900'>Order Summary</h2>
           </div>
 
-          <div className='p-6'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
-              {items.map((item) => (
-                <div
-                  key={item.product.id}
-                  className='bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 h-full'
-                >
-                  <div className='p-6 h-full flex flex-col'>
-                    <div className='flex-grow'>
-                      <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                        {item.product?.name || "Unnamed Item"} - {item.product?.size}
-                      </h3>
-                      {item.product.description && (
-                        <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
+          <div className=''>
+            {items.map((item) => (
+              <div key={item.product.id} className='basket-item'>
+                <div className='p-6 h-full flex flex-col'>
+                  <div className='flex-grow'>
+                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
+                      {item.product?.name || "Unnamed Item"} {item.product?.size && `- ${item.product?.size}`}
+                    </h3>
+                    {item.product.description && (
+                      <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
+                    )}
+                    <div className='flex items-baseline mt-2'>
+                      <span className='text-lg font-bold text-gray-900'>
+                        £{(item.product.price * item.quantity).toFixed(2)}
+                      </span>
+                      {item.quantity > 1 && (
+                        <span className='ml-2 text-sm text-gray-500'>(£{item.product.price.toFixed(2)} each)</span>
                       )}
-                      <div className='flex items-baseline mt-2'>
-                        <span className='text-lg font-bold text-gray-900'>
-                          £{(item.product.price * item.quantity).toFixed(2)}
-                        </span>
-                        {item.quantity > 1 && (
-                          <span className='ml-2 text-sm text-gray-500'>(£{item.product.price.toFixed(2)} each)</span>
-                        )}
-                      </div>
                     </div>
+                  </div>
 
-                    <div className='basket-item-controls'>
-                      <div className='flex items-center justify-between mb-4'>
-                        <span className='text-sm font-medium text-gray-700'>Quantity</span>
-                        <div className='flex items-center border border-gray-200 rounded-lg'>
-                          <button
-                            type='button'
-                            className='button'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
-                            }}
-                          >
-                            <FaMinus className='button-icon' />
-                          </button>
-                          <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
-                          <button
-                            type='button'
-                            className='button'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
-                            }}
-                          >
-                            <FaPlus className='button-icon' />
-                          </button>
-                        </div>
+                  <div className='basket-item-controls'>
+                    <div className='flex items-center justify-between mb-4'>
+                      <span className='text-sm font-medium text-gray-700'>Quantity</span>
+                      <div className='quantity-container'>
+                        <button
+                          type='button'
+                          className='button quantity-button'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
+                          }}
+                        >
+                          <FaMinus className='button-icon' />
+                        </button>
+                        <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
+                        <button
+                          type='button'
+                          className='button quantity-button'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
+                          }}
+                        >
+                          <FaPlus className='button-icon' />
+                        </button>
+                        <button
+                          type='button'
+                          className='remove-button'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeItem(item.product.id);
+                          }}
+                        >
+                          <FaTrash size={15} />
+                        </button>
                       </div>
-
-                      <button
-                        type='button'
-                        className='remove-button'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeItem(item.product.id);
-                        }}
-                      >
-                        <FaTrash />
-                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
 
           <div className='border-t border-gray-200 px-6 py-6'>
