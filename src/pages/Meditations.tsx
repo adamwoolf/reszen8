@@ -6,32 +6,56 @@ const Meditations: React.FC = () => {
   return (
     <div className="category-page">
       <header className="category-header">
-        <h1>Guided Meditations</h1>
-        <p className="subtitle">Expert-led sessions for all experience levels</p>
+        <h1>RESZEN8 Meditation Hub</h1>
       </header>
 
       <section className="category-content">
         <div className="category-intro">
           <p>Our guided meditations are thoughtfully created by experienced practitioners to help you establish or deepen your mindfulness practice. Whether you're a beginner looking for an introduction to meditation or an experienced meditator seeking new perspectives, our library offers sessions tailored to your needs.</p>
-          <p>Each meditation is crafted with careful attention to pacing, language, and ambient sound to create an immersive experience that supports your wellness journey.</p>
+          <p>In our increasingly digital world, RESZEN8 brings mindfulness to your devices with thoughtfully designed digital resources. Our collection of guides and audio experiences helps you maintain your practice anywhere, anytime.</p>
         </div>
 
         <div className="feature-grid">
           <div className="feature-item">
-            <h3>Beginner Series</h3>
+            <h3>Beginner Practice</h3>
             <p>Approachable sessions that introduce fundamental techniques and concepts for those new to meditation.</p>
           </div>
           <div className="feature-item">
-            <h3>Specialized Practice</h3>
+            <h3>Specialised Practice</h3>
             <p>Targeted meditations for specific needs such as sleep, anxiety reduction, focus, and emotional resilience.</p>
           </div>
           <div className="feature-item">
-            <h3>Advanced Techniques</h3>
+            <h3>Advanced Practice</h3>
             <p>Deeper explorations for experienced practitioners, including non-dual awareness, vipassana, and mindful inquiry.</p>
           </div>
           <div className="feature-item">
-            <h3>Themed Collections</h3>
-            <p>Curated series that explore specific themes or traditions over multiple sessions for comprehensive understanding.</p>
+            <h3>Special Meditation Events</h3>
+            <p>Special meditation events designed to deepen your practice and connect you with a mindful community.
+            Live sessions, workshops, and seasonal in person gatherings to support your inner journey.</p>
+          </div>
+        </div>
+
+        <div className="digital-features">
+          <h2>Digital Resources</h2>
+          <p>Enhance your meditation practice with our carefully selected digital tools and resources.</p>
+          
+          <div className="feature-grid">
+            <div className="feature-item">
+              <h3>Meditation Apps</h3>
+              <p>Simple, intuitive applications designed to guide your practice without distraction or unnecessary complexity.</p>
+            </div>
+            <div className="feature-item">
+              <h3>E-Books & Guides</h3>
+              <p>Comprehensive resources on mindfulness, breathwork, and meditation techniques written by experienced practitioners.</p>
+            </div>
+            <div className="feature-item">
+              <h3>Audio Libraries</h3>
+              <p>Curated collections of nature sounds, ambient music, and guided sessions to create the perfect atmosphere.</p>
+            </div>
+            <div className="feature-item">
+              <h3>Practice Journals</h3>
+              <p>Digital journals with prompts and tracking features to help you maintain consistency and reflect on your progress.</p>
+            </div>
           </div>
         </div>
 
@@ -55,7 +79,7 @@ const Meditations: React.FC = () => {
             </div>
           </div>
           <div className="access-all">
-            <p>Access our complete library of over 200 guided meditations with a RESZEN8 Digital Membership</p>
+            <p>Access our complete library of guided meditations with a RESZEN8 Digital Membership</p>
             <Link to="/memberships" className="cta-button">
               Explore Membership Options
             </Link>

@@ -1,7 +1,7 @@
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import './MembersArea.css';
+import './CategoryPage.css';
 
 export default function MembersArea() {
   const { currentUser, logout } = useAuth();
@@ -17,8 +17,6 @@ export default function MembersArea() {
   useEffect(() => {
     // In a real app, you would check the user's subscription status from your backend
     const timer = setInterval(() => {
-      // This is a simple countdown for demo purposes
-      // In a real app, you would calculate this based on the user's signup date
       setTimeLeft(prev => {
         const seconds = prev.seconds - 1;
         let minutes = prev.minutes;
@@ -50,73 +48,70 @@ export default function MembersArea() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSubscribe = () => {
-    // In a real app, this would integrate with a payment processor
-    setIsSubscribed(true);
-    setIsTrialActive(false);
-    // Add your subscription logic here
-  };
-
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   return (
-    <div className="members-area">
-      <h1>Welcome to RESZEN8 Premium</h1>
-      <p className="user-email">Signed in as: {currentUser.email}</p>
-      
-      {isTrialActive && (
-        <div className="trial-banner">
-          <h2>Your 7-Day Free Trial</h2>
-          <div className="countdown-timer">
-            <div className="time-block">
-              <span className="time-value">{timeLeft.days}</span>
-              <span className="time-label">Days</span>
-            </div>
-            <div className="time-block">
-              <span className="time-value">{timeLeft.hours}</span>
-              <span className="time-label">Hours</span>
-            </div>
-            <div className="time-block">
-              <span className="time-value">{timeLeft.minutes}</span>
-              <span className="time-label">Minutes</span>
-            </div>
-            <div className="time-block">
-              <span className="time-value">{timeLeft.seconds}</span>
-              <span className="time-label">Seconds</span>
+    <div className="category-page">
+      <header className="category-header">
+        <h1>Welcome to Your Members Area</h1>
+        <p className="subtitle">Exclusive content and benefits for our valued members</p>
+      </header>
+
+      <section className="category-content">
+        <div className="category-intro">
+          <p>Thank you for being a part of the RESZEN8 community. Here you'll find exclusive content, member benefits, and tools to enhance your mindfulness journey.</p>
+        </div>
+
+        {isTrialActive && (
+          <div className="trial-banner">
+            <h3>Your Free Trial</h3>
+            <p>Your trial period ends in: {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m</p>
+            <div className="button-group">
+              <Link to="/memberships" className="cta-button">
+                Upgrade Now
+              </Link>
+              <Link to="/memberships" className="cta-button secondary">
+                Manage Membership
+              </Link>
+              <Link to="/apparel" className="cta-button tertiary">
+                Why not grab some RESZEN8 Merch!
+              </Link>
             </div>
           </div>
-          <p className="trial-message">
-            Your free trial ends soon! Upgrade now to continue enjoying premium features.
-          </p>
-          <button className="upgrade-button" onClick={handleSubscribe}>
-            Upgrade to Premium
-          </button>
+        )}
+        
+        {!isTrialActive && (
+          <div className="account-actions">
+            <Link to="/memberships" className="cta-button">
+              Manage Membership
+            </Link>
+            <Link to="/apparel" className="cta-button tertiary">
+              Why not grab some RESZEN8 Merch!
+            </Link>
+          </div>
+        )}
+
+        <div className="feature-grid">
+          <div className="feature-item">
+            <h3>Your Membership</h3>
+            <p>Manage your subscription, update payment details, and view your membership status all in one place.</p>
+          </div>
+          <div className="feature-item">
+            <h3>Exclusive Content</h3>
+            <p>Access members-only meditations, guides, and resources to deepen your practice.</p>
+          </div>
+          <div className="feature-item">
+            <h3>Member Benefits</h3>
+            <p>Enjoy special discounts, early access to new features, and priority customer support.</p>
+          </div>
+          <div className="feature-item">
+            <h3>Your Activity</h3>
+            <p>Track your progress, save your favorite sessions, and set personal mindfulness goals.</p>
+          </div>
         </div>
-      )}
-
-      {isSubscribed && (
-        <div className="premium-banner">
-          <h2>🎉 Thank You for Subscribing!</h2>
-          <p>Your premium membership is now active. Enjoy all the benefits!</p>
-        </div>
-      )}
-
-      <div className="membership-features">
-        <h2>Your Membership Includes:</h2>
-        <ul>
-          <li>✓ Unlimited access to guided meditations</li>
-          <li>✓ Exclusive wellness content</li>
-          <li>✓ Member-only discounts</li>
-          <li>✓ Early access to new features</li>
-          <li>✓ Priority customer support</li>
-        </ul>
-      </div>
-
-      <button className="logout-button" onClick={logout}>
-        Logout
-      </button>
+      </section>
     </div>
   );
 }

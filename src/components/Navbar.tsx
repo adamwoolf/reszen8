@@ -86,10 +86,27 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li>
+              <NavLink to='/apparel' className={getNavLinkClass}>
+                Apparel & Accessories
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to='/guided-meditations' className={getNavLinkClass}>
+                Meditation Hub
+              </NavLink>
+            </li>
+            <li>
               <NavLink to='/memberships' className={getNavLinkClass}>
                 Memberships
               </NavLink>
             </li>
+            {currentUser && (
+              <li>
+                <NavLink to='/members' className={getNavLinkClass}>
+                  Members Area
+                </NavLink>
+              </li>
+            )}
           </ul>
 
           <div className='nav-right'>

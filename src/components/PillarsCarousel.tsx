@@ -12,36 +12,18 @@ interface Pillar {
 const pillars: Pillar[] = [
   {
     id: 1,
-    title: 'Apparel',
-    description: 'Premium comfort wear designed for your wellness journey',
+    title: 'Apparel & Accessories',
+    description: 'Premium comfort wear designed for your relaxation journey',
     path: '/apparel'
   },
   {
     id: 2,
-    title: 'Wellness Tools',
-    description: 'Essential tools to support your mental and physical wellbeing',
-    path: '/wellness-tools'
-  },
-  {
-    id: 3,
-    title: 'Digital Goods',
-    description: 'Digital resources to enhance your daily practice',
-    path: '/digital-goods'
-  },
-  {
-    id: 4,
-    title: 'Guided Meditations',
+    title: 'Meditation Hub',
     description: 'Expert-led sessions for all experience levels',
     path: '/guided-meditations'
   },
   {
-    id: 5,
-    title: 'Accessories',
-    description: 'Complementary items to complete your wellness toolkit',
-    path: '/accessories'
-  },
-  {
-    id: 6,
+    id: 3,
     title: 'Memberships',
     description: 'Exclusive access to premium content, products, and experiences',
     path: '/memberships'

@@ -86,31 +86,6 @@
   box-shadow: 0 6px 16px rgba(255, 165, 0, 0.3);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .membership-tabs {
-    flex-wrap: wrap;
-    border-radius: 12px;
-    padding: 0.5rem;
-  }
-  
-  .tab-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .membership-tabs {
-    gap: 0.5rem;
-  }
-  
-  .tab-button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-}
-
 /* Membership Grid */
 .membership-grid {
   display: grid;
@@ -163,6 +138,10 @@
 
 .membership-header {
   padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .membership-header h3 {
@@ -170,6 +149,7 @@
   color: #FFFFFF;
   margin-bottom: 0.5rem;
   font-weight: 700;
+  width: 100%;
 }
 
 .price {
@@ -177,6 +157,10 @@
   font-weight: 800;
   color: #FFA500;
   margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .billing {
@@ -199,17 +183,20 @@
 .features {
   padding: 0 1.5rem;
   margin: 1.5rem 0;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  text-align: center;
 }
 
 .feature-item {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  line-height: 1.4;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #E0E0E0;
+  justify-content: center;
+}
+
+.feature-item svg {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
 }
 
 .check-icon {
@@ -220,11 +207,12 @@
   flex-shrink: 0;
 }
 
-/* Buttons */
 .subscribe-button {
-  margin: 0 1.5rem 1.5rem;
   margin-top: auto;
-  width: calc(100% - 3rem);
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 2rem;
   font-weight: 600;
@@ -250,6 +238,28 @@
 .subscribe-button.featured-button:hover {
   background: #FFB52E;
   border-color: #FFB52E;
+}
+
+/* Coming Soon Tag */
+.coming-soon-tag {
+  display: inline-block;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 /* FAQ Section */
@@ -302,25 +312,26 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .membership-grid {
-    grid-template-columns: 1fr;
+  .membership-tabs {
+    flex-wrap: wrap;
+    border-radius: 12px;
+    padding: 0.5rem;
   }
   
-  .membership-header h3 {
-    font-size: 1.3rem;
+  .tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
   }
-  
-  .price {
-    font-size: 2rem;
-  }
-  
+}
+
+@media (max-width: 480px) {
   .membership-tabs {
     gap: 0.5rem;
   }
   
   .tab-button {
-    padding: 0.4rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
   }
 }
 

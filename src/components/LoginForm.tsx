@@ -24,8 +24,10 @@ const LoginForm: React.FC = () => {
       setIsSubmitting(true);
       clearError();
       await login(email, password, rememberMe);
+      
+      // Redirect to Members Area after successful login
+      navigate('/members');
       toast.success('Successfully logged in!');
-      navigate('/'); // Redirect to home page after successful login
     } catch (error) {
       // Error is already handled by AuthContext
       console.error('Login error:', error);
