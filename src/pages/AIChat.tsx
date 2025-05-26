@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import OpenAI from 'openai';
+import { FaPaperPlane, FaRobot, FaUser } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import './AIChat.css';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  timestamp: Date;
 }
 
 const AIChat: React.FC = () => {
@@ -17,11 +19,17 @@ const AIChat: React.FC = () => {
   const [error, setError] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize OpenAI with your API key from environment variables
-  const openai = new OpenAI({
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true, // Only for development
-  });
+  // System prompt that helps the AI understand it's a site assistant
+  const systemPrompt = `You are a helpful assistant for RESZEN8, a wellness and lifestyle platform. 
+  Help users with questions about:
+  - Membership benefits
+  - Meditation programs
+  - Apparel and merchandise
+  - Account management
+  - Site navigation
+  - Wellness tips
+  
+  Be friendly, concise, and professional. If you don't know an answer, direct them to contact support.`;
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -34,66 +42,126 @@ const AIChat: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const userMessage: Message = { 
+      role: 'user', 
+      content: input,
+      timestamp: new Date()
+    };
+    
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     setError('');
 
     try {
-      // Add a system message if it's the first user message
-      const conversation = messages.length === 0 
-        ? [
-            { role: 'system' as const, content: 'You are a helpful assistant.' },
-            userMessage
+      // Use the fetch API to call your backend endpoint
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await currentUser?.getIdToken()}`
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages.map(({ role, content }) => ({ role, content })),
+            { role: 'user', content: input }
           ]
-        : [...messages, userMessage];
-
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: conversation,
-        max_tokens: 1000,
+        })
       });
 
+      if (!response.ok) throw new Error('Failed to get response');
+      
+      const data = await response.json();
+      
       const aiMessage: Message = {
         role: 'assistant',
-        content: completion.choices[0]?.message?.content || 'Sorry, I could not process your request.'
+        content: data.response || "I'm sorry, I couldn't process your request.",
+        timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (err) {
-      console.error('Error calling OpenAI API:', err);
-      setError('Failed to get response from AI. Please try again.');
+      console.error('Error:', err);
+      setError('Failed to get response. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: '/ai-chat' }} replace />;
   }
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div className="ai-chat-container">
-      <h1>AI Assistant</h1>
-      <p className="ai-subtitle">Ask me anything and I'll do my best to help!</p>
+      <div className="chat-header">
+        <h1><FaRobot className="header-icon" /> RESZEN8 Assistant</h1>
+        <p className="ai-subtitle">How can I help you today?</p>
+      </div>
       
       <div className="chat-messages">
         {messages.length === 0 ? (
           <div className="empty-state">
-            <p>Start a conversation with the AI assistant by typing a message below.</p>
+            <FaRobot className="empty-icon" />
+            <p>Ask me anything about RESZEN8, our services, or how to get started!</p>
+            <div className="suggested-questions">
+              <button onClick={() => setInput('What memberships do you offer?')}>
+                What memberships do you offer?
+              </button>
+              <button onClick={() => setInput('How do I reset my password?')}>
+                How do I reset my password?
+              </button>
+              <button onClick={() => setInput('Tell me about your meditation programs')}>
+                Tell me about your meditation programs
+              </button>
+            </div>
           </div>
         ) : (
-          messages.map((message, index) => (
-            <div key={index} className={`message ${message.role}`}>
-              <div className="message-content">
-                <strong>{message.role === 'user' ? 'You' : 'Assistant'}:</strong>
-                <p>{message.content}</p>
-              </div>
-            </div>
-          ))
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                className={`message ${message.role}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="message-avatar">
+                  {message.role === 'user' ? <FaUser /> : <FaRobot />}
+                </div>
+                <div className="message-content">
+                  <div className="message-header">
+                    <strong>{message.role === 'user' ? 'You' : 'RESZEN8 Assistant'}</strong>
+                    <span className="message-time">{formatTime(message.timestamp)}</span>
+                  </div>
+                  <p>{message.content}</p>
+                </div>
+              </motion.div>
+            ))}
+            {isLoading && (
+              <motion.div 
+                className="message assistant"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="message-avatar">
+                  <FaRobot />
+                </div>
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -106,22 +174,23 @@ const AIChat: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message here..."
             disabled={isLoading}
-            aria-label="Type your message"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
           />
           <button 
             type="submit" 
             disabled={isLoading || !input.trim()}
             className="send-button"
           >
-            {isLoading ? 'Sending...' : 'Send'}
+            <FaPaperPlane className="send-icon" />
           </button>
         </div>
-        {error && <p className="error-message">{error}</p>}
+        {error && <div className="error-message">{error}</div>}
       </form>
-      
-      <p className="ai-note">
-        Note: This is a demo using OpenAI's API. Your conversations may be used to improve AI models.
-      </p>
     </div>
   );
 };

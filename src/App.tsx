@@ -22,12 +22,13 @@ import Memberships from "./pages/Memberships";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TestPaymentPage from "./pages/TestPaymentPage";
+import Sitemap from "./pages/Sitemap";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import FloatingCTA from "./components/FloatingCTA";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
-import Basket from "./pages/Basket/Basket";
+import Basket from "./pages/Basket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -182,6 +183,14 @@ const AnimatedRoutes = () => {
           element={
             <Layout>
               <PrivacyPolicy />
+            </Layout>
+          }
+        />
+        <Route
+          path='/sitemap'
+          element={
+            <Layout>
+              <Sitemap />
             </Layout>
           }
         />
