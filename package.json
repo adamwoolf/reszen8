@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/auth": "^1.10.6",
+    "@firebase/firestore": "^4.7.16",
+    "@firebase/storage": "^0.13.12",
     "@heroicons/react": "^2.2.0",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.3.0",
