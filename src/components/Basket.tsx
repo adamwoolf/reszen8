@@ -1,15 +1,9 @@
-import { useBasketStore } from '../store/basketStore';
-import { Link } from 'react-router-dom';
-import styles from './Basket.module.css';
+import { useBasketStore } from "../store/basketStore";
+import { Link } from "react-router-dom";
+import styles from "./Basket.module.css";
 
 const Basket = () => {
-  const { 
-    items, 
-    removeItem, 
-    updateQuantity, 
-    totalPrice, 
-    clearBasket 
-  } = useBasketStore();
+  const { items, removeItem, updateQuantity, totalPrice, clearBasket } = useBasketStore();
 
   if (items.length === 0) {
     return (
@@ -24,26 +18,16 @@ const Basket = () => {
     <div className={styles.basketContainer}>
       <div className={styles.basketHeader}>
         <h2 className={styles.basketTitle}>Your Basket</h2>
-        <button
-          onClick={clearBasket}
-          className={styles.clearButton}
-        >
+        <button onClick={clearBasket} className={styles.clearButton}>
           Clear Basket
         </button>
       </div>
 
       <div className={styles.itemsList}>
-        {items.map((item) => (
-          <div 
-            key={item.product.id}
-            className={styles.basketItem}
-          >
+        {items.map((item, i: number) => (
+          <div key={item.product.id + i} className={styles.basketItem}>
             {item.product.image && (
-              <img
-                src={item.product.image}
-                alt={item.product.name}
-                className={styles.productImage}
-              />
+              <img src={item.product.image} alt={item.product.name} className={styles.productImage} />
             )}
             <div className={styles.itemDetails}>
               <h3 className={styles.productName}>{item.product.name}</h3>
@@ -55,9 +39,7 @@ const Basket = () => {
                 >
                   -
                 </button>
-                <span className={styles.quantityValue}>
-                  {item.quantity}
-                </span>
+                <span className={styles.quantityValue}>{item.quantity}</span>
                 <button
                   onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                   className={`${styles.quantityButton} ${styles.quantityButtonRight}`}
@@ -67,14 +49,9 @@ const Basket = () => {
               </div>
             </div>
             <div className={styles.itemTotal}>
-              <p className={styles.totalPrice}>
-                £{(item.product.price * item.quantity).toFixed(2)}
-              </p>
-              <button
-                onClick={() => removeItem(item.product.id)}
-                className={styles.removeButton}
-              >
-X
+              <p className={styles.totalPrice}>£{(item.product.price * item.quantity).toFixed(2)}</p>
+              <button onClick={() => removeItem(item.product.id)} className={styles.removeButton}>
+                X
               </button>
             </div>
           </div>
@@ -86,10 +63,7 @@ X
           <span className={styles.totalLabel}>Total:</span>
           <span className={styles.totalAmount}>£{totalPrice().toFixed(2)}</span>
         </div>
-        <Link
-          to="/checkout"
-          className={styles.checkoutButton}
-        >
+        <Link to='/checkout' className={styles.checkoutButton}>
           Proceed to Checkout
         </Link>
       </div>

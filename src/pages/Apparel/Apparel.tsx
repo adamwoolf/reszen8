@@ -3,6 +3,7 @@ import "../CategoryPage.css";
 import "./ApparelStyles.css";
 import { useBasketStore } from "../../store/basketStore";
 import { getStoreItems } from "../../contentful";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 type SizeQuantity = {
   size: string;
@@ -51,37 +52,71 @@ const Apparel: React.FC = () => {
     }
   };
 
+  const Dropdown = ({ product, items }) => {
+    const [open, setOpen] = useState(false);
+    const hasSelection = items.some((item) => item.product.id === product.id);
+
+    return (
+      <div onChange={(e) => e.preventDefault()}>
+        <button
+          className='dropdown-button'
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setOpen(!open);
+          }}
+        >
+          {hasSelection ? "view selection" : "select size and quantity"}
+        </button>
+        {open && (
+          <div className='dropdown'>
+            {product?.sizes?.map((size, i) => {
+              const numInBasket = items.find((item) => item.product.id === product.id && item.product.size === size)
+                ?.quantity;
+              return (
+                <div value={size} className='product-select-item' key={size}>
+                  <button
+                    className='product-select-item-button'
+                    onClick={() => handleQuantityChange(product, size, i, "min")}
+                  >
+                    <FaMinus size={10} />
+                  </button>
+                  <span>
+                    {size} {numInBasket && `(${numInBasket})`}
+                  </span>
+                  <button
+                    className='product-select-item-button'
+                    onClick={() => handleQuantityChange(product, size, i, "plus")}
+                  >
+                    <FaPlus size={10} />
+                  </button>{" "}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderDropdown = (product) => {
-    console.log(product);
     if (!product.sizes) {
       const numInBasket = items.find((item) => item.product.id === product.id)?.quantity;
       return (
         <div className='product-select-item'>
-          <button onClick={() => handleQuantityChange(product, null, 1, "min")}>{"-"}</button>
-          <span>Add to basket {numInBasket && `(${numInBasket})`}</span>
-          <button onClick={() => handleQuantityChange(product, null, 1, "plus")}>{"+"}</button>{" "}
+          <button className='product-select-item-button' onClick={() => handleQuantityChange(product, null, 1, "min")}>
+            <FaMinus size={10} />
+          </button>
+          <span>
+            {numInBasket ? "Added to basket" : "Add to basket"} {numInBasket && `(${numInBasket})`}
+          </span>
+          <button className='product-select-item-button' onClick={() => handleQuantityChange(product, null, 1, "plus")}>
+            <FaPlus size={10} />
+          </button>{" "}
         </div>
       );
     }
-    return (
-      <div onChange={(e) => e.preventDefault()}>
-        <div>select size and quantity</div>
-        {product?.sizes?.map((size, i) => {
-          const numInBasket = items.find((item) => item.product.id === product.id && item.product.size === size)
-            ?.quantity;
-          return (
-            <div value={size} className='product-select-item' key={size}>
-              <button onClick={() => handleQuantityChange(product, size, i, "min")}>{"-"}</button>
-              <span>
-                {" "}
-                {size} {numInBasket && `(${numInBasket})`}
-              </span>{" "}
-              <button onClick={() => handleQuantityChange(product, size, i, "plus")}>{"+"}</button>{" "}
-            </div>
-          );
-        })}
-      </div>
-    );
+    return <Dropdown product={product} items={items} />;
   };
 
   return (
@@ -106,14 +141,7 @@ const Apparel: React.FC = () => {
 
         <div className='products-grid'>
           {products.map((product) => (
-            <div key={product.id} id={`product-${product.id}`} className='product-card relative'>
-              {showSizePrompt[product.id] && product.sizes && (
-                <div className='absolute -top-2 left-0 right-0 transform -translate-y-full'>
-                  <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-2 text-sm rounded'>
-                    <p>Please select at least one size and quantity</p>
-                  </div>
-                </div>
-              )}
+            <div key={product.id} id={`product-${product.id}`} className='product-card'>
               <div className='product-image'>
                 <img
                   src={product.image || "https://i.ibb.co/kgZ2j4Fm/Apparel-Placeholder.jpg"}
@@ -121,10 +149,12 @@ const Apparel: React.FC = () => {
                   className='w-full h-64 object-cover'
                 />
               </div>
-              <div className='p-4 flex flex-col h-full'>
-                <h3 className='text-xl font-semibold mb-2'>{product.name}</h3>
-                <p className='text-gray-600 mb-2'>£{product.price.toFixed(2)}</p>
-                <p className='text-sm text-gray-500 mb-4'>{product.description}</p>
+              <div className='product-card-content'>
+                <div className='product-details'>
+                  <h3 className='product-name'>{product.name}</h3>
+                  <p className='text-gray-600 mb-2'>£{product.price.toFixed(2)}</p>
+                  <p className='text-sm text-gray-500 mb-4'>{product.description}</p>
+                </div>
                 {renderDropdown(product)}
               </div>
             </div>

@@ -3,6 +3,7 @@ import { useBasketStore } from "../../store/basketStore";
 import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./BasketStyles.css";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface BasketItem {
   id: string;
@@ -52,67 +53,78 @@ const Basket = () => {
           </div>
 
           <div className=''>
-            {items.map((item, i) => (
-              <div key={item.product.id + i} className='basket-item'>
-                <div className='p-6 h-full flex flex-col'>
-                  <div className='flex-grow'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                      {item.product?.name || "Unnamed Item"} {item.product?.size && `- ${item.product?.size}`}
-                    </h3>
-                    {item.product.description && (
-                      <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
-                    )}
-                    <div className='flex items-baseline mt-2'>
-                      <span className='text-lg font-bold text-gray-900'>
-                        £{(item.product.price * item.quantity).toFixed(2)}
-                      </span>
-                      {item.quantity > 1 && (
-                        <span className='ml-2 text-sm text-gray-500'>(£{item.product.price.toFixed(2)} each)</span>
-                      )}
-                    </div>
-                  </div>
+            <AnimatePresence>
+              {items.map((item, i) => (
+                <motion.div
+                  key={item.product.id + i}
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -100 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ marginBottom: "10px" }}
+                >
+                  <div className='basket-item'>
+                    <div className='p-6 h-full flex flex-col'>
+                      <div className='flex-grow'>
+                        <h3 className='text-lg font-semibold text-gray-900 mb-2'>
+                          {item.product?.name || "Unnamed Item"} {item.product?.size && `- ${item.product?.size}`}
+                        </h3>
+                        {item.product.description && (
+                          <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
+                        )}
+                        <div className='flex items-baseline mt-2'>
+                          <span className='text-lg font-bold text-gray-900'>
+                            £{(item.product.price * item.quantity).toFixed(2)}
+                          </span>
+                          {item.quantity > 1 && (
+                            <span className='ml-2 text-sm text-gray-500'>(£{item.product.price.toFixed(2)} each)</span>
+                          )}
+                        </div>
+                      </div>
 
-                  <div className='basket-item-controls'>
-                    <div className='flex items-center justify-between mb-4'>
-                      <span className='text-sm font-medium text-gray-700'>Quantity</span>
-                      <div className='quantity-container'>
-                        <button
-                          type='button'
-                          className='button quantity-button'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
-                          }}
-                        >
-                          -
-                        </button>
-                        <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
-                        <button
-                          type='button'
-                          className='button quantity-button'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
-                          }}
-                        >
-                          +
-                        </button>
-                        <button
-                          type='button'
-                          className='remove-button'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeItem(item.product.id, item.product.size);
-                          }}
-                        >
-                          <FaTrash size={15} />
-                        </button>
+                      <div className='basket-item-controls'>
+                        <div className='flex items-center justify-between mb-4'>
+                          <span className='text-sm font-medium text-gray-700'>Quantity</span>
+                          <div className='quantity-container'>
+                            <button
+                              type='button'
+                              className='button quantity-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
+                              }}
+                            >
+                              -
+                            </button>
+                            <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
+                            <button
+                              type='button'
+                              className='button quantity-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
+                              }}
+                            >
+                              +
+                            </button>
+                            <button
+                              type='button'
+                              className='remove-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeItem(item.product.id, item.product.size);
+                              }}
+                            >
+                              <FaTrash size={15} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
 
           <div className='border-t border-gray-200 px-6 py-6'>

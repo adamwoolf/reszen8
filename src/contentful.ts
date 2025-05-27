@@ -8,4 +8,7 @@ const client = createClient({
 const getStoreItems = () =>
   client.getEntries({ content_type: "storeItem", order: "fields.order" }).then((response) => response.items);
 
-export { getStoreItems };
+const getMeditationPage = () =>
+  client.getEntries({ content_type: "meditationHubPage" }).then((response) => response.items[0]);
+
+export { getStoreItems, getMeditationPage };
