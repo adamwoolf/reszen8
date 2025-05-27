@@ -107,7 +107,7 @@ const PillarsCarousel: React.FC = () => {
       <div className='carousel-track' ref={carouselTrackRef}>
         {pillars.map((pillar, index) => (
           <div
-            key={pillar.id}
+            key={pillar.fields.title}
             className='carousel-slide'
             ref={(el) => (slideRefs.current[index] = el)}
             onClick={() => handlePillarClick(pillar.fields.path)}
