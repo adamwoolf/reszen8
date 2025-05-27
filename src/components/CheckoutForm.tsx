@@ -13,7 +13,7 @@ const CheckoutForm = () => {
   const [isMounted, setIsMounted] = useState(false);
   const navigate = useNavigate();
 
-  // Set mounted state to prevent memory leaks
+  // Set mounted state to prevent memory leaks...
   useEffect(() => {
     setIsMounted(true);
     return () => {
