@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "../CategoryPage.css";
 import "./ApparelStyles.css";
 import { useBasketStore } from "../../store/basketStore";
-import { getStoreItems } from "../../contentful";
+import { getStoreItems, getApparelPage } from "../../contentful";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import useContentful from "../../hooks/useContentful";
+import { marked } from "marked";
 
 type SizeQuantity = {
   size: string;
@@ -11,6 +13,8 @@ type SizeQuantity = {
 };
 
 const Apparel: React.FC = () => {
+  const content = useContentful(getApparelPage)?.content?.fields;
+  const { title, description } = content || {};
   const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: SizeQuantity[] }>({});
   const [showSizePrompt, setShowSizePrompt] = useState<{ [key: string]: boolean }>({});
   const { items, addItem, removeItem, updateQuantity } = useBasketStore();
@@ -122,12 +126,9 @@ const Apparel: React.FC = () => {
   return (
     <div className='category-page'>
       <header className='category-header'>
-        <h1>Apparel & Accessories</h1>
-        <p className='subtitle'>
-          Our apparel & accessories collection features thoughtfully designed items that enhance your relaxation
-          practice and bring mindfulness into everyday moments. Each piece combines aesthetic appeal with practical
-          function, creating objects that are as beautiful as they are useful.
-        </p>
+        <h1>{title}</h1>
+
+        {description && <p className='subtitle' dangerouslySetInnerHTML={{ __html: marked(description) }} />}
       </header>
 
       <section className='category-content'>

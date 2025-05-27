@@ -121,11 +121,12 @@
 }
 
 .navbar-container {
+  position: fixed;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: 1400px;
+  width: 100vw;
   margin: 0 auto;
   padding: 0 2rem;
 }

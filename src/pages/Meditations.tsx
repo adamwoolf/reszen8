@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "./CategoryPage.css";
 import { getMeditationPage } from "../contentful";
 import { marked } from "marked";
+import useContentful from "../hooks/useContentful";
 
 const Meditations: React.FC = () => {
-  const [content, setContent] = useState({});
+  const content = useContentful(getMeditationPage)?.content?.fields;
 
-  useEffect(() => {
-    getMeditationPage().then((data) => setContent(data.fields));
-  }, []);
   console.log(content);
   return (
     <div className='category-page'>
       <header className='category-header'>
-        <h1>{content.title}</h1>
+        <h1>{content?.title}</h1>
       </header>
 
       <section className='category-content'>
