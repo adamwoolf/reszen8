@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MembersArea from './pages/MembersArea';
+import Dashboard from './pages/Dashboard';
 import AIChat from './pages/AIChat';
 import Apparel from './pages/Apparel';
 import Meditations from './pages/Meditations';
@@ -79,11 +80,12 @@ const AnimatedRoutes = () => {
             <Layout><MembersArea /></Layout>
           </ProtectedRoute>
         } />
-        <Route path="/ai-chat" element={
+        <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Layout><AIChat /></Layout>
+            <Layout><Dashboard /></Layout>
           </ProtectedRoute>
         } />
+        <Route path="/ai-chat" element={<Layout><AIChat /></Layout>} />
         
         {/* Public Routes */}
         <Route path="/apparel" element={<Layout><Apparel /></Layout>} />
