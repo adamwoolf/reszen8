@@ -83,6 +83,14 @@ const Navbar: React.FC = () => {
             </li>
 
             {currentUser && (
+              <li>
+                <NavLink to='/ai-meditation-generator' className={getNavLinkClass}>
+                  AI Meditation Generator
+                </NavLink>
+              </li>
+            )}
+
+            {currentUser && (
               <>
                 <li>
                   <NavLink to='/members' className={getNavLinkClass}>

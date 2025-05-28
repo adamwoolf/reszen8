@@ -18,13 +18,14 @@
     "@stripe/stripe-js": "^7.3.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-transition-group": "^4.4.12",
+    "@types/uuid": "^10.0.0",
     "contentful": "^11.5.24",
     "firebase": "^11.8.1",
     "framer-motion": "^12.10.5",
     "install": "^0.13.0",
     "marked": "^15.0.12",
     "npm": "^11.4.0",
-    "openai": "^4.98.0",
+    "openai": "^4.103.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
@@ -32,6 +33,7 @@
     "react-router-dom": "^6.30.0",
     "react-toastify": "^11.0.5",
     "react-transition-group": "^4.4.5",
+    "uuid": "^11.1.0",
     "zustand": "^5.0.4"
   },
   "devDependencies": {

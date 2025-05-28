@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type ItemType = {
   id: number;
@@ -21,14 +21,32 @@ type SavedItemsContextType = {
   removeItem: (itemId: number, type: keyof SavedItemsType) => void;
 };
 
+const LOCAL_STORAGE_KEY = 'reszen8_saved_items';
+
 const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undefined);
 
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [savedItems, setSavedItems] = useState<SavedItemsType>({
-    meditations: [],
-    ebooks: [],
-    publications: []
+  // Load saved items from localStorage on initial render
+  const [savedItems, setSavedItems] = useState<SavedItemsType>(() => {
+    if (typeof window === 'undefined') {
+      return { meditations: [], ebooks: [], publications: [] };
+    }
+    
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved items from localStorage', e);
+      }
+    }
+    return { meditations: [], ebooks: [], publications: [] };
   });
+
+  // Save to localStorage whenever savedItems changes
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
+  }, [savedItems]);
 
   const addItem = (item: ItemType) => {
     const itemType = item.type === 'meditation' ? 'meditations' : 
@@ -38,26 +56,32 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     const itemExists = savedItems[itemType].some(savedItem => savedItem.id === item.id);
     
     if (!itemExists) {
-      setSavedItems(prev => ({
-        ...prev,
-        [itemType]: [
-          ...prev[itemType], 
-          { 
-            ...item, 
-            savedDate: new Date().toISOString().split('T')[0] 
-          }
-        ]
-      }));
+      setSavedItems(prev => {
+        const newItems = {
+          ...prev,
+          [itemType]: [
+            ...prev[itemType], 
+            { 
+              ...item, 
+              savedDate: new Date().toISOString() 
+            }
+          ]
+        };
+        return newItems;
+      });
       return true; // Item was added
     }
     return false; // Item already exists
   };
 
   const removeItem = (itemId: number, type: keyof SavedItemsType) => {
-    setSavedItems(prev => ({
-      ...prev,
-      [type]: prev[type].filter(item => item.id !== itemId)
-    }));
+    setSavedItems(prev => {
+      const newItems = {
+        ...prev,
+        [type]: prev[type].filter(item => item.id !== itemId)
+      };
+      return newItems;
+    });
   };
 
   return (
