@@ -2,7 +2,7 @@
   "files": [],
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
-    "jsx": "react-jsx", // or "react" for older versions
+    "jsx": "react-jsx",
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["DOM", "ESNext"],
@@ -13,5 +13,4 @@
     "forceConsistentCasingInFileNames": true,
     "composite": true
   }
-  // "include": ["src"]
 }

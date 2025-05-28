@@ -17,7 +17,8 @@ const getMembershipPage = () =>
   client.getEntries({ content_type: "membershipPage" }).then((response) => response.items[0]);
 const getCarouselSlides = () => client.getEntries({ content_type: "carouselSlide" }).then((response) => response);
 const getFAQs = () => client.getEntries({ content_type: "faq" }).then((response) => response);
-const getMembershipTiers = () => client.getEntries({ content_type: "membershipTier" }).then((response) => response);
+const getMembershipTiers = () =>
+  client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
 
 export {
   getStoreItems,
