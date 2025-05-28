@@ -105,17 +105,42 @@ const AIChat: React.FC = () => {
     setShowPrompts((prev) => !prev);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (promptButtonRef.current && !promptButtonRef.current.contains(e.target as Node)) {
-        // setShowPrompts(false);
-      }
-    };
+  async function callChatFunction(messages: { role: string; content: string }[]) {
+    console.log(messages);
+    try {
+      const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/chat";
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ messages }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Function response:", data.response);
+      return data.response;
+    } catch (error) {
+      console.error("Failed to call chat function:", error);
+      return null;
+    }
+  }
+  // Close dropdown when clicking outside
+  // useEffect(() => {
+  //   const handleClickOutside = (e: MouseEvent) => {
+  //     if (promptButtonRef.current && !promptButtonRef.current.contains(e.target as Node)) {
+  //       // setShowPrompts(false);
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   // Handle prompt selection
   const handlePromptSelect = async (prompt: string) => {
@@ -128,36 +153,23 @@ const AIChat: React.FC = () => {
       content: prompt,
       timestamp: new Date(),
     };
-
     // Add user message to chat
     setMessages((prev) => [...prev, userMessage]);
 
     // Process the message to get AI response
     try {
       setIsLoading(true);
-      const token = await auth.currentUser?.getIdToken();
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...messages.map(({ role, content }) => ({ role, content })),
-            { role: "user", content: prompt },
-          ],
-        }),
-      });
+      const data = await callChatFunction([
+        { role: "system", content: systemPrompt },
+        ...messages.map(({ role, content }) => ({ role, content })),
+        { role: "user", content: prompt },
+      ]);
+      console.log(data);
 
-      if (!response.ok) throw new Error("Failed to get response");
-
-      const data = await response.json();
       const aiMessage: Message = {
         role: "assistant",
-        content: data.response || data.message || "I'm sorry, I couldn't process your request.",
+        content: data || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -178,32 +190,14 @@ const AIChat: React.FC = () => {
     setError("");
 
     try {
-      const token = await auth.currentUser?.getIdToken();
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...messages.map(({ role, content }) => ({ role, content })),
-            { role: "user", content: message },
-          ],
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get response");
-      }
-
-      const data = await response.json();
-
+      const data = await callChatFunction([
+        { role: "system", content: systemPrompt },
+        ...messages.map(({ role, content }) => ({ role, content })),
+        { role: "user", content: message },
+      ]);
       const aiMessage: Message = {
         role: "assistant",
-        content: data.response || data.message || "I'm sorry, I couldn't process your request.",
+        content: data || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -242,38 +236,16 @@ const AIChat: React.FC = () => {
 
     try {
       console.log("Sending message to /api/chat");
-      const token = await auth.currentUser?.getIdToken();
-      console.log("Auth token:", token ? "Token exists" : "No token");
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...messages.map(({ role, content }) => ({ role, content })),
-            { role: "user", content: input },
-          ],
-        }),
-      });
-
-      console.log("Response status:", response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("API Error:", errorData);
-        throw new Error(errorData.error || "Failed to get response");
-      }
-
-      const data = await response.json();
-      console.log("API Response:", data);
+      const data = await callChatFunction([
+        { role: "system", content: systemPrompt },
+        ...messages.map(({ role, content }) => ({ role, content })),
+        { role: "user", content: input },
+      ]);
 
       const aiMessage: Message = {
         role: "assistant",
-        content: data.response || data.message || "I'm sorry, I couldn't process your request.",
+        content: data || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 

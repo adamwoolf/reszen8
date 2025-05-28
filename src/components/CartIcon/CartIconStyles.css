@@ -1,19 +1,12 @@
-.cart-icon-container .absolute {
-  font-size: 0.6rem;
-  height: 1.25rem;
-  width: 1.25rem;
-  top: -0.5rem;
-  right: -0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #1a1a1a;
-  display: flex;
-  align-items: center;
+.cart-icon-container {
+  padding-left: 16px;
 }
 
 .cart-icon-count {
   font-size: 0.7rem;
+  position: absolute;
+  bottom: -10px;
+  left: 22px;
 }
 
 .cart-icon {

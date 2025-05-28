@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
+import { FaBars } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar: React.FC = () => {
@@ -47,122 +48,113 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
-      <div className='navbar-container'>
-        <div className='nav-brand'>
-          <NavLink to='/'>RESZEN8</NavLink>
-        </div>
+    <div>
+      <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+        <div className='navbar-container'>
+          <div className='nav-brand'>
+            <NavLink to='/'>RESZEN8</NavLink>
+          </div>
 
-        <div className='nav-sections'>
-          <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
-            <li>
-              <NavLink to='/home' end className={getNavLinkClass}>
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/memberships' className={getNavLinkClass}>
-                Memberships
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/ai-chat' className={getNavLinkClass}>
-                RESZEN8 Chat
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/apparel' className={getNavLinkClass}>
-                Apparel & Accessories
-              </NavLink>
-            </li>
+          <div className='nav-sections'>
+            <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
+              <li>
+                <NavLink to='/home' end className={getNavLinkClass}>
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/memberships' className={getNavLinkClass}>
+                  Memberships
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/ai-chat' className={getNavLinkClass}>
+                  RESZEN8 Chat
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/apparel' className={getNavLinkClass}>
+                  Apparel & Accessories
+                </NavLink>
+              </li>
 
-            <li>
-              <NavLink to='/guided-meditations' className={getNavLinkClass}>
-                Meditation Hub
-              </NavLink>
-            </li>
+              <li>
+                <NavLink to='/guided-meditations' className={getNavLinkClass}>
+                  Meditation Hub
+                </NavLink>
+              </li>
 
-            {currentUser && (
-              <>
-                <li>
-                  <NavLink to='/members' className={getNavLinkClass}>
-                    Members Area
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to='/dashboard' className={getNavLinkClass}>
-                    My Dashboard
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to='/members' className={getNavLinkClass}>
-                    Account Management
-                  </NavLink>
-                </li>
-              </>
-            )}
-          </ul>
-
-          <div className='nav-right'>
-            <div className='flex items-center space-x-4'>
-              <ul className='auth-links'>
-                <li className='flex items-center'>
-                  <CartIcon />
-                </li>
-
-                {currentUser ? (
-                  <li className='user-items'>
-                    <span className='user-address'>{currentUser.email}</span>
-                    <div className=''>
-                      <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
-                        My Account
-                      </NavLink>
-                      <button className='user-address' onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </div>
+              {currentUser && (
+                <>
+                  <li>
+                    <NavLink to='/members' className={getNavLinkClass}>
+                      Members Area
+                    </NavLink>
                   </li>
-                ) : (
-                  <>
-                    <li>
-                      <NavLink to='/login' className={getNavLinkClass}>
-                        Login
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to='/signup' className='nav-link signup-btn'>
-                        Sign Up
-                      </NavLink>
-                    </li>
-                  </>
-                )}
-              </ul>
+                  <li>
+                    <NavLink to='/dashboard' className={getNavLinkClass}>
+                      My Dashboard
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/members' className={getNavLinkClass}>
+                      Account Management
+                    </NavLink>
+                  </li>
+                </>
+              )}
+            </ul>
+
+            <div className='nav-right'>
+              <div className='flex items-center space-x-4'>
+                <ul className='auth-links'>
+                  <li className='flex items-center'>
+                    <CartIcon />
+                  </li>
+
+                  {!currentUser && (
+                    <>
+                      <li>
+                        <NavLink to='/login' className={getNavLinkClass}>
+                          Login
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink to='/signup' className='nav-link signup-btn'>
+                          Sign Up
+                        </NavLink>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button
-          className='mobile-menu-button'
-          onClick={toggleMobileMenu}
-          aria-label='Toggle menu'
-          aria-expanded={isMobileMenuOpen}
-        >
-          <svg
-            className='w-6 h-6'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-            xmlns='http://www.w3.org/2000/svg'
+          <button
+            className='mobile-menu-button'
+            onClick={toggleMobileMenu}
+            aria-label='Toggle menu'
+            aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? (
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-            ) : (
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16m-7 6h7' />
-            )}
-          </svg>
-        </button>
-      </div>
-    </nav>
+            <FaBars style={{ color: "orange", fontSize: 24 }} />
+          </button>
+        </div>
+        {currentUser && (
+          <div className='user-items'>
+            <span className='user-address'>{currentUser.email}</span>
+            <div className=''>
+              <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
+                My Account
+              </NavLink>
+              <button className='user-address' onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
+    </div>
   );
 };
 
