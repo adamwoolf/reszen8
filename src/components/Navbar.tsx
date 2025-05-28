@@ -95,6 +95,11 @@ const Navbar: React.FC = () => {
                   </NavLink>
                 </li>
                 <li>
+                  <NavLink to='/digital-library' className={getNavLinkClass}>
+                    Digital Library
+                  </NavLink>
+                </li>
+                <li>
                   <NavLink to='/members' className={getNavLinkClass}>
                     Account Management
                   </NavLink>

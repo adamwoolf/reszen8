@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { SavedItemsProvider } from './contexts/SavedItemsContext';
 import { BasketProvider } from './contexts/BasketContext';
 import Navbar from './components/Navbar';
 import PageTransition from './components/PageTransition';
@@ -14,6 +15,7 @@ import Login from './pages/Login/Login';
 import Signup from './pages/Signup';
 import MembersArea from './pages/MembersArea';
 import Dashboard from './pages/Dashboard';
+import DigitalLibrary from './pages/DigitalLibrary';
 import AIChat from './pages/AIChat';
 import Apparel from './pages/Apparel/Apparel';
 import Meditations from './pages/Meditations';
@@ -109,6 +111,11 @@ const AnimatedRoutes = () => {
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Layout><Dashboard /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/digital-library" element={
+          <ProtectedRoute>
+            <Layout><DigitalLibrary /></Layout>
           </ProtectedRoute>
         } />
         <Route path="/ai-chat" element={<Layout><AIChat /></Layout>} />
@@ -213,9 +220,11 @@ function App() {
   return (
     <BasketProvider>
       <AuthProvider>
-        <Router>
-          <AnimatedRoutes />
-        </Router>
+        <SavedItemsProvider>
+          <Router>
+            <AnimatedRoutes />
+          </Router>
+        </SavedItemsProvider>
       </AuthProvider>
     </BasketProvider>
   );

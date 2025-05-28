@@ -71,7 +71,6 @@ const CheckoutForm = () => {
     );
   }
 
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
