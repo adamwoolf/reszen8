@@ -20,7 +20,6 @@ const AIMeditationGenerator: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
-  const [error, setError] = useState('');
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -107,8 +106,6 @@ const AIMeditationGenerator: React.FC = () => {
     if (isGenerating) return;
     
     setIsGenerating(true);
-    setError('');
-    setGeneratedMeditation(null);
     
     try {
       const toastId = toast.loading('Generating your meditation...');
@@ -145,10 +142,8 @@ const AIMeditationGenerator: React.FC = () => {
         
       } catch (error) {
         console.error('Error in meditation generation:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to generate meditation';
-        setError(errorMessage);
         toast.update(toastId, {
-          render: errorMessage,
+          render: 'Failed to generate meditation',
           type: 'error',
           isLoading: false,
           autoClose: 5000,
@@ -170,12 +165,12 @@ const AIMeditationGenerator: React.FC = () => {
       duration: `${duration} sec`,
     };
 
-    const isAdded = addItem(newMeditation);
-
-    if (isAdded) {
+    try {
+      addItem(newMeditation);
       toast.success('Meditation saved to your dashboard!');
       navigate('/dashboard');
-    } else {
+    } catch (error) {
+      console.error('Failed to save meditation:', error);
       toast.error('Failed to save meditation. Please try again.');
     }
   };
@@ -281,13 +276,6 @@ const AIMeditationGenerator: React.FC = () => {
             </div>
           </form>
         </div>
-
-        {error && (
-          <div className="mt-4 p-4 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg text-red-200">
-            <p className="font-medium">Error</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
 
         {generatedMeditation && (
           <div id="generated-content" className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-700 transition-all duration-500 transform">

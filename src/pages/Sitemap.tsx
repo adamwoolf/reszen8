@@ -1,9 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Sitemap.css';
 
-// Define the sitemap structure
-const sitemapData = {
+interface SitemapLink {
+  path: string;
+  label: string;
+  priority: number;
+  protected?: boolean;
+}
+
+interface SitemapData {
+  [key: string]: SitemapLink[];
+}
+
+// Define the sitemap structure with proper types
+const sitemapData: SitemapData = {
   'Main': [
     { path: '/', label: 'Homepage', priority: 1.0 },
     { path: '/home', label: 'Home', priority: 0.9 },
@@ -40,32 +50,32 @@ const sitemapData = {
 
 const Sitemap: React.FC = () => {
   return (
-    <div className="sitemap-container">
-      <h1>Website Sitemap</h1>
-      <div className="sitemap">
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Website Sitemap</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.entries(sitemapData).map(([section, links]) => (
-          <div key={section} className="section">
-            <h2>{section}</h2>
-            <div className="section-links">
+          <div key={section} className="bg-white bg-opacity-10 rounded-lg p-6 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4 text-amber-400">{section}</h2>
+            <div className="space-y-2">
               {links.map(({ path, label, priority, protected: isProtected }) => (
-                <div key={path} className="sitemap-link">
-                  <Link to={path}>
+                <div key={path} className="flex justify-between items-center py-2 border-b border-gray-700">
+                  <Link 
+                    to={path} 
+                    className="text-white hover:text-amber-400 transition-colors flex items-center"
+                  >
                     {label}
-                    {isProtected && <span className="protected-badge">Protected</span>}
+                    {isProtected && (
+                      <span className="ml-2 px-2 py-0.5 text-xs bg-amber-500 bg-opacity-20 text-amber-300 rounded-md">
+                        Protected
+                      </span>
+                    )}
                   </Link>
-                  <span className="priority-badge">{priority.toFixed(1)}</span>
+                  <span className="text-xs text-gray-400">{priority.toFixed(1)}</span>
                 </div>
               ))}
             </div>
           </div>
         ))}
-        <div className="last-updated">
-          Last updated: {new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
-        </div>
       </div>
     </div>
   );

@@ -1,14 +1,28 @@
 import axios from 'axios';
 
-const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-const ELEVENLABS_API_KEY = process.env.REACT_APP_ELEVENLABS_API_KEY;
+// Get environment variables with type safety
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
+const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string;
 const ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Default voice ID (Rachel)
+console.log(`OPENAI_API_KEY: ${OPENAI_API_KEY}`);
+console.log(`ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}`);
+console.log(`ELEVENLABS_VOICE_ID: ${ELEVENLABS_VOICE_ID}`);
 
 export interface MeditationResponse {
   title: string;
   content: string;
   audioUrl?: string;
 }
+
+// Add type for Axios error with response
+type AxiosErrorWithResponse = Error & {
+  response?: {
+    data?: any;
+    status?: number;
+    headers?: any;
+  };
+  request?: any;
+};
 
 export const generateMeditation = async (
   meditationType: string,
@@ -61,6 +75,7 @@ export const generateMeditation = async (
 
     // Generate audio using ElevenLabs
     try {
+      console.log('Calling ElevenLabs API with voice ID:', ELEVENLABS_VOICE_ID);
       const audioResponse = await axios.post(
         `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
         {
@@ -80,20 +95,38 @@ export const generateMeditation = async (
         }
       );
 
+      console.log('ElevenLabs API response status:', audioResponse.status);
+      
+      if (!audioResponse.data) {
+        throw new Error('No audio data received from ElevenLabs');
+      }
+
       // Convert blob to URL
       const audioBlob = new Blob([audioResponse.data], { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(audioBlob);
+      console.log('Successfully created audio URL');
 
       return {
         ...meditationData,
         audioUrl,
       };
-    } catch (audioError) {
-      console.error('Error generating audio:', audioError);
+    } catch (error: unknown) {
+      console.error('Error generating audio:');
+      const audioError = error as AxiosErrorWithResponse;
+      
+      if (audioError.response) {
+        console.error('Error response data:', audioError.response.data);
+        console.error('Error status:', audioError.response.status);
+        console.error('Error headers:', audioError.response.headers);
+      } else if (audioError.request) {
+        console.error('No response received:', audioError.request);
+      } else {
+        console.error('Error setting up request:', audioError.message);
+      }
       // Return text response even if audio generation fails
       return meditationData;
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating meditation:', error);
     throw new Error('Failed to generate meditation. Please try again later.');
   }

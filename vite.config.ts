@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         VITE_STRIPE_PUBLIC_KEY: JSON.stringify(env.VITE_STRIPE_PUBLIC_KEY),
         VITE_OPENAI_API_KEY: JSON.stringify(env.VITE_OPENAI_API_KEY),
+        VITE_ELEVENLABS_API_KEY: JSON.stringify(env.VITE_ELEVENLABS_API_KEY),
       },
     },
     server: {
