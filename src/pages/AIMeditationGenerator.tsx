@@ -2,16 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSavedItems } from '../contexts/SavedItemsContext';
 import { v4 as uuidv4 } from 'uuid';
+import { generateMeditation } from '../services/aiMeditationService';
+import { toast } from 'react-toastify';
 
-// Mock audio data - in a real app, this would come from your API
-const mockAudioData = {
-  mindfulness: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  sleep: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-  anxiety: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-  gratitude: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-  focus: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-  'loving-kindness': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
-};
+interface MeditationState {
+  title: string;
+  content: string;
+  audioUrl?: string;
+}
 
 const AIMeditationGenerator: React.FC = () => {
   const [meditationType, setMeditationType] = useState('mindfulness');
@@ -21,18 +19,12 @@ const AIMeditationGenerator: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
+  const [error, setError] = useState('');
+  const [isAudioGenerating, setIsAudioGenerating] = useState(false);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
-
-  // Generated meditation state
-  const [generatedMeditation, setGeneratedMeditation] = useState<{
-    title: string;
-    content: string;
-    audioUrl?: string;
-  } | null>(null);
-
-  // Error state
-  const [error, setError] = useState('');
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
 
@@ -45,17 +37,29 @@ const AIMeditationGenerator: React.FC = () => {
     { value: 'loving-kindness', label: 'Loving-Kindness' },
   ];
 
-  // Update durations array to go up to 15 minutes
-  const durations = ['3', '5', '8', '10', '15'];
+  const durations = ['5', '10', '15', '30', '60', '120', '300'];
 
-  // Format time from seconds to MM:SS
   const formatTime = (seconds: number) => {
+    if (seconds < 60) {
+      return `${seconds} sec`;
+    }
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return secs === 0 ? `${mins} min` : `${mins}m ${secs}s`;
   };
 
-  // Handle play/pause
+  useEffect(() => {
+    // Clean up audio URL when component unmounts
+    return () => {
+      if (generatedMeditation?.audioUrl) {
+        URL.revokeObjectURL(generatedMeditation.audioUrl);
+      }
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    };
+  }, [generatedMeditation]);
+
   const togglePlayPause = () => {
     if (!audioRef.current) return;
 
@@ -65,13 +69,15 @@ const AIMeditationGenerator: React.FC = () => {
         clearInterval(progressInterval.current);
       }
     } else {
-      audioRef.current.play();
+      audioRef.current.play().catch(e => {
+        console.error('Error playing audio:', e);
+        toast.error('Failed to play audio. Please try again.');
+      });
       startProgressTimer();
     }
     setIsPlaying(!isPlaying);
   };
 
-  // Update progress bar
   const startProgressTimer = () => {
     if (progressInterval.current) {
       clearInterval(progressInterval.current);
@@ -83,7 +89,6 @@ const AIMeditationGenerator: React.FC = () => {
         setProgress(isNaN(currentProgress) ? 0 : currentProgress);
         setCurrentTime(audioRef.current.currentTime);
 
-        // Check if audio ended
         if (audioRef.current.ended) {
           setIsPlaying(false);
           setProgress(0);
@@ -96,67 +101,60 @@ const AIMeditationGenerator: React.FC = () => {
     }, 100);
   };
 
-  // Clean up interval on unmount
-  useEffect(() => {
-    return () => {
-      if (progressInterval.current) {
-        clearInterval(progressInterval.current);
-      }
-    };
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isGenerating) return;
+    
     setIsGenerating(true);
     setError('');
-
+    setGeneratedMeditation(null);
+    
     try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Generate mock response based on type
-      const meditationTitles = {
-        mindfulness: 'Mindful Breathing Exercise',
-        sleep: 'Peaceful Sleep Meditation',
-        anxiety: 'Calming Anxiety Relief',
-        gratitude: 'Gratitude Meditation',
-        focus: 'Deep Focus Session',
-        'loving-kindness': 'Loving-Kindness Practice',
-      };
-
-      const meditationContent = {
-        mindfulness: `Sit comfortably and close your eyes. Take a deep breath in through your nose, counting to four. Hold your breath for a count of four, then exhale slowly through your mouth for a count of six. Continue this pattern, focusing on the sensation of your breath. If your mind wanders, gently bring your attention back to your breath.`,
-        sleep: `Lie down in a comfortable position. Close your eyes and take three deep breaths. With each exhale, feel your body becoming heavier and more relaxed. Imagine yourself in a peaceful place, surrounded by tranquility. Let go of any tension with each out-breath.`,
-        anxiety: `Find a comfortable seated position. Place one hand on your chest and the other on your belly. Breathe in slowly through your nose, feeling your belly rise. Exhale slowly through pursed lips. With each breath, imagine releasing tension and anxiety.`,
-        gratitude: `Sit comfortably and take a few deep breaths. Bring to mind three things you're grateful for today. They can be simple things like the warmth of the sun or a kind word from a friend. Sit with the feeling of gratitude for a few moments.`,
-        focus: `Sit with a straight back. Choose a point to focus on, like your breath or a candle flame. When your mind wanders, gently bring your attention back to your focus point. Practice this for a few minutes.`,
-        'loving-kindness': `Close your eyes and take a few deep breaths. Bring to mind someone you love. Silently repeat: "May you be happy. May you be healthy. May you be safe. May you live with ease." Then extend these wishes to yourself and all beings.`,
-      };
-
-      const newMeditation = {
-        title: meditationTitles[meditationType as keyof typeof meditationTitles] || 'Custom Meditation',
-        content: meditationContent[meditationType as keyof typeof meditationContent] || 'Your custom meditation content will appear here.',
-        audioUrl: mockAudioData[meditationType as keyof typeof mockAudioData] || mockAudioData.mindfulness,
-      };
-
-      setGeneratedMeditation(newMeditation);
-
-      // Reset audio state
-      setIsPlaying(false);
-      setProgress(0);
-      setCurrentTime(0);
-
-      // Scroll to the generated content
-      setTimeout(() => {
-        const element = document.getElementById('generated-content');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+      const toastId = toast.loading('Generating your meditation...');
+      
+      try {
+        const result = await generateMeditation(meditationType, duration, additionalDetails);
+        
+        setGeneratedMeditation(result);
+        
+        // If audio is being generated, show a different message
+        if (!result.audioUrl) {
+          toast.update(toastId, {
+            render: 'Meditation generated! (Audio generation skipped - check console for details)',
+            type: 'info',
+            isLoading: false,
+            autoClose: 5000,
+          });
+        } else {
+          toast.update(toastId, {
+            render: 'Meditation generated successfully!',
+            type: 'success',
+            isLoading: false,
+            autoClose: 3000,
+          });
         }
-      }, 100);
-
-    } catch (err) {
-      console.error('Error generating meditation:', err);
-      setError('Failed to generate meditation. Please try again.');
+        
+        // Scroll to the generated content
+        setTimeout(() => {
+          const element = document.getElementById('generated-content');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+        
+      } catch (error) {
+        console.error('Error in meditation generation:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to generate meditation';
+        setError(errorMessage);
+        toast.update(toastId, {
+          render: errorMessage,
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
+      }
+      
     } finally {
       setIsGenerating(false);
     }
@@ -169,13 +167,16 @@ const AIMeditationGenerator: React.FC = () => {
       id: parseInt(uuidv4().replace(/\D/g, '').slice(0, 8)),
       title: generatedMeditation.title,
       type: 'meditation' as const,
-      duration: `${duration} min`,
+      duration: `${duration} sec`,
     };
 
     const isAdded = addItem(newMeditation);
 
     if (isAdded) {
+      toast.success('Meditation saved to your dashboard!');
       navigate('/dashboard');
+    } else {
+      toast.error('Failed to save meditation. Please try again.');
     }
   };
 
@@ -213,14 +214,14 @@ const AIMeditationGenerator: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Duration: {duration} minutes
+                Duration: {formatTime(parseInt(duration))}
               </label>
               <div className="flex items-center space-x-4">
                 <input
                   type="range"
-                  min="3"
-                  max="15"
-                  step="1"
+                  min="5"
+                  max="300"
+                  step="5"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-amber-500"
@@ -228,13 +229,15 @@ const AIMeditationGenerator: React.FC = () => {
                   list="duration-markers"
                 />
                 <datalist id="duration-markers" className="flex justify-between w-full">
-                  <option value="3" label="3"></option>
-                  <option value="5" label="5"></option>
-                  <option value="8" label="8"></option>
-                  <option value="10" label="10"></option>
-                  <option value="15" label="15"></option>
+                  <option value="5" label="5s"></option>
+                  <option value="10" label="10s"></option>
+                  <option value="15" label="15s"></option>
+                  <option value="30" label="30s"></option>
+                  <option value="60" label="1m"></option>
+                  <option value="120" label="2m"></option>
+                  <option value="300" label="5m"></option>
                 </datalist>
-                <span className="text-amber-400 font-medium w-8 text-center">{duration}</span>
+                <span className="text-amber-400 font-medium w-8 text-center">{formatTime(parseInt(duration))}</span>
               </div>
             </div>
 
@@ -257,16 +260,20 @@ const AIMeditationGenerator: React.FC = () => {
               <button
                 type="submit"
                 disabled={isGenerating}
-                className={`px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${isGenerating ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                  isGenerating
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : 'bg-amber-500 hover:bg-amber-600 transform hover:scale-105 transition-transform'
+                }`}
               >
                 {isGenerating ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Generating...
-                  </span>
+                  </div>
                 ) : (
                   'Generate Meditation'
                 )}
@@ -276,8 +283,9 @@ const AIMeditationGenerator: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-red-900 bg-opacity-30 border border-red-700 text-red-100 px-4 py-3 rounded-lg mb-6">
-            {error}
+          <div className="mt-4 p-4 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg text-red-200">
+            <p className="font-medium">Error</p>
+            <p className="text-sm">{error}</p>
           </div>
         )}
 
@@ -302,7 +310,7 @@ const AIMeditationGenerator: React.FC = () => {
               </p>
             </div>
 
-            {generatedMeditation.audioUrl && (
+            {generatedMeditation?.audioUrl && (
               <div className="mt-8 bg-gray-700 bg-opacity-50 rounded-xl p-4 border border-gray-600">
                 <div className="flex items-center mb-4">
                   <button
@@ -321,7 +329,7 @@ const AIMeditationGenerator: React.FC = () => {
                   </button>
                   <div className="ml-4 flex-1">
                     <div className="text-sm text-gray-300 mb-1">
-                      {formatTime(currentTime * 1000)} / {duration}:00
+                      {formatTime(currentTime * 1000)} / {formatTime(parseInt(duration) * 1000)}
                     </div>
                     <div className="w-full bg-gray-600 rounded-full h-1.5">
                       <div 
@@ -338,13 +346,14 @@ const AIMeditationGenerator: React.FC = () => {
                     setIsPlaying(false);
                     setProgress(0);
                     setCurrentTime(0);
+                    if (progressInterval.current) {
+                      clearInterval(progressInterval.current);
+                    }
                   }}
-                  onTimeUpdate={(e) => {
-                    const audio = e.target as HTMLAudioElement;
-                    setCurrentTime(audio.currentTime);
-                    setProgress((audio.currentTime / audio.duration) * 100 || 0);
+                  onError={(e) => {
+                    console.error('Audio playback error:', e);
+                    toast.error('Error playing audio. The text-to-speech service might be unavailable.');
                   }}
-                  className="hidden"
                 />
               </div>
             )}
