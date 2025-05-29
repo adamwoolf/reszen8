@@ -153,21 +153,53 @@ const AIMeditationGenerator: React.FC = () => {
     }
   };
 
-  const handleSaveToDashboard = () => {
+  const handleSaveToDashboard = async () => {
     if (!generatedMeditation) return;
 
-    const newMeditation = {
-      id: parseInt(uuidv4().replace(/\D/g, "").slice(0, 8)),
-      title: generatedMeditation.title,
-      audioUrl: generatedMeditation.audioUrl,
-      type: "meditation" as const,
-      duration: `${duration} sec`,
-    };
-
     try {
-      addItem(newMeditation);
-      toast.success("Meditation saved to your dashboard!");
-      navigate("/dashboard");
+      // Convert the blob URL to a data URL if it exists
+      let audioDataUrl = generatedMeditation.audioUrl;
+      
+      if (audioDataUrl && audioDataUrl.startsWith('blob:')) {
+        try {
+          // Fetch the blob data
+          const response = await fetch(audioDataUrl);
+          const blob = await response.blob();
+          
+          // Convert blob to base64 data URL
+          const reader = new FileReader();
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          
+          audioDataUrl = dataUrl;
+        } catch (error) {
+          console.error('Error processing audio data:', error);
+          toast.error('Failed to process audio data');
+          return;
+        }
+      }
+
+      const newMeditation = {
+        id: Date.now(), // Use timestamp as ID instead of UUID for simplicity
+        title: generatedMeditation.title,
+        audioUrl: audioDataUrl,
+        type: 'meditation' as const,
+        duration: `${duration} sec`,
+        content: generatedMeditation.content, // Save the content as well
+        savedDate: new Date().toISOString()
+      };
+
+      const wasAdded = addItem(newMeditation);
+      
+      if (wasAdded) {
+        toast.success("Meditation saved to your dashboard!");
+        navigate("/dashboard");
+      } else {
+        toast.info("This meditation is already in your dashboard");
+      }
     } catch (error) {
       console.error("Failed to save meditation:", error);
       toast.error("Failed to save meditation. Please try again.");

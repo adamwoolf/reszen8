@@ -164,107 +164,83 @@ const Dashboard = () => {
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data.map((item) => (
-              <div key={item.id} className='dashboard-card p-6 bg-gray-800 rounded-lg flex flex-col'>
-                <div className='flex-grow'>
-                  <h3 className='text-xl font-semibold mb-2 text-white'>{item.title}</h3>
-                  {item.duration && <p className='text-gray-300'>Duration: {item.duration}</p>}
-                  {item.author && <p className='text-gray-300'>By: {item.author}</p>}
-                  {item.savedDate && (
-                    <p className='text-gray-400 text-sm mt-2'>
-                      Added on: {new Date(item.savedDate).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-                <div className='mt-4'>
-                  {activeTab === "meditations" && (
-                    <>
-                      <div className='relative mb-2'>
-                        {currentlyPlaying === item.id && (
-                          <div className='w-full bg-gray-700 rounded-full h-1.5 mb-2 overflow-hidden'>
-                            <div
-                              className='bg-amber-500 h-full rounded-full transition-all duration-300 ease-out'
-                              style={{ width: `${progress}%` }}
+              <div
+                key={item.id}
+                className='bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 mb-6 border border-gray-700 transition-all hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
+              >
+                <div className='flex flex-col md:flex-row justify-between gap-6'>
+                  <div className='flex-1'>
+                    <h3 className='text-xl font-semibold text-white mb-2'>{item.title}</h3>
+                    {item.content && (
+                      <p className='text-gray-300 mb-4 line-clamp-3'>{item.content}</p>
+                    )}
+                    <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
+                      {item.duration && (
+                        <span className='flex items-center'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='h-4 w-4 mr-1 text-amber-400'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                             />
-                          </div>
-                        )}
-                        {currentlyPlaying === item.id && (
-                          <div className='flex justify-between text-xs text-gray-400 mb-2 px-1'>
-                            <span>{formatTime(currentTime)}</span>
-                            <span>{item.duration}</span>
-                            <audio
-                              controls
-                              src='blob:http://localhost:5173/623dbc03-2ed9-491c-89e7-a6a20387b82e'
-                            ></audio>
-                          </div>
-                        )}
-
+                          </svg>
+                          {item.duration}
+                        </span>
+                      )}
+                      {item.savedDate && (
+                        <span className='flex items-center'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='h-4 w-4 mr-1 text-amber-400'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
+                            />
+                          </svg>
+                          {new Date(item.savedDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className='flex flex-col gap-3 min-w-[200px]'>
+                    {item.audioUrl && (
+                      <div className='mb-2'>
                         <AudioPlayer audioUrl={item.audioUrl} />
                       </div>
-                    </>
-                  )}
-                  <div className='flex gap-4'>
-                    {activeTab === "meditations" && (
-                      <button
-                        onClick={() => togglePlayPause(item)}
-                        className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 ${
-                          currentlyPlaying === item.id && isPlaying
-                            ? "bg-amber-600 hover:bg-amber-700"
-                            : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                        } text-black font-semibold py-2.5 px-6 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95`}
-                      >
-                        {currentlyPlaying === item.id && isPlaying ? (
-                          <>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                            <span>Pause</span>
-                          </>
-                        ) : (
-                          <>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                            <span>{currentlyPlaying === item.id ? "Resume" : "Play"}</span>
-                          </>
-                        )}
-                      </button>
                     )}
-                    <button
-                      onClick={() => handleRemoveItem(item.id, activeTab)}
-                      className='flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2.5 px-6 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95'
-                    >
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        className='h-5 w-5'
-                        viewBox='0 0 20 20'
-                        fill='currentColor'
+                    <div className='flex gap-3'>
+                      <button
+                        onClick={() => handleRemoveItem(item.id, 'meditations')}
+                        className='flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 text-sm'
                       >
-                        <path
-                          fillRule='evenodd'
-                          d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                      <span>Remove</span>
-                    </button>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          className='h-4 w-4'
+                          viewBox='0 0 20 20'
+                          fill='currentColor'
+                        >
+                          <path
+                            fillRule='evenodd'
+                            d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
+                            clipRule='evenodd'
+                          />
+                        </svg>
+                        <span>Remove</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -320,25 +296,89 @@ const Dashboard = () => {
 export default Dashboard;
 
 function AudioPlayer({ audioUrl }: { audioUrl: string }) {
-  console.log(audioUrl);
-  const audioRef2 = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const handlePlay = () => {
-    const audio = new Audio(audioUrl);
-    audio.play();
+  useEffect(() => {
+    // Clean up audio when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
-    // if (audioRef2.current) {
-    //   audioRef2.current.play();
-    // }
+  const togglePlayPause = () => {
+    if (!audioUrl) return;
+
+    if (!audioRef.current) {
+      // Create a new audio element if it doesn't exist
+      audioRef.current = new Audio(audioUrl);
+      
+      // Set up event listeners
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+      };
+      
+      audioRef.current.onpause = () => {
+        setIsPlaying(false);
+      };
+      
+      audioRef.current.onplay = () => {
+        setIsPlaying(true);
+      };
+    }
+
+    // Toggle play/pause
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(error => {
+        console.error('Error playing audio:', error);
+        setIsPlaying(false);
+      });
+    }
   };
 
-  const audioBlob = new Blob([audioUrl], { type: "audio/mpeg" });
-  const test = URL.createObjectURL(audioBlob);
-
   return (
-    <div>
-      <audio ref={audioRef2} src={test} />
-      <button onClick={handlePlay}>Play Audio</button>
-    </div>
+    <button
+      onClick={togglePlayPause}
+      className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-full transition-colors"
+    >
+      {isPlaying ? (
+        <>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>Pause</span>
+        </>
+      ) : (
+        <>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>Play</span>
+        </>
+      )}
+    </button>
   );
 }
