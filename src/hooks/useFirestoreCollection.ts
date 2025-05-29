@@ -1,72 +1,79 @@
-// hooks/useFirestoreCollection.js
+// hooks/useRealtimeDatabase.ts
 import { useEffect, useState, useCallback } from "react";
-import { collection, addDoc, onSnapshot, updateDoc, doc, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // adjust path to your Firebase config
+import { getDatabase, ref, onValue, set, update, remove, off } from "firebase/database";
+import { db } from "../firebase"; // Adjust path to your firebase config
 
-export const useFirestoreCollection = (collectionName) => {
-  const [docs, setDocs] = useState([]);
+type Data = Record<string, any>;
+
+export const useRealtimeDatabase = (path: string) => {
+  const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
-  // Fetch documents and listen for changes
   useEffect(() => {
-    // const unsubscribe = onSnapshot(
-    //   collection(db, collectionName),
-    //   (snapshot) => {
-    //     const data = snapshot.docs.map((doc) => ({
-    //       id: doc.id,
-    //       ...doc.data(),
-    //     }));
-    //     console.log("FB DATA", data);
-    //     setDocs(data);
-    //     setLoading(false);
-    //   },
-    //   (err) => {
-    //     console.error("Firestore error:", err);
-    //     setError(err);
-    //     setLoading(false);
-    //   }
-    // );
-    // return () => unsubscribe();
-  }, [collectionName]);
+    const dbRef = ref(db, path);
 
-  // Add new document
-  // const addDocument = useCallback(
-  //   async (data) => {
-  //     console.log("ADD data", data);
-  //     try {
-  //       await addDoc(collection(db, collectionName), data);
-  //     } catch (err) {
-  //       console.error("Add doc error:", err);
-  //       setError(err);
-  //     }
-  //   },
-  //   [collectionName]
-  // );
+    const unsubscribe = onValue(
+      dbRef,
+      (snapshot) => {
+        setData(snapshot.val());
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Realtime DB error:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
 
-  const addDocument = (data) => {
-    console.log(data);
-  };
+    return () => off(dbRef); // Cleanup
+  }, [path]);
 
-  // Update a document by ID
-  const updateDocument = useCallback(
-    async (id, updatedData) => {
+  const addOrUpdate = useCallback(
+    async (id: string, value: any) => {
       try {
-        const docRef = doc(db, collectionName, id);
-        await updateDoc(docRef, updatedData);
+        console.log(id, value);
+        await set(ref(db, `${path}/${id}`), value);
       } catch (err) {
-        console.error("Update doc error:", err);
+        console.error("Add/Update error:", err);
         setError(err);
       }
     },
-    [collectionName]
+    [path]
+  );
+
+  const patch = useCallback(
+    async (id: string, updates: any) => {
+      try {
+        await update(ref(db, `${path}/${id}`), updates);
+      } catch (err) {
+        console.error("Patch error:", err);
+        setError(err);
+      }
+    },
+    [path]
+  );
+
+  const deleteDocument = useCallback(
+    async (id: string) => {
+      try {
+        await remove(ref(db, `${path}/${id}`));
+      } catch (err) {
+        console.error("Delete error:", err);
+        setError(err);
+      }
+    },
+    [path]
   );
 
   return {
-    documents: docs,
+    data,
     loading,
     error,
-    addDocument,
-    updateDocument,
+    addOrUpdate,
+    patch,
+    deleteDocument,
   };
 };
+
+export default useRealtimeDatabase;

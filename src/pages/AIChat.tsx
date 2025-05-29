@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./AIChat.css";
-import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
+import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 interface TopPrompt {
   text: string;
@@ -28,6 +28,7 @@ const AIChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const promptButtonRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { data: firebaseData, addOrUpdate } = useFirebaseDatabase("AI-Prompts");
 
   // System prompt that helps the AI understand it's a site assistant
   const systemPrompt = `You are a helpful assistant for RESZEN8, a wellness and lifestyle platform. 
@@ -104,31 +105,12 @@ const AIChat: React.FC = () => {
     },
   ];
 
-  const [topPrompts, setTopPrompts] = useState([
-    // these will come from db
-    {
-      text: "Ask me anything about RESZEN8, our services, or how to get started",
-      calls: 1,
-    },
-    {
-      text: "What memberships do you offer?",
-      calls: 1,
-    },
-    {
-      text: "How do I reset my password?",
-      calls: 1,
-    },
-  ]);
-
-  const { docs, addDocument } = useFirestoreCollection("prompts");
-  console.log(docs);
   // Toggle prompts dropdown
   const togglePrompts = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setShowPrompts((prev) => !prev);
   };
-
   async function callChatFunction(messages: { role: string; content: string }[]) {
     try {
       const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/chat";
@@ -166,23 +148,19 @@ const AIChat: React.FC = () => {
 
   const updateTopPrompts = (prompt: string) => {
     let found = false;
-
-    const result: TopPrompt[] = topPrompts.reduce((acc: TopPrompt[], item: TopPrompt) => {
+    if (!firebaseData) return;
+    Object.values(firebaseData).forEach((item: TopPrompt) => {
       if (item.text === prompt) {
+        console.log(item);
         found = true;
-        acc.push({ ...item, calls: item.calls + 1 });
-      } else {
-        acc.push(item);
+        const updatedPrompt = { ...item, calls: item.calls + 1 };
+        addOrUpdate(prompt, updatedPrompt);
       }
-      return acc;
-    }, []);
+    });
 
     if (!found) {
-      result.push({ text: prompt, calls: 1 });
+      addOrUpdate(prompt, { text: prompt, calls: 1 });
     }
-    addDocument({ text: `${prompt}`, calls: 1 });
-    setTopPrompts(result);
-    // update db
   };
 
   // Handle prompt selection
@@ -327,25 +305,26 @@ const AIChat: React.FC = () => {
             <FaRobot className='empty-icon' />
             <p>Ask me anything about RESZEN8, our services, or how to get started!</p>
             <div className='suggested-questions'>
-              {topPrompts
-                .sort((a, b) => b.calls - a.calls)
-                .slice(0, 3)
-                .map((prompt) => (
-                  <button
-                    key={prompt.text}
-                    onClick={() => {
-                      const userMessage: Message = {
-                        role: "user",
-                        content: prompt.text,
-                        timestamp: new Date(),
-                      };
-                      setMessages((prev) => [...prev, userMessage]);
-                      processMessage(message);
-                    }}
-                  >
-                    {prompt.text}
-                  </button>
-                ))}
+              {firebaseData &&
+                Object.values(firebaseData)
+                  .sort((a, b) => b.calls - a.calls)
+                  .slice(0, 3)
+                  .map((prompt) => (
+                    <button
+                      key={prompt.text}
+                      onClick={() => {
+                        const userMessage: Message = {
+                          role: "user",
+                          content: prompt.text,
+                          timestamp: new Date(),
+                        };
+                        setMessages((prev) => [...prev, userMessage]);
+                        processMessage(prompt.text);
+                      }}
+                    >
+                      {prompt.text}
+                    </button>
+                  ))}
             </div>
           </div>
         ) : (
