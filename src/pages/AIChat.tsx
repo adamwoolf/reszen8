@@ -6,6 +6,11 @@ import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./AIChat.css";
 
+interface TopPrompt {
+  text: string;
+  calls: number;
+}
+
 interface Message {
   role: "user" | "assistant" | "system";
   content: string;
@@ -98,6 +103,22 @@ const AIChat: React.FC = () => {
     },
   ];
 
+  const [topPrompts, setTopPrompts] = useState([
+    // these will come from db
+    {
+      text: "Ask me anything about RESZEN8, our services, or how to get started",
+      calls: 1,
+    },
+    {
+      text: "What memberships do you offer?",
+      calls: 1,
+    },
+    {
+      text: "How do I reset my password?",
+      calls: 1,
+    },
+  ]);
+
   // Toggle prompts dropdown
   const togglePrompts = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -106,7 +127,6 @@ const AIChat: React.FC = () => {
   };
 
   async function callChatFunction(messages: { role: string; content: string }[]) {
-    console.log(messages);
     try {
       const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/chat";
 
@@ -142,10 +162,34 @@ const AIChat: React.FC = () => {
   //   return () => document.removeEventListener("mousedown", handleClickOutside);
   // }, []);
 
+  const updateTopPrompts = (prompt: string) => {
+    let found = false;
+
+    const result: TopPrompt[] = topPrompts.reduce((acc: TopPrompt[], item: TopPrompt) => {
+      if (item.text === prompt) {
+        found = true;
+        acc.push({ ...item, calls: item.calls + 1 });
+      } else {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+
+    if (!found) {
+      result.push({ text: prompt, calls: 1 });
+    }
+
+    setTopPrompts(result);
+    // update db
+  };
+
   // Handle prompt selection
   const handlePromptSelect = async (prompt: string) => {
     // Close the dropdown
     setShowPrompts(false);
+
+    // log the choice in topPrompts
+    updateTopPrompts(prompt);
 
     // Create and add user message
     const userMessage: Message = {
@@ -267,7 +311,6 @@ const AIChat: React.FC = () => {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
   return (
     <div className='ai-chat-container'>
       <div className='chat-header'>
@@ -283,48 +326,25 @@ const AIChat: React.FC = () => {
             <FaRobot className='empty-icon' />
             <p>Ask me anything about RESZEN8, our services, or how to get started!</p>
             <div className='suggested-questions'>
-              <button
-                onClick={() => {
-                  const message = "What memberships do you offer?";
-                  const userMessage: Message = {
-                    role: "user",
-                    content: message,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prev) => [...prev, userMessage]);
-                  processMessage(message);
-                }}
-              >
-                What memberships do you offer?
-              </button>
-              <button
-                onClick={() => {
-                  const message = "How do I reset my password?";
-                  const userMessage: Message = {
-                    role: "user",
-                    content: message,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prev) => [...prev, userMessage]);
-                  processMessage(message);
-                }}
-              >
-                How do I reset my password?
-              </button>
-              <button
-                onClick={() => {
-                  const message = "Tell me about your meditation programs";
-                  const userMessage: Message = {
-                    role: "user",
-                    content: message,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prev) => [...prev, userMessage]);
-                  processMessage(message);
-                }}
-              >
-                Tell me about your meditation programs
-              </button>
+              {topPrompts
+                .sort((a, b) => b.calls - a.calls)
+                .slice(0, 3)
+                .map((prompt) => (
+                  <button
+                    key={prompt.text}
+                    onClick={() => {
+                      const userMessage: Message = {
+                        role: "user",
+                        content: prompt.text,
+                        timestamp: new Date(),
+                      };
+                      setMessages((prev) => [...prev, userMessage]);
+                      processMessage(message);
+                    }}
+                  >
+                    {prompt.text}
+                  </button>
+                ))}
             </div>
           </div>
         ) : (
