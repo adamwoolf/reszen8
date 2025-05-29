@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { getDatabase, ref, onValue, set, update, remove, off } from "firebase/database";
 import { db } from "../firebase"; // Adjust path to your firebase config
 
-type Data = Record<string, any>;
+type Data = any;
 
 export const useRealtimeDatabase = (path: string) => {
   const [data, setData] = useState<Data | null>(null);

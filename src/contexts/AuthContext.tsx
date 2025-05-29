@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { data: users, addOrUpdate } = useFirebaseDatabase("USERS");
+
   const clearError = useCallback(() => setError(null), []);
 
   // Handle user state changes
@@ -54,7 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailVerified: firebaseUser.emailVerified,
           // Add any additional user properties you need
         };
-        setCurrentUser(user);
+
+        const currentFromDB = users?.find((u: User) => u.email === firebaseUser.email);
+
+        setCurrentUser({ ...currentFromDB, ...user } || { email: "please create your account again, Cormac" });
       } else {
         setCurrentUser(null);
       }
@@ -63,6 +67,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const userFromDB = Array.from(users)?.find((u) => u.email === currentUser?.email);
+    if (currentUser && userFromDB && currentUser !== userFromDB) {
+      console.log("changed");
+    }
+  }, [users]);
 
   const signup = useCallback(async (email: string, password: string) => {
     try {
