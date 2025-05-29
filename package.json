@@ -10,9 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@firebase/auth": "^1.10.6",
-    "@firebase/firestore": "^4.7.16",
-    "@firebase/storage": "^0.13.12",
     "@heroicons/react": "^2.2.0",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.3.0",
@@ -21,7 +18,7 @@
     "@types/uuid": "^10.0.0",
     "axios": "^1.9.0",
     "contentful": "^11.5.24",
-    "firebase": "^11.8.1",
+    "firebase": "^10.8.1",
     "framer-motion": "^12.10.5",
     "install": "^0.13.0",
     "marked": "^15.0.12",

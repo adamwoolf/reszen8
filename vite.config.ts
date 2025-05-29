@@ -47,10 +47,10 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            react: ["react", "react-dom", "react-router-dom"],
-            stripe: ["@stripe/stripe-js", "@stripe/react-stripe-js"],
-          },
+          // manualChunks: {
+          //   react: ["react", "react-dom", "react-router-dom"],
+          //   stripe: ["@stripe/stripe-js", "@stripe/react-stripe-js"],
+          // },
         },
       },
     },

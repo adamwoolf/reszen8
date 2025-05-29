@@ -1,17 +1,17 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
-    "jsx": "react-jsx", // or "react" for older versions
-    "module": "ESNext",
+    "jsx": "react-jsx",
     "target": "ESNext",
-    "lib": ["DOM", "ESNext"],
+    "module": "ESNext",
     "moduleResolution": "Node",
+    "lib": ["DOM", "ESNext"],
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true
-  }
-  // "include": ["src"]
+    "outDir": "dist", // ✅ Output directory
+    "noEmit": true // ✅ Prevent emitting if using Vite
+  },
+  "include": ["src"], // ✅ Only include your source
+  "exclude": ["dist", "node_modules"] // ✅ Avoid re-compiling output
 }

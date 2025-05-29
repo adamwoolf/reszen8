@@ -1,13 +1,14 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged, 
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
   // type User as FirebaseUser,
   // type UserCredential
-} from 'firebase/auth';
-import { auth } from '../firebase';
+} from "firebase/auth";
+import { auth } from "../firebase";
+import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 interface User {
   uid: string;
@@ -31,15 +32,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: users, addOrUpdate } = useFirebaseDatabase("USERS");
 
   const clearError = useCallback(() => setError(null), []);
 
@@ -53,7 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           emailVerified: firebaseUser.emailVerified,
           // Add any additional user properties you need
         };
-        setCurrentUser(user);
+
+        const currentFromDB = users?.find((u: User) => u.email === firebaseUser.email);
+
+        setCurrentUser({ ...currentFromDB, ...user } || { email: "please create your account again, Cormac" });
       } else {
         setCurrentUser(null);
       }
@@ -63,13 +68,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const userFromDB = users ? Array.from(users)?.find((u) => u.email === currentUser?.email) : undefined;
+    if (currentUser && userFromDB && currentUser !== userFromDB) {
+      console.log("changed");
+    }
+  }, [users]);
+
   const signup = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true);
       clearError();
-      return await createUserWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
+      // create db entry in USERS for new user
+      return addOrUpdate(Date.now().toString(), { email });
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to create an account';
+      const errorMessage = error.message || "Failed to create an account";
       setError(errorMessage);
       throw error;
     } finally {
@@ -81,11 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       clearError();
-      console.log(email)
+      console.log(email);
       await signInWithEmailAndPassword(auth, email, password);
       // Note: onAuthStateChanged will update the currentUser
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to log in';
+      const errorMessage = error.message || "Failed to log in";
       setError(errorMessage);
       throw error;
     } finally {
@@ -99,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       // Note: onAuthStateChanged will update the currentUser
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to log out';
+      const errorMessage = error.message || "Failed to log out";
       setError(errorMessage);
       throw error;
     } finally {
@@ -117,9 +131,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearError,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }
