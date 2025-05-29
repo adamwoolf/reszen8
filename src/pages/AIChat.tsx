@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./AIChat.css";
+import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
 
 interface TopPrompt {
   text: string;
@@ -119,6 +120,8 @@ const AIChat: React.FC = () => {
     },
   ]);
 
+  const { docs, addDocument } = useFirestoreCollection("prompts");
+  console.log(docs);
   // Toggle prompts dropdown
   const togglePrompts = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -143,7 +146,6 @@ const AIChat: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Function response:", data.response);
       return data.response;
     } catch (error) {
       console.error("Failed to call chat function:", error);
@@ -178,7 +180,7 @@ const AIChat: React.FC = () => {
     if (!found) {
       result.push({ text: prompt, calls: 1 });
     }
-
+    addDocument({ text: `${prompt}`, calls: 1 });
     setTopPrompts(result);
     // update db
   };
@@ -209,7 +211,6 @@ const AIChat: React.FC = () => {
         ...messages.map(({ role, content }) => ({ role, content })),
         { role: "user", content: prompt },
       ]);
-      console.log(data);
 
       const aiMessage: Message = {
         role: "assistant",
@@ -442,10 +443,8 @@ const AIChat: React.FC = () => {
                       name={`prompt-${section.category.toLowerCase().replace(/\s+/g, "-")}`}
                       className='prompt-item'
                       onClick={(e) => {
-                        console.log("Button clicked, preventing default");
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log("Prompt selected:", prompt);
 
                         handlePromptSelect(prompt);
                       }}

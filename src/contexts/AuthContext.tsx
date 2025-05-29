@@ -7,7 +7,7 @@ import {
   // type User as FirebaseUser,
   // type UserCredential
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebase.ts';
 
 interface User {
   uid: string;
