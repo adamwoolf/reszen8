@@ -32,7 +32,6 @@ export const useRealtimeDatabase = (path: string) => {
   const addOrUpdate = useCallback(
     async (id: string, value: any) => {
       try {
-        console.log(id, value);
         await set(ref(db, `${path}/${id}`), value);
       } catch (err) {
         console.error("Add/Update error:", err);

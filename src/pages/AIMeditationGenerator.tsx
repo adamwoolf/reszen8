@@ -4,6 +4,7 @@ import { useSavedItems } from "../contexts/SavedItemsContext";
 import { v4 as uuidv4 } from "uuid";
 import { generateMeditation } from "../services/aiMeditationService";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 interface MeditationState {
   title: string;
@@ -21,7 +22,8 @@ const AIMeditationGenerator: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
-
+  const { currentUser } = useAuth();
+  console.log(currentUser);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const { addItem } = useSavedItems();
@@ -111,7 +113,7 @@ const AIMeditationGenerator: React.FC = () => {
       const toastId = toast.loading("Generating your meditation...");
 
       try {
-        const result = await generateMeditation(meditationType, duration, additionalDetails);
+        const result = await generateMeditation(meditationType, duration, additionalDetails, currentUser.uid);
         console.log("RESULT", result);
         setGeneratedMeditation(result);
 
@@ -159,13 +161,13 @@ const AIMeditationGenerator: React.FC = () => {
     try {
       // Convert the blob URL to a data URL if it exists
       let audioDataUrl = generatedMeditation.audioUrl;
-      
-      if (audioDataUrl && audioDataUrl.startsWith('blob:')) {
+
+      if (audioDataUrl && audioDataUrl.startsWith("blob:")) {
         try {
           // Fetch the blob data
           const response = await fetch(audioDataUrl);
           const blob = await response.blob();
-          
+
           // Convert blob to base64 data URL
           const reader = new FileReader();
           const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -173,11 +175,11 @@ const AIMeditationGenerator: React.FC = () => {
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
-          
+
           audioDataUrl = dataUrl;
         } catch (error) {
-          console.error('Error processing audio data:', error);
-          toast.error('Failed to process audio data');
+          console.error("Error processing audio data:", error);
+          toast.error("Failed to process audio data");
           return;
         }
       }
@@ -186,14 +188,15 @@ const AIMeditationGenerator: React.FC = () => {
         id: Date.now(), // Use timestamp as ID instead of UUID for simplicity
         title: generatedMeditation.title,
         audioUrl: audioDataUrl,
-        type: 'meditation' as const,
+        type: "meditation" as const,
         duration: `${duration} sec`,
         content: generatedMeditation.content, // Save the content as well
-        savedDate: new Date().toISOString()
+        savedDate: new Date().toISOString(),
+        ...generateMeditation,
       };
 
       const wasAdded = addItem(newMeditation);
-      
+
       if (wasAdded) {
         toast.success("Meditation saved to your dashboard!");
         navigate("/dashboard");

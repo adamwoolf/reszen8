@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard.css";
+import useFirebasedatabase from "../hooks/useFirestoreCollection";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -17,11 +18,12 @@ const mockAudioData = {
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
-  const { savedItems, removeItem } = useSavedItems();
+  const { removeItem, savedItems } = useSavedItems();
+  // const { savedItems } = currentUser || {};
+  const [allItems, setAllItems] = useState([]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
-  console.log(savedItems);
   // Audio player state
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -29,7 +31,7 @@ const Dashboard = () => {
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-
+  console.log(currentUser);
   // Format time from seconds to MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -63,8 +65,7 @@ const Dashboard = () => {
 
       // Set up new audio
       // const audioUrl = mockAudioData[item.type as keyof typeof mockAudioData] || mockAudioData.mindfulness;
-      const audioUrl = savedItems.meditations[0].audioUrl;
-      console.log(audioUrl);
+      const audioUrl = savedItems?.meditations[0].audioUrl;
       audioRef.current = new Audio(audioUrl);
 
       // Set up event listeners
@@ -145,7 +146,6 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = savedItems[activeTab];
-
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -163,19 +163,17 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data.map((item) => (
+            {data.map((item, i) => (
               <div
-                key={item.id}
+                key={`dashboard-item ${i}`}
                 className='bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 mb-6 border border-gray-700 transition-all hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
               >
                 <div className='flex flex-col md:flex-row justify-between gap-6'>
                   <div className='flex-1'>
                     <h3 className='text-xl font-semibold text-white mb-2'>{item.title}</h3>
-                    {item.content && (
-                      <p className='text-gray-300 mb-4 line-clamp-3'>{item.content}</p>
-                    )}
+                    {/* {item.content && <p className='text-gray-300 mb-4 line-clamp-3'>{item.content}</p>} */}
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
-                      {item.duration && (
+                      {/* {item.duration && (
                         <span className='flex items-center'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -193,10 +191,10 @@ const Dashboard = () => {
                           </svg>
                           {item.duration}
                         </span>
-                      )}
+                      )} */}
                       {item.savedDate && (
                         <span className='flex items-center'>
-                          <svg
+                          {/* <svg
                             xmlns='http://www.w3.org/2000/svg'
                             className='h-4 w-4 mr-1 text-amber-400'
                             fill='none'
@@ -209,7 +207,7 @@ const Dashboard = () => {
                               strokeWidth={2}
                               d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
                             />
-                          </svg>
+                          </svg> */}
                           {new Date(item.savedDate).toLocaleDateString()}
                         </span>
                       )}
@@ -219,11 +217,12 @@ const Dashboard = () => {
                     {item.audioUrl && (
                       <div className='mb-2'>
                         <AudioPlayer audioUrl={item.audioUrl} />
+                        {/* <DownloadButton downloadLink={item.downloadLink} /> */}
                       </div>
                     )}
-                    <div className='flex gap-3'>
-                      <button
-                        onClick={() => handleRemoveItem(item.id, 'meditations')}
+                    {/* <div className='flex gap-3'>
+                      {/* <button
+                        onClick={() => handleRemoveItem(item.id, "meditations")}
                         className='flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 text-sm'
                       >
                         <svg
@@ -239,8 +238,8 @@ const Dashboard = () => {
                           />
                         </svg>
                         <span>Remove</span>
-                      </button>
-                    </div>
+                      </button> */}
+                    {/* </div>  */}
                   </div>
                 </div>
               </div>
@@ -261,16 +260,16 @@ const Dashboard = () => {
           onClick={() => setActiveTab("meditations")}
         >
           My Meditations
-          {savedItems.meditations.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full'>
-              {savedItems.meditations.length}
+          {savedItems?.meditations.length > 0 && (
+            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
+              {savedItems?.meditations.length}
             </span>
           )}
         </button>
         <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
           My E-Books
           {savedItems.ebooks.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full'>
+            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
               {savedItems.ebooks.length}
             </span>
           )}
@@ -281,7 +280,7 @@ const Dashboard = () => {
         >
           My Publications
           {savedItems.publications.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full'>
+            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
               {savedItems.publications.length}
             </span>
           )}
@@ -315,16 +314,16 @@ function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     if (!audioRef.current) {
       // Create a new audio element if it doesn't exist
       audioRef.current = new Audio(audioUrl);
-      
+
       // Set up event listeners
       audioRef.current.onended = () => {
         setIsPlaying(false);
       };
-      
+
       audioRef.current.onpause = () => {
         setIsPlaying(false);
       };
-      
+
       audioRef.current.onplay = () => {
         setIsPlaying(true);
       };
@@ -334,8 +333,8 @@ function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch(error => {
-        console.error('Error playing audio:', error);
+      audioRef.current.play().catch((error) => {
+        console.error("Error playing audio:", error);
         setIsPlaying(false);
       });
     }
@@ -344,36 +343,26 @@ function AudioPlayer({ audioUrl }: { audioUrl: string }) {
   return (
     <button
       onClick={togglePlayPause}
-      className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-full transition-colors"
+      className='flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-full transition-colors'
     >
       {isPlaying ? (
         <>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
+          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
             <path
-              fillRule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-              clipRule="evenodd"
+              fillRule='evenodd'
+              d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z'
+              clipRule='evenodd'
             />
           </svg>
           <span>Pause</span>
         </>
       ) : (
         <>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
+          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
             <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-              clipRule="evenodd"
+              fillRule='evenodd'
+              d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
+              clipRule='evenodd'
             />
           </svg>
           <span>Play</span>
@@ -382,3 +371,16 @@ function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     </button>
   );
 }
+
+const DownloadButton = ({ downloadLink }: { downloadLink: string }) => {
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = downloadLink;
+    link.download = "meditation.mp3";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return <button onClick={handleDownload}>Download Meditation Audio</button>;
+};

@@ -7,6 +7,8 @@ type Product = {
   price: number;
   image?: string;
   description?: string;
+  size?: string;
+  quantity?: number;
 };
 
 type BasketItem = {
@@ -48,34 +50,32 @@ export const useBasketStore = create<BasketStore>()(
           };
         }),
 
-      removeItem: (productId, size) =>
-        set((state) => {
-          console.log(state.items);
-          console.log(size);
-          console.log(productId);
-
-          const itemToDelete = state.items.find((item) => item.product.id === productId && item.product.size === size);
+      removeItem: (productId: string, size?: string) =>
+        set((state: any) => {
+          const itemToDelete = state.items.find(
+            (item: any) => item.product.id === productId && item.product.size === size
+          );
           console.log(itemToDelete);
           return {
-            items: state.items.filter((item) => item !== itemToDelete),
+            items: state.items.filter((item: any) => item !== itemToDelete),
           };
         }),
 
-      updateQuantity: (productId, size, quantity) =>
-        set((state) => ({
+      updateQuantity: (productId: string, size: string, quantity: number) =>
+        set((state: any) => ({
           items:
             quantity <= 0
-              ? state.items.filter((item) => item.product.id !== productId && item.product?.size !== size)
-              : state.items.map((item) =>
+              ? state.items.filter((item: any) => item.product.id !== productId && item.product?.size !== size)
+              : state.items.map((item: any) =>
                   item.product.id === productId && item.product.size === size ? { ...item, quantity } : item
                 ),
         })),
 
       clearBasket: () => set({ items: [] }),
 
-      itemCount: () => get().items.reduce((total, item) => total + item.quantity, 0),
+      itemCount: () => get().items.reduce((total: number, item: any) => total + item.quantity, 0),
 
-      totalPrice: () => get().items.reduce((total, item) => total + item.product.price * item.quantity, 0),
+      totalPrice: () => get().items.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0),
     }),
     {
       name: "basket-storage",
