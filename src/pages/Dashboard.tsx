@@ -18,8 +18,8 @@ const mockAudioData = {
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
+  console.log(currentUser);
   const { removeItem, savedItems } = useSavedItems();
-  // const { savedItems } = currentUser || {};
   const [allItems, setAllItems] = useState([]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");

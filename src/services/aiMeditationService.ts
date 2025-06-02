@@ -92,6 +92,27 @@ export const generateMeditation = async (
       };
     }
 
+    // STEP 2a: Generate audio from script via Amazon Polly
+    // const polly = new PollyClient({
+    //   region: AWS_REGION,
+    //   credentials: {
+    //     accessKeyId: AWS_ACCESS_KEY_ID,
+    //     secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    //   },
+    // });
+
+    // const synthCommand = new SynthesizeSpeechCommand({
+    //   Text: meditationData.content,
+    //   OutputFormat: "mp3",
+    //   VoiceId: "Joanna", // Change voice if needed
+    // });
+
+    // const audioData = await polly.send(synthCommand);
+    // if (!audioData.AudioStream) {
+    //   throw new Error("No audio data returned from Polly");
+    // }
+    // POLLY ENDS HERE
+
     // STEP 2: Generate audio from script via ElevenLabs
     const audioResponse = await axios.post(
       `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
@@ -115,7 +136,7 @@ export const generateMeditation = async (
     if (!audioResponse.data) {
       throw new Error("No audio data received from ElevenLabs");
     }
-
+    // ELEVENLABS ends here
     const audioBlob = new Blob([audioResponse.data], { type: "audio/mp3" });
     const reader = new FileReader();
 
