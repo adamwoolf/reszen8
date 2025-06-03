@@ -1,19 +1,20 @@
 import axios from "axios";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage, db } from "../firebase"; // adjust path as needed
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
-// Get environment variables with type safety
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string;
 const ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Default voice ID (Rachel)
 
-console.log("11 label api key", ELEVENLABS_API_KEY);
-
-interface MeditationResponse {
+export interface MeditationResponse {
   title: string;
   content: string;
   audioUrl?: string;
+  downloadLink?: string;
+  audioBlob?: Blob;
 }
 
-// Add type for Axios error with response
 type AxiosErrorWithResponse = Error & {
   response?: {
     data?: any;
@@ -34,22 +35,22 @@ type AxiosErrorWithResponse = Error & {
 export const generateMeditation = async (
   type: string,
   duration: number,
-  language: string = 'en',
-  voiceStyle: string = ''
+  language: string = "en",
+  voiceStyle: string = ""
 ): Promise<{ title: string; content: string }> => {
   try {
     // Map language codes to full language names for the prompt
     const languageNames: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      pt: "Portuguese",
     };
 
-    const languageName = languageNames[language] || 'English';
-    
+    const languageName = languageNames[language] || "English";
+
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -57,16 +58,20 @@ export const generateMeditation = async (
         messages: [
           {
             role: "system",
-            content: `You are an AI meditation guide. Create a guided meditation script in ${languageName} based on the following parameters. ${voiceStyle} ` +
-                     'The meditation should flow naturally and be suitable for the specified duration. ' +
-                     'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
-                     'The response must be valid JSON with no additional text before or after the JSON object. ' +
-                     `The entire meditation must be in ${languageName} language.`,
+            content:
+              `You are an AI meditation guide. Create a guided meditation script in ${languageName} based on the following parameters. ${voiceStyle} ` +
+              "The meditation should flow naturally and be suitable for the specified duration. " +
+              'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
+              "The response must be valid JSON with no additional text before or after the JSON object. " +
+              `The entire meditation must be in ${languageName} language.`,
           },
           {
             role: "user",
-            content: `Create a ${type} meditation in ${languageName} that is approximately ${duration} seconds long.`,
-          }
+            content: `Create a ${duration}-second ${meditationType} meditation. 
+              The meditation should be exactly ${duration} seconds when spoken at a natural pace.
+              Keep the content focused and appropriate for the short duration.
+              Format the response as a valid JSON object with 'title' and 'content' properties.`,
+          },
         ],
         temperature: 0.7,
       },
@@ -78,52 +83,83 @@ export const generateMeditation = async (
       }
     );
 
-    if (!response.data.choices || !response.data.choices[0].message) {
-      console.error('OpenAI API Error:', response.data);
-      throw new Error('Failed to generate meditation');
+    const content = response.data.choices[0].message.content;
+    let meditationData: Omit<MeditationResponse, "audioUrl">;
+
+    try {
+      meditationData = JSON.parse(content);
+    } catch {
+      meditationData = {
+        title: `${meditationType} Meditation`,
+        content,
+      };
     }
 
-    // Parse the response content as JSON
-    const content = response.data.choices[0].message.content.trim();
-    let result;
-    
-    try {
-      // Try to parse the content directly as JSON
-      result = JSON.parse(content);
-    } catch (e) {
-      // If parsing fails, try to extract JSON from the response
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('Failed to parse meditation content as JSON');
+    // STEP 2: Generate audio from script via ElevenLabs
+    const audioResponse = await axios.post(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      {
+        text: meditationData.content,
+        model_id: "eleven_monolingual_v1",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": ELEVENLABS_API_KEY,
+        },
+        responseType: "arraybuffer",
       }
+    );
+
+    if (!audioResponse.data) {
+      throw new Error("No audio data received from ElevenLabs");
     }
-    
+
+    const audioBlob = new Blob([audioResponse.data], { type: "audio/mp3" });
+    const reader = new FileReader();
+
+    // STEP 3: Upload to Firebase via Cloud Function
+    const firebaseAudioUrl = await new Promise<string>((resolve, reject) => {
+      console.log("uploading");
+      reader.onloadend = async () => {
+        const audioBase64 = (reader.result as string).split(",")[1];
+        try {
+          const uploadResponse = await axios.post(
+            "https://us-central1-reszen8-1d832.cloudfunctions.net/api/uploadAudio",
+            {
+              audioBase64,
+              title: meditationData.title,
+              content: meditationData.content,
+              generatedBy: userId,
+              type: meditationType,
+            }
+          );
+
+          resolve(uploadResponse.data.audioUrl);
+          console.log("uploaded");
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(audioBlob);
+    });
+
+    // Optional: trigger download
+    // saveAudioToFile(audioBlob, `${meditationData.title}.mp3`);
+    console.log("audio", firebaseAudioUrl);
     return {
-      title: result.title || `${type.charAt(0).toUpperCase() + type.slice(1)} Meditation`,
-      content: result.content || 'No content generated.',
+      ...meditationData,
+      audioUrl: firebaseAudioUrl,
+      downloadLink: firebaseAudioUrl,
+      audioBlob,
     };
   } catch (error) {
-    console.error('Error in generateMeditation:', error);
-    
-    // More specific error handling
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as any;
-      if (axiosError.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Error response data:', axiosError.response.data);
-        console.error('Error status:', axiosError.response.status);
-        console.error('Error headers:', axiosError.response.headers);
-        throw new Error(`API Error: ${axiosError.response.status} - ${JSON.stringify(axiosError.response.data)}`);
-      } else if (axiosError.request) {
-        // The request was made but no response was received
-        console.error('Error request:', axiosError.request);
-        throw new Error('No response received from the API. Please check your network connection.');
-      }
-    }
-    
-    throw error;
+    console.error("Failed to generate meditation:", error);
+    throw new Error("Failed to generate meditation. Please try again later.");
   }
 };

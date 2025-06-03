@@ -45,7 +45,10 @@
   font-weight: 600;
 }
 
-/* Dashboard Content */
+.tab-count {
+  padding-left: 8px;
+}
+
 .dashboard-content {
   animation: fadeIn 0.3s ease-out;
 }

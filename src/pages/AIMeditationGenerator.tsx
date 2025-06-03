@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { generateMeditation } from "../services/aiMeditationService";
 import { convertTextToSpeech, VOICE_OPTIONS } from "../services/ttsService";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 interface MeditationState {
   title: string;
@@ -30,6 +31,8 @@ const AIMeditationGenerator: React.FC = () => {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Refs
+  const { currentUser } = useAuth();
+  console.log(currentUser);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const musicAudioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
@@ -440,13 +443,13 @@ const AIMeditationGenerator: React.FC = () => {
     try {
       // Convert blob URL to data URL if it exists
       let audioDataUrl = generatedMeditation.audioUrl;
-      
-      if (audioDataUrl && audioDataUrl.startsWith('blob:')) {
+
+      if (audioDataUrl && audioDataUrl.startsWith("blob:")) {
         try {
           // Fetch the blob data
           const response = await fetch(audioDataUrl);
           const blob = await response.blob();
-          
+
           // Convert blob to base64 data URL
           const reader = new FileReader();
           const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -454,11 +457,11 @@ const AIMeditationGenerator: React.FC = () => {
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
-          
+
           audioDataUrl = dataUrl;
         } catch (error) {
-          console.error('Error processing audio data:', error);
-          toast.error('Failed to process audio data');
+          console.error("Error processing audio data:", error);
+          toast.error("Failed to process audio data");
           return;
         }
       }
@@ -467,14 +470,15 @@ const AIMeditationGenerator: React.FC = () => {
         id: Date.now(),
         title: generatedMeditation.title,
         audioUrl: audioDataUrl,
-        type: 'meditation' as const,
+        type: "meditation" as const,
         duration: `${duration} sec`,
-        content: generatedMeditation.content,
-        savedDate: new Date().toISOString()
+        content: generatedMeditation.content, // Save the content as well
+        savedDate: new Date().toISOString(),
+        ...generateMeditation,
       };
 
       const wasAdded = addItem(newMeditation);
-      
+
       if (wasAdded) {
         toast.success("Meditation saved to your dashboard!");
         navigate("/dashboard");

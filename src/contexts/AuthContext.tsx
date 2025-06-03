@@ -14,6 +14,8 @@ interface User {
   uid: string;
   email: string | null;
   emailVerified: boolean;
+  meditations?: [];
+
   // Add other user properties as needed
 }
 
@@ -41,8 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: users, addOrUpdate } = useFirebaseDatabase("USERS");
-
+  const { data: users, addOrUpdate } = useFirebaseDatabase("USERS") || [];
   const clearError = useCallback(() => setError(null), []);
 
   // Handle user state changes
@@ -55,10 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailVerified: firebaseUser.emailVerified,
           // Add any additional user properties you need
         };
+        const currentFromDB = users?.find((u: User) => u.uid === firebaseUser.uid) || {};
 
-        const currentFromDB = users?.find((u: User) => u.email === firebaseUser.email);
-
-        setCurrentUser({ ...currentFromDB, ...user } || { email: "please create your account again, Cormac" });
+        setCurrentUser({ ...currentFromDB, ...user });
       } else {
         setCurrentUser(null);
       }
@@ -66,13 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const userFromDB = users ? Array.from(users)?.find((u) => u.email === currentUser?.email) : undefined;
-    if (currentUser && userFromDB && currentUser !== userFromDB) {
-      console.log("changed");
-    }
   }, [users]);
 
   const signup = useCallback(async (email: string, password: string) => {
@@ -81,7 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearError();
       await createUserWithEmailAndPassword(auth, email, password);
       // create db entry in USERS for new user
-      return addOrUpdate(Date.now().toString(), { email });
+      const firebaseId = Date.now().toString();
+      return addOrUpdate(firebaseId, { email, firebaseId });
     } catch (error: any) {
       const errorMessage = error.message || "Failed to create an account";
       setError(errorMessage);
@@ -95,7 +89,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       clearError();
-      console.log(email);
       await signInWithEmailAndPassword(auth, email, password);
       // Note: onAuthStateChanged will update the currentUser
     } catch (error: any) {
@@ -129,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     error,
     clearError,
+    setCurrentUser,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

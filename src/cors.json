@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["http://localhost:5173", "https://celebrated-palmier-404449.netlify.app/"],
+    "method": ["GET", "POST", "PUT"],
+    "maxAgeSeconds": 3600
+  }
+]
