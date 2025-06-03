@@ -51,7 +51,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       setSavedItems({
         ebooks: savedItems.ebooks,
         publications: savedItems.publications,
-        meditations: medArray?.filter((med: any) => med.generatedBy === currentUser?.uid),
+        meditations: currentUser?.savedItems?.meditations || [],
       });
     }
   }, [meditations, currentUser]);
