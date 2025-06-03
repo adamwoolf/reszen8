@@ -38,7 +38,7 @@ export const generateMeditation = async (
   language: string = "en",
   voiceStyle: string = "",
   userId: string
-): Promise<{ title: string; content: string; audioUrl: string }> => {
+): Promise<{ title: string; content: string; audioUrl: string; downloadLink: string }> => {
   try {
     // Map language codes to full language names for the prompt
     const languageNames: Record<string, string> = {

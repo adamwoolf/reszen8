@@ -47,52 +47,65 @@ const Memberships: React.FC = () => {
 
       <div className='membership-grid'>
         {membershipTiers
-          ?.sort((a, b) => a.fields.order - b.fields.order)
-          ?.map(({ fields: tier }) => (
-            <div key={tier.id} className={`membership-card ${tier.mostPopular ? "featured" : ""}`}>
-              {tier.mostPopular && <div className='popular-badge'>Most Popular</div>}
-              <div className='membership-header'>
-                <h3>{tier.title}</h3>
-                <div className='price'>
-                  {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "Enquire for pricing"}
-                  {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
+          ?.sort((a: any, b: any) => a.fields.order - b.fields.order)
+          ?.map(
+            ({
+              fields: tier,
+            }: {
+              fields: {
+                price: number;
+                billing: string;
+                description: string;
+                title: string;
+                mostPopular: boolean;
+                id: string;
+              };
+            }) => (
+              <div key={tier.id} className={`membership-card ${tier.mostPopular ? "featured" : ""}`}>
+                {tier.mostPopular && <div className='popular-badge'>Most Popular</div>}
+                <div className='membership-header'>
+                  <h3>{tier.title}</h3>
+                  <div className='price'>
+                    {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "Enquire for pricing"}
+                    {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
+                  </div>
+                  <p className='description'>
+                    {tier.description}
+                    {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
+                  </p>
                 </div>
-                <p className='description'>
-                  {tier.description}
-                  {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
-                </p>
+                <ul className='features'>
+                  {tier.features.map((feature: string, index: number) => (
+                    <li key={index} className='feature-item'>
+                      <svg className='check-icon' viewBox='0 0 20 20' fill='currentColor'>
+                        <path
+                          fillRule='evenodd'
+                          d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
+                  onClick={() => handleSubscribe(tier)}
+                >
+                  {tier.id === "bespoke-journey" ? "Make Enquiry" : "Get Started"}
+                </button>
               </div>
-              <ul className='features'>
-                {tier.features.map((feature, index) => (
-                  <li key={index} className='feature-item'>
-                    <svg className='check-icon' viewBox='0 0 20 20' fill='currentColor'>
-                      <path
-                        fillRule='evenodd'
-                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <button
-                className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
-                onClick={() => handleSubscribe(tier)}
-              >
-                {tier.id === "bespoke-journey" ? "Make Enquiry" : "Get Started"}
-              </button>
-            </div>
-          ))}
+            )
+          )}
       </div>
 
       <div className='membership-faq'>
         <h2>Frequently Asked Questions</h2>
         <div className='faq-grid'>
-          {faqs?.map(({ fields: item }) => (
+          {faqs?.map(({ fields }: { fields: { item: { question: string; answer: string } } }) => (
             <div className='faq-item'>
-              <h3>{item?.question}</h3>
-              <p>{item?.answer}</p>
+              <h3>{fields.item?.question}</h3>
+              <p>{fields.item?.answer}</p>
             </div>
           ))}
         </div>

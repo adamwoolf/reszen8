@@ -20,7 +20,7 @@ type BasketStore = {
   items: BasketItem[];
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateQuantity: (productId: string, size: string, quantity: number) => void;
   clearBasket: () => void;
   itemCount: () => number;
   totalPrice: () => number;
