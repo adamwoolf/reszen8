@@ -63,43 +63,50 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
-  console.log("current", currentUser);
+
   const addItem = (item: ItemType) => {
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
+    const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
+    if (itemExists) return;
     addOrUpdate(currentUser.firebaseId, {
       ...currentUser,
       savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
     });
     // Check if item already exists
-    const itemExists = savedItems[itemType].some((savedItem) => savedItem.id === item.id);
 
-    if (!itemExists) {
-      setSavedItems((prev) => {
-        const newItems = {
-          ...prev,
-          [itemType]: [
-            ...prev[itemType],
-            {
-              ...item,
-              savedDate: new Date().toISOString(),
-            },
-          ],
-        };
-        return newItems;
-      });
-      return true;
-    }
-    return false;
+    // if (!itemExists) {
+    //   // setSavedItems((prev) => {
+    //   //   const newItems = {
+    //   //     ...prev,
+    //   //     [itemType]: [
+    //   //       ...prev[itemType],
+    //   //       {
+    //   //         ...item,
+    //   //         savedDate: new Date().toISOString(),
+    //   //       },
+    //   //     ],
+    //   //   };
+    //   //   return newItems;
+    //   // });
+    //   return true;
+    // }
+    // return false;
   };
 
-  const removeItem = (itemId: number, type: keyof SavedItemsType) => {
-    setSavedItems((prev) => {
-      const newItems = {
-        ...prev,
-        [type]: prev[type].filter((item) => item.id !== itemId),
-      };
-      return newItems;
+  const removeItem = (item: any, type: keyof SavedItemsType) => {
+    const newItemsArray = [...currentUser.savedItems[type]].filter((i) => i.createdAt !== item.createdAt);
+
+    addOrUpdate(currentUser.firebaseId, {
+      ...currentUser,
+      savedItems: { ...currentUser?.savedItems, [type]: newItemsArray },
     });
+    // setSavedItems((prev) => {
+    //   const newItems = {
+    //     ...prev,
+    //     [type]: prev[type].filter((item) => item.id !== itemId),
+    //   };
+    //   return newItems;
+    // });
   };
 
   return (

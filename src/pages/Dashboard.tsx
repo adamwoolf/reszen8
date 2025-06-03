@@ -134,8 +134,8 @@ const Dashboard = () => {
     return null;
   }
 
-  const handleRemoveItem = (itemId: number, type: keyof typeof savedItems) => {
-    removeItem(itemId, type);
+  const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
+    removeItem(itemId, type, index);
     setNotification({
       show: true,
       message: "Item removed from your Dashboard",
@@ -168,51 +168,25 @@ const Dashboard = () => {
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data.map((item, i) => (
-              <div
-                key={`dashboard-item ${i}`}
-                className='bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 mb-6 border border-gray-700 transition-all hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
-              >
+              <div key={`dashboard-item ${i}`} className='dashboard-card'>
                 <div className='flex flex-col md:flex-row justify-between gap-6'>
                   <div className='flex-1'>
                     <h3 className='text-xl font-semibold text-white mb-2'>{item.title}</h3>
                     {/* {item.content && <p className='text-gray-300 mb-4 line-clamp-3'>{item.content}</p>} */}
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
-                      {/* {item.duration && (
-                        <span className='flex items-center'>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            className='h-4 w-4 mr-1 text-amber-400'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            stroke='currentColor'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
-                            />
-                          </svg>
-                          {item.duration}
-                        </span>
-                      )} */}
                       {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
                       )}
                     </div>
                   </div>
-                  <div className='flex flex-col gap-3 min-w-[200px]'>
+                  <div className='dashboard-buttons'>
                     {item.audioUrl && (
                       <div className='mb-2'>
                         <AudioPlayer audioUrl={item.audioUrl} />
-                        {/* <DownloadButton downloadLink={item.downloadLink} /> */}
                       </div>
                     )}
-                    {/* <div className='flex gap-3'>
-                      {/* <button
-                        onClick={() => handleRemoveItem(item.id, "meditations")}
-                        className='flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 text-sm'
-                      >
+                    <div className='flex gap-3'>
+                      <button onClick={() => handleRemoveItem(item, "meditations", i)} className='dashboard-button'>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           className='h-4 w-4'
@@ -226,8 +200,8 @@ const Dashboard = () => {
                           />
                         </svg>
                         <span>Remove</span>
-                      </button> */}
-                    {/* </div>  */}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -340,10 +314,7 @@ function AudioPlayer({ audioUrl }: { audioUrl: string }) {
   };
 
   return (
-    <button
-      onClick={togglePlayPause}
-      className='flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-full transition-colors'
-    >
+    <button onClick={togglePlayPause} className='dashboard-button'>
       {isPlaying ? (
         <>
           <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
