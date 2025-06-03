@@ -9,6 +9,7 @@ type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
   const { currentUser } = useAuth();
+  // const { add } = useFirebaseDatabase('USERS')
   const navigate = useNavigate();
   const { addItem } = useSavedItems();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
@@ -71,6 +72,7 @@ const DigitalLibrary = () => {
 
   const renderTabContent = () => {
     const data = libraryData[activeTab];
+    console.log(data);
 
     return (
       <div className='dashboard-content'>
@@ -86,6 +88,7 @@ const DigitalLibrary = () => {
               <h3 className='text-xl font-semibold mb-2 text-white'>{item.title}</h3>
               {item.duration && <p className='text-gray-300'>Duration: {item.duration}</p>}
               {item.meditationType && <p className='text-gray-300'>Meditation Type: {item.meditationType}</p>}
+              {item.language && <p className='text-gray-300'>Language: {item.language}</p>}
 
               <button
                 onClick={() => handleAddItem(item)}

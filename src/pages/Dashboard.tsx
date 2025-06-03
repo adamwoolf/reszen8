@@ -18,9 +18,7 @@ const mockAudioData = {
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
-  console.log(currentUser);
   const { removeItem, savedItems } = useSavedItems();
-  const [allItems, setAllItems] = useState([]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
@@ -31,17 +29,20 @@ const Dashboard = () => {
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  console.log(currentUser);
   // Format time from seconds to MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
-  // const [audioUrl, setAudioUrl] = useState("");
-  // Handle play/pause for a specific meditation
+
+  // Redirect to login if not authenticated
+  if (!currentUser) {
+    navigate("/login");
+    return null;
+  }
+
   const togglePlayPause = (item: any) => {
-    // setAudioUrl(item.audioUrl);
     if (currentlyPlaying === item.id) {
       // Toggle play/pause for the current item
       if (audioRef.current) {
@@ -112,6 +113,8 @@ const Dashboard = () => {
     }, 100);
   };
 
+  //
+
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -146,6 +149,7 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = savedItems[activeTab];
+    console.log(data);
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -192,24 +196,8 @@ const Dashboard = () => {
                           {item.duration}
                         </span>
                       )} */}
-                      {item.savedDate && (
-                        <span className='flex items-center'>
-                          {/* <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            className='h-4 w-4 mr-1 text-amber-400'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            stroke='currentColor'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                            />
-                          </svg> */}
-                          {new Date(item.savedDate).toLocaleDateString()}
-                        </span>
+                      {item.createdAt && (
+                        <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
                       )}
                     </div>
                   </div>
@@ -274,6 +262,9 @@ const Dashboard = () => {
             </span>
           )}
         </button>
+        <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
+          My E-Books
+        </button>
         <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}
@@ -287,7 +278,15 @@ const Dashboard = () => {
         </button>
       </div>
 
+      {notification.show && (
+        <div className='fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'>
+          {notification.message}
+        </div>
+      )}
+
       {renderTabContent()}
+
+      <audio ref={audioRef} />
     </div>
   );
 };

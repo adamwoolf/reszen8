@@ -48,7 +48,7 @@ app.post("/chat", async (req, res) => {
 // ✅ NEW: Upload audio to Firebase Storage and save Firestore doc
 app.post("/uploadAudio", async (req, res) => {
   try {
-    const { audioBase64, title, content, generatedBy, type } = req.body;
+    const { audioBase64, title, content, generatedBy, type, language } = req.body;
 
     if (!audioBase64 || !title || !content) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -84,6 +84,7 @@ app.post("/uploadAudio", async (req, res) => {
       createdAt: Date.now(),
       generatedBy,
       type,
+      language,
     });
 
     return res.status(200).json({

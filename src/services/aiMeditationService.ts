@@ -24,33 +24,34 @@ type AxiosErrorWithResponse = Error & {
   request?: any;
 };
 
-// const saveAudioToFile = (blob: Blob, filename = "meditation.mp3") => {
-//   const url = URL.createObjectURL(blob);
-//   const link = document.createElement("a");
-//   link.href = url;
-//   link.download = filename;
-//   document.body.appendChild(link);
-//   link.click();
-//   document.body.removeChild(link);
-//   URL.revokeObjectURL(url);
-// };
-
-// const blobToBase64 = (blob: Blob): Promise<string> =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.onerror = () => reject("Failed to convert blob to base64");
-//     reader.onload = () => resolve(reader.result as string);
-//     reader.readAsDataURL(blob);
-//   });
-
+/**
+ * Generates meditation content using OpenAI's GPT-4 model
+ * @param type Type of meditation (e.g., 'mindfulness', 'sleep')
+ * @param duration Duration in seconds
+ * @param language Language code (e.g., 'en', 'es', 'fr')
+ * @param voiceStyle Voice style and language instructions
+ * @returns Promise with generated meditation content
+ */
 export const generateMeditation = async (
   meditationType: string,
   duration: string,
-  additionalDetails: string,
+  language: string = "en",
+  voiceStyle: string = "",
   userId: string
-): Promise<MeditationResponse> => {
+): Promise<{ title: string; content: string; audioUrl: string }> => {
   try {
-    // STEP 1: Generate meditation script via OpenAI
+    // Map language codes to full language names for the prompt
+    const languageNames: Record<string, string> = {
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      pt: "Portuguese",
+    };
+
+    const languageName = languageNames[language] || "English";
+
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -59,14 +60,17 @@ export const generateMeditation = async (
           {
             role: "system",
             content:
-              "You are a professional meditation guide with years of experience in creating personalized meditation scripts.",
+              `You are an AI meditation guide. Create a guided meditation script in ${languageName} based on the following parameters. ${voiceStyle} ` +
+              "The meditation should flow naturally and be suitable for the specified duration. " +
+              'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
+              "The response must be valid JSON with no additional text before or after the JSON object. " +
+              `The entire meditation must be in ${languageName} language.`,
           },
           {
             role: "user",
-            content: `Create a ${duration}-second ${meditationType} meditation. 
+            content: `Create a ${duration}-second ${meditationType} meditation in ${languageName}. 
               The meditation should be exactly ${duration} seconds when spoken at a natural pace.
               Keep the content focused and appropriate for the short duration.
-              ${additionalDetails ? `Additional details: ${additionalDetails}` : ""} 
               Format the response as a valid JSON object with 'title' and 'content' properties.`,
           },
         ],
@@ -80,8 +84,16 @@ export const generateMeditation = async (
       }
     );
 
-    const content = response.data.choices[0].message.content;
+    const content = response.data.choices[0].message.content.trim();
+
     let meditationData: Omit<MeditationResponse, "audioUrl">;
+    // if (!response.data.choices || !response.data.choices[0].message) {
+    //   console.error('OpenAI API Error:', response.data);
+    //   throw new Error('Failed to generate meditation');
+    // }
+
+    // Parse the response content as JSON
+    let result;
 
     try {
       meditationData = JSON.parse(content);
@@ -154,6 +166,7 @@ export const generateMeditation = async (
               content: meditationData.content,
               generatedBy: userId,
               type: meditationType,
+              language: languageName,
             }
           );
 
@@ -179,5 +192,6 @@ export const generateMeditation = async (
   } catch (error) {
     console.error("Failed to generate meditation:", error);
     throw new Error("Failed to generate meditation. Please try again later.");
+    // Try to parse the content directly as JSON
   }
 };

@@ -56,15 +56,20 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser]);
 
+  console.log("SAVED", savedItems);
+
   // Save to localStorage whenever savedItems changes - do this
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
-
+  console.log("current", currentUser);
   const addItem = (item: ItemType) => {
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
-
+    addOrUpdate(currentUser.firebaseId, {
+      ...currentUser,
+      savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
+    });
     // Check if item already exists
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.id === item.id);
 
@@ -82,9 +87,9 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         };
         return newItems;
       });
-      return true; // Item was added
+      return true;
     }
-    return false; // Item already exists
+    return false;
   };
 
   const removeItem = (itemId: number, type: keyof SavedItemsType) => {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import { v4 as uuidv4 } from "uuid";
 import { generateMeditation } from "../services/aiMeditationService";
+import { convertTextToSpeech, VOICE_OPTIONS } from "../services/ttsService";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -10,12 +11,14 @@ interface MeditationState {
   title: string;
   content: string;
   audioUrl?: string;
+  cleanupAudio?: () => void; // Add this line
 }
-
 const AIMeditationGenerator: React.FC = () => {
+  // State management
   const [meditationType, setMeditationType] = useState("mindfulness");
+  const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [duration, setDuration] = useState("5");
-  const [additionalDetails, setAdditionalDetails] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -24,11 +27,18 @@ const AIMeditationGenerator: React.FC = () => {
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser } = useAuth();
   console.log(currentUser);
+  const [selectedMusic, setSelectedMusic] = useState<string>("none");
+
+  // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const musicAudioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
+
+  // Hooks
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
 
+  // Constants
   const meditationTypes = [
     { value: "mindfulness", label: "Mindfulness" },
     { value: "sleep", label: "Sleep" },
@@ -40,6 +50,36 @@ const AIMeditationGenerator: React.FC = () => {
 
   const durations = ["5", "10", "15", "30", "60", "120", "300"];
 
+  const languageOptions = [
+    { value: "en", label: "English" },
+    { value: "es", label: "Spanish" },
+    { value: "fr", label: "French" },
+    { value: "de", label: "German" },
+    { value: "it", label: "Italian" },
+    { value: "pt", label: "Portuguese" },
+  ];
+
+  const musicOptions = [
+    { value: "none", label: "No background music" },
+    { value: "ambient", label: "Ambient Soundscape" },
+    { value: "rain", label: "Gentle Rain" },
+    { value: "ocean", label: "Ocean Waves" },
+    { value: "forest", label: "Forest Sounds" },
+    { value: "singing-bowl", label: "Singing Bowls" },
+    { value: "white-noise", label: "White Noise" },
+  ];
+
+  // Get filtered voices based on selected language
+  const filteredVoices = VOICE_OPTIONS.filter((voice) => voice.supportedLanguages.includes(selectedLanguage));
+
+  // Reset selected voice if it's not in the filtered list
+  useEffect(() => {
+    if (filteredVoices.length > 0 && !filteredVoices.some((voice) => voice.id === selectedVoice)) {
+      setSelectedVoice(filteredVoices[0].id);
+    }
+  }, [selectedLanguage, filteredVoices]);
+
+  // Format time for display
   const formatTime = (seconds: number) => {
     if (seconds < 60) {
       return `${seconds} sec`;
@@ -49,9 +89,13 @@ const AIMeditationGenerator: React.FC = () => {
     return secs === 0 ? `${mins} min` : `${mins}m ${secs}s`;
   };
 
+  // Clean up on unmount
   useEffect(() => {
-    // Clean up audio URL when component unmounts
     return () => {
+      // Clean up audio when component unmounts or meditation changes
+      if (generatedMeditation?.cleanupAudio) {
+        generatedMeditation.cleanupAudio();
+      }
       if (generatedMeditation?.audioUrl) {
         URL.revokeObjectURL(generatedMeditation.audioUrl);
       }
@@ -61,7 +105,74 @@ const AIMeditationGenerator: React.FC = () => {
     };
   }, [generatedMeditation]);
 
-  const togglePlayPause = () => {
+  const playMeditationWithMusic = async (meditationAudioUrl: string) => {
+    try {
+      // Create audio context
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // Load meditation audio
+      const [meditationBuffer, musicBuffer] = await Promise.all([
+        fetch(meditationAudioUrl)
+          .then((r) => r.arrayBuffer())
+          .then((b) => audioContext.decodeAudioData(b)),
+        selectedMusic !== "none"
+          ? fetch(`/sounds/${selectedMusic}.mp3`)
+              .then((r) => {
+                if (!r.ok) throw new Error("Failed to load background music");
+                return r.arrayBuffer();
+              })
+              .then((b) => audioContext.decodeAudioData(b))
+              .catch((e) => {
+                console.error("Error loading music:", e);
+                return null;
+              })
+          : Promise.resolve(null),
+      ]);
+
+      // Create meditation audio source
+      const meditationSource = audioContext.createBufferSource();
+      meditationSource.buffer = meditationBuffer;
+
+      // Create music source if available
+      let musicSource: AudioBufferSourceNode | null = null;
+      if (musicBuffer) {
+        musicSource = audioContext.createBufferSource();
+        musicSource.buffer = musicBuffer;
+        musicSource.loop = true;
+
+        const musicGain = audioContext.createGain();
+        musicGain.gain.value = 0.3; // Lower volume for background
+
+        musicSource.connect(musicGain);
+        musicGain.connect(audioContext.destination);
+      }
+
+      // Connect meditation audio to destination
+      meditationSource.connect(audioContext.destination);
+
+      // Start playback
+      const startTime = audioContext.currentTime + 0.1; // Small delay to ensure everything is ready
+      if (musicSource) musicSource.start(startTime);
+      meditationSource.start(startTime);
+
+      // Return cleanup function
+      return () => {
+        try {
+          meditationSource.stop();
+          if (musicSource) musicSource.stop();
+          audioContext.close();
+        } catch (e) {
+          console.error("Error cleaning up audio:", e);
+        }
+      };
+    } catch (error) {
+      console.error("Error in playMeditationWithMusic:", error);
+      toast.error("Failed to play meditation with background music");
+      return () => {}; // Return empty cleanup function
+    }
+  };
+  // Toggle play/pause for audio
+  const togglePlayPause = async () => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
@@ -70,15 +181,27 @@ const AIMeditationGenerator: React.FC = () => {
         clearInterval(progressInterval.current);
       }
     } else {
-      audioRef.current.play().catch((e) => {
+      try {
+        // If we have a cleanup function, we're using the Web Audio API
+        if (generatedMeditation?.cleanupAudio) {
+          // The audio is already playing through Web Audio API
+          // Just update the UI state
+          setIsPlaying(true);
+          startProgressTimer();
+        } else {
+          // Fallback to regular audio element
+          await audioRef.current.play();
+          startProgressTimer();
+        }
+      } catch (e) {
         console.error("Error playing audio:", e);
         toast.error("Failed to play audio. Please try again.");
-      });
-      startProgressTimer();
+      }
     }
     setIsPlaying(!isPlaying);
   };
 
+  // Update progress bar
   const startProgressTimer = () => {
     if (progressInterval.current) {
       clearInterval(progressInterval.current);
@@ -102,64 +225,122 @@ const AIMeditationGenerator: React.FC = () => {
     }, 100);
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (isGenerating) return;
+
+    // Get the selected voice details
+    const selectedVoiceDetails = VOICE_OPTIONS.find((voice) => voice.id === selectedVoice);
+    console.log("Selected voice details:", selectedVoiceDetails);
+
+    // Create voice style prompt
+    const voiceStylePrompt = selectedVoiceDetails ? `Please use a ${selectedVoiceDetails.style} voice tone. ` : "";
+
+    console.log("Starting meditation generation...");
+    console.log("Selected voice ID:", selectedVoice);
+    console.log("Selected language:", selectedLanguage);
+    console.log("Selected music:", selectedMusic);
 
     setIsGenerating(true);
 
     try {
       const toastId = toast.loading("Generating your meditation...");
 
-      try {
-        const result = await generateMeditation(meditationType, duration, additionalDetails, currentUser.uid);
-        console.log("RESULT", result);
-        setGeneratedMeditation(result);
+      const result = await generateMeditation(
+        meditationType,
+        duration,
+        selectedLanguage,
+        selectedVoice,
+        currentUser.uid
+      );
+      console.log("RESULT", result);
+      setGeneratedMeditation(result);
 
-        // If audio is being generated, show a different message
-        if (!result?.audioUrl) {
-          toast.update(toastId, {
-            render: "Meditation generated! (Audio generation skipped - check console for details)",
-            type: "info",
-            isLoading: false,
-            autoClose: 5000,
-          });
-        } else {
-          toast.update(toastId, {
-            render: "Meditation generated successfully!",
-            type: "success",
-            isLoading: false,
-            autoClose: 3000,
-          });
-        }
-
-        // Scroll to the generated content
-        setTimeout(() => {
-          const element = document.getElementById("generated-content");
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 100);
-      } catch (error) {
-        console.error("Error in meditation generation:", error);
+      // If audio is being generated, show a different message
+      if (!result?.audioUrl) {
         toast.update(toastId, {
-          render: "Failed to generate meditation",
-          type: "error",
+          render: "Meditation generated! (Audio generation skipped - check console for details)",
+          type: "info",
           isLoading: false,
           autoClose: 5000,
         });
+      } else {
+        toast.update(toastId, {
+          render: "Meditation generated successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
-    } finally {
-      setIsGenerating(false);
+
+      // Scroll to the generated content
+      setTimeout(() => {
+        const element = document.getElementById("generated-content");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } catch (error) {
+      console.error("Error in meditation generation:", error);
+      toast.update(toastId, {
+        render: "Failed to generate meditation",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
+
+      const result = await generateMeditation(
+        meditationType,
+        parseInt(duration, 10),
+        selectedLanguage,
+        voiceStylePrompt
+      );
+
+      console.log("Meditation text generated successfully");
+
+      // Generate audio with selected voice
+      console.log("Generating audio with voice ID:", selectedVoice);
+      setIsAudioGenerating(true);
+
+      try {
+        const audioUrl = await convertTextToSpeech(result.content, selectedVoice);
+        console.log("Audio generation complete");
+
+        // Create a blob URL for the audio
+        const response = await fetch(audioUrl);
+        const audioBlob = await response.blob();
+        const audioBlobUrl = URL.createObjectURL(audioBlob);
+
+        // Play the meditation with background music
+        const cleanup = await playMeditationWithMusic(audioBlobUrl);
+
+        // Update result with generated audio and cleanup function
+        const resultWithAudio = {
+          ...result,
+          audioUrl: audioBlobUrl,
+          cleanupAudio: cleanup,
+        };
+
+        setGeneratedMeditation(resultWithAudio);
+        toast.success("Meditation generated successfully!");
+      } catch (audioError) {
+        console.error("Error generating audio:", audioError);
+        toast.error("Failed to generate audio. Please try again.");
+        throw audioError;
+      } finally {
+        toast.dismiss(toastId);
+        setIsAudioGenerating(false);
+      }
     }
   };
 
+  // Save meditation to dashboard
   const handleSaveToDashboard = async () => {
     if (!generatedMeditation) return;
 
     try {
-      // Convert the blob URL to a data URL if it exists
+      // Convert blob URL to data URL if it exists
       let audioDataUrl = generatedMeditation.audioUrl;
 
       if (audioDataUrl && audioDataUrl.startsWith("blob:")) {
@@ -185,7 +366,7 @@ const AIMeditationGenerator: React.FC = () => {
       }
 
       const newMeditation = {
-        id: Date.now(), // Use timestamp as ID instead of UUID for simplicity
+        id: Date.now(),
         title: generatedMeditation.title,
         audioUrl: audioDataUrl,
         type: "meditation" as const,
@@ -209,6 +390,27 @@ const AIMeditationGenerator: React.FC = () => {
     }
   };
 
+  // Handle music playback when selection changes
+  useEffect(() => {
+    if (musicAudioRef.current) {
+      musicAudioRef.current.pause();
+      musicAudioRef.current = null;
+    }
+
+    if (selectedMusic !== "none") {
+      // In a real app, you would load the actual music file here
+      // For now, we'll just log the selection
+      console.log("Selected music:", selectedMusic);
+
+      // Example of how you might play the music:
+      // const audio = new Audio(`/sounds/${selectedMusic}.mp3`);
+      // audio.loop = true;
+      // audio.volume = 0.3; // Lower volume for background music
+      // audio.play();
+      // musicAudioRef.current = audio;
+    }
+  }, [selectedMusic]);
+
   return (
     <div className='min-h-screen bg-gradient-to-b from-gray-900 to-black text-white pt-24 pb-12 px-4'>
       <div className='container mx-auto max-w-4xl'>
@@ -220,6 +422,7 @@ const AIMeditationGenerator: React.FC = () => {
           <h2 className='text-2xl font-semibold mb-6 text-amber-400'>Create Your Custom Meditation</h2>
 
           <form onSubmit={handleSubmit} className='space-y-6'>
+            {/* Meditation Type Selection */}
             <div>
               <label htmlFor='meditationType' className='block text-sm font-medium text-gray-300 mb-2'>
                 Meditation Type
@@ -241,6 +444,74 @@ const AIMeditationGenerator: React.FC = () => {
               </select>
             </div>
 
+            {/* Language Selection */}
+            <div>
+              <label htmlFor='language' className='block text-sm font-medium text-gray-300 mb-2'>
+                Language
+              </label>
+              <select
+                id='language'
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
+                disabled={isGenerating}
+              >
+                {languageOptions.map((lang) => (
+                  <option key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Voice Selection */}
+            <div>
+              <label htmlFor='voiceType' className='block text-sm font-medium text-gray-300 mb-2'>
+                Voice
+              </label>
+              <select
+                id='voiceType'
+                value={selectedVoice}
+                onChange={(e) => setSelectedVoice(e.target.value)}
+                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
+                disabled={isGenerating || filteredVoices.length === 0}
+              >
+                {filteredVoices.length === 0 ? (
+                  <option value=''>
+                    No voices available for{" "}
+                    {languageOptions.find((lang) => lang.value === selectedLanguage)?.label || "selected language"}
+                  </option>
+                ) : (
+                  filteredVoices.map((voice) => (
+                    <option key={voice.id} value={voice.id}>
+                      {voice.name} - {voice.gender} ({voice.style})
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+
+            {/* Music Selection */}
+            <div>
+              <label htmlFor='musicType' className='block text-sm font-medium text-gray-300 mb-2'>
+                Background Music (Optional)
+              </label>
+              <select
+                id='musicType'
+                value={selectedMusic}
+                onChange={(e) => setSelectedMusic(e.target.value)}
+                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
+                disabled={isGenerating}
+              >
+                {musicOptions.map((music) => (
+                  <option key={music.value} value={music.value}>
+                    {music.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Duration Slider */}
             <div>
               <label className='block text-sm font-medium text-gray-300 mb-2'>
                 Duration: {formatTime(parseInt(duration))}
@@ -270,21 +541,7 @@ const AIMeditationGenerator: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <label htmlFor='additionalDetails' className='block text-sm font-medium text-gray-300 mb-2'>
-                Additional Details (Optional)
-              </label>
-              <textarea
-                id='additionalDetails'
-                value={additionalDetails}
-                onChange={(e) => setAdditionalDetails(e.target.value)}
-                placeholder='Any specific focus, mood, or intention for your meditation...'
-                rows={3}
-                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
-                disabled={isGenerating}
-              />
-            </div>
-
+            {/* Generate Button */}
             <div className='flex justify-center'>
               <button
                 type='submit'
@@ -327,6 +584,7 @@ const AIMeditationGenerator: React.FC = () => {
           </form>
         </div>
 
+        {/* Generated Content */}
         {generatedMeditation && (
           <div
             id='generated-content'
@@ -360,6 +618,7 @@ const AIMeditationGenerator: React.FC = () => {
               <p className='whitespace-pre-line text-gray-200 leading-relaxed'>{generatedMeditation.content}</p>
             </div>
 
+            {/* Audio Player */}
             {generatedMeditation?.audioUrl && (
               <div className='mt-8 bg-gray-700 bg-opacity-50 rounded-xl p-4 border border-gray-600'>
                 <div className='flex items-center mb-4'>
