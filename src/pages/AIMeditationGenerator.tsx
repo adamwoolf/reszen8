@@ -243,10 +243,9 @@ const AIMeditationGenerator: React.FC = () => {
     console.log("Selected music:", selectedMusic);
 
     setIsGenerating(true);
+    const toastId = toast.loading("Generating your meditation...");
 
     try {
-      const toastId = toast.loading("Generating your meditation...");
-
       const result = await generateMeditation(
         meditationType,
         duration,
@@ -292,9 +291,10 @@ const AIMeditationGenerator: React.FC = () => {
 
       const result = await generateMeditation(
         meditationType,
-        parseInt(duration, 10),
+        duration,
         selectedLanguage,
-        voiceStylePrompt
+        voiceStylePrompt,
+        currentUser.uid
       );
 
       console.log("Meditation text generated successfully");
