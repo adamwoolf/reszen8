@@ -20,16 +20,16 @@ const Meditations: React.FC = () => {
           <div className='category-intro' dangerouslySetInnerHTML={{ __html: marked(content?.text) }} />
         )}
 
-        <div className='feature-grid'>
+        {/* <div className='feature-grid'>
           {content?.option
-            ?.filter((o) => !o.fields.isDigital)
+            ?.filter((o) => !o?.fields?.isDigital)
             .map(({ fields }) => (
               <div className='feature-item'>
                 <h3>{fields.title}</h3>
                 <p>{fields.description}</p>
               </div>
             ))}
-        </div>
+        </div> */}
 
         <div className='digital-features'>
           <h2>{content?.digitalResourcesTitle}</h2>
@@ -37,7 +37,7 @@ const Meditations: React.FC = () => {
 
           <div className='feature-grid'>
             {content?.option
-              ?.filter((o) => o.fields.isDigital)
+              ?.filter((o) => o?.fields?.isDigital)
               .map(({ fields }) => (
                 <div className='feature-item'>
                   <h3>{fields.title}</h3>

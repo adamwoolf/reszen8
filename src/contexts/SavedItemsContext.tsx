@@ -89,7 +89,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
     } else {
-      console.log("bollocls");
       addOrUpdate(currentUser.firebaseId, {
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [item] },

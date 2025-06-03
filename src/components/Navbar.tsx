@@ -72,25 +72,25 @@ const Navbar: React.FC = () => {
                   RESZEN8 Chat
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink to='/apparel' className={getNavLinkClass}>
                   Apparel & Accessories
                 </NavLink>
-              </li>
+              </li> */}
 
-              <li>
+              {/* <li>
                 <NavLink to='/guided-meditations' className={getNavLinkClass}>
                   Meditation Hub
                 </NavLink>
-              </li>
+              </li> */}
 
               {currentUser && (
                 <>
-                  <li>
+                  {/* <li>
                     <NavLink to='/members' className={getNavLinkClass}>
-                      Members Area
+                      Members Management
                     </NavLink>
-                  </li>
+                  </li> */}
                   <li>
                     <NavLink to='/ai-meditation-generator' className={getNavLinkClass}>
                       AI Meditation Generator
@@ -106,11 +106,11 @@ const Navbar: React.FC = () => {
                       My Dashboard
                     </NavLink>
                   </li>
-                  <li>
+                  {/* <li>
                     <NavLink to='/members' className={getNavLinkClass}>
                       Account Management
                     </NavLink>
-                  </li>
+                  </li> */}
                 </>
               )}
             </ul>
@@ -154,9 +154,9 @@ const Navbar: React.FC = () => {
           <div className='user-items'>
             <span className='user-address'>{currentUser.email}</span>
             <div className=''>
-              <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
+              {/* <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
                 My Account
-              </NavLink>
+              </NavLink> */}
               <button className='user-address' onClick={handleLogout}>
                 Logout
               </button>

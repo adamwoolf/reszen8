@@ -104,8 +104,8 @@ const Memberships: React.FC = () => {
         <div className='faq-grid'>
           {faqs?.map(({ fields }: { fields: { item: { question: string; answer: string } } }) => (
             <div className='faq-item'>
-              <h3>{fields.item?.question}</h3>
-              <p>{fields.item?.answer}</p>
+              <h3>{fields?.question}</h3>
+              <p>{fields?.answer}</p>
             </div>
           ))}
         </div>

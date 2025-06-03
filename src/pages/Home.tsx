@@ -18,9 +18,7 @@ const Home: React.FC = () => {
           {content?.tagline && <p className='mission-tagline'>{content?.tagline}</p>}
         </div>
       </section>
-      <div className='carousel-container'>
-        <PillarsCarousel />
-      </div>
+      {/* <div className='carousel-container'><PillarsCarousel /></div> */}
     </div>
   );
 };
