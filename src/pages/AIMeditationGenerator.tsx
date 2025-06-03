@@ -13,6 +13,7 @@ interface MeditationState {
   audioUrl?: string;
   cleanupAudio?: () => void; // Add this line
 }
+
 const AIMeditationGenerator: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("mindfulness");
@@ -27,7 +28,9 @@ const AIMeditationGenerator: React.FC = () => {
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser } = useAuth();
   console.log(currentUser);
-  const [selectedMusic, setSelectedMusic] = useState<string>("none");
+  const [selectedMusic, setSelectedMusic] = useState<string>('none');
+  const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -60,13 +63,41 @@ const AIMeditationGenerator: React.FC = () => {
   ];
 
   const musicOptions = [
-    { value: "none", label: "No background music" },
-    { value: "ambient", label: "Ambient Soundscape" },
-    { value: "rain", label: "Gentle Rain" },
-    { value: "ocean", label: "Ocean Waves" },
-    { value: "forest", label: "Forest Sounds" },
-    { value: "singing-bowl", label: "Singing Bowls" },
-    { value: "white-noise", label: "White Noise" },
+    {
+      value: 'none',
+      label: 'No background music',
+      url: ''
+    },
+    {
+      value: 'ambient',
+      label: 'Ambient Soundscape',
+      url: 'https://assets.mixkit.co/active_storage/sfx/2585/2585-preview.mp3' // Calm ambient music
+    },
+    {
+      value: 'rain',
+      label: 'Gentle Rain',
+      url: 'https://assets.mixkit.co/active_storage/sfx/161/161-preview.mp3' // Rain sound
+    },
+    {
+      value: 'ocean',
+      label: 'Ocean Waves',
+      url: 'https://assets.mixkit.co/active_storage/sfx/80/80-preview.mp3' // Ocean waves
+    },
+    {
+      value: 'forest',
+      label: 'Forest Sounds',
+      url: 'https://assets.mixkit.co/active_storage/sfx/2583/2583-preview.mp3' // Forest ambiance
+    },
+    {
+      value: 'singing-bowl',
+      label: 'Singing Bowls',
+      url: 'https://assets.mixkit.co/active_storage/sfx/2587/2587-preview.mp3' // Singing bowl
+    },
+    {
+      value: 'white-noise',
+      label: 'White Noise',
+      url: 'https://assets.mixkit.co/active_storage/sfx/80/80-preview.mp3' // White noise
+    }
   ];
 
   // Get filtered voices based on selected language
@@ -102,32 +133,119 @@ const AIMeditationGenerator: React.FC = () => {
       if (progressInterval.current) {
         clearInterval(progressInterval.current);
       }
+      if (previewAudio) {
+        previewAudio.pause();
+      }
     };
-  }, [generatedMeditation]);
+  }, [generatedMeditation, previewAudio]);
+
+  useEffect(() => {
+    const testMusicUrls = async () => {
+      for (const music of musicOptions) {
+        if (music.value !== 'none' && music.url) {
+          try {
+            const response = await fetch(music.url, { method: 'HEAD' });
+            console.log(`Music ${music.label} (${music.url}):`, response.ok ? '✅ Accessible' : '❌ Not accessible');
+          } catch (error) {
+            console.error(`Error accessing ${music.label}:`, error);
+          }
+        }
+      }
+    };
+    
+    testMusicUrls();
+  }, []);
+
+  const handleMusicChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedMusic(value);
+    
+    // Stop any currently playing preview
+    if (previewAudio) {
+      previewAudio.pause();
+      setPreviewAudio(null);
+      setIsMusicPlaying(false);
+    }
+    
+    // Play preview of selected music
+    if (value !== 'none') {
+      const music = musicOptions.find(m => m.value === value);
+      if (music?.url) {
+        try {
+          const audio = new Audio(music.url);
+          audio.volume = 0.3;
+          audio.loop = true;
+          await audio.play();
+          setPreviewAudio(audio);
+          setIsMusicPlaying(true);
+        } catch (error) {
+          console.error('Error playing music preview:', error);
+          toast.error('Failed to play music preview');
+        }
+      }
+    }
+  };
 
   const playMeditationWithMusic = async (meditationAudioUrl: string) => {
-    try {
-      // Create audio context
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    console.log('Starting playMeditationWithMusic with:', { meditationAudioUrl, selectedMusic });
+    
+    // Stop any preview that might be playing
+    if (previewAudio) {
+      previewAudio.pause();
+      setPreviewAudio(null);
+      setIsMusicPlaying(false);
+    }
 
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('AudioContext created');
+      
       // Load meditation audio
       const [meditationBuffer, musicBuffer] = await Promise.all([
         fetch(meditationAudioUrl)
-          .then((r) => r.arrayBuffer())
-          .then((b) => audioContext.decodeAudioData(b)),
-        selectedMusic !== "none"
-          ? fetch(`/sounds/${selectedMusic}.mp3`)
-              .then((r) => {
-                if (!r.ok) throw new Error("Failed to load background music");
-                return r.arrayBuffer();
-              })
-              .then((b) => audioContext.decodeAudioData(b))
-              .catch((e) => {
-                console.error("Error loading music:", e);
-                return null;
-              })
-          : Promise.resolve(null),
+          .then(r => {
+            console.log('Fetched meditation audio, status:', r.status);
+            return r.arrayBuffer();
+          })
+          .then(b => {
+            console.log('Decoding meditation audio');
+            return audioContext.decodeAudioData(b);
+          }),
+        (async () => {
+          if (selectedMusic === 'none') {
+            console.log('No background music selected');
+            return null;
+          }
+          
+          const music = musicOptions.find(m => m.value === selectedMusic);
+          console.log('Selected music:', music);
+          
+          if (!music?.url) {
+            console.log('No music URL found');
+            return null;
+          }
+          
+          try {
+            console.log('Fetching music from:', music.url);
+            const response = await fetch(music.url);
+            console.log('Music fetch response status:', response.status);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const buffer = await response.arrayBuffer();
+            console.log('Decoding music buffer');
+            return audioContext.decodeAudioData(buffer);
+          } catch (e) {
+            console.error('Error loading music:', e);
+            toast.error('Failed to load background music');
+            return null;
+          }
+        })()
       ]);
+
+      console.log('Audio buffers loaded', { 
+        meditationBuffer: !!meditationBuffer, 
+        musicBuffer: !!musicBuffer 
+      });
 
       // Create meditation audio source
       const meditationSource = audioContext.createBufferSource();
@@ -151,13 +269,18 @@ const AIMeditationGenerator: React.FC = () => {
       meditationSource.connect(audioContext.destination);
 
       // Start playback
-      const startTime = audioContext.currentTime + 0.1; // Small delay to ensure everything is ready
-      if (musicSource) musicSource.start(startTime);
+      const startTime = audioContext.currentTime + 0.1;
+      if (musicSource) {
+        musicSource.start(startTime);
+        console.log('Started music playback');
+      }
       meditationSource.start(startTime);
-
+      console.log('Started meditation playback');
+      
       // Return cleanup function
       return () => {
         try {
+          console.log('Cleaning up audio');
           meditationSource.stop();
           if (musicSource) musicSource.stop();
           audioContext.close();
@@ -171,6 +294,7 @@ const AIMeditationGenerator: React.FC = () => {
       return () => {}; // Return empty cleanup function
     }
   };
+
   // Toggle play/pause for audio
   const togglePlayPause = async () => {
     if (!audioRef.current) return;
@@ -499,7 +623,7 @@ const AIMeditationGenerator: React.FC = () => {
               <select
                 id='musicType'
                 value={selectedMusic}
-                onChange={(e) => setSelectedMusic(e.target.value)}
+                onChange={handleMusicChange}
                 className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
                 disabled={isGenerating}
               >
@@ -509,8 +633,29 @@ const AIMeditationGenerator: React.FC = () => {
                   </option>
                 ))}
               </select>
+              {selectedMusic !== 'none' && (
+                <button
+                  onClick={async () => {
+                    const music = musicOptions.find(m => m.value === selectedMusic);
+                    if (music?.url) {
+                      try {
+                        const audio = new Audio(music.url);
+                        audio.volume = 0.5;
+                        await audio.play();
+                        toast.success('Music playback successful!');
+                      } catch (e) {
+                        console.error('Test play failed:', e);
+                        toast.error('Failed to play music: ' + (e instanceof Error ? e.message : String(e)));
+                      }
+                    }
+                  }}
+                  className="mt-2 w-full px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors"
+                  type="button"
+                >
+                  {isMusicPlaying ? ' Music Playing...' : ' Test Music Playback'}
+                </button>
+              )}
             </div>
-
             {/* Duration Slider */}
             <div>
               <label className='block text-sm font-medium text-gray-300 mb-2'>

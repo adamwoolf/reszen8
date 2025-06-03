@@ -64,6 +64,28 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
 
+  const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
+
+  useEffect(() => {
+    if (meditations && currentUser) {
+      const medArray = Object.values(meditations);
+
+      setSavedItems({
+        ebooks: savedItems.ebooks,
+        publications: savedItems.publications,
+        meditations: currentUser?.savedItems?.meditations || [],
+      });
+    }
+  }, [meditations, currentUser]);
+
+  console.log("SAVED", savedItems);
+
+  // Save to localStorage whenever savedItems changes - do this
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
+    // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
+  }, [savedItems]);
+  console.log("current", currentUser);
   const addItem = (item: ItemType) => {
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
