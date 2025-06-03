@@ -36,9 +36,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     // MOVE THIS TO USER CONTEXT
     if (users && currentUser) {
       const allDetails = Object.values(users).find((u) => u.email === currentUser.email);
-      console.log(users);
-      console.log(currentUser);
-      console.log(allDetails);
       setCurrentUser({ ...currentUser, ...allDetails });
     }
   }, [users]);
@@ -58,15 +55,13 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   console.log("SAVED", savedItems);
 
   // Save to localStorage whenever savedItems changes - do this
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
-    // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
-  }, [savedItems]);
+  // useEffect(() => {
+  //   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
+  //   // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
+  // }, [savedItems]);
 
   useEffect(() => {
     if (meditations && currentUser) {
-      const medArray = Object.values(meditations);
-
       setSavedItems({
         ebooks: savedItems.ebooks,
         publications: savedItems.publications,
@@ -82,15 +77,24 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
+
   console.log("current", currentUser);
   const addItem = (item: ItemType) => {
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
     if (itemExists) return;
-    addOrUpdate(currentUser.firebaseId, {
-      ...currentUser,
-      savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
-    });
+    if (currentUser.savedItems) {
+      addOrUpdate(currentUser.firebaseId, {
+        ...currentUser,
+        savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
+      });
+    } else {
+      console.log("bollocls");
+      addOrUpdate(currentUser.firebaseId, {
+        ...currentUser,
+        savedItems: { ...currentUser?.savedItems, [itemType]: [item] },
+      });
+    }
     // Check if item already exists
 
     // if (!itemExists) {
