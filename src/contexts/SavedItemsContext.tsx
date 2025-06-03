@@ -30,6 +30,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   const { data: meditations } = useFirebasedatabase("meditations");
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const { currentUser, setCurrentUser } = useAuth();
+  const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
 
   useEffect(() => {
     // MOVE THIS TO USER CONTEXT
@@ -41,8 +42,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       setCurrentUser({ ...currentUser, ...allDetails });
     }
   }, [users]);
-
-  const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
 
   useEffect(() => {
     if (meditations && currentUser) {
@@ -63,8 +62,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
-
-  const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
 
   useEffect(() => {
     if (meditations && currentUser) {
