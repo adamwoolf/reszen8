@@ -9,6 +9,7 @@ interface Pillar {
   title: string;
   description: string;
   path: string;
+  icon?: string;
 }
 
 const PillarsCarousel: React.FC = () => {
@@ -114,6 +115,10 @@ const PillarsCarousel: React.FC = () => {
             tabIndex={0}
           >
             <div className='pillar-content'>
+              {/* Add icon if available */}
+              {pillar.fields.icon && (
+                <div className="pillar-icon" dangerouslySetInnerHTML={{ __html: pillar.fields.icon }} />
+              )}
               <h3>{pillar.fields.title}</h3>
               <p>{pillar.fields.description}</p>
               <button className='explore-button'>Explore {pillar.fields.title}</button>

@@ -59,9 +59,31 @@
   margin: 0 auto;
 }
 
-/* Hover effect removed */
+.pillar-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  color: #FFA500; /* Orange color to match the theme */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 165, 0, 0.1);
+  transition: all 0.3s ease;
+}
 
+.pillar-icon svg {
+  width: 40px;
+  height: 40px;
+  fill: currentColor;
+}
 
+/* Hover effect for the icon */
+.pillar-content:hover .pillar-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+}
 
 .pillar-content h3 {
   font-size: 2.2rem;
