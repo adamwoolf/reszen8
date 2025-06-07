@@ -29,14 +29,15 @@ type AxiosErrorWithResponse = Error & {
  * @param type Type of meditation (e.g., 'mindfulness', 'sleep')
  * @param duration Duration in seconds
  * @param language Language code (e.g., 'en', 'es', 'fr')
- * @param voiceStyle Voice style and language instructions
+ * @param voiceId The ID of the voice to use for text-to-speech
+ * @param userId User ID for tracking
  * @returns Promise with generated meditation content
  */
 export const generateMeditation = async (
   meditationType: string,
   duration: string,
   language: string = "en",
-  voiceStyle: string = "",
+  voiceId: string = ELEVENLABS_VOICE_ID, // Use provided voice ID or fallback to default
   userId: string
 ): Promise<{ title: string; content: string; audioUrl: string; downloadLink: string }> => {
   try {
@@ -60,7 +61,7 @@ export const generateMeditation = async (
           {
             role: "system",
             content:
-              `You are an AI meditation guide. Create a guided meditation script in ${languageName} based on the following parameters. ${voiceStyle} ` +
+              `You are an AI meditation guide. Create a guided meditation script in ${languageName}. ` +
               "The meditation should flow naturally and be suitable for the specified duration. " +
               'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
               "The response must be valid JSON with no additional text before or after the JSON object. " +
@@ -87,13 +88,6 @@ export const generateMeditation = async (
     const content = response.data.choices[0].message.content.trim();
 
     let meditationData: Omit<MeditationResponse, "audioUrl">;
-    // if (!response.data.choices || !response.data.choices[0].message) {
-    //   console.error('OpenAI API Error:', response.data);
-    //   throw new Error('Failed to generate meditation');
-    // }
-
-    // Parse the response content as JSON
-    let result;
 
     try {
       meditationData = JSON.parse(content);
@@ -104,30 +98,9 @@ export const generateMeditation = async (
       };
     }
 
-    // STEP 2a: Generate audio from script via Amazon Polly
-    // const polly = new PollyClient({
-    //   region: AWS_REGION,
-    //   credentials: {
-    //     accessKeyId: AWS_ACCESS_KEY_ID,
-    //     secretAccessKey: AWS_SECRET_ACCESS_KEY,
-    //   },
-    // });
-
-    // const synthCommand = new SynthesizeSpeechCommand({
-    //   Text: meditationData.content,
-    //   OutputFormat: "mp3",
-    //   VoiceId: "Joanna", // Change voice if needed
-    // });
-
-    // const audioData = await polly.send(synthCommand);
-    // if (!audioData.AudioStream) {
-    //   throw new Error("No audio data returned from Polly");
-    // }
-    // POLLY ENDS HERE
-
-    // STEP 2: Generate audio from script via ElevenLabs
+    // Generate audio from script via ElevenLabs using the provided voiceId
     const audioResponse = await axios.post(
-      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, // Use the provided voiceId
       {
         text: meditationData.content,
         model_id: "eleven_monolingual_v1",
@@ -148,7 +121,6 @@ export const generateMeditation = async (
     if (!audioResponse.data) {
       throw new Error("No audio data received from ElevenLabs");
     }
-    // ELEVENLABS ends here
     const audioBlob = new Blob([audioResponse.data], { type: "audio/mp3" });
     const reader = new FileReader();
 

@@ -61,14 +61,15 @@ const Home: React.FC = () => {
     <div className='home-page'>
       <section className='mission-statement'>
         <div className='mission-content'>
-          <h2>{content?.title}</h2>
-          {content?.description && (
-            <p className='mission-text' dangerouslySetInnerHTML={{ __html: marked(content?.description) }} />
-          )}
-          {content?.tagline && <p className='mission-tagline'>{content?.tagline}</p>}
+          <h2>Our Mission</h2>
+          <div className="mission-text">
+            <p>At RESZEN8, we believe that meditation should meet you where you are, whether you're seeking a moment of calm between meetings, a deeper connection to yourself, or simply a better night's sleep. Our mission is to make mindfulness more accessible, personal, and sustainable in the digital age.</p>
+            <p>Through our custom-built platform, we offer more than just meditations, we offer meaningful tools for modern life. Our Digital Meditation Library is filled with sessions for every mood and moment, from relaxation to deep focus. The AI Meditation Generator creates personalised experiences that adapt to your needs, while your Personalised Dashboard keeps everything in one serene, simple place, your journey, your way.</p>
+            <p>In a world that constantly demands more, RESZEN8 is here to help you slow down, tune in, and find your rhythm again. Because balance isn't a luxury, it's a necessity.</p>
+          </div>
         </div>
       </section>
-      
+
       <section className="features-section">
         <h2 className="features-title">Our Digital Meditation Product</h2>
         <motion.div 

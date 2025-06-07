@@ -6,12 +6,13 @@ import { generateMeditation } from "../services/aiMeditationService";
 import { convertTextToSpeech, VOICE_OPTIONS } from "../services/ttsService";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
+import "./AIMeditationGenerator.css";
 
 interface MeditationState {
   title: string;
   content: string;
   audioUrl?: string;
-  cleanupAudio?: () => void; // Add this line
+  cleanupAudio?: () => void;
 }
 
 const AIMeditationGenerator: React.FC = () => {
@@ -38,7 +39,7 @@ const AIMeditationGenerator: React.FC = () => {
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Hooks
-  const { addItem } = useSavedItems();
+  const { addItem, savedItems } = useSavedItems();
   const navigate = useNavigate();
 
   // Constants
@@ -51,7 +52,7 @@ const AIMeditationGenerator: React.FC = () => {
     { value: "loving-kindness", label: "Loving-Kindness" },
   ];
 
-  const durations = ["5", "10", "15", "30", "60", "120", "300"];
+  const durations = ["5", "10"];
 
   const languageOptions = [
     { value: "en", label: "English" },
@@ -110,14 +111,11 @@ const AIMeditationGenerator: React.FC = () => {
     }
   }, [selectedLanguage, filteredVoices]);
 
-  // Format time for display
-  const formatTime = (seconds: number) => {
-    if (seconds < 60) {
-      return `${seconds} sec`;
-    }
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return secs === 0 ? `${mins} min` : `${mins}m ${secs}s`;
+  // Format time in seconds to MM:SS
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   // Clean up on unmount
@@ -333,9 +331,12 @@ const AIMeditationGenerator: React.FC = () => {
 
     progressInterval.current = setInterval(() => {
       if (audioRef.current) {
-        const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+        const currentTime = audioRef.current.currentTime;
+        const duration = audioRef.current.duration || parseInt(duration) * 1000; // Fallback to selected duration if duration is not available
+        const currentProgress = (currentTime / duration) * 100;
+        
         setProgress(isNaN(currentProgress) ? 0 : currentProgress);
-        setCurrentTime(audioRef.current.currentTime);
+        setCurrentTime(currentTime);
 
         if (audioRef.current.ended) {
           setIsPlaying(false);
@@ -358,8 +359,16 @@ const AIMeditationGenerator: React.FC = () => {
     const selectedVoiceDetails = VOICE_OPTIONS.find((voice) => voice.id === selectedVoice);
     console.log("Selected voice details:", selectedVoiceDetails);
 
-    // Create voice style prompt
-    const voiceStylePrompt = selectedVoiceDetails ? `Please use a ${selectedVoiceDetails.style} voice tone. ` : "";
+    // Reset any existing meditation
+    setGeneratedMeditation(null);
+    setIsPlaying(false);
+    setProgress(0);
+    setCurrentTime(0);
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
 
     console.log("Starting meditation generation...");
     console.log("Selected voice ID:", selectedVoice);
@@ -374,143 +383,89 @@ const AIMeditationGenerator: React.FC = () => {
         meditationType,
         duration,
         selectedLanguage,
-        selectedVoice,
-        currentUser.uid
+        selectedVoice, // Pass the selected voice ID
+        currentUser?.uid || 'anonymous'
       );
-      console.log("RESULT", result);
-      setGeneratedMeditation(result);
-
-      // If audio is being generated, show a different message
-      if (!result?.audioUrl) {
-        toast.update(toastId, {
-          render: "Meditation generated! (Audio generation skipped - check console for details)",
-          type: "info",
-          isLoading: false,
-          autoClose: 5000,
-        });
-      } else {
-        toast.update(toastId, {
-          render: "Meditation generated successfully!",
-          type: "success",
-          isLoading: false,
-          autoClose: 3000,
-        });
+      
+      console.log("Meditation generation result:", result);
+      
+      if (!result) {
+        throw new Error("Failed to generate meditation");
       }
+
+      // Ensure we have the required data
+      if (!result.title || !result.content) {
+        throw new Error("Incomplete meditation data received");
+      }
+
+      // Update the state with the new meditation
+      setGeneratedMeditation({
+        title: result.title,
+        content: result.content,
+        audioUrl: result.audioUrl
+      });
+
+      // Show success message
+      toast.update(toastId, {
+        render: "Meditation generated successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
 
       // Scroll to the generated content
       setTimeout(() => {
-        const element = document.getElementById("generated-content");
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
+        const resultsElement = document.querySelector('.results-container');
+        if (resultsElement) {
+          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
+
     } catch (error) {
-      console.error("Error in meditation generation:", error);
+      console.error("Error generating meditation:", error);
       toast.update(toastId, {
-        render: "Failed to generate meditation",
+        render: "Failed to generate meditation. Please try again.",
         type: "error",
         isLoading: false,
         autoClose: 5000,
       });
-
-      const result = await generateMeditation(
-        meditationType,
-        duration,
-        selectedLanguage,
-        voiceStylePrompt,
-        currentUser.uid
-      );
-
-      console.log("Meditation text generated successfully");
-
-      // Generate audio with selected voice
-      console.log("Generating audio with voice ID:", selectedVoice);
-      setIsAudioGenerating(true);
-
-      try {
-        const audioUrl = await convertTextToSpeech(result.content, selectedVoice);
-        console.log("Audio generation complete");
-
-        // Create a blob URL for the audio
-        const response = await fetch(audioUrl);
-        const audioBlob = await response.blob();
-        const audioBlobUrl = URL.createObjectURL(audioBlob);
-
-        // Play the meditation with background music
-        const cleanup = await playMeditationWithMusic(audioBlobUrl);
-
-        // Update result with generated audio and cleanup function
-        const resultWithAudio = {
-          ...result,
-          audioUrl: audioBlobUrl,
-          cleanupAudio: cleanup,
-        };
-
-        setGeneratedMeditation(resultWithAudio);
-        toast.success("Meditation generated successfully!");
-      } catch (audioError) {
-        console.error("Error generating audio:", audioError);
-        toast.error("Failed to generate audio. Please try again.");
-        throw audioError;
-      } finally {
-        toast.dismiss(toastId);
-        setIsAudioGenerating(false);
-      }
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  // Save meditation to dashboard
-  const handleSaveToDashboard = async () => {
-    if (!generatedMeditation) return;
+  // Handle saving to dashboard
+  const handleSaveToDashboard = () => {
+    if (!generatedMeditation || !currentUser) return;
+    
+    const newItem = {
+      id: Date.now(),
+      title: generatedMeditation.title,
+      type: "meditation" as const,
+      duration: duration,
+      savedDate: new Date().toISOString(),
+      audioUrl: generatedMeditation.audioUrl,
+      content: generatedMeditation.content
+    };
 
-    try {
-      // Convert blob URL to data URL if it exists
-      let audioDataUrl = generatedMeditation.audioUrl;
+    addItem(newItem);
+    toast.success("Saved to your dashboard");
+  };
 
-      if (audioDataUrl && audioDataUrl.startsWith("blob:")) {
-        try {
-          // Fetch the blob data
-          const response = await fetch(audioDataUrl);
-          const blob = await response.blob();
-
-          // Convert blob to base64 data URL
-          const reader = new FileReader();
-          const dataUrl = await new Promise<string>((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-
-          audioDataUrl = dataUrl;
-        } catch (error) {
-          console.error("Error processing audio data:", error);
-          toast.error("Failed to process audio data");
-          return;
-        }
-      }
-
-      const newMeditation = {
-        id: Date.now(),
-        title: generatedMeditation.title,
-        audioUrl: audioDataUrl,
-        type: "meditation" as const,
-        duration: `${duration} sec`,
-        content: generatedMeditation.content, // Save the content as well
-        savedDate: new Date().toISOString(),
-        ...generateMeditation,
-      };
-
-      const wasAdded = addItem(newMeditation);
-
-      if (wasAdded) {
-        toast.success("Meditation saved to your dashboard!");
-        navigate("/dashboard");
-      } else {
-        toast.info("This meditation is already in your dashboard");
-      }
-    } catch (error) {
-      console.error("Failed to save meditation:", error);
-      toast.error("Failed to save meditation. Please try again.");
+  // Function to reset the form
+  const handleStartOver = () => {
+    setGeneratedMeditation(null);
+    setIsPlaying(false);
+    setProgress(0);
+    setCurrentTime(0);
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
     }
   };
 
@@ -536,299 +491,218 @@ const AIMeditationGenerator: React.FC = () => {
   }, [selectedMusic]);
 
   return (
-    <div className='min-h-screen bg-gradient-to-b from-gray-900 to-black text-white pt-24 pb-12 px-4'>
-      <div className='container mx-auto max-w-4xl'>
-        <h1 className='text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600'>
-          AI Meditation Generator
-        </h1>
+    <div className="ai-meditation-generator">
+      <div className="generator-header">
+        <h1>AI Meditation Generator</h1>
+        <p className="text-white">Create a personalized meditation session tailored to your needs. Select your preferences below and let our AI craft the perfect meditation for you.</p>
+      </div>
 
-        <div className='bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-2xl p-6 mb-8 border border-gray-700'>
-          <h2 className='text-2xl font-semibold mb-6 text-amber-400'>Create Your Custom Meditation</h2>
+      <form onSubmit={handleSubmit} className="generator-form">
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="background-music">Background Music</label>
+            <select
+              id="background-music"
+              value={selectedMusic}
+              onChange={handleMusicChange}
+              disabled={isGenerating}
+            >
+              {musicOptions.map((music) => (
+                <option key={music.value} value={music.value}>
+                  {music.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            {/* Meditation Type Selection */}
-            <div>
-              <label htmlFor='meditationType' className='block text-sm font-medium text-gray-300 mb-2'>
-                Meditation Type
-              </label>
-              <select
-                id='meditationType'
-                value={meditationType}
-                onChange={(e) => setMeditationType(e.target.value)}
-                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
-                required
-                disabled={isGenerating}
-              >
-                <option value=''>Select a meditation type</option>
-                {meditationTypes.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
+          <div className="form-group">
+            <label htmlFor="meditation-type">Meditation Type</label>
+            <select
+              id="meditation-type"
+              value={meditationType}
+              onChange={(e) => setMeditationType(e.target.value)}
+              disabled={isGenerating}
+            >
+              {meditationTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="duration">Duration (seconds)</label>
+            <select
+              id="duration"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              disabled={isGenerating}
+            >
+              {durations.map((dur) => (
+                <option key={dur} value={dur}>
+                  {dur} sec
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="language">Language</label>
+            <select
+              id="language"
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              disabled={isGenerating}
+            >
+              {languageOptions.map((lang) => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="voice">Voice</label>
+            <select
+              id="voice"
+              value={selectedVoice}
+              onChange={(e) => setSelectedVoice(e.target.value)}
+              disabled={isGenerating || filteredVoices.length === 0}
+            >
+              {filteredVoices.length === 0 ? (
+                <option value="">
+                  No voices available for {
+                    languageOptions.find(lang => lang.value === selectedLanguage)?.label || 'selected language'
+                  }
+                </option>
+              ) : (
+                filteredVoices.map((voice) => (
+                  <option key={voice.id} value={voice.id}>
+                    {voice.name} - {voice.gender} ({voice.style})
                   </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Language Selection */}
-            <div>
-              <label htmlFor='language' className='block text-sm font-medium text-gray-300 mb-2'>
-                Language
-              </label>
-              <select
-                id='language'
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
-                disabled={isGenerating}
-              >
-                {languageOptions.map((lang) => (
-                  <option key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Voice Selection */}
-            <div>
-              <label htmlFor='voiceType' className='block text-sm font-medium text-gray-300 mb-2'>
-                Voice
-              </label>
-              <select
-                id='voiceType'
-                value={selectedVoice}
-                onChange={(e) => setSelectedVoice(e.target.value)}
-                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
-                disabled={isGenerating || filteredVoices.length === 0}
-              >
-                {filteredVoices.length === 0 ? (
-                  <option value=''>
-                    No voices available for{" "}
-                    {languageOptions.find((lang) => lang.value === selectedLanguage)?.label || "selected language"}
-                  </option>
-                ) : (
-                  filteredVoices.map((voice) => (
-                    <option key={voice.id} value={voice.id}>
-                      {voice.name} - {voice.gender} ({voice.style})
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-
-            {/* Music Selection */}
-            <div>
-              <label htmlFor='musicType' className='block text-sm font-medium text-gray-300 mb-2'>
-                Background Music (Optional)
-              </label>
-              <select
-                id='musicType'
-                value={selectedMusic}
-                onChange={handleMusicChange}
-                className='w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent shadow-sm text-white'
-                disabled={isGenerating}
-              >
-                {musicOptions.map((music) => (
-                  <option key={music.value} value={music.value}>
-                    {music.label}
-                  </option>
-                ))}
-              </select>
-              {selectedMusic !== 'none' && (
-                <button
-                  onClick={async () => {
-                    const music = musicOptions.find(m => m.value === selectedMusic);
-                    if (music?.url) {
-                      try {
-                        const audio = new Audio(music.url);
-                        audio.volume = 0.5;
-                        await audio.play();
-                        toast.success('Music playback successful!');
-                      } catch (e) {
-                        console.error('Test play failed:', e);
-                        toast.error('Failed to play music: ' + (e instanceof Error ? e.message : String(e)));
-                      }
-                    }
-                  }}
-                  className="mt-2 w-full px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors"
-                  type="button"
-                >
-                  {isMusicPlaying ? ' Music Playing...' : ' Test Music Playback'}
-                </button>
+                ))
               )}
-            </div>
-            {/* Duration Slider */}
-            <div>
-              <label className='block text-sm font-medium text-gray-300 mb-2'>
-                Duration: {formatTime(parseInt(duration))}
-              </label>
-              <div className='flex items-center space-x-4'>
-                <input
-                  type='range'
-                  min='5'
-                  max='300'
-                  step='5'
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className='w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-amber-500'
-                  disabled={isGenerating}
-                  list='duration-markers'
-                />
-                <datalist id='duration-markers' className='flex justify-between w-full'>
-                  <option value='5' label='5s'></option>
-                  <option value='10' label='10s'></option>
-                  <option value='15' label='15s'></option>
-                  <option value='30' label='30s'></option>
-                  <option value='60' label='1m'></option>
-                  <option value='120' label='2m'></option>
-                  <option value='300' label='5m'></option>
-                </datalist>
-                <span className='text-amber-400 font-medium w-8 text-center'>{formatTime(parseInt(duration))}</span>
-              </div>
-            </div>
-
-            {/* Generate Button */}
-            <div className='flex justify-center'>
-              <button
-                type='submit'
-                disabled={isGenerating}
-                className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                  isGenerating
-                    ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-amber-500 hover:bg-amber-600 transform hover:scale-105 transition-transform"
-                }`}
-              >
-                {isGenerating ? (
-                  <div className='flex items-center justify-center'>
-                    <svg
-                      className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                    >
-                      <circle
-                        className='opacity-25'
-                        cx='12'
-                        cy='12'
-                        r='10'
-                        stroke='currentColor'
-                        strokeWidth='4'
-                      ></circle>
-                      <path
-                        className='opacity-75'
-                        fill='currentColor'
-                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                      ></path>
-                    </svg>
-                    Generating...
-                  </div>
-                ) : (
-                  "Generate Meditation"
-                )}
-              </button>
-            </div>
-          </form>
+            </select>
+          </div>
         </div>
 
-        {/* Generated Content */}
-        {generatedMeditation && (
-          <div
-            id='generated-content'
-            className='bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-700 transition-all duration-500 transform'
+        <div className="flex justify-center mt-8 space-x-8">
+          <button 
+            type="submit" 
+            className="generate-btn"
+            disabled={isGenerating}
           >
-            <div className='flex justify-between items-start mb-6'>
-              <h2 className='text-2xl font-semibold text-amber-400'>{generatedMeditation.title}</h2>
-              <button
-                onClick={handleSaveToDashboard}
-                className='px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center'
-              >
-                <svg
-                  className='w-4 h-4 mr-1'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                  xmlns='http://www.w3.org/2000/svg'
+            {isGenerating ? (
+              <>
+                <span className="spinner"></span>
+                Generating...
+              </>
+            ) : (
+              'Generate Meditation'
+            )}
+          </button>
+        </div>
+      </form>
+
+      {isGenerating && (
+        <div className="loading-animation">
+          <div className="spinner"></div>
+          <p>Creating your personalized meditation...</p>
+        </div>
+      )}
+
+      {generatedMeditation && (
+        <div className="results-container">
+          <div className="meditation-content">
+            <h2 className="text-2xl font-bold mb-6 text-orange-400">{generatedMeditation.title}</h2>
+            <div className="audio-player bg-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4 text-orange-400">Preview Your Meditation</h3>
+              <div className="player-controls">
+                <button
+                  className="play-btn bg-orange-500 hover:bg-orange-600 text-white rounded-full w-12 h-12 flex items-center justify-center transition-colors"
+                  onClick={togglePlayPause}
+                  disabled={isAudioGenerating}
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
                 >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
-                  />
-                </svg>
-                Save to Dashboard
-              </button>
-            </div>
-
-            <div className='prose prose-invert max-w-none mb-6'>
-              <p className='whitespace-pre-line text-gray-200 leading-relaxed'>{generatedMeditation.content}</p>
-            </div>
-
-            {/* Audio Player */}
-            {generatedMeditation?.audioUrl && (
-              <div className='mt-8 bg-gray-700 bg-opacity-50 rounded-xl p-4 border border-gray-600'>
-                <div className='flex items-center mb-4'>
-                  <button
-                    onClick={togglePlayPause}
-                    className='w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center text-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200'
-                  >
-                    {isPlaying ? (
-                      <svg
-                        className='w-6 h-6'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className='w-6 h-6'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                    )}
-                  </button>
-                  <div className='ml-4 flex-1'>
-                    <div className='text-sm text-gray-300 mb-1'>
-                      {formatTime(currentTime * 1000)} / {formatTime(parseInt(duration) * 1000)}
-                    </div>
-                    <div className='w-full bg-gray-600 rounded-full h-1.5'>
-                      <div className='bg-amber-500 h-1.5 rounded-full' style={{ width: `${progress}%` }}></div>
-                    </div>
+                  {isAudioGenerating ? (
+                    <div className="spinner-small"></div>
+                  ) : isPlaying ? (
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+                
+                <div className="progress-container flex-1 ml-4">
+                  <div className="time-display flex justify-between text-sm text-gray-400 mb-1">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(parseInt(duration))}</span>
+                  </div>
+                  <div className="progress-bar bg-gray-700 rounded-full h-2 w-full overflow-hidden">
+                    <div 
+                      className="progress bg-orange-500 h-full transition-all duration-300" 
+                      style={{ width: `${progress}%` }}
+                    ></div>
                   </div>
                 </div>
-                <audio
-                  ref={audioRef}
-                  src={generatedMeditation.audioUrl}
-                  onEnded={() => {
-                    setIsPlaying(false);
-                    setProgress(0);
-                    setCurrentTime(0);
-                    if (progressInterval.current) {
-                      clearInterval(progressInterval.current);
-                    }
-                  }}
-                  onError={(e) => {
-                    console.error("Audio playback error:", e);
-                    toast.error("Error playing audio. The text-to-speech service might be unavailable.");
-                  }}
-                />
               </div>
-            )}
+              
+              <div className="flex justify-center mt-10 space-x-8">
+                <button
+                  type="button"
+                  className="start-over-btn"
+                  onClick={handleStartOver}
+                >
+                  Start Over
+                </button>
+                <button
+                  className="generate-btn"
+                  onClick={handleSaveToDashboard}
+                  disabled={!currentUser}
+                >
+                  {savedItems.meditations.some(item => item.title === generatedMeditation?.title) 
+                    ? 'Saved to Dashboard' 
+                    : 'Save to Dashboard'}
+                </button>
+              </div>
+              
+              {!currentUser && (
+                <p className="text-sm text-gray-400 mt-4 text-center">
+                  <button 
+                    onClick={() => navigate('/login')} 
+                    className="text-orange-400 hover:underline"
+                  >
+                    Sign in
+                  </button> to save this meditation to your dashboard
+                </p>
+              )}
+              
+              <audio
+                ref={audioRef}
+                src={generatedMeditation.audioUrl}
+                onEnded={() => {
+                  setIsPlaying(false);
+                  setProgress(0);
+                  setCurrentTime(0);
+                  if (progressInterval.current) {
+                    clearInterval(progressInterval.current);
+                  }
+                }}
+                onError={(e) => {
+                  console.error("Audio playback error:", e);
+                  toast.error("Error playing audio. The text-to-speech service might be unavailable.");
+                }}
+              />
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
