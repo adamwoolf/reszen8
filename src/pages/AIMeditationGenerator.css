@@ -5,7 +5,7 @@
   background-color: #000000;
   color: #ffffff;
   padding: 2rem 1.5rem 4rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
 /* Header Section */
@@ -20,9 +20,9 @@
 .generator-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #FFA500;
+  color: #ffa500;
   margin-bottom: 1rem;
-  background: linear-gradient(90deg, #FFA500, #FF8C00);
+  background: linear-gradient(90deg, #ffa500, #ff8c00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -58,13 +58,14 @@
   display: block;
   margin-bottom: 0.75rem;
   font-weight: 600;
-  color: #FFA500;
+  color: #ffa500;
   font-size: 1.05rem;
   letter-spacing: 0.5px;
 }
 
 /* Select and Input Styling */
-select, input[type="number"] {
+select,
+input[type="number"] {
   width: 100%;
   padding: 0.75rem 1rem;
   background: #000000;
@@ -88,9 +89,10 @@ select option {
 }
 
 /* Style the dropdown when opened */
-select:focus, input[type="number"]:focus {
+select:focus,
+input[type="number"]:focus {
   outline: none;
-  border-color: #FFA500;
+  border-color: #ffa500;
   box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
 }
 
@@ -120,14 +122,14 @@ select:focus, input[type="number"]:focus {
 }
 
 .generate-btn {
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
   color: #1a1a1a;
   border: none;
   box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
 }
 
 .generate-btn:hover {
-  background: linear-gradient(135deg, #FF8C00, #FF6B00);
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
 }
@@ -142,14 +144,15 @@ select:focus, input[type="number"]:focus {
 
 .start-over-btn {
   background: transparent;
-  color: #FFA500;
-  border: 1px solid #FFA500;
+  color: #ffa500;
+  border: 1px solid #ffa500;
+  margin-right: 16px;
 }
 
 .start-over-btn:hover {
   background: rgba(255, 165, 0, 0.1);
-  color: #FF8C00;
-  border-color: #FF8C00;
+  color: #ff8c00;
+  border-color: #ff8c00;
 }
 
 .start-over-btn:disabled {
@@ -177,9 +180,9 @@ select:focus, input[type="number"]:focus {
 .meditation-content h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #FFA500;
+  color: #ffa500;
   margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #FFA500, #FF8C00);
+  background: linear-gradient(90deg, #ffa500, #ff8c00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -210,7 +213,7 @@ select:focus, input[type="number"]:focus {
 }
 
 .audio-player h3 {
-  color: #FFA500;
+  color: #ffa500;
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
@@ -227,7 +230,7 @@ select:focus, input[type="number"]:focus {
 }
 
 .play-btn {
-  background: #FFA500;
+  background: #ffa500;
   color: #1f2937;
   border: none;
   border-radius: 50%;
@@ -239,10 +242,11 @@ select:focus, input[type="number"]:focus {
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  padding: 0;
 }
 
 .play-btn:hover {
-  background: #FF8C00;
+  background: #ff8c00;
   transform: scale(1.05);
 }
 
@@ -273,7 +277,7 @@ select:focus, input[type="number"]:focus {
 
 .progress {
   height: 100%;
-  background: #FFA500;
+  background: #ffa500;
   width: 0%;
   transition: width 0.1s linear;
 }
@@ -281,8 +285,8 @@ select:focus, input[type="number"]:focus {
 /* Save Button */
 .save-btn {
   background: transparent;
-  color: #FFA500;
-  border: 1px solid #FFA500;
+  color: #ffa500;
+  border: 1px solid #ffa500;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 500;
@@ -329,18 +333,26 @@ select:focus, input[type="number"]:focus {
   height: 3rem;
   border: 4px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  border-top-color: #FFA500;
+  border-top-color: #ffa500;
   animation: spin 1s ease-in-out infinite;
   margin: 0 auto;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Mobile styles */
@@ -350,14 +362,14 @@ select:focus, input[type="number"]:focus {
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .generate-btn,
   .start-over-btn {
     width: 100%;
     margin-right: 0;
     margin-bottom: 1rem;
   }
-  
+
   .generate-btn:last-child,
   .start-over-btn:last-child {
     margin-bottom: 0;
@@ -370,15 +382,15 @@ select:focus, input[type="number"]:focus {
   .results-container {
     padding: 1.5rem;
   }
-  
+
   .generator-header h1 {
     font-size: 2rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .generate-btn {
     width: 100%;
     justify-content: center;
@@ -389,7 +401,7 @@ select:focus, input[type="number"]:focus {
   .generator-form {
     padding: 2.5rem;
   }
-  
+
   .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -401,7 +413,7 @@ select:focus, input[type="number"]:focus {
   .ai-meditation-generator {
     padding: 3rem 2rem;
   }
-  
+
   .form-grid {
     grid-template-columns: repeat(3, 1fr);
   }

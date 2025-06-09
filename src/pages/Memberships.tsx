@@ -32,7 +32,7 @@ const Memberships: React.FC = () => {
     "New content when available",
     "Access to E-Books",
     "Access to publications",
-    "RESZEN8 AI chat"
+    "RESZEN8 AI chat",
   ];
 
   const handleSubscribe = (tier: MembershipTier) => {
@@ -57,58 +57,21 @@ const Memberships: React.FC = () => {
       </header>
 
       <div className='membership-grid'>
-        {/* 7-Day Free Trial Card */}
-        <div className="membership-card free-trial">
-          <div className='popular-badge'>Limited Time</div>
-          <div className='membership-header'>
-            <h3>7-Day Free Trial</h3>
-            <div className='price'>
-              £0.00
-              <span className='billing'>/ 7 days</span>
-            </div>
-            <p className='description'>
-              Experience all Digital Hub features for free. No credit card required.
-            </p>
-          </div>
-          <ul className='features'>
-            {digitalHubFeatures.map((feature, index) => (
-              <li key={index} className='feature-item'>
-                <svg className='check-icon' viewBox='0 0 20 20' fill='currentColor'>
-                  <path
-                    fillRule='evenodd'
-                    d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                    clipRule='evenodd'
-                  />
-                </svg>
-                {feature}
-              </li>
-            ))}
-          </ul>
-          <button 
-            className="subscribe-button featured-button"
-            onClick={() => {
-              // Add logic to start free trial
-              alert('Starting your 7-day free trial!');
-            }}
-          >
-            Start Free Trial
-          </button>
-        </div>
-
         {membershipTiers
           ?.sort((a: any, b: any) => a.fields.order - b.fields.order)
           ?.map(({ fields: tier }) => {
             // Use the standard features for Digital Hub memberships and free trial
-            const isDigitalHub = tier.title?.toLowerCase().includes('digital hub') || tier.type === 'digital';
+            const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
             const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
-            
+
             return (
-              <div key={tier.id} className={`membership-card ${tier.mostPopular ? "featured" : ""}`}>
+              <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
                 {tier.mostPopular && <div className='popular-badge'>Most Popular</div>}
                 <div className='membership-header'>
                   <h3>{tier.title}</h3>
+                  {tier?.badge && <div className='popular-badge'>{tier?.badge}</div>}
                   <div className='price'>
-                    {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "Enquire for pricing"}
+                    {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
                     {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
                   </div>
                   <p className='description'>
@@ -134,7 +97,7 @@ const Memberships: React.FC = () => {
                   className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
                   onClick={() => handleSubscribe(tier)}
                 >
-                  {tier.id === "bespoke-journey" ? "Make Enquiry" : "Get Started"}
+                  {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Get Started"}
                 </button>
               </div>
             );
