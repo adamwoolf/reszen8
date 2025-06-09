@@ -236,9 +236,6 @@ const Dashboard = () => {
             </span>
           )}
         </button>
-        <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
-          My E-Books
-        </button>
         <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}

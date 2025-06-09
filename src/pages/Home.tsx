@@ -24,6 +24,12 @@ const features = [
     title: "Personalised Dashboard",
     description: "Listen to your saved meditations, read meditation guides and customise your journey",
     path: "/dashboard"
+  },
+  {
+    title: "7 Day Free Trial",
+    description: "Start your journey to mindfulness with our risk-free trial. Get full access to all digital platform features for 7 days.",
+    path: "/memberships",
+    isTrial: true
   }
 ];
 
@@ -82,15 +88,39 @@ const Home: React.FC = () => {
           {features.map((feature, index) => (
             <motion.div 
               key={index} 
-              className={`feature-card ${currentUser ? 'clickable' : ''}`}
+              className={`feature-card ${currentUser || feature.isTrial ? 'clickable' : ''}`}
               variants={item}
-              whileHover={{ y: currentUser ? -10 : 0, transition: { duration: 0.2 } }}
-              onClick={currentUser ? () => handleCardClick(feature.path, feature.title) : undefined}
-              style={{ cursor: currentUser ? 'pointer' : 'default' }}
+              whileHover={{ y: (currentUser || feature.isTrial) ? -10 : 0, transition: { duration: 0.2 } }}
+              onClick={(currentUser || feature.isTrial) ? () => navigate(feature.path) : undefined}
+              style={{ 
+                cursor: (currentUser || feature.isTrial) ? 'pointer' : 'default',
+                border: feature.isTrial ? '2px solid #FFA500' : '1px solid rgba(255, 255, 255, 0.1)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
             >
-              <h3 className="feature-title">{feature.title}</h3>
+              {feature.isTrial && (
+                <div style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  background: '#FFA500',
+                  color: '#000',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Popular
+                </div>
+              )}
+              <h3 className="feature-title" style={feature.isTrial ? { color: '#FFA500' } : {}}>
+                {feature.title}
+              </h3>
               <p className="feature-description">{feature.description}</p>
-              {currentUser && <div className="feature-arrow">→</div>}
+              {(currentUser || feature.isTrial) && <div className="feature-arrow">→</div>}
             </motion.div>
           ))}
         </motion.div>
