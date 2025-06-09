@@ -4,7 +4,7 @@
   margin: 2rem auto;
   margin-top: 170px;
   padding: 0 2rem;
-  color: #E0E0E0;
+  color: #e0e0e0;
 }
 
 /* Header */
@@ -16,7 +16,7 @@
 
 .memberships-header h1 {
   font-size: 3rem;
-  color: #FFA500;
+  color: #ffa500;
   margin-bottom: 1rem;
   font-weight: 700;
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
@@ -24,14 +24,20 @@
 }
 
 @keyframes pulse {
-  0% { text-shadow: 0 0 15px rgba(255, 165, 0, 0.3); }
-  50% { text-shadow: 0 0 20px rgba(255, 165, 0, 0.5); }
-  100% { text-shadow: 0 0 15px rgba(255, 165, 0, 0.3); }
+  0% {
+    text-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 165, 0, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+  }
 }
 
 .memberships-header .subtitle {
   font-size: 1.2rem;
-  color: #E0E0E0;
+  color: #e0e0e0;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -48,7 +54,7 @@
   gap: 1rem;
   margin: 0 auto;
   max-width: 800px;
-  background: #2A2A2A;
+  background: #2a2a2a;
   padding: 0.75rem;
   border-radius: 50px;
   border: 1px solid #444444;
@@ -60,7 +66,7 @@
   border: none;
   border-radius: 50px;
   background: transparent;
-  color: #AAAAAA;
+  color: #aaaaaa;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.95rem;
@@ -69,13 +75,13 @@
 }
 
 .tab-button:hover {
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
 
 .tab-button.active {
-  background: #FFA500;
+  background: #ffa500;
   color: #000000;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 165, 0, 0.2);
@@ -114,7 +120,7 @@
 }
 
 .membership-card.featured {
-  border: 2px solid #FFA500;
+  border: 2px solid #4caf50;
   transform: translateY(-10px);
 }
 
@@ -123,7 +129,7 @@
 }
 
 .membership-card.free-trial {
-  border: 2px solid #4CAF50;
+  border: 2px solid #4caf50;
   position: relative;
   overflow: hidden;
   transform: translateY(-10px);
@@ -131,7 +137,7 @@
 }
 
 .membership-card.free-trial .popular-badge {
-  background: #4CAF50;
+  background: #4caf50;
   color: #000000;
   font-weight: 700;
   padding: 0.35rem 0.75rem;
@@ -148,13 +154,13 @@
 }
 
 .membership-card.free-trial .price {
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 2.8rem;
   margin: 1.5rem 0;
 }
 
 .membership-card.free-trial .subscribe-button {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
   border: none;
   margin-top: auto;
@@ -170,7 +176,7 @@
 }
 
 .membership-card.free-trial .description {
-  color: #E0E0E0;
+  color: #e0e0e0;
   font-size: 1rem;
   font-weight: 400;
   min-height: auto;
@@ -188,11 +194,11 @@
   text-align: left;
   justify-content: flex-start;
   font-size: 1rem;
-  color: #E0E0E0;
+  color: #e0e0e0;
 }
 
 .membership-card.free-trial .feature-item svg {
-  color: #4CAF50;
+  color: #4caf50;
   margin-right: 0.75rem;
 }
 
@@ -202,7 +208,7 @@
 }
 
 .membership-card .description {
-  color: #E0E0E0;
+  color: #e0e0e0;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -215,7 +221,7 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #FFA500;
+  background: #ffa500;
   color: #000000;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
@@ -227,9 +233,15 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .membership-header {
@@ -242,7 +254,7 @@
 
 .membership-header h3 {
   font-size: 1.5rem;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 0.5rem;
   font-weight: 700;
   width: 100%;
@@ -251,7 +263,7 @@
 .price {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #FFA500;
+  color: #ffa500;
   margin: 1rem 0;
   display: flex;
   align-items: center;
@@ -262,12 +274,12 @@
 .billing {
   font-size: 1rem;
   font-weight: 500;
-  color: #AAAAAA;
+  color: #aaaaaa;
   margin-left: 0.25rem;
 }
 
 .description {
-  color: #AAAAAA;
+  color: #aaaaaa;
   margin-bottom: 1.5rem;
   line-height: 1.5;
   min-height: 70px;
@@ -286,7 +298,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.75rem;
-  color: #E0E0E0;
+  color: #e0e0e0;
   justify-content: center;
 }
 
@@ -298,7 +310,7 @@
 .check-icon {
   width: 1.25rem;
   height: 1.25rem;
-  color: #4CAF50;
+  color: #4caf50;
   margin-right: 0.75rem;
   flex-shrink: 0;
 }
@@ -315,7 +327,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: #444444;
-  color: #FFFFFF;
+  color: #ffffff;
   border: 2px solid #444444;
 }
 
@@ -326,20 +338,20 @@
 }
 
 .subscribe-button.featured-button {
-  background: #FFA500;
+  background: #ffa500;
   color: #000000;
-  border-color: #FFA500;
+  border-color: #ffa500;
 }
 
 .subscribe-button.featured-button:hover {
-  background: #FFB52E;
-  border-color: #FFB52E;
+  background: #ffb52e;
+  border-color: #ffb52e;
 }
 
 /* Coming Soon Tag */
 .coming-soon-tag {
   display: inline-block;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   font-size: 0.75rem;
   font-weight: 600;
@@ -353,9 +365,15 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* FAQ Section */
@@ -368,7 +386,7 @@
 .membership-faq h2 {
   text-align: center;
   font-size: 2rem;
-  color: #FFA500;
+  color: #ffa500;
   margin-bottom: 2.5rem;
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
   animation: pulse 3s ease-in-out infinite;
@@ -394,14 +412,14 @@
 }
 
 .faq-item h3 {
-  color: #FFA500;
+  color: #ffa500;
   font-size: 1.1rem;
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .faq-item p {
-  color: #CCCCCC;
+  color: #cccccc;
   line-height: 1.6;
   margin: 0;
 }
@@ -413,7 +431,7 @@
     border-radius: 12px;
     padding: 0.5rem;
   }
-  
+
   .tab-button {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
@@ -424,7 +442,7 @@
   .membership-tabs {
     gap: 0.5rem;
   }
-  
+
   .tab-button {
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
@@ -435,19 +453,19 @@
 @media (prefers-color-scheme: dark) {
   .membership-card,
   .faq-item {
-    background: #1E1E1E;
+    background: #1e1e1e;
     border-color: #333333;
   }
-  
+
   .tab-button {
-    background: #1E1E1E;
+    background: #1e1e1e;
     border-color: #333333;
   }
-  
+
   .tab-button:hover {
-    background: #2A2A2A;
+    background: #2a2a2a;
   }
-  
+
   .membership-header,
   .feature-item {
     border-color: #333333;
