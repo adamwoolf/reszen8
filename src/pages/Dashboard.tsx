@@ -172,7 +172,6 @@ const Dashboard = () => {
                 <div className='flex flex-col md:flex-row justify-between gap-6'>
                   <div className='flex-1'>
                     <h3 className='text-xl font-semibold text-white mb-2'>{item.title}</h3>
-                    {/* {item.content && <p className='text-gray-300 mb-4 line-clamp-3'>{item.content}</p>} */}
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
                       {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
@@ -186,7 +185,7 @@ const Dashboard = () => {
                       </div>
                     )}
                     <div className='flex gap-3'>
-                      <button onClick={() => handleRemoveItem(item, "meditations", i)} className='dashboard-button'>
+                      <button onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)} className='dashboard-button'>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           className='h-4 w-4'
