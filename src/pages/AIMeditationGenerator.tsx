@@ -612,8 +612,9 @@ const AIMeditationGenerator: React.FC = () => {
             <div className='audio-player bg-gray-800 rounded-lg p-6'>
               <h3 className='text-lg font-semibold mb-4 text-orange-400'>Preview Your Meditation</h3>
               <div className='player-controls'>
-                <button
-                  className='play-btn bg-orange-500 hover:bg-orange-600 text-white rounded-full w-12 h-12 flex items-center justify-center transition-colors'
+                <div
+                  className='play-btn'
+                  role='button'
                   onClick={togglePlayPause}
                   disabled={isAudioGenerating}
                   aria-label={isPlaying ? "Pause" : "Play"}
@@ -637,7 +638,7 @@ const AIMeditationGenerator: React.FC = () => {
                       />
                     </svg>
                   )}
-                </button>
+                </div>
 
                 <div className='progress-container flex-1 ml-4'>
                   <div className='time-display flex justify-between text-sm text-gray-400 mb-1'>
