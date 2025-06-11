@@ -230,7 +230,7 @@ input[type="number"]:focus {
 }
 
 .play-btn {
-  background: #ffa500;
+  background-color: #ffa500;
   color: #1f2937;
   border: none;
   border-radius: 50%;
@@ -243,6 +243,12 @@ input[type="number"]:focus {
   transition: all 0.2s ease;
   flex-shrink: 0;
   padding: 0;
+  overflow: hidden;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.play-btn svg {
+  width: 100%;
 }
 
 .play-btn:hover {
