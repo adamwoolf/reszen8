@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { useAuth } from "../contexts/AuthContext";
+import { useBasketStore } from "../store/basketStore";
+
 type ItemType = {
   id: number;
   title: string;
@@ -31,6 +33,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const { currentUser, setCurrentUser } = useAuth();
   const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
+  const { items, setItems } = useBasketStore();
 
   useEffect(() => {
     // MOVE THIS TO USER CONTEXT
@@ -39,6 +42,16 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       setCurrentUser({ ...currentUser, ...allDetails });
     }
   }, [users]);
+
+  useEffect(() => {
+    addOrUpdate(currentUser.firebaseId, { ...currentUser, basket: items });
+  }, [items]);
+
+  useEffect(() => {
+    if (currentUser?.basket) {
+      setItems(currentUser?.basket);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (meditations && currentUser) {
@@ -52,14 +65,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser]);
 
-  console.log("SAVED", savedItems);
-
-  // Save to localStorage whenever savedItems changes - do this
-  // useEffect(() => {
-  //   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
-  //   // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
-  // }, [savedItems]);
-
   useEffect(() => {
     if (meditations && currentUser) {
       setSavedItems({
@@ -70,15 +75,12 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser]);
 
-  console.log("SAVED", savedItems);
-
   // Save to localStorage whenever savedItems changes - do this
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
     // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
   }, [savedItems]);
 
-  console.log("current", currentUser);
   const addItem = (item: ItemType) => {
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);

@@ -2,7 +2,7 @@ import React from "react";
 import { useBasketStore } from "../../store/basketStore";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "./BasketStyles.css";
+import "./BasketStyles.scss";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
 import { ToastContainer, toast } from "react-toastify";
@@ -152,7 +152,7 @@ const Basket = () => {
                             )}
                             <button
                               type='button'
-                              className='remove-button'
+                              className='basket-remove-button'
                               onClick={(e) => {
                                 e.stopPropagation();
                                 removeItem(item.product.id, item.product.size);
@@ -185,19 +185,10 @@ const Basket = () => {
             </div>
 
             <div className='mt-6 flex justify-end space-x-4'>
-              <button
-                type='button'
-                onClick={clearBasket}
-                className='px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500'
-              >
+              <button type='button' onClick={clearBasket} className='basket__clear-button'>
                 Clear Basket
               </button>
-              <Link
-                to='/checkout'
-                className='flex justify-center items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500'
-              >
-                Proceed to Checkout
-              </Link>
+              <Link to='/checkout'>Proceed to Checkout</Link>
             </div>
           </div>
         </div>

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 type Product = {
   id: string;
@@ -19,77 +18,64 @@ type BasketItem = {
 type BasketStore = {
   items: BasketItem[];
   addItem: (product: Product) => void;
-  removeItem: (productId: string) => void;
+  removeItem: (productId: string, size?: string) => void;
   updateQuantity: (productId: string, size: string, quantity: number) => void;
   clearBasket: () => void;
   itemCount: () => number;
   totalPrice: () => number;
+  setItems: (items: BasketItem[]) => void; // To load items from DB
 };
 
-export const useBasketStore = create<BasketStore>()(
-  persist(
-    (set, get) => ({
-      items: [],
+export const useBasketStore = create<BasketStore>((set, get) => ({
+  items: [],
 
-      addItem: (product) =>
-        set((state) => {
-          // Ensure product has required fields
-          const productWithDefaults = {
-            ...product,
-            name: product.name || 'Membership', // Default name if not provided
-            price: product.price || 0,
-          };
+  setItems: (items) => set({ items }),
 
-          const existingItem = state.items.find(
-            (item) => item.product.id === productWithDefaults.id && 
-                    item.product.size === productWithDefaults.size
-          );
+  addItem: (product) =>
+    set((state) => {
+      const productWithDefaults = {
+        ...product,
+        name: product.name || "Membership",
+        price: product.price || 0,
+      };
 
-          if (existingItem) {
-            return {
-              items: state.items.map((item) =>
-                item.product.id === productWithDefaults.id && 
-                item.product.size === productWithDefaults.size
-                  ? { ...item, quantity: item.quantity + 1 }
-                  : item
-              ),
-            };
-          }
+      const existingItem = state.items.find(
+        (item) => item.product.id === productWithDefaults.id && item.product.size === productWithDefaults.size
+      );
 
-          return {
-            items: [...state.items, { product: productWithDefaults, quantity: 1 }],
-          };
-        }),
+      if (existingItem) {
+        return {
+          items: state.items.map((item) =>
+            item.product.id === productWithDefaults.id && item.product.size === productWithDefaults.size
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      }
 
-      removeItem: (productId: string, size?: string) =>
-        set((state: any) => {
-          const itemToDelete = state.items.find(
-            (item: any) => item.product.id === productId && item.product.size === size
-          );
-          console.log(itemToDelete);
-          return {
-            items: state.items.filter((item: any) => item !== itemToDelete),
-          };
-        }),
-
-      updateQuantity: (productId: string, size: string, quantity: number) =>
-        set((state: any) => ({
-          items:
-            quantity <= 0
-              ? state.items.filter((item: any) => item.product.id !== productId && item.product?.size !== size)
-              : state.items.map((item: any) =>
-                  item.product.id === productId && item.product.size === size ? { ...item, quantity } : item
-                ),
-        })),
-
-      clearBasket: () => set({ items: [] }),
-
-      itemCount: () => get().items.reduce((total: number, item: any) => total + item.quantity, 0),
-
-      totalPrice: () => get().items.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0),
+      return {
+        items: [...state.items, { product: productWithDefaults, quantity: 1 }],
+      };
     }),
-    {
-      name: "basket-storage",
-    }
-  )
-);
+
+  removeItem: (productId, size) =>
+    set((state) => ({
+      items: state.items.filter((item) => item.product.id !== productId || item.product.size !== size),
+    })),
+
+  updateQuantity: (productId, size, quantity) =>
+    set((state) => ({
+      items:
+        quantity <= 0
+          ? state.items.filter((item) => item.product.id !== productId || item.product.size !== size)
+          : state.items.map((item) =>
+              item.product.id === productId && item.product.size === size ? { ...item, quantity } : item
+            ),
+    })),
+
+  clearBasket: () => set({ items: [] }),
+
+  itemCount: () => get().items.reduce((total, item) => total + item.quantity, 0),
+
+  totalPrice: () => get().items.reduce((total, item) => total + item.product.price * item.quantity, 0),
+}));
