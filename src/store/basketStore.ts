@@ -33,20 +33,31 @@ export const useBasketStore = create<BasketStore>()(
 
       addItem: (product) =>
         set((state) => {
+          // Ensure product has required fields
+          const productWithDefaults = {
+            ...product,
+            name: product.name || 'Membership', // Default name if not provided
+            price: product.price || 0,
+          };
+
           const existingItem = state.items.find(
-            (item) => item.product.id === product.id && item.product.size === product.size
+            (item) => item.product.id === productWithDefaults.id && 
+                    item.product.size === productWithDefaults.size
           );
 
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+                item.product.id === productWithDefaults.id && 
+                item.product.size === productWithDefaults.size
+                  ? { ...item, quantity: item.quantity + 1 }
+                  : item
               ),
             };
           }
 
           return {
-            items: [...state.items, { product, quantity: 1 }],
+            items: [...state.items, { product: productWithDefaults, quantity: 1 }],
           };
         }),
 

@@ -1,9 +1,13 @@
 import React from "react";
 import { useBasketStore } from "../../store/basketStore";
-import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
+import { FaTrash, FaMinus, FaPlus, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./BasketStyles.css";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSavedItemsStore } from "../../store/savedItemsStore";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../../contexts/AuthContext";
 
 interface BasketItem {
   id: string;
@@ -11,18 +15,42 @@ interface BasketItem {
   price?: number;
   quantity?: number;
   description?: string;
+  size?: string;
 }
 
 const Basket = () => {
+  const { currentUser } = useAuth();
   const { items, removeItem, updateQuantity, clearBasket, totalPrice } = useBasketStore();
+  const { saveItem } = useSavedItemsStore();
 
   const subtotal = totalPrice();
   const shipping = subtotal > 0 ? 3.99 : 0;
   const total = subtotal + shipping;
 
-  const handleQuantityChange = (productId: string, size?: number, newQuantity: number) => {
+  const handleQuantityChange = (productId: string, size: string | undefined, newQuantity: number) => {
     if (newQuantity < 1) return;
     updateQuantity(productId, size, newQuantity);
+  };
+
+  const handleSaveForLater = (item: any) => {
+    saveItem({
+      id: item.product.id,
+      name: item.product.name || 'Unnamed Item',
+      price: item.product.price,
+      description: item.product.description,
+      size: item.product.size,
+      quantity: item.quantity,
+    });
+    
+    toast.success('Item saved to your Members Area', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   if (!items || items.length === 0) {
@@ -41,6 +69,7 @@ const Basket = () => {
       </div>
     );
   }
+
 
   return (
     <div className='bg-gray-50 py-12'>
@@ -67,7 +96,8 @@ const Basket = () => {
                     <div className='p-6 h-full flex flex-col'>
                       <div className='flex-grow'>
                         <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                          {item.product?.name || "Unnamed Item"} {item.product?.size && `- ${item.product?.size}`}
+                          {item.product?.name || 'Membership'}
+                          {item.product?.size && ` (${item.product.size})`}
                         </h3>
                         {item.product.description && (
                           <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
@@ -94,7 +124,7 @@ const Basket = () => {
                                 handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
                               }}
                             >
-                              -
+                              <FaMinus size={10} />
                             </button>
                             <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
                             <button
@@ -105,7 +135,7 @@ const Basket = () => {
                                 handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
                               }}
                             >
-                              +
+                              <FaPlus size={10} />
                             </button>
                             <button
                               type='button'
@@ -119,6 +149,19 @@ const Basket = () => {
                             </button>
                           </div>
                         </div>
+                        {currentUser && (
+                          <button
+                            type="button"
+                            className="basket-save-later-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSaveForLater(item);
+                            }}
+                          >
+                            <FaArrowRight className="basket-save-later-icon" />
+                            <span>Save for Later</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -86,11 +86,6 @@ const Navbar: React.FC = () => {
 
               {currentUser && (
                 <>
-                  {/* <li>
-                    <NavLink to='/members' className={getNavLinkClass}>
-                      Members Management
-                    </NavLink>
-                  </li> */}
                   <li>
                     <NavLink to='/ai-meditation-generator' className={getNavLinkClass}>
                       AI Meditation Generator
@@ -104,6 +99,11 @@ const Navbar: React.FC = () => {
                   <li>
                     <NavLink to='/dashboard' className={getNavLinkClass}>
                       My Dashboard
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/members' className={getNavLinkClass}>
+                      Members Area
                     </NavLink>
                   </li>
                   {/* <li>

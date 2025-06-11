@@ -40,12 +40,18 @@ const Memberships: React.FC = () => {
       navigate("/contact");
       return;
     }
-    addItem({
+    
+    // Create a proper product object with all required fields
+    const product = {
       id: tier.id,
-      name: `${tier.name} (${tier.billing})`,
-      price: tier.price,
-      description: tier.description,
-    });
+      name: tier.name || 'Membership', // Ensure name is always defined
+      price: tier.price || 0,
+      description: tier.description || '',
+      size: tier.billing, // Store billing cycle as size
+    };
+    
+    console.log('Adding to basket:', product); // Debug log
+    addItem(product);
     navigate("/basket");
   };
 

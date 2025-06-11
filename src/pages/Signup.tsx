@@ -110,13 +110,21 @@ export default function Signup() {
             </button>
           </div>
         </form>
-        <div className="text-center">
+        <div className="text-center mt-4 space-y-2">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Sign in
             </Link>
           </p>
+          <div className="pt-2">
+            <Link 
+              to="/home" 
+              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
+              Back to Homepage
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -229,15 +229,17 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <BasketProvider>
+    <ErrorBoundary>
       <AuthProvider>
-        <SavedItemsProvider>
-          <Router>
-            <AnimatedRoutes />
-          </Router>
-        </SavedItemsProvider>
+        <BasketProvider>
+          <SavedItemsProvider>
+            <Router>
+              <AnimatedRoutes />
+            </Router>
+          </SavedItemsProvider>
+        </BasketProvider>
       </AuthProvider>
-    </BasketProvider>
+    </ErrorBoundary>
   );
 }
 
