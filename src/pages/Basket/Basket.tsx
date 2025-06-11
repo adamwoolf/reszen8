@@ -102,11 +102,9 @@ const Basket = () => {
                           <p className='text-sm text-gray-500 mb-3'>{item.product.description}</p>
                         )}
                         <div className='flex items-baseline mt-2'>
-                          <span className='text-lg font-bold text-gray-900'>
-                            £{(item.product.price * item.quantity).toFixed(2)}
-                          </span>
+                          <span className='basket-item-total'>£{(item.product.price * item.quantity).toFixed(2)}</span>
                           {item.quantity > 1 && (
-                            <span className='ml-2 text-sm text-gray-500'>(£{item.product.price.toFixed(2)} each)</span>
+                            <span className='basket-quantity-total'>(£{item.product.price.toFixed(2)} each)</span>
                           )}
                         </div>
                       </div>
@@ -137,31 +135,31 @@ const Basket = () => {
                               +
                             </button>
                           </div>
-                          <div className="item-save-or-remove-container" >
-                          {currentUser && (
-                            <div>
-                              <button
-                                type='button'
-                                className='basket-save-button'
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSaveForLater(item);
-                                }}
-                              >
-                                <span>Save for Later</span>
-                              </button>
-                            </div>
-                          )}
-                          <button
-                            type='button'
-                            className='remove-button'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeItem(item.product.id, item.product.size);
-                            }}
-                          >
-                            <FaTrash size={15} />
-                          </button>
+                          <div className='item-save-or-remove-container'>
+                            {currentUser && (
+                              <div>
+                                <button
+                                  type='button'
+                                  className='basket-save-button'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSaveForLater(item);
+                                  }}
+                                >
+                                  <span>Save for Later</span>
+                                </button>
+                              </div>
+                            )}
+                            <button
+                              type='button'
+                              className='remove-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeItem(item.product.id, item.product.size);
+                              }}
+                            >
+                              <FaTrash size={15} />
+                            </button>
                           </div>
                         </div>
                       </div>

@@ -38,6 +38,14 @@
   border: 2px solid;
 }
 
+.basket-quantity-total {
+  margin-left: 8px;
+}
+
+.basket-item-total {
+  font-weight: bold;
+}
+
 .remove-button {
   width: 30px;
   height: 35px;
