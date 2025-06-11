@@ -1,12 +1,12 @@
 import React from "react";
 import { useBasketStore } from "../../store/basketStore";
-import { FaTrash, FaMinus, FaPlus, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./BasketStyles.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../contexts/AuthContext";
 
 interface BasketItem {
@@ -35,14 +35,14 @@ const Basket = () => {
   const handleSaveForLater = (item: any) => {
     saveItem({
       id: item.product.id,
-      name: item.product.name || 'Unnamed Item',
+      name: item.product.name || "Unnamed Item",
       price: item.product.price,
       description: item.product.description,
       size: item.product.size,
       quantity: item.quantity,
     });
-    
-    toast.success('Item saved to your Members Area', {
+
+    toast.success("Item saved to your Members Area", {
       position: "top-right",
       autoClose: 3000,
       hideProgressBar: false,
@@ -70,7 +70,6 @@ const Basket = () => {
     );
   }
 
-
   return (
     <div className='bg-gray-50 py-12'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -96,7 +95,7 @@ const Basket = () => {
                     <div className='p-6 h-full flex flex-col'>
                       <div className='flex-grow'>
                         <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                          {item.product?.name || 'Membership'}
+                          {item.product?.name || "Membership"}
                           {item.product?.size && ` (${item.product.size})`}
                         </h3>
                         {item.product.description && (
@@ -113,7 +112,7 @@ const Basket = () => {
                       </div>
 
                       <div className='basket-item-controls'>
-                        <div className='flex items-center justify-between mb-4'>
+                        <div>
                           <span className='text-sm font-medium text-gray-700'>Quantity</span>
                           <div className='quantity-container'>
                             <button
@@ -124,9 +123,9 @@ const Basket = () => {
                                 handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
                               }}
                             >
-                              <FaMinus size={10} />
+                              -
                             </button>
-                            <span className='w-10 text-center text-sm font-medium'>{item.quantity}</span>
+                            <span>{item.quantity}</span>
                             <button
                               type='button'
                               className='button quantity-button'
@@ -135,33 +134,36 @@ const Basket = () => {
                                 handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
                               }}
                             >
-                              <FaPlus size={10} />
-                            </button>
-                            <button
-                              type='button'
-                              className='remove-button'
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeItem(item.product.id, item.product.size);
-                              }}
-                            >
-                              <FaTrash size={15} />
+                              +
                             </button>
                           </div>
-                        </div>
-                        {currentUser && (
+                          <div className="item-save-or-remove-container" >
+                          {currentUser && (
+                            <div>
+                              <button
+                                type='button'
+                                className='basket-save-button'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSaveForLater(item);
+                                }}
+                              >
+                                <span>Save for Later</span>
+                              </button>
+                            </div>
+                          )}
                           <button
-                            type="button"
-                            className="basket-save-later-btn"
+                            type='button'
+                            className='remove-button'
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleSaveForLater(item);
+                              removeItem(item.product.id, item.product.size);
                             }}
                           >
-                            <FaArrowRight className="basket-save-later-icon" />
-                            <span>Save for Later</span>
+                            <FaTrash size={15} />
                           </button>
-                        )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
