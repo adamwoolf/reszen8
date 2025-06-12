@@ -149,7 +149,7 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = savedItems[activeTab];
-    console.log(data);
+
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -185,7 +185,10 @@ const Dashboard = () => {
                       </div>
                     )}
                     <div className='flex gap-3'>
-                      <button onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)} className='dashboard-button'>
+                      <button
+                        onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
+                        className='dashboard-button'
+                      >
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           className='h-4 w-4'

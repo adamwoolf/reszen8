@@ -23,6 +23,7 @@ const LoginForm: React.FC = () => {
     try {
       setIsSubmitting(true);
       clearError();
+
       await login(email, password, rememberMe);
 
       // Redirect to Members Area after successful login
