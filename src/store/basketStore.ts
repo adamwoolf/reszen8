@@ -29,10 +29,10 @@ type BasketStore = {
 export const useBasketStore = create<BasketStore>((set, get) => ({
   items: [],
 
-  setItems: (items) => set({ items }),
+  setItems: (items: BasketItem[]) => set({ items }),
 
-  addItem: (product) =>
-    set((state) => {
+  addItem: (product: Product) =>
+    set((state: any) => {
       const productWithDefaults = {
         ...product,
         name: product.name || "Membership",

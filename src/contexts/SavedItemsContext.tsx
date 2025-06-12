@@ -44,7 +44,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [users]);
 
   useEffect(() => {
-    addOrUpdate(currentUser.firebaseId, { ...currentUser, basket: items });
+    if (currentUser && currentUser.firebaseId) addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
   }, [items]);
 
   useEffect(() => {
