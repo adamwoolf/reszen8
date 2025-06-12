@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
       console.error("Failed to log out", error);
     }
   };
-
+  const name = currentUser.firstName ? `${currentUser?.firstName} ${currentUser?.surName}: ` : "";
   return (
     <div>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
@@ -152,7 +152,9 @@ const Navbar: React.FC = () => {
         </div>
         {currentUser && (
           <div className='user-items'>
-            <span className='user-address'>{currentUser.email}</span>
+            <span className='user-address'>
+              {name} {currentUser.email}
+            </span>
             <div className=''>
               {/* <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
                 My Account

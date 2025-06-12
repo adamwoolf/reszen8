@@ -75,14 +75,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [users, currentUser]);
 
-  const signup = useCallback(async (email: string, password: string) => {
+  const signup = useCallback(async (email: string, password: string, firstName: string, surName: string) => {
     try {
       setLoading(true);
       clearError();
       await createUserWithEmailAndPassword(auth, email, password);
       // create db entry in USERS for new user
       const firebaseId = Date.now().toString();
-      return addOrUpdate(firebaseId, { email, firebaseId });
+      return addOrUpdate(firebaseId, { email, firebaseId, firstName, surName });
     } catch (error: any) {
       const errorMessage = error.message || "Failed to create an account";
       setError(errorMessage);
