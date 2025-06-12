@@ -40,17 +40,17 @@ const Memberships: React.FC = () => {
       navigate("/contact");
       return;
     }
-    
+
     // Create a proper product object with all required fields
     const product = {
       id: tier.id,
-      name: tier.name || 'Membership', // Ensure name is always defined
+      name: tier.name || "Membership", // Ensure name is always defined
       price: tier.price || 0,
-      description: tier.description || '',
+      description: tier.description || "",
       size: tier.billing, // Store billing cycle as size
     };
-    
-    console.log('Adding to basket:', product); // Debug log
+
+    console.log("Adding to basket:", product); // Debug log
     addItem(product);
     navigate("/basket");
   };
@@ -72,7 +72,6 @@ const Memberships: React.FC = () => {
 
             return (
               <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
-                {tier.mostPopular && <div className='popular-badge'>Most Popular</div>}
                 <div className='membership-header'>
                   <h3>{tier.title}</h3>
                   {tier?.badge && <div className='popular-badge'>{tier?.badge}</div>}

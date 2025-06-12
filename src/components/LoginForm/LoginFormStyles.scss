@@ -1,0 +1,26 @@
+.form {
+  &__input {
+    width: 100%;
+    border-radius: 8px;
+    height: 50px;
+    margin: 8px;
+  }
+
+  &__signin {
+    margin: 8px 16px;
+  }
+
+  &__prompts {
+    margin: 8px 16px;
+  }
+
+  &__remember {
+    padding-left: 8px;
+    display: none;
+  }
+
+  &__checkbox {
+    margin-right: 8px;
+    display: none;
+  }
+}

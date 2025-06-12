@@ -7,6 +7,12 @@
   color: #e0e0e0;
 }
 
+@media (max-width: 768px) {
+  .memberships-page {
+    margin-top: 230px;
+  }
+}
+
 /* Header */
 .memberships-header {
   text-align: center;
@@ -136,23 +142,6 @@
   box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
 }
 
-.membership-card.free-trial .popular-badge {
-  background: #4caf50;
-  color: #000000;
-  font-weight: 700;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
-  top: 1rem;
-  right: 1rem;
-  transform: none;
-  width: auto;
-  text-align: center;
-  border-radius: 4px;
-  position: absolute;
-  z-index: 1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
 .membership-card.free-trial .price {
   color: #4caf50;
   font-size: 2.8rem;
@@ -219,17 +208,20 @@
 
 .popular-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 8px;
+  right: 8px;
   background: #ffa500;
   color: #000000;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: 8px;
   font-size: 0.8rem;
-  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   animation: pulse 2s infinite;
+  background: #4caf50;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
 }
 
 @keyframes pulse {
@@ -246,6 +238,7 @@
 
 .membership-header {
   padding: 1.5rem;
+  padding-top: 4rem;
   text-align: center;
   display: flex;
   flex-direction: column;

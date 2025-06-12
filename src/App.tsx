@@ -1,41 +1,41 @@
-import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { SavedItemsProvider } from './contexts/SavedItemsContext';
-import { BasketProvider } from './contexts/BasketContext';
-import Navbar from './components/Navbar';
-import PageTransition from './components/PageTransition';
-import LandingPage from './pages/LandingPage';
-import Home from './pages/Home';
-import AboutMe from './pages/AboutMe';
-import Photos from './pages/Photos';
-import Contact from './pages/Contact';
-import Login from './pages/Login/Login';
-import Signup from './pages/Signup';
-import MembersArea from './pages/MembersArea';
-import Dashboard from './pages/Dashboard';
-import DigitalLibrary from './pages/DigitalLibrary';
-import AIChat from './pages/AIChat';
-import Apparel from './pages/Apparel/Apparel';
-import Meditations from './pages/Meditations';
-import AIMeditationGenerator from './pages/AIMeditationGenerator';
-import Checkout from './pages/Checkout';
-import OrderSuccess from './pages/OrderSuccess';
-import Memberships from './pages/Memberships';
-import TermsAndConditions from './pages/TermsAndConditions';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TestPaymentPage from './pages/TestPaymentPage';
-import Sitemap from './pages/Sitemap';
-import ErrorBoundary from './components/ErrorBoundary';
-import LoadingSpinner from './components/LoadingSpinner';
-import FloatingCTA from './components/FloatingCTA';
-import Footer from './components/Footer';
-import NotFound from './pages/NotFound';
-import Basket from './pages/Basket/Basket';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './App.css';
+import React, { Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { SavedItemsProvider } from "./contexts/SavedItemsContext";
+import { BasketProvider } from "./contexts/BasketContext";
+import Navbar from "./components/Navbar";
+import PageTransition from "./components/PageTransition";
+import LandingPage from "./pages/LandingPage";
+import Home from "./pages/Home";
+import AboutMe from "./pages/AboutMe";
+import Photos from "./pages/Photos";
+import Contact from "./pages/Contact";
+import Login from "./pages/Login/Login";
+import Signup from "./pages/Signup/Signup";
+import MembersArea from "./pages/MembersArea";
+import Dashboard from "./pages/Dashboard";
+import DigitalLibrary from "./pages/DigitalLibrary";
+import AIChat from "./pages/AIChat";
+import Apparel from "./pages/Apparel/Apparel";
+import Meditations from "./pages/Meditations";
+import AIMeditationGenerator from "./pages/AIMeditationGenerator";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import Memberships from "./pages/Memberships";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TestPaymentPage from "./pages/TestPaymentPage";
+import Sitemap from "./pages/Sitemap";
+import ErrorBoundary from "./components/ErrorBoundary";
+import LoadingSpinner from "./components/LoadingSpinner";
+import FloatingCTA from "./components/FloatingCTA";
+import Footer from "./components/Footer";
+import NotFound from "./pages/NotFound";
+import Basket from "./pages/Basket/Basket";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -104,23 +104,45 @@ const AnimatedRoutes = () => {
         <Route path='/signup' element={<Signup />} />
 
         {/* Protected Routes */}
-        <Route path="/members" element={
-          <ProtectedRoute>
-            <Layout><MembersArea /></Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Layout><Dashboard /></Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/digital-library" element={
-          <ProtectedRoute>
-            <Layout><DigitalLibrary /></Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/ai-chat" element={<Layout><AIChat /></Layout>} />
-        
+        <Route
+          path='/members'
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MembersArea />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/dashboard'
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/digital-library'
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <DigitalLibrary />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/ai-chat'
+          element={
+            <Layout>
+              <AIChat />
+            </Layout>
+          }
+        />
+
         {/* Public Routes */}
         <Route
           path='/apparel'

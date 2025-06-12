@@ -56,9 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailVerified: firebaseUser.emailVerified,
           // Add any additional user properties you need
         };
-        const currentFromDB = users?.find((u: User) => u.uid === firebaseUser.uid) || {};
 
-        setCurrentUser({ ...currentFromDB, ...user });
+        setCurrentUser(user);
         // console.log({ ...currentFromDB, ...user });
       } else {
         setCurrentUser(null);
@@ -67,7 +66,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [users]);
+  }, []);
+
+  useEffect(() => {
+    if (users && users.length && currentUser) {
+      const currentFromDB = users ? users?.find((u: User) => u.email === currentUser.email) : {};
+      setCurrentUser({ ...currentUser, ...currentFromDB });
+    }
+  }, [users, currentUser]);
 
   const signup = useCallback(async (email: string, password: string) => {
     try {
