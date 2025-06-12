@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const currentFromDB = users?.find((u: User) => u.uid === firebaseUser.uid) || {};
 
         setCurrentUser({ ...currentFromDB, ...user });
+        // console.log({ ...currentFromDB, ...user });
       } else {
         setCurrentUser(null);
       }

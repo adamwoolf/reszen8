@@ -520,8 +520,8 @@ const AIMeditationGenerator: React.FC = () => {
               onChange={(e) => setMeditationType(e.target.value)}
               disabled={isGenerating}
             >
-              {meditationTypes.map((type) => (
-                <option key={type.value} value={type.value}>
+              {meditationTypes.map((type, i) => (
+                <option key={type.value + i} value={type.value}>
                   {type.label}
                 </option>
               ))}
@@ -536,8 +536,8 @@ const AIMeditationGenerator: React.FC = () => {
               onChange={(e) => setDuration(e.target.value)}
               disabled={isGenerating}
             >
-              {durations.map((dur) => (
-                <option key={dur} value={dur}>
+              {durations.map((dur, i) => (
+                <option key={dur + i} value={dur}>
                   {dur} sec
                 </option>
               ))}
@@ -552,8 +552,8 @@ const AIMeditationGenerator: React.FC = () => {
               onChange={(e) => setSelectedLanguage(e.target.value)}
               disabled={isGenerating}
             >
-              {languageOptions.map((lang) => (
-                <option key={lang.value} value={lang.value}>
+              {languageOptions.map((lang, i) => (
+                <option key={lang.value + i} value={lang.value}>
                   {lang.label}
                 </option>
               ))}
@@ -574,8 +574,8 @@ const AIMeditationGenerator: React.FC = () => {
                   {languageOptions.find((lang) => lang.value === selectedLanguage)?.label || "selected language"}
                 </option>
               ) : (
-                filteredVoices.map((voice) => (
-                  <option key={voice.id} value={voice.id}>
+                filteredVoices.map((voice, i) => (
+                  <option key={voice.id + i} value={voice.id}>
                     {voice.name} - {voice.gender} ({voice.style})
                   </option>
                 ))
