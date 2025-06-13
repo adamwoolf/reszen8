@@ -85,7 +85,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       });
     } else {
       const newItems = !currentUser.savedItems
-        ? { itemType: [item] }
+        ? { [itemType]: [item] }
         : { ...currentUser.savedItems, [itemType]: [item] };
       console.log(item);
       console.log(newItems);
