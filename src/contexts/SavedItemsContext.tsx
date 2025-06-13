@@ -58,21 +58,9 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
 
   useEffect(() => {
     if (meditations && currentUser) {
-      const medArray = Object.values(meditations);
-
       setSavedItems({
-        ebooks: savedItems.ebooks,
-        publications: savedItems.publications,
-        meditations: currentUser?.savedItems?.meditations || [],
-      });
-    }
-  }, [meditations, currentUser]);
-
-  useEffect(() => {
-    if (meditations && currentUser) {
-      setSavedItems({
-        ebooks: savedItems.ebooks,
-        publications: savedItems.publications,
+        ebooks: currentUser?.savedItems?.ebooks || [],
+        publications: currentUser?.savedItems?.publications || [],
         meditations: currentUser?.savedItems?.meditations || [],
       });
     }
@@ -85,39 +73,28 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [savedItems]);
 
   const addItem = (item: ItemType) => {
+    console.log(item);
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
-    if (itemExists) return;
-    if (currentUser.savedItems) {
+    console.log(itemExists);
+    if (itemExists) return false;
+    if (currentUser.savedItems && currentUser.savedItems[itemType]) {
       addOrUpdate(currentUser.firebaseId, {
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
     } else {
+      const newItems = !currentUser.savedItems
+        ? { itemType: [item] }
+        : { ...currentUser.savedItems, [itemType]: [item] };
+      console.log(item);
+      console.log(newItems);
       addOrUpdate(currentUser.firebaseId, {
         ...currentUser,
-        savedItems: { ...currentUser?.savedItems, [itemType]: [item] },
+        savedItems: newItems,
       });
     }
-    // Check if item already exists
-
-    // if (!itemExists) {
-    //   // setSavedItems((prev) => {
-    //   //   const newItems = {
-    //   //     ...prev,
-    //   //     [itemType]: [
-    //   //       ...prev[itemType],
-    //   //       {
-    //   //         ...item,
-    //   //         savedDate: new Date().toISOString(),
-    //   //       },
-    //   //     ],
-    //   //   };
-    //   //   return newItems;
-    //   // });
-    //   return true;
-    // }
-    // return false;
+    return true;
   };
 
   const removeItem = (item: any, type: keyof SavedItemsType) => {

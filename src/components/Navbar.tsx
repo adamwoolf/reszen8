@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
       console.error("Failed to log out", error);
     }
   };
-  const name = currentUser.firstName ? `${currentUser?.firstName} ${currentUser?.surName}: ` : "";
+  const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName}: ` : "";
   return (
     <div>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>

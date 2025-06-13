@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard.css";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
+import Meditations from "./Meditations";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -15,7 +16,7 @@ const DigitalLibrary = () => {
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const { data } = useFirebaseDatabase("meditations");
-  console.log(data);
+
   // Redirect to login if not authenticated
   if (!currentUser) {
     navigate("/login");
@@ -23,35 +24,63 @@ const DigitalLibrary = () => {
   }
   const [libraryData, setLibraryData] = useState({
     meditations: [
-      { id: 101, title: "Morning Calm", duration: "10 min", type: "meditation" as const },
-      { id: 102, title: "Deep Sleep", duration: "20 min", type: "meditation" as const },
-      { id: 103, title: "Anxiety Relief", duration: "15 min", type: "meditation" as const },
+      // { id: 101, title: "Morning Calm", duration: "10 min", type: "meditation" as const },
+      // { id: 102, title: "Deep Sleep", duration: "20 min", type: "meditation" as const },
+      // { id: 103, title: "Anxiety Relief", duration: "15 min", type: "meditation" as const },
     ],
     ebooks: [
-      { id: 201, title: "Mindfulness for Beginners", author: "Dr. Sarah Johnson", type: "ebook" as const },
-      { id: 202, title: "The Art of Breathing", author: "Michael Chen", type: "ebook" as const },
+      {
+        createdAt: 12343,
+        id: 201,
+        title: "Mindfulness for Beginners",
+        author: "Dr. Sarah Johnson",
+        type: "ebook" as const,
+      },
+      { createdAt: 12344, id: 202, title: "The Art of Breathing", author: "Michael Chen", type: "ebook" as const },
     ],
     publications: [
-      { id: 301, title: "The Science of Mindfulness", author: "Dr. Jane Smith", type: "publication" as const },
-      { id: 302, title: "Meditation and Mental Health", author: "Dr. John Doe", type: "publication" as const },
-      { id: 303, title: "Modern Meditation Techniques", author: "Dr. Emily Wilson", type: "publication" as const },
+      {
+        createdAt: 12345,
+        id: 301,
+        title: "The Science of Mindfulness",
+        author: "Dr. Jane Smith",
+        type: "publication" as const,
+      },
+      {
+        createdAt: 123466,
+        id: 302,
+        title: "Meditation and Mental Health",
+        author: "Dr. John Doe",
+        type: "publication" as const,
+      },
+      {
+        createdAt: 12347,
+        id: 303,
+        title: "Modern Meditation Techniques",
+        author: "Dr. Emily Wilson",
+        type: "publication" as const,
+      },
     ],
   });
 
   useEffect(() => {
-    if (data) {
+    if (data && !libraryData?.meditations.length) {
       const meds = Object.values(data);
-      console.log("MEDS", meds);
+
       setLibraryData({
         ...libraryData,
-        meditations: meds.map((m) => ({ ...(m as {}), type: "meditation", meditationType: m.type })),
+        meditations: meds.map((m, i) => ({
+          ...(m as {}),
+          type: "meditation",
+          id: `${m.type}-${i}`,
+          meditationType: m.type,
+        })),
       });
     }
   }, [data]);
 
   const handleAddItem = (item: any) => {
     const wasAdded = addItem(item);
-
     if (wasAdded) {
       setNotification({
         show: true,
@@ -73,7 +102,8 @@ const DigitalLibrary = () => {
   const renderTabContent = () => {
     const data = libraryData[activeTab];
     console.log(data);
-
+    console.log(activeTab);
+    console.log(libraryData);
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -83,8 +113,8 @@ const DigitalLibrary = () => {
         )}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {data.map((item) => (
-            <div key={item.id} className='dashboard-card p-6 bg-gray-800 rounded-lg'>
+          {data.map((item, i) => (
+            <div key={item.id + i} className='dashboard-card p-6 bg-gray-800 rounded-lg'>
               <h3 className='text-xl font-semibold mb-2 text-white'>{item.title}</h3>
               {item.duration && <p className='text-gray-300'>Duration: {item.duration}</p>}
               {item.meditationType && <p className='text-gray-300'>Meditation Type: {item.meditationType}</p>}
