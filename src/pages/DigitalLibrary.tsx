@@ -101,9 +101,7 @@ const DigitalLibrary = () => {
 
   const renderTabContent = () => {
     const data = libraryData[activeTab];
-    console.log(data);
-    console.log(activeTab);
-    console.log(libraryData);
+
     return (
       <div className='dashboard-content'>
         {notification.show && (
