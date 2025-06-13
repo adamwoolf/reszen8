@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   // type User as FirebaseUser,
   // type UserCredential
 } from "firebase/auth";
@@ -27,6 +28,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   clearError: () => void;
+  resetPassword: (email: string) => Promise<void>; // <-- Add this line
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -121,6 +123,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      setLoading(true);
+      clearError();
+      await sendPasswordResetEmail(auth, email);
+    } catch (error: any) {
+      const errorMessage = error.message || "Failed to send password reset email";
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const value = {
     currentUser,
     login,
@@ -130,6 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error,
     clearError,
     setCurrentUser,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

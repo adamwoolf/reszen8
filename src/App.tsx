@@ -36,6 +36,7 @@ import Basket from "./pages/Basket/Basket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import PasswordResetPage from "./pages/PasswordReset/PasswordReset";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -149,6 +150,14 @@ const AnimatedRoutes = () => {
           element={
             <Layout>
               <Apparel />
+            </Layout>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <Layout>
+              <PasswordResetPage />
             </Layout>
           }
         />
