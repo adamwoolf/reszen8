@@ -44,7 +44,10 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [users]);
 
   useEffect(() => {
-    if (currentUser && currentUser.firebaseId) addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
+    if (currentUser && currentUser.firebaseId) {
+      addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
+      setCurrentUser({ ...currentUser, basket: items });
+    }
   }, [items]);
 
   useEffect(() => {
@@ -56,15 +59,16 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [currentUser]);
 
+  // set savedItems with data from db
   useEffect(() => {
-    if (meditations && currentUser) {
+    if (meditations && currentUser && currentUser.savedItems) {
       setSavedItems({
         ebooks: currentUser?.savedItems?.ebooks || [],
         publications: currentUser?.savedItems?.publications || [],
         meditations: currentUser?.savedItems?.meditations || [],
       });
     }
-  }, [meditations, currentUser]);
+  }, [meditations, currentUser?.savedItems]);
 
   // Save to localStorage whenever savedItems changes - do this
   useEffect(() => {
@@ -73,10 +77,9 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [savedItems]);
 
   const addItem = (item: ItemType) => {
-    console.log(item);
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
-    console.log(itemExists);
+
     if (itemExists) return false;
     if (currentUser.savedItems && currentUser.savedItems[itemType]) {
       addOrUpdate(currentUser.firebaseId, {
@@ -86,9 +89,8 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     } else {
       const newItems = !currentUser.savedItems
         ? { [itemType]: [item] }
-        : { ...currentUser.savedItems, [itemType]: [item] };
-      console.log(item);
-      console.log(newItems);
+        : { ...currentUser?.savedItems, [itemType]: [item] };
+
       addOrUpdate(currentUser.firebaseId, {
         ...currentUser,
         savedItems: newItems,
@@ -98,19 +100,19 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   const removeItem = (item: any, type: keyof SavedItemsType) => {
-    const newItemsArray = [...currentUser.savedItems[type]].filter((i) => i.createdAt !== item.createdAt);
+    const newItemsArray = [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt);
 
-    addOrUpdate(currentUser.firebaseId, {
-      ...currentUser,
-      savedItems: { ...currentUser?.savedItems, [type]: newItemsArray },
-    });
-    // setSavedItems((prev) => {
-    //   const newItems = {
-    //     ...prev,
-    //     [type]: prev[type].filter((item) => item.id !== itemId),
-    //   };
-    //   return newItems;
-    // });
+    let newSavedItems = { ...currentUser?.savedItems, [type]: newItemsArray };
+    if (!newItemsArray.length) delete newSavedItems[type];
+    console.log(newSavedItems);
+    const newUserObj = Object.keys(newSavedItems).length
+      ? {
+          ...currentUser,
+          savedItems: newSavedItems,
+        }
+      : { ...currentUser, savedItems: {} };
+    addOrUpdate(currentUser.firebaseId, newUserObj);
+    setCurrentUser(newUserObj);
   };
 
   return (

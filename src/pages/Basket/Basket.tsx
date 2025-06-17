@@ -22,7 +22,6 @@ const Basket = () => {
   const { currentUser } = useAuth();
   const { items, removeItem, updateQuantity, clearBasket, totalPrice } = useBasketStore();
   const { saveItem } = useSavedItemsStore();
-
   const subtotal = totalPrice();
   const shipping = subtotal > 0 ? 3.99 : 0;
   const total = subtotal + shipping;
@@ -80,7 +79,7 @@ const Basket = () => {
             <h2 className='text-lg font-medium text-gray-900'>Order Summary</h2>
           </div>
 
-          <div className=''>
+          <div className='basket-grid'>
             <AnimatePresence>
               {items.map((item, i) => (
                 <motion.div
@@ -136,20 +135,6 @@ const Basket = () => {
                             </button>
                           </div>
                           <div className='item-save-or-remove-container'>
-                            {currentUser && (
-                              <div>
-                                <button
-                                  type='button'
-                                  className='basket-save-button'
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSaveForLater(item);
-                                  }}
-                                >
-                                  <span>Save for Later</span>
-                                </button>
-                              </div>
-                            )}
                             <button
                               type='button'
                               className='basket-remove-button'

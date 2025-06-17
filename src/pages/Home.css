@@ -28,7 +28,7 @@
 
 .mission-statement h2 {
   font-size: 2.5rem;
-  color: #FFA500; /* Orange color to match your theme */
+  color: #ffa500; /* Orange color to match your theme */
   margin-bottom: 1.5rem;
   font-weight: 600;
 }
@@ -44,7 +44,7 @@
 .mission-tagline {
   font-size: 1.4rem;
   font-weight: 500;
-  color: #FFA500; /* Orange color to match your theme */
+  color: #ffa500; /* Orange color to match your theme */
   font-style: italic;
   letter-spacing: 0.5px;
   margin-top: 1.5rem;
@@ -134,9 +134,9 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  color: #FFA500;
+  color: #ffa500;
   text-shadow: 0 0 8px rgba(255, 165, 0, 0.3);
-  -webkit-text-fill-color: #FFA500; /* For Safari */
+  -webkit-text-fill-color: #ffa500; /* For Safari */
 }
 
 .feature-card:hover .feature-icon {
@@ -146,7 +146,7 @@
 
 .features-title {
   font-size: 2.5rem;
-  color: #FFA500;
+  color: #ffa500;
   margin-bottom: 3rem;
   font-weight: 600;
   text-align: center;
@@ -156,7 +156,7 @@
 .feature-card .feature-title {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #FFA500;
+  color: #ffa500;
   font-weight: 600;
 }
 
@@ -181,7 +181,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
   color: #000000;
   border: none;
   border-radius: 50px;
@@ -200,55 +200,55 @@
   .home-page {
     padding: 1rem 0 0;
   }
-  
+
   .mission-statement {
     padding: 2rem 0;
   }
-  
+
   .mission-content {
     padding: 0 1.5rem;
   }
-  
+
   .mission-statement h2 {
     font-size: 1.75rem;
   }
-  
+
   .mission-text {
     font-size: 1rem;
     line-height: 1.6;
   }
-  
+
   .mission-tagline {
     font-size: 1.1rem;
   }
-  
+
   .carousel-container {
     width: 100%;
     margin: 0 -1rem;
     padding: 0;
   }
-  
+
   .tiles-wrapper {
     align-items: flex-start;
   }
-  
+
   .features-section {
     padding: 2rem 1rem;
   }
-  
+
   .features-container {
     gap: 1.5rem;
   }
-  
+
   .feature-card {
     min-width: 100%;
     padding: 1.5rem;
   }
-  
+
   .feature-title {
     font-size: 1.3rem;
   }
-  
+
   .feature-description {
     font-size: 0.95rem;
   }
@@ -258,53 +258,53 @@
   .hero {
     padding: 4rem 1rem;
   }
-  
+
   .hero h1 {
     font-size: 2rem;
   }
-  
+
   .tagline {
     font-size: 1.1rem;
   }
-  
+
   .pillars-section,
   .cta-section {
     padding: 3rem 1rem;
   }
-  
+
   .pillars-section h2,
   .cta-section h2 {
     font-size: 1.8rem;
   }
-  
+
   .cta-button {
     padding: 0.8rem 2rem;
     font-size: 1rem;
   }
-  
+
   .mission-statement {
     padding: 1.5rem 0;
   }
-  
+
   .mission-content {
     padding: 0 1rem;
   }
-  
+
   .mission-statement h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .mission-text {
     font-size: 0.95rem;
     line-height: 1.5;
   }
-  
+
   .mission-tagline {
     font-size: 1rem;
     margin-top: 1.25rem;
   }
-  
+
   .carousel-container {
     padding: 0;
   }

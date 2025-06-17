@@ -58,20 +58,25 @@ export const useBasketStore = create<BasketStore>((set, get) => ({
       };
     }),
 
-  removeItem: (productId, size) =>
-    set((state) => ({
-      items: state.items.filter((item) => item.product.id !== productId || item.product.size !== size),
-    })),
+  removeItem: (productId, size) => {
+    set((state) => {
+      const filteredItems = state.items.filter((item) => item.product.id !== productId || item.product.size !== size);
+      return {
+        items: filteredItems,
+      };
+    });
+  },
 
-  updateQuantity: (productId, size, quantity) =>
-    set((state) => ({
+  updateQuantity: (productId, size, quantity) => {
+    return set((state) => ({
       items:
         quantity <= 0
           ? state.items.filter((item) => item.product.id !== productId || item.product.size !== size)
           : state.items.map((item) =>
               item.product.id === productId && item.product.size === size ? { ...item, quantity } : item
             ),
-    })),
+    }));
+  },
 
   clearBasket: () => set({ items: [] }),
 

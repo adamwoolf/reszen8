@@ -135,7 +135,7 @@ const Dashboard = () => {
   }
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
-    removeItem(itemId, type, index);
+    removeItem(itemId, type);
     setNotification({
       show: true,
       message: "Item removed from your Dashboard",

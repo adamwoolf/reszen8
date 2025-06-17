@@ -40,7 +40,10 @@ const Memberships: React.FC = () => {
       navigate("/contact");
       return;
     }
-
+    if (tier.freeTrial) {
+      navigate("/signup");
+      return;
+    }
     // Create a proper product object with all required fields
     const product = {
       id: tier.id,
@@ -49,7 +52,6 @@ const Memberships: React.FC = () => {
       description: tier.description || "",
       size: tier.billing, // Store billing cycle as size
     };
-
     console.log("Adding to basket:", product); // Debug log
     addItem(product);
     navigate("/basket");

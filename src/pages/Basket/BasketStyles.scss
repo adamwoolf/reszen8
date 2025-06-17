@@ -29,6 +29,15 @@
   height: 65px;
 }
 
+.basket-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
 .basket {
   &__clear-button {
     margin-right: 16px;
@@ -57,7 +66,6 @@
   &-remove-button {
     width: 30px;
     height: 35px;
-    margin-left: 30px;
     display: flex;
     justify-content: center;
     align-items: center;

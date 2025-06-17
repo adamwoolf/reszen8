@@ -28,7 +28,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser } = useAuth();
-  console.log(currentUser);
+
   const [selectedMusic, setSelectedMusic] = useState<string>("none");
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
@@ -143,7 +143,6 @@ const AIMeditationGenerator: React.FC = () => {
         if (music.value !== "none" && music.url) {
           try {
             const response = await fetch(music.url, { method: "HEAD" });
-            console.log(`Music ${music.label} (${music.url}):`, response.ok ? "✅ Accessible" : "❌ Not accessible");
           } catch (error) {
             console.error(`Error accessing ${music.label}:`, error);
           }

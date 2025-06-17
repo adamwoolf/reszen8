@@ -19,7 +19,20 @@
   margin-bottom: 3rem;
   padding: 0 1rem;
 }
+.to-basket-link {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+}
 
+.saved-item-block {
+  background: transparent;
+}
+
+.to-basket-link-label {
+  margin-right: 4px;
+  color: orange;
+}
 .memberships-header h1 {
   font-size: 3rem;
   color: #ffa500;
