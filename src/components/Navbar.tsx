@@ -5,6 +5,42 @@ import CartIcon from "./CartIcon/CartIcon";
 import { FaBars } from "react-icons/fa";
 import "./Navbar.css";
 
+export const CountDown = ({ user }) => {
+  const start = user?.subscription?.startDate;
+  const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0 });
+  useEffect(() => {
+    const targetDate = new Date(start);
+    targetDate.setDate(targetDate.getDate() + 7);
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        setRemaining({ days: 0, hours: 0, minutes: 0 });
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      setRemaining({ days, hours, minutes });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000); // update every minute
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  return user?.subscription?.subscription === "free-trial" ? (
+    <span style={{ color: "inherit" }}>
+      Free trial remaining: {remaining.days}d {remaining.hours}h {remaining.minutes}m
+    </span>
+  ) : null;
+};
+
 const Navbar: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +52,6 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
-
   // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
@@ -152,17 +187,20 @@ const Navbar: React.FC = () => {
         </div>
         {currentUser && (
           <div className='user-items'>
-            <span className='user-address'>
-              {name} {currentUser.email}
-            </span>
-            <div className=''>
-              {/* <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
+            <span className='countdown'>{<CountDown user={currentUser} />}</span>
+            <span className='user-items-right'>
+              <span className='user-address'>
+                {name} {currentUser.email}
+              </span>
+              <div className=''>
+                {/* <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
                 My Account
               </NavLink> */}
-              <button className='user-address' onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
+                <button className='user-address' onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            </span>
           </div>
         )}
       </nav>

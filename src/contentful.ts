@@ -7,6 +7,8 @@ const client = createClient({
 
 const getStoreItems = () =>
   client.getEntries({ content_type: "storeItem", order: "fields.order" }).then((response) => response.items);
+const getMeditationItems = () =>
+  client.getEntries({ content_type: "meditationItem" }).then((response) => response.items);
 
 const getMeditationPage = () =>
   client.getEntries({ content_type: "meditationHubPage" }).then((response) => response.items[0]);
@@ -21,6 +23,7 @@ const getMembershipTiers = () =>
   client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
 
 export {
+  getMeditationItems,
   getStoreItems,
   getMeditationPage,
   getApparelPage,

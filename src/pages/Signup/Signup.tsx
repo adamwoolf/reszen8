@@ -134,7 +134,7 @@ export default function Signup() {
 
           <div>
             <button type='submit' disabled={loading} className='form__submit'>
-              {loading ? "Creating account..." : "Sign up"}
+              {loading ? "Creating account..." : "Start Free Trial"}
             </button>
           </div>
         </form>

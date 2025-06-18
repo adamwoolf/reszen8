@@ -8,7 +8,6 @@ import useContentful from "../hooks/useContentful";
 const Meditations: React.FC = () => {
   const content = useContentful(getMeditationPage)?.content?.fields;
 
-  console.log(content);
   return (
     <div className='category-page'>
       <header className='category-header'>

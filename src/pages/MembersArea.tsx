@@ -8,6 +8,7 @@ import { useSavedItemsStore } from "../store/savedItemsStore";
 import { useBasketStore } from "../store/basketStore";
 import { FaTrash, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { CountDown } from "../components/Navbar";
 
 export default function MembersArea() {
   const { currentUser, logout } = useAuth();
@@ -16,7 +17,6 @@ export default function MembersArea() {
   const { purchasedItems } = usePurchasedItemsStore();
   const { savedItems, removeSavedItem, moveToBasket } = useSavedItemsStore();
   const { addItem } = useBasketStore();
-  console.log(savedItems);
   const handleResetPassword = () => {
     // Add password reset logic here
     alert("Password reset link will be sent to your email");
@@ -62,7 +62,7 @@ export default function MembersArea() {
   if (!currentUser) {
     return <Navigate to='/login' />;
   }
-  console.log(currentUser.basket);
+
   return (
     <div className='home-page'>
       <header className='mission-statement'>
@@ -73,51 +73,25 @@ export default function MembersArea() {
           </p>
         </div>
       </header>
-
+      {/* subscription details  panel */}
       <section className='features-section'>
         <div className='features-container'>
-          {!isSubscribed && isTrialActive && (
-            <div className='feature-card'>
-              <h3 className='feature-title'>Free Trial</h3>
-              <p className='feature-description'>
-                Enjoy full access to our premium features during your trial period.
-                <br />
-                <br />
-                <strong>Included in your trial:</strong>
-                <ul>
-                  <li>Unlimited access to all meditations</li>
-                  <li>Personalized recommendations</li>
-                  <li>Downloadable meditation guides</li>
-                  <li>Priority customer support</li>
-                </ul>
-              </p>
-              <button className='membership-cta' style={{ marginTop: "1rem" }} onClick={() => setIsSubscribed(true)}>
-                Upgrade Now
-              </button>
-            </div>
-          )}
+          <div className='feature-card'>
+            <h3 className='feature-title'>My Subscription</h3>
 
-          {isSubscribed && (
-            <div className='feature-card'>
-              <h3 className='feature-title'>Your Membership</h3>
-              <p className='feature-description'>
-                <strong>Premium Membership Benefits:</strong>
-                <ul>
-                  <li>Unlimited access to all meditations</li>
-                  <li>Downloadable meditation guides</li>
-                  <li>Personalized recommendations</li>
-                  <li>Exclusive member content</li>
-                  <li>Priority customer support</li>
-                  <li>Offline listening</li>
-                </ul>
-                <br />
-                <strong>Next Billing Date:</strong> June 30, 2025
-              </p>
-              <button className='membership-cta' style={{ marginTop: "1rem" }}>
-                Manage Subscription
-              </button>
-            </div>
-          )}
+            {currentUser?.subscription?.subscription === "free-trial" ? (
+              <div>
+                {" "}
+                <p>Free 7 Day Trial</p>
+                <CountDown user={currentUser} />
+              </div>
+            ) : (
+              <span>Monthly</span>
+            )}
+            <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
+              Upgrade Now
+            </Link>
+          </div>
 
           {/* Saved for Later Section */}
           <div className='feature-card '>

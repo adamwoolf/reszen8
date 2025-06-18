@@ -5,6 +5,8 @@ import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard.css";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 import Meditations from "./Meditations";
+import useContentful from "../hooks/useContentful";
+import { getMeditationItems } from "../contentful";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -16,6 +18,8 @@ const DigitalLibrary = () => {
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const { data } = useFirebaseDatabase("meditations");
+  const staticMeditations = useContentful(getMeditationItems)?.content;
+  console.log(staticMeditations);
 
   // Redirect to login if not authenticated
   if (!currentUser) {
@@ -23,11 +27,7 @@ const DigitalLibrary = () => {
     return null;
   }
   const [libraryData, setLibraryData] = useState({
-    meditations: [
-      // { id: 101, title: "Morning Calm", duration: "10 min", type: "meditation" as const },
-      // { id: 102, title: "Deep Sleep", duration: "20 min", type: "meditation" as const },
-      // { id: 103, title: "Anxiety Relief", duration: "15 min", type: "meditation" as const },
-    ],
+    meditations: [],
     ebooks: [
       {
         createdAt: 12343,
@@ -66,18 +66,26 @@ const DigitalLibrary = () => {
   useEffect(() => {
     if (data && !libraryData?.meditations.length) {
       const meds = Object.values(data);
-
+      const staticMeds = staticMeditations?.map(({ fields }) => ({
+        audioUrl: fields.audioFile.fields.file.url,
+        type: fields.type,
+        title: fields.title,
+      }));
       setLibraryData({
         ...libraryData,
-        meditations: meds.map((m, i) => ({
-          ...(m as {}),
-          type: "meditation",
-          id: `${m.type}-${i}`,
-          meditationType: m.type,
-        })),
+        meditations: [
+          ...libraryData.meditations,
+          ...staticMeds,
+          ...meds.map((m, i) => ({
+            ...(m as {}),
+            type: "meditation",
+            id: `${m.type}-${i}`,
+            meditationType: m.type,
+          })),
+        ],
       });
     }
-  }, [data]);
+  }, [data, staticMeditations]);
 
   const handleAddItem = (item: any) => {
     const wasAdded = addItem(item);

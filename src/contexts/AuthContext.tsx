@@ -70,12 +70,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (users && users.length && currentUser) {
-      const currentFromDB = users ? users?.find((u: User) => u.email === currentUser.email) : {};
-      setCurrentUser({ ...currentUser, ...currentFromDB });
-    }
-  }, [users, currentUser]);
+  // useEffect(() => {
+  //   if (users && users.length && currentUser) {
+  //     const currentFromDB = users ? users?.find((u: User) => u.email === currentUser.email) : {};
+  //     console.log(currentFromDB);
+  //     console.log("RUNS");
+  //     setCurrentUser(
+  //       currentFromDB.subscription
+  //         ? { ...currentUser, ...currentFromDB }
+  //         : {
+  //             ...currentUser,
+  //             ...currentFromDB,
+  //             subscription: {
+  //               hasCompletedTrial: false,
+  //               subscription: "free-trial",
+  //               duration: 7,
+  //               startDate: "",
+  //             },
+  //           }
+  //     );
+  //   }
+  // }, [users, currentUser]);
 
   const signup = useCallback(async (email: string, password: string, firstName: string, surName: string) => {
     try {
@@ -84,7 +99,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await createUserWithEmailAndPassword(auth, email, password);
       // create db entry in USERS for new user
       const firebaseId = Date.now().toString();
-      return addOrUpdate(firebaseId, { email, firebaseId, firstName, surName });
+      return addOrUpdate(firebaseId, {
+        email,
+        firebaseId,
+        firstName,
+        surName,
+        subscription: {
+          hasCompletedTrial: false,
+          subscription: "free-trial",
+          duration: 7,
+          startDate: Date.now(),
+        },
+      });
     } catch (error: any) {
       const errorMessage = error.message || "Failed to create an account";
       setError(errorMessage);

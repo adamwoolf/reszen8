@@ -242,10 +242,15 @@
   right: 0;
   margin-top: 100px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
   border-top: 1px solid #ffa50030;
+}
+
+.user-items-right {
+  display: flex;
+  align-items: center;
 }
 
 .user-address {
@@ -319,25 +324,6 @@
   margin-left: 1rem;
 }
 
-.user-greeting {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  transition: all 0.3s ease;
-}
-
-.user-greeting:hover {
-  background-color: rgba(255, 165, 0, 0.2);
-}
-
-.user-icon {
-  font-size: 1.5rem;
-  color: #ffa500;
-}
-
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .navbar.scrolled {
@@ -383,4 +369,9 @@
       color: #000000;
     }
   }
+}
+
+.countdown {
+  margin: 0 30px;
+  color: orange;
 }

@@ -46,7 +46,20 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   useEffect(() => {
     if (currentUser && currentUser.firebaseId) {
       addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
-      setCurrentUser({ ...currentUser, basket: items });
+      // setCurrentUser(
+      //   currentUser.subscriptions
+      //     ? { ...currentUser, basket: items }
+      //     : {
+      //         ...currentUser,
+      //         basket: items,
+      //         subscription: {
+      //           hasCompletedTrial: false,
+      //           subscription: "free-trial",
+      //           duration: 7,
+      //           startDate: Date.now(),
+      //         },
+      //       }
+      // );
     }
   }, [items]);
 

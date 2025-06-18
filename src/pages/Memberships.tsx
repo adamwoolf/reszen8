@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBasketStore } from "../store/basketStore";
 import "./Memberships.css";
 import useContentful from "../hooks/useContentful";
 import { getMembershipTiers, getMembershipPage, getFAQs } from "../contentful";
+import { useAuth } from "../contexts/AuthContext";
 
 type MembershipTier = {
   id: string;
@@ -19,7 +20,7 @@ type MembershipTier = {
 const Memberships: React.FC = () => {
   const navigate = useNavigate();
   const { addItem } = useBasketStore();
-
+  const { currentUser } = useAuth();
   const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
   const content = useContentful(getMembershipPage)?.content?.fields;
   const faqs = useContentful(getFAQs)?.content?.items;
@@ -71,7 +72,7 @@ const Memberships: React.FC = () => {
             // Use the standard features for Digital Hub memberships and free trial
             const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
             const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
-
+            console.log(tier);
             return (
               <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
                 <div className='membership-header'>
@@ -100,12 +101,20 @@ const Memberships: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <button
-                  className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
-                  onClick={() => handleSubscribe(tier)}
-                >
-                  {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Get Started"}
-                </button>
+                {currentUser?.subscription?.subscription === tier.id ? (
+                  <></>
+                ) : (
+                  <button
+                    className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
+                    onClick={() => handleSubscribe(tier)}
+                  >
+                    {tier.id === "bespoke-journey"
+                      ? "Make Enquiry"
+                      : tier.freeTrial
+                      ? "Start Free Trial"
+                      : "Get Started"}
+                  </button>
+                )}
               </div>
             );
           })}
