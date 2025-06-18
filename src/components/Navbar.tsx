@@ -7,7 +7,7 @@ import "./Navbar.css";
 
 export const CountDown = ({ user }) => {
   const start = user?.subscription?.startDate;
-  const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0 });
+  const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
     const targetDate = new Date(start);
     targetDate.setDate(targetDate.getDate() + 7);
@@ -17,26 +17,27 @@ export const CountDown = ({ user }) => {
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        setRemaining({ days: 0, hours: 0, minutes: 0 });
+        setRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
 
-      setRemaining({ days, hours, minutes });
+      setRemaining({ days, hours, minutes, seconds });
     };
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // update every minute
+    const interval = setInterval(updateCountdown, 1000); // update every second
 
     return () => clearInterval(interval);
-  }, [user]);
+  }, [start]); // Changed dependency to `start` since it's the relevant prop
 
   return user?.subscription?.subscription === "free-trial" ? (
     <span style={{ color: "inherit" }}>
-      Free trial remaining: {remaining.days}d {remaining.hours}h {remaining.minutes}m
+      Free trial remaining: {remaining.days}d {remaining.hours}h {remaining.minutes}m, {remaining.seconds}s
     </span>
   ) : null;
 };

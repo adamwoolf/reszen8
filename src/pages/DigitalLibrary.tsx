@@ -3,8 +3,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard.css";
-import useFirebaseDatabase from "../hooks/useFirestoreCollection";
-import Meditations from "./Meditations";
 import useContentful from "../hooks/useContentful";
 import { getMeditationItems } from "../contentful";
 
@@ -17,9 +15,7 @@ const DigitalLibrary = () => {
   const { addItem } = useSavedItems();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
-  const { data } = useFirebaseDatabase("meditations");
   const staticMeditations = useContentful(getMeditationItems)?.content;
-  console.log(staticMeditations);
 
   // Redirect to login if not authenticated
   if (!currentUser) {
@@ -64,8 +60,7 @@ const DigitalLibrary = () => {
   });
 
   useEffect(() => {
-    if (data && !libraryData?.meditations.length) {
-      const meds = Object.values(data);
+    if (!libraryData?.meditations.length) {
       const staticMeds = staticMeditations?.map(({ fields }) => ({
         audioUrl: fields.audioFile.fields.file.url,
         type: fields.type,
@@ -73,19 +68,10 @@ const DigitalLibrary = () => {
       }));
       setLibraryData({
         ...libraryData,
-        meditations: [
-          ...libraryData.meditations,
-          ...staticMeds,
-          ...meds.map((m, i) => ({
-            ...(m as {}),
-            type: "meditation",
-            id: `${m.type}-${i}`,
-            meditationType: m.type,
-          })),
-        ],
+        meditations: [...libraryData.meditations, ...staticMeds],
       });
     }
-  }, [data, staticMeditations]);
+  }, [staticMeditations]);
 
   const handleAddItem = (item: any) => {
     const wasAdded = addItem(item);

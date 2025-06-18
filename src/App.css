@@ -338,7 +338,7 @@ div {
 
 .auth-container button {
   padding: 0.8rem;
-  background-color: var(--primary-color);
+  background-color: var(--primary-color) !important;
   color: #000000;
   border: none;
   border-radius: var(--border-radius);
@@ -347,9 +347,9 @@ div {
   transition: var(--transition);
 }
 
-.auth-container button:hover {
+/* .auth-container button:hover {
   background-color: var(--secondary-color);
-}
+} */
 
 .auth-container button:disabled {
   background-color: #666;
@@ -474,13 +474,6 @@ button,
   cursor: pointer;
   transition: var(--transition);
 }
-
-button:hover,
-.btn:hover,
-.button:hover {
-  background-color: var(--secondary-color);
-}
-
 input,
 textarea,
 select {

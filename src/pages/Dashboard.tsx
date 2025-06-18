@@ -3,9 +3,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard.css";
-import useFirebasedatabase from "../hooks/useFirestoreCollection";
+import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
-type TabType = "meditations" | "ebooks" | "publications";
+type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
 
 const mockAudioData = {
   mindfulness: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
@@ -29,6 +29,10 @@ const Dashboard = () => {
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [myMeds, setMyMeds] = useState([]);
+  const { data } = useFirebaseDatabase("meditations");
+  const [allItems, setAllItems] = useState({});
+
   // Format time from seconds to MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -41,6 +45,27 @@ const Dashboard = () => {
     navigate("/login");
     return null;
   }
+
+  useEffect(() => {
+    setAllItems({ ...savedItems, myMeds });
+  }, [savedItems, myMeds]);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      console.log(currentUser);
+      const meds = Object.values(data);
+      const parsedMeds = meds
+        .filter((item) => item.generatedBy === currentUser.uid)
+        .map((m, i) => ({
+          ...(m as {}),
+          type: "meditation",
+          id: `${m.type}-${i}`,
+          meditationType: m.type,
+        }));
+      setMyMeds(Object.values(parsedMeds));
+    }
+  }, [data, currentUser]);
 
   const togglePlayPause = (item: any) => {
     if (currentlyPlaying === item.id) {
@@ -146,10 +171,11 @@ const Dashboard = () => {
       setNotification((prev) => ({ ...prev, show: false }));
     }, 3000);
   };
-
+  console.log(allItems);
+  console.log(activeTab);
   const renderTabContent = () => {
-    const data = savedItems[activeTab];
-
+    const data = allItems[activeTab];
+    console.log(allItems);
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -158,7 +184,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {data.length === 0 ? (
+        {data?.length === 0 ? (
           <div className='text-center py-10'>
             <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
             <Link to='/digital-library' className='text-orange-400 hover:text-orange-300 font-medium'>
@@ -167,7 +193,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data.map((item, i) => (
+            {data?.map((item, i) => (
               <div key={`dashboard-item ${i}`} className='dashboard-card'>
                 <div className='flex flex-col md:flex-row justify-between gap-6'>
                   <div className='flex-1'>
@@ -185,24 +211,26 @@ const Dashboard = () => {
                       </div>
                     )}
                     <div className='flex gap-3'>
-                      <button
-                        onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
-                        className='dashboard-button'
-                      >
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          className='h-4 w-4'
-                          viewBox='0 0 20 20'
-                          fill='currentColor'
+                      {activeTab !== "myMeds" && (
+                        <button
+                          onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
+                          className='dashboard-button'
                         >
-                          <path
-                            fillRule='evenodd'
-                            d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                            clipRule='evenodd'
-                          />
-                        </svg>
-                        <span>Remove</span>
-                      </button>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='h-4 w-4'
+                            viewBox='0 0 20 20'
+                            fill='currentColor'
+                          >
+                            <path
+                              fillRule='evenodd'
+                              d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
+                              clipRule='evenodd'
+                            />
+                          </svg>
+                          <span>Remove</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -219,12 +247,20 @@ const Dashboard = () => {
       <h1 className='text-3xl font-bold mb-6 text-white'>My Dashboard</h1>
 
       <div className='tabs mb-8'>
+        <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
+          My Meditations
+          {myMeds?.length > 0 && (
+            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
+              {myMeds?.length}
+            </span>
+          )}
+        </button>
         <button
           className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
           onClick={() => setActiveTab("meditations")}
         >
-          My Meditations
-          {savedItems?.meditations.length > 0 && (
+          Saved Meditations
+          {savedItems?.meditations?.length > 0 && (
             <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
               {savedItems?.meditations.length}
             </span>
