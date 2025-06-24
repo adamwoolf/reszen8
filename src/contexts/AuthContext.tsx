@@ -10,15 +10,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
-
-interface User {
-  uid: string;
-  email: string | null;
-  emailVerified: boolean;
-  meditations?: [];
-
-  // Add other user properties as needed
-}
+import { User } from "../models";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -58,8 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailVerified: firebaseUser.emailVerified,
           // Add any additional user properties you need
         };
+        const allDetails: User | any = Object.values(users).find((u) => u.email === firebaseUser.email) || {};
 
-        setCurrentUser(user);
+        setCurrentUser({ ...user, ...allDetails });
         // console.log({ ...currentFromDB, ...user });
       } else {
         setCurrentUser(null);
@@ -68,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [users]);
 
   // useEffect(() => {
   //   if (users && users.length && currentUser) {

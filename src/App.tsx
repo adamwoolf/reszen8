@@ -30,18 +30,25 @@ import Sitemap from "./pages/Sitemap";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import FloatingCTA from "./components/FloatingCTA";
-import Footer from "./components/Footer";
+import Footer from "./components/Footer/Footer";
 import NotFound from "./pages/NotFound";
 import Basket from "./pages/Basket/Basket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import PasswordResetPage from "./pages/PasswordReset/PasswordReset";
+import UserManager from "./components/UserManager";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser } = useAuth();
-  return currentUser ? <>{children}</> : <Navigate to='/login' />;
+  return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' />;
+};
+
+const UserRoute = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser } = useAuth();
+  return children;
+  // return currentUser ? <>{children}</> : <Navigate to='/login' />;
 };
 
 // Layout component that wraps all pages except LandingPage
@@ -108,11 +115,11 @@ const AnimatedRoutes = () => {
         <Route
           path='/members'
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <MembersArea />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
@@ -170,7 +177,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path='/ai-meditation-generator'
+          path='/bespoke-meditation-generator'
           element={
             <ProtectedRoute>
               <Layout>
@@ -265,7 +272,9 @@ function App() {
         <BasketProvider>
           <SavedItemsProvider>
             <Router>
-              <AnimatedRoutes />
+              <UserManager>
+                <AnimatedRoutes />
+              </UserManager>
             </Router>
           </SavedItemsProvider>
         </BasketProvider>

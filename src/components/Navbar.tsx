@@ -4,8 +4,9 @@ import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
 import { FaBars } from "react-icons/fa";
 import "./Navbar.css";
+import useFirebasedatabase from "../hooks/useFirestoreCollection";
 
-export const CountDown = ({ user }) => {
+export const CountDown = ({ user, lines = 1 }) => {
   const start = user?.subscription?.startDate;
   const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
@@ -35,20 +36,32 @@ export const CountDown = ({ user }) => {
     return () => clearInterval(interval);
   }, [start]); // Changed dependency to `start` since it's the relevant prop
 
+  const { days, hours, minutes, seconds } = remaining;
+  const hasTime = days + hours + minutes + seconds;
+
+  const Tag = lines !== 1 ? "p" : "span";
+
+  if (user?.subscription?.subscription === "monthly") return <span>Active Monthly Subscription</span>;
+
   return user?.subscription?.subscription === "free-trial" ? (
-    <span style={{ color: "inherit" }}>
-      Free trial remaining: {remaining.days}d {remaining.hours}h {remaining.minutes}m, {remaining.seconds}s
-    </span>
+    hasTime ? (
+      <span style={{ color: "inherit" }}>
+        {" "}
+        <Tag> Free trial time remaining: </Tag> {days}d {hours}h {minutes}m, {seconds}s
+      </span>
+    ) : (
+      <span>Your free trial has expired. Please update your subscription </span>
+    )
   ) : null;
 };
 
 const Navbar: React.FC = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, setCurrentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const { addOrUpdate } = useFirebasedatabase("USERS");
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -82,6 +95,32 @@ const Navbar: React.FC = () => {
       console.error("Failed to log out", error);
     }
   };
+  const newTrial = {
+    duration: 7,
+    hasCompletedTrial: false,
+    isActiveSub: true,
+    startDate: Date.now(),
+    subscription: "free-trial",
+  };
+  console.log(currentUser);
+  const resetTrial = () => {
+    if (currentUser && currentUser.firebaseId && currentUser?.isGod && window.godControls) {
+      const reset = () => {
+        const newUserData = {
+          ...currentUser,
+          subscription: newTrial,
+        };
+        addOrUpdate(currentUser.firebaseId, newUserData);
+        setCurrentUser(newUserData);
+      };
+      return (
+        <button style={{ marginRight: 8 }} onClick={reset}>
+          god reset free trial
+        </button>
+      );
+    }
+    return null;
+  };
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName}: ` : "";
   return (
     <div>
@@ -108,23 +147,12 @@ const Navbar: React.FC = () => {
                   RESZEN8 Chat
                 </NavLink>
               </li>
-              {/* <li>
-                <NavLink to='/apparel' className={getNavLinkClass}>
-                  Apparel & Accessories
-                </NavLink>
-              </li> */}
 
-              {/* <li>
-                <NavLink to='/guided-meditations' className={getNavLinkClass}>
-                  Meditation Hub
-                </NavLink>
-              </li> */}
-
-              {currentUser && (
+              {currentUser?.subscription?.isActiveSub && (
                 <>
                   <li>
-                    <NavLink to='/ai-meditation-generator' className={getNavLinkClass}>
-                      AI Meditation Generator
+                    <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
+                      Bespoke Meditation Generator
                     </NavLink>
                   </li>
                   <li>
@@ -137,17 +165,14 @@ const Navbar: React.FC = () => {
                       My Dashboard
                     </NavLink>
                   </li>
-                  <li>
-                    <NavLink to='/members' className={getNavLinkClass}>
-                      Members Area
-                    </NavLink>
-                  </li>
-                  {/* <li>
-                    <NavLink to='/members' className={getNavLinkClass}>
-                      Account Management
-                    </NavLink>
-                  </li> */}
                 </>
+              )}
+              {currentUser && (
+                <li>
+                  <NavLink to='/members' className={getNavLinkClass}>
+                    Members Area
+                  </NavLink>
+                </li>
               )}
             </ul>
 
@@ -188,19 +213,17 @@ const Navbar: React.FC = () => {
         </div>
         {currentUser && (
           <div className='user-items'>
-            <span className='countdown'>{<CountDown user={currentUser} />}</span>
+            <span className='countdown'>
+              {resetTrial()}
+              {<CountDown user={currentUser} />}
+            </span>
             <span className='user-items-right'>
               <span className='user-address'>
                 {name} {currentUser.email}
               </span>
-              <div className=''>
-                {/* <NavLink to='/members' className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
-                My Account
-              </NavLink> */}
-                <button className='user-address' onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
+              <button className='user-address' onClick={handleLogout}>
+                Logout
+              </button>
             </span>
           </div>
         )}

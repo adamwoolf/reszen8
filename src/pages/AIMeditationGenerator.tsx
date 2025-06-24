@@ -6,7 +6,7 @@ import { generateMeditation } from "../services/aiMeditationService";
 import { convertTextToSpeech, VOICE_OPTIONS } from "../services/ttsService";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
-import "./AIMeditationGenerator.css";
+import "./AIMeditationGenerator.scss";
 
 interface MeditationState {
   title: string;
@@ -369,11 +369,6 @@ const AIMeditationGenerator: React.FC = () => {
       audioRef.current = null;
     }
 
-    console.log("Starting meditation generation...");
-    console.log("Selected voice ID:", selectedVoice);
-    console.log("Selected language:", selectedLanguage);
-    console.log("Selected music:", selectedMusic);
-
     setIsGenerating(true);
     const toastId = toast.loading("Generating your meditation...");
 
@@ -491,7 +486,7 @@ const AIMeditationGenerator: React.FC = () => {
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
-        <h1>AI Meditation Generator</h1>
+        <h1>Bespoke Meditation Generator</h1>
         <p className='text-white'>
           Create a personalized meditation session tailored to your needs. Select your preferences below and let our AI
           craft the perfect meditation for you.
@@ -654,14 +649,15 @@ const AIMeditationGenerator: React.FC = () => {
               </div>
 
               <div className='flex justify-center mt-10 space-x-8'>
-                <button type='button' className='start-over-btn' onClick={handleStartOver}>
+                {/* <button type='button' className='start-over-btn' onClick={handleStartOver}>
                   Start Over
                 </button>
                 <button className='generate-btn' onClick={handleSaveToDashboard} disabled={!currentUser}>
                   {savedItems.meditations.some((item) => item.title === generatedMeditation?.title)
                     ? "Saved to Dashboard"
                     : "Save to Dashboard"}
-                </button>
+                </button> */}
+                <span className='message'>Your meditation has been saved to the My Meditations tab in dashboard</span>
               </div>
 
               {!currentUser && (

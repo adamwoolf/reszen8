@@ -9,7 +9,6 @@ const Login = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    console.log(currentUser);
     if (currentUser) navigate("/members");
   }, [currentUser]);
 

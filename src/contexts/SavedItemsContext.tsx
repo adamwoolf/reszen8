@@ -36,14 +36,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   const { items, setItems } = useBasketStore();
 
   useEffect(() => {
-    // MOVE THIS TO USER CONTEXT
-    if (users && currentUser) {
-      const allDetails = Object.values(users).find((u) => u.email === currentUser.email);
-      setCurrentUser({ ...currentUser, ...allDetails });
-    }
-  }, [users]);
-
-  useEffect(() => {
     if (currentUser && currentUser.firebaseId) {
       addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
       // setCurrentUser(

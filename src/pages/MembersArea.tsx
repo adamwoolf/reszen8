@@ -80,10 +80,8 @@ export default function MembersArea() {
             <h3 className='feature-title'>My Subscription</h3>
 
             {currentUser?.subscription?.subscription === "free-trial" ? (
-              <div>
-                {" "}
-                <p>Free 7 Day Trial</p>
-                <CountDown user={currentUser} />
+              <div className='features-content'>
+                <CountDown user={currentUser} lines={2} />
               </div>
             ) : (
               <span>Monthly</span>

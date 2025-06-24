@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
-import "./Dashboard.css";
+import "./Dashboard.scss";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
@@ -248,7 +248,7 @@ const Dashboard = () => {
 
       <div className='tabs mb-8'>
         <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
-          My Meditations
+          Bespoke Meditations
           {myMeds?.length > 0 && (
             <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
               {myMeds?.length}
@@ -259,7 +259,7 @@ const Dashboard = () => {
           className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
           onClick={() => setActiveTab("meditations")}
         >
-          Saved Meditations
+          Library Meditations
           {savedItems?.meditations?.length > 0 && (
             <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
               {savedItems?.meditations.length}

@@ -166,6 +166,13 @@
   font-size: 1rem;
 }
 
+.features-content {
+  padding: 8px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 165, 0, 0.2);
+  border-radius: 9px;
+}
+
 /* Membership CTA */
 .membership-cta-container {
   display: flex;

@@ -7,6 +7,9 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { usePurchasedItemsStore } from '../store/purchasedItemsStore';
 import './Checkout.css';
+import { useAuth } from "../contexts/AuthContext";
+import useFirebasedatabase from "../hooks/useFirestoreCollection";
+
 
 // Initialize Stripe with test public key
 const stripePromise = loadStripe('pk_test_51O...'); // Replace with your test public key
@@ -29,6 +32,8 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   const navigate = useNavigate();
   const { items, totalPrice, clearBasket } = useBasketStore();
   const { addPurchasedItems } = usePurchasedItemsStore();
+  const { currentUser, setCurrentUser } = useAuth();
+  const { addOrUpdate } = useFirebasedatabase("USERS");
 
   // Redirect to basket if empty
   if (items.length === 0) {
@@ -141,12 +146,27 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
     }
   };
 
+  const godSignUp = () => {
+if(currentUser?.subscription && currentUser.firebaseId) {
+  const newUserData = {...currentUser, basket: [], subscription: {
+    duration: 30,
+    hasCompletedTrial: true,
+    isActiveSub: true,
+    startDate: Date.now(),
+    subscription: 'monthly'
+  }}
+  addOrUpdate(currentUser.firebaseId, newUserData)
+  setCurrentUser(newUserData)
+
+}
+  }
+
   const formattedTotal = (totalPrice()).toFixed(2);
 
   return (
     <form onSubmit={handleSubmit} className="checkout-form">
       {/* Contact Information */}
-      <section className="checkout-section">
+      {/* <section className="checkout-section">
         <h2 className="section-title">Contact Information</h2>
         <div className="form-grid">
           <div className="form-group">
@@ -172,10 +192,10 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Shipping Address */}
-      <section className="checkout-section">
+      {/* <section className="checkout-section">
         <h2 className="section-title">Shipping Address</h2>
         <div className="form-grid">
           <div className="form-group full-width">
@@ -233,7 +253,7 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Order Summary */}
       <section className="checkout-section order-summary">
@@ -279,10 +299,11 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
               <button type="button" className="payment-tab active">
                 <span>Pay with card</span>
               </button>
+              {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>}
             </div>
           </div>
           
-          <div className="card-details">
+          {/* <div className="card-details">
             <div className="form-group">
               <label htmlFor="cardNumber">Card number</label>
               <div className="card-input">
@@ -326,9 +347,9 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
                   maxLength={4}
                 />
               </div>
-            </div>
+            </div> */}
             
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="cardName">Name on card</label>
               <input
                 type="text"
@@ -338,10 +359,10 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
                 className="card-name"
               />
             </div>
-          </div>
+          </div> */}
         </div>
         
-        {error && <div className="payment-error">{error}</div>}
+        {/* {error && <div className="payment-error">{error}</div>}
         <div className="form-actions">
           <button 
             type="submit" 
@@ -350,7 +371,7 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
           >
             {isProcessing ? 'Processing...' : `Pay £${formattedTotal}`}
           </button>
-        </div>
+        </div> */}
       </section>
     </form>
   );
