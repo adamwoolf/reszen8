@@ -3,57 +3,9 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
 import { FaBars } from "react-icons/fa";
-import "./Navbar.css";
+import "./Navbar.scss";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
-
-export const CountDown = ({ user, lines = 1 }) => {
-  const start = user?.subscription?.startDate;
-  const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  useEffect(() => {
-    const targetDate = new Date(start);
-    targetDate.setDate(targetDate.getDate() + 7);
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = targetDate - now;
-
-      if (diff <= 0) {
-        setRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      setRemaining({ days, hours, minutes, seconds });
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000); // update every second
-
-    return () => clearInterval(interval);
-  }, [start]); // Changed dependency to `start` since it's the relevant prop
-
-  const { days, hours, minutes, seconds } = remaining;
-  const hasTime = days + hours + minutes + seconds;
-
-  const Tag = lines !== 1 ? "p" : "span";
-
-  if (user?.subscription?.subscription === "monthly") return <span>Active Monthly Subscription</span>;
-
-  return user?.subscription?.subscription === "free-trial" ? (
-    hasTime ? (
-      <span style={{ color: "inherit" }}>
-        {" "}
-        <Tag> Free trial time remaining: </Tag> {days}d {hours}h {minutes}m, {seconds}s
-      </span>
-    ) : (
-      <span>Your free trial has expired. Please update your subscription </span>
-    )
-  ) : null;
-};
+import AccountStatus from "../components/AccountStatus/AccountStatus";
 
 const Navbar: React.FC = () => {
   const { currentUser, logout, setCurrentUser } = useAuth();
@@ -116,6 +68,27 @@ const Navbar: React.FC = () => {
       return (
         <button style={{ marginRight: 8 }} onClick={reset}>
           god reset free trial
+        </button>
+      );
+    }
+    return null;
+  };
+
+  const endSub = () => {
+    if (currentUser && currentUser.firebaseId && currentUser?.isGod && window.godControls) {
+      const reset = () => {
+        const thirtyFiveDaysAgo = Date.now() - 35 * 24 * 60 * 60 * 1000;
+
+        const newUserData = {
+          ...currentUser,
+          subscription: { ...newTrial, startDate: thirtyFiveDaysAgo, hasCompletedTrial: true },
+        };
+        addOrUpdate(currentUser.firebaseId, newUserData);
+        setCurrentUser(newUserData);
+      };
+      return (
+        <button style={{ marginRight: 8 }} onClick={reset}>
+          end sub
         </button>
       );
     }
@@ -215,7 +188,8 @@ const Navbar: React.FC = () => {
           <div className='user-items'>
             <span className='countdown'>
               {resetTrial()}
-              {<CountDown user={currentUser} />}
+              {endSub()}
+              {<AccountStatus user={currentUser} />}
             </span>
             <span className='user-items-right'>
               <span className='user-address'>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
-import "./Dashboard.scss";
+import "./Dashboard/Dashboard.scss";
 import useContentful from "../hooks/useContentful";
 import { getMeditationItems } from "../contentful";
 

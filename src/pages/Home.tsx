@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import PillarsCarousel from "../components/PillarsCarousel";
-import "./Home.css";
+import "./Home.scss";
 import useContentful from "../hooks/useContentful";
 import { getHomePage } from "../contentful";
 import { marked } from "marked";

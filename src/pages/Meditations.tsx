@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./CategoryPage.css";
+import "./CategoryPage.scss";
 import { getMeditationPage } from "../contentful";
 import { marked } from "marked";
 import useContentful from "../hooks/useContentful";

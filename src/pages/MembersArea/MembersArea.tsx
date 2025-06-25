@@ -1,14 +1,14 @@
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { Navigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "./CategoryPage.css";
-import "./Home.css";
-import { usePurchasedItemsStore } from "../store/purchasedItemsStore";
-import { useSavedItemsStore } from "../store/savedItemsStore";
-import { useBasketStore } from "../store/basketStore";
+import "../CategoryPage.scss";
+import "../Home.scss";
+import { usePurchasedItemsStore } from "../../store/purchasedItemsStore";
+import { useSavedItemsStore } from "../../store/savedItemsStore";
+import { useBasketStore } from "../../store/basketStore";
 import { FaTrash, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import { CountDown } from "../components/Navbar";
+import CountDown from "../../components/AccountStatus/AccountStatus";
 
 export default function MembersArea() {
   const { currentUser, logout } = useAuth();
@@ -64,7 +64,7 @@ export default function MembersArea() {
   }
 
   return (
-    <div className='home-page'>
+    <div className='home-page members-area'>
       <header className='mission-statement'>
         <div className='mission-content'>
           <h1>Welcome to Your Members Area</h1>
@@ -81,7 +81,7 @@ export default function MembersArea() {
 
             {currentUser?.subscription?.subscription === "free-trial" ? (
               <div className='features-content'>
-                <CountDown user={currentUser} lines={2} />
+                <CountDown user={currentUser} />
               </div>
             ) : (
               <span>Monthly</span>
@@ -187,114 +187,6 @@ export default function MembersArea() {
           </div>
         </div>
       </section>
-
-      <style jsx>{`
-        .purchased-items-container,
-        .saved-items-container {
-          margin-top: 1rem;
-        }
-
-        .purchased-item,
-        .saved-item {
-          border-radius: 8px;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          border: 1px solid rgba(255, 165, 0, 0.2);
-        }
-
-        .purchased-item:last-child,
-        .saved-item:last-child {
-          margin-bottom: 0;
-        }
-
-        .purchased-item-details,
-        .saved-item-details {
-          color: #e2e8f0;
-          position: relative;
-        }
-
-        .purchased-item-name,
-        .saved-item-name {
-          font-weight: 600;
-          margin: 0 0 0.5rem 0;
-          color: #fff;
-        }
-
-        .purchased-item-size,
-        .purchased-item-quantity,
-        .purchased-item-price,
-        .purchased-item-date,
-        .saved-item-size,
-        .saved-item-quantity,
-        .saved-item-price,
-        .saved-item-date {
-          margin: 0.25rem 0;
-          font-size: 0.9rem;
-          color: #a0aec0;
-        }
-
-        .purchased-item-price,
-        .saved-item-price {
-          font-weight: 600;
-          color: #ffa500;
-          margin: 0.5rem 0;
-        }
-
-        .purchased-item-date,
-        .saved-item-date {
-          font-size: 0.8rem;
-          color: #718096;
-          font-style: italic;
-        }
-
-        .saved-item-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 0.75rem;
-          padding-top: 0.75rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .move-to-basket-btn {
-          display: flex;
-          align-items: center;
-          background: transparent;
-          color: #ffa500;
-          border: 1px solid #ffa500;
-          border-radius: 4px;
-          padding: 0.25rem 0.75rem;
-          font-size: 0.8rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .move-to-basket-btn:hover {
-          background: rgba(255, 165, 0, 0.1);
-        }
-
-        .remove-saved-item-btn {
-          background: transparent;
-          border: none;
-          color: #e53e3e;
-          cursor: pointer;
-          padding: 0.25rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .remove-saved-item-btn:hover {
-          color: #c53030;
-        }
-
-        .no-items-message {
-          color: #a0aec0;
-          font-style: italic;
-          text-align: center;
-          padding: 1rem 0;
-        }
-      `}</style>
     </div>
   );
 }

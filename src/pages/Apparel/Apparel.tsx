@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../CategoryPage.css";
+import "../CategoryPage.scss";
 import "./ApparelStyles.css";
 import { useBasketStore } from "../../store/basketStore";
 import { getStoreItems, getApparelPage } from "../../contentful";

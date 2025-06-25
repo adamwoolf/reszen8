@@ -72,12 +72,15 @@ const Memberships: React.FC = () => {
             // Use the standard features for Digital Hub memberships and free trial
             const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
             const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
-            console.log(tier);
             return (
               <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
                 <div className='membership-header'>
                   <h3>{tier.title}</h3>
-                  {tier?.badge && <div className='popular-badge'>{tier?.badge}</div>}
+                  {tier?.badge && (
+                    <div className='popular-badge'>
+                      {currentUser?.subscription?.hasCompletedTrial ? "Completed" : tier?.badge}
+                    </div>
+                  )}
                   <div className='price'>
                     {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
                     {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}

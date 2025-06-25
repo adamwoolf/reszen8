@@ -362,36 +362,6 @@ div {
   text-align: center;
 }
 
-.members-area {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-
-.members-area h1 {
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-}
-
-.members-area button {
-  margin-top: 1rem;
-  padding: 0.8rem 1.5rem;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.members-area button:hover {
-  background-color: #c0392b;
-}
-
 /* Navbar Auth Styles */
 .user-info {
   display: flex;

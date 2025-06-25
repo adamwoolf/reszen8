@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { useSavedItems } from "../contexts/SavedItemsContext";
+import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
-import useFirebaseDatabase from "../hooks/useFirestoreCollection";
+import useFirebaseDatabase from "../../hooks/useFirestoreCollection";
 
 type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
 
@@ -195,9 +195,9 @@ const Dashboard = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data?.map((item, i) => (
               <div key={`dashboard-item ${i}`} className='dashboard-card'>
-                <div className='flex flex-col md:flex-row justify-between gap-6'>
-                  <div className='flex-1'>
-                    <h3 className='text-xl font-semibold text-white mb-2'>{item.title}</h3>
+                <div className='dashboard-card__content'>
+                  <div>
+                    <h3>{item.title}</h3>
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
                       {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
@@ -249,41 +249,25 @@ const Dashboard = () => {
       <div className='tabs mb-8'>
         <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
           Bespoke Meditations
-          {myMeds?.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
-              {myMeds?.length}
-            </span>
-          )}
+          {myMeds?.length > 0 && <span className='tab-count'>{myMeds?.length}</span>}
         </button>
         <button
           className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
           onClick={() => setActiveTab("meditations")}
         >
           Library Meditations
-          {savedItems?.meditations?.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
-              {savedItems?.meditations.length}
-            </span>
-          )}
+          {savedItems?.meditations?.length > 0 && <span className='tab-count'>{savedItems?.meditations.length}</span>}
         </button>
         <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
           My E-Books
-          {savedItems.ebooks.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
-              {savedItems.ebooks.length}
-            </span>
-          )}
+          {savedItems.ebooks.length > 0 && <span className='tab-count'>{savedItems.ebooks.length}</span>}
         </button>
         <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}
         >
           My Publications
-          {savedItems.publications.length > 0 && (
-            <span className='ml-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full tab-count'>
-              {savedItems.publications.length}
-            </span>
-          )}
+          {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
         </button>
       </div>
 
