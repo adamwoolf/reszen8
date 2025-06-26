@@ -1,10 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./FooterStyles.scss";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const { currentUser, logout, setCurrentUser } = useAuth();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  };
   return (
     <footer className='bg-gray-900 text-white py-6 border-t border-gray-800 w-full'>
       <div className='container mx-auto px-4'>
@@ -25,6 +36,9 @@ const Footer: React.FC = () => {
               Privacy Policy
             </Link>
           </div>
+          <button className='logout-cta' onClick={handleLogout}>
+            logout
+          </button>
         </div>
       </div>
     </footer>

@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
     }
     return null;
   };
-  const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName}: ` : "";
+  const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName} ` : "";
   return (
     <div>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
@@ -208,12 +208,10 @@ const Navbar: React.FC = () => {
               {<AccountStatus user={currentUser} />}
             </span>
             <span className='user-items-right'>
-              <span className='user-address'>
-                {name} {currentUser.email}
-              </span>
-              <button className='user-address' onClick={handleLogout}>
+              <span className='user-address'>{name}</span>
+              {/* <button className='user-address' onClick={handleLogout}>
                 Logout
-              </button>
+              </button> */}
             </span>
           </div>
         )}

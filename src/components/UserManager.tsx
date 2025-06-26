@@ -32,7 +32,7 @@ const UserManager = ({ children }) => {
   useEffect(() => {
     const isActive = isSubscriptionActive(currentUser?.subscription);
     setisActiveSub(isActive);
-    if (!isActive) navigate("/members");
+    if (currentUser && !isActive) navigate("/members");
   }, [currentUser]);
 
   useEffect(() => {

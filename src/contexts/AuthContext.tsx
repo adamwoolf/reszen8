@@ -14,6 +14,7 @@ import useSendMail from "../hooks/useSendEmail";
 
 interface AuthContextType {
   currentUser: User | null;
+  setCurrentUser: () => void;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signup: (email: string, password: string, firstName: string, surName: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -161,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value: AuthContextType = {
     currentUser,
+    setCurrentUser,
     login,
     signup,
     logout,
