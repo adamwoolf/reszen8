@@ -1,89 +1,103 @@
-import React, { useState } from 'react';
-import './Contact.css';
+import React, { useState, useEffect } from "react";
+import "./Contact.css";
+import useSendMail from "../hooks/useSendEmail";
 
 const Contact: React.FC = () => {
+  const { sendMail, sent, sending } = useSendMail();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
+
+    sendMail(
+      formData.message,
+      `New message from  ${formData.name}: ${formData.email} via RESZEN8 contact form.`,
+      "connect@reszen8.com"
+    );
+
+    setFormData({ name: "", email: "", phone: "", message: "" });
+  };
+
+  console.log("sent", sent);
+
+  const getCtaLabel = () => {
+    if (sending) return "SENDING MESSAGE";
+    if (!sending && !sent) return "SEND MESSAGE";
+    if (sent) return "THANKYOU FOR YOUR MESSAGE";
   };
 
   return (
-    <div className="contact-page">
-      <div className="contact-container">
+    <div className='contact-page'>
+      <div className='contact-container'>
         <h1>Contact Us</h1>
-        <p className="contact-intro">Have questions or feedback? We'd love to hear from you!</p>
-        
-        <form onSubmit={handleSubmit} className="contact-form">
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
+        <p className='contact-intro'>Have questions or feedback? We'd love to hear from you!</p>
+
+        <form onSubmit={handleSubmit} className='contact-form'>
+          <div className='form-group'>
+            <label htmlFor='name'>Full Name</label>
             <input
-              type="text"
-              id="name"
-              name="name"
+              type='text'
+              id='name'
+              name='name'
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="John Doe"
+              placeholder='John Doe'
             />
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+
+          <div className='form-group'>
+            <label htmlFor='email'>Email Address</label>
             <input
-              type="email"
-              id="email"
-              name="email"
+              type='email'
+              id='email'
+              name='email'
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="your.email@example.com"
+              placeholder='your.email@example.com'
             />
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="phone">Phone Number</label>
+
+          <div className='form-group'>
+            <label htmlFor='phone'>Phone Number</label>
             <input
-              type="tel"
-              id="phone"
-              name="phone"
+              type='tel'
+              id='phone'
+              name='phone'
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+44 1234 567890"
+              placeholder='+44 1234 567890'
             />
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="message">Your Message</label>
+
+          <div className='form-group'>
+            <label htmlFor='message'>Your Message</label>
             <textarea
-              id="message"
-              name="message"
+              id='message'
+              name='message'
               value={formData.message}
               onChange={handleChange}
               required
               rows={5}
-              placeholder="Type your message here..."
+              placeholder='Type your message here...'
             ></textarea>
           </div>
-          
-          <button type="submit" className="submit-btn">
-            Send Message
+          <button disabled={sending || sent} type='submit' className='submit-btn'>
+            {getCtaLabel()}
           </button>
         </form>
       </div>

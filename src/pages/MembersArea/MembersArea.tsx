@@ -3,6 +3,7 @@ import { Navigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../CategoryPage.scss";
 import "../Home.scss";
+import "./MembersArea.scss";
 import { usePurchasedItemsStore } from "../../store/purchasedItemsStore";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
 import { useBasketStore } from "../../store/basketStore";
@@ -17,10 +18,6 @@ export default function MembersArea() {
   const { purchasedItems } = usePurchasedItemsStore();
   const { savedItems, removeSavedItem, moveToBasket } = useSavedItemsStore();
   const { addItem } = useBasketStore();
-  const handleResetPassword = () => {
-    // Add password reset logic here
-    alert("Password reset link will be sent to your email");
-  };
 
   const handleCancelMembership = () => {
     // Add membership cancellation logic here
@@ -60,6 +57,7 @@ export default function MembersArea() {
   };
 
   if (!currentUser) {
+    console.log("HERE");
     return <Navigate to='/login' />;
   }
 
@@ -76,7 +74,7 @@ export default function MembersArea() {
       {/* subscription details  panel */}
       <section className='features-section'>
         <div className='features-container'>
-          <div className='feature-card'>
+          <div className='feature-card membership-panel'>
             <h3 className='feature-title'>My Subscription</h3>
 
             {currentUser?.subscription?.subscription === "free-trial" ? (
@@ -86,9 +84,11 @@ export default function MembersArea() {
             ) : (
               <span>Monthly</span>
             )}
-            <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
-              Upgrade Now
-            </Link>
+            {(!currentUser?.subscription?.isActiveSub || currentUser?.subscription?.subscription === "free-trial") && (
+              <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
+                Upgrade Now
+              </Link>
+            )}
           </div>
 
           {/* Saved for Later Section */}
@@ -120,14 +120,14 @@ export default function MembersArea() {
           {/* Purchased Items Section */}
           <div className='feature-card'>
             <h3 className='feature-title'>Purchased Items</h3>
-            {purchasedItems.length > 0 ? (
+            {currentUser?.purchasedItems?.length > 0 ? (
               <div className='purchased-items-container'>
-                {purchasedItems.map((item, index) => (
+                {currentUser?.purchasedItems.map((item, index) => (
                   <div key={`${item.id}-${index}`} className='purchased-item'>
                     <div className='purchased-item-details'>
                       <h4 className='purchased-item-name'>{item.name}</h4>
                       {item.size && <p className='purchased-item-size'>Size: {item.size}</p>}
-                      <p className='purchased-item-quantity'>Qty: {item.quantity || 1}</p>
+                      {item.quantity && <p className='purchased-item-quantity'>Qty: {item.quantity || 1}</p>}
                       <p className='purchased-item-price'>£{item.price.toFixed(2)}</p>
                       {item.purchaseDate && (
                         <p className='purchased-item-date'>Purchased: {formatDate(item.purchaseDate)}</p>
@@ -149,7 +149,7 @@ export default function MembersArea() {
               <br />
               Reset your password to ensure your account remains protected.
             </p>
-            <button
+            <Link
               className='membership-cta'
               style={{
                 marginTop: "1rem",
@@ -157,10 +157,10 @@ export default function MembersArea() {
                 border: "2px solid #FFA500",
                 color: "#FFA500",
               }}
-              onClick={handleResetPassword}
+              to='/forgot-password'
             >
               Reset Password
-            </button>
+            </Link>
           </div>
 
           <div className='feature-card'>

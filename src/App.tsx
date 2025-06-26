@@ -41,14 +41,18 @@ import UserManager from "./components/UserManager";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { currentUser } = useAuth();
-  return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' />;
+  const { currentUser, loading } = useAuth();
+
+  if (loading) return null;
+
+  return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
 };
 
 const UserRoute = ({ children }: { children: React.ReactNode }) => {
-  const { currentUser } = useAuth();
-  return children;
-  // return currentUser ? <>{children}</> : <Navigate to='/login' />;
+  const { currentUser, loading } = useAuth();
+  console.log(currentUser);
+  if (loading) return <p>LOADING</p>;
+  return currentUser ? <>{children}</> : <Navigate to='/login' replace />;
 };
 
 // Layout component that wraps all pages except LandingPage
@@ -73,195 +77,195 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode='wait'>
-      <Routes location={location} key={location.pathname}>
-        <Route path='/' element={<LandingPage />} />
-        <Route
-          path='/home'
-          element={
-            <Layout>
-              <Home />
-            </Layout>
-          }
-        />
-        <Route
-          path='/about'
-          element={
-            <Layout>
-              <AboutMe />
-            </Layout>
-          }
-        />
-        <Route
-          path='/photos'
-          element={
-            <Layout>
-              <Photos />
-            </Layout>
-          }
-        />
-        <Route
-          path='/contact'
-          element={
-            <Layout>
-              <Contact />
-            </Layout>
-          }
-        />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
+    // <AnimatePresence mode='wait'>
+    <Routes location={location} key={location.pathname}>
+      <Route path='/' element={<LandingPage />} />
+      <Route
+        path='/home'
+        element={
+          <Layout>
+            <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path='/about'
+        element={
+          <Layout>
+            <AboutMe />
+          </Layout>
+        }
+      />
+      <Route
+        path='/photos'
+        element={
+          <Layout>
+            <Photos />
+          </Layout>
+        }
+      />
+      <Route
+        path='/contact'
+        element={
+          <Layout>
+            <Contact />
+          </Layout>
+        }
+      />
+      <Route path='/login' element={<Login />} />
+      <Route path='/signup' element={<Signup />} />
 
-        {/* Protected Routes */}
-        <Route
-          path='/members'
-          element={
-            <UserRoute>
-              <Layout>
-                <MembersArea />
-              </Layout>
-            </UserRoute>
-          }
-        />
-        <Route
-          path='/dashboard'
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/digital-library'
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <DigitalLibrary />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/ai-chat'
-          element={
+      {/* Protected Routes */}
+      <Route
+        path='/members'
+        element={
+          <UserRoute>
             <Layout>
-              <AIChat />
+              <MembersArea />
             </Layout>
-          }
-        />
+          </UserRoute>
+        }
+      />
+      <Route
+        path='/dashboard'
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/digital-library'
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DigitalLibrary />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/ai-chat'
+        element={
+          <Layout>
+            <AIChat />
+          </Layout>
+        }
+      />
 
-        {/* Public Routes */}
-        <Route
-          path='/apparel'
-          element={
+      {/* Public Routes */}
+      <Route
+        path='/apparel'
+        element={
+          <Layout>
+            <Apparel />
+          </Layout>
+        }
+      />
+      <Route
+        path='/forgot-password'
+        element={
+          <Layout>
+            <PasswordResetPage />
+          </Layout>
+        }
+      />
+      <Route
+        path='/guided-meditations'
+        element={
+          <Layout>
+            <Meditations />
+          </Layout>
+        }
+      />
+      <Route
+        path='/bespoke-meditation-generator'
+        element={
+          <ProtectedRoute>
             <Layout>
-              <Apparel />
+              <AIMeditationGenerator />
             </Layout>
-          }
-        />
-        <Route
-          path='/forgot-password'
-          element={
-            <Layout>
-              <PasswordResetPage />
-            </Layout>
-          }
-        />
-        <Route
-          path='/guided-meditations'
-          element={
-            <Layout>
-              <Meditations />
-            </Layout>
-          }
-        />
-        <Route
-          path='/bespoke-meditation-generator'
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <AIMeditationGenerator />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/checkout'
-          element={
-            <Layout>
-              <Checkout />
-            </Layout>
-          }
-        />
-        <Route
-          path='/basket'
-          element={
-            <Layout>
-              <Basket />
-            </Layout>
-          }
-        />
-        <Route
-          path='/order-success'
-          element={
-            <Layout>
-              <OrderSuccess />
-            </Layout>
-          }
-        />
-        <Route
-          path='/memberships'
-          element={
-            <Layout>
-              <Memberships />
-            </Layout>
-          }
-        />
-        <Route
-          path='/terms-and-conditions'
-          element={
-            <Layout>
-              <TermsAndConditions />
-            </Layout>
-          }
-        />
-        <Route
-          path='/privacy-policy'
-          element={
-            <Layout>
-              <PrivacyPolicy />
-            </Layout>
-          }
-        />
-        <Route
-          path='/sitemap'
-          element={
-            <Layout>
-              <Sitemap />
-            </Layout>
-          }
-        />
-        <Route
-          path='/test-payment'
-          element={
-            <Layout>
-              <TestPaymentPage />
-            </Layout>
-          }
-        />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/checkout'
+        element={
+          <Layout>
+            <Checkout />
+          </Layout>
+        }
+      />
+      <Route
+        path='/basket'
+        element={
+          <Layout>
+            <Basket />
+          </Layout>
+        }
+      />
+      <Route
+        path='/order-success'
+        element={
+          <Layout>
+            <OrderSuccess />
+          </Layout>
+        }
+      />
+      <Route
+        path='/memberships'
+        element={
+          <Layout>
+            <Memberships />
+          </Layout>
+        }
+      />
+      <Route
+        path='/terms-and-conditions'
+        element={
+          <Layout>
+            <TermsAndConditions />
+          </Layout>
+        }
+      />
+      <Route
+        path='/privacy-policy'
+        element={
+          <Layout>
+            <PrivacyPolicy />
+          </Layout>
+        }
+      />
+      <Route
+        path='/sitemap'
+        element={
+          <Layout>
+            <Sitemap />
+          </Layout>
+        }
+      />
+      <Route
+        path='/test-payment'
+        element={
+          <Layout>
+            <TestPaymentPage />
+          </Layout>
+        }
+      />
 
-        {/* 404 Route */}
-        <Route
-          path='*'
-          element={
-            <Layout>
-              <NotFound />
-            </Layout>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+      {/* 404 Route */}
+      <Route
+        path='*'
+        element={
+          <Layout>
+            <NotFound />
+          </Layout>
+        }
+      />
+    </Routes>
+    // </AnimatePresence>
   );
 };
 

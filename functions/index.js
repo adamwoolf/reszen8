@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const { OpenAI } = require("openai");
 const admin = require("firebase-admin");
+const nodemailer = require("nodemailer");
+
 require("dotenv").config();
 
 admin.initializeApp();
@@ -11,7 +13,7 @@ const bucket = admin.storage().bucket(); // Uses default bucket
 
 // Configure environment variables (set OPENAI_API_KEY via `firebase functions:config:set`)
 const openai = new OpenAI({
-  apiKey: functions.config().openai.key,
+  apiKey: functions?.config()?.openai?.key,
 });
 
 const app = express();
@@ -96,6 +98,49 @@ app.post("/uploadAudio", async (req, res) => {
     console.error("Upload error:", error);
     return res.status(500).json({ error: "Upload failed", details: error.message });
   }
+});
+
+exports.sendMail = functions.https.onRequest((req, res) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, POST");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+    return res.status(204).send("");
+  }
+
+  res.set("Access-Control-Allow-Origin", "*");
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "connect@reszen8.com",
+      pass: "jqsvxbqvsdxljuba",
+    },
+  });
+
+  const { html, subject, to: recipient, cc } = req.body;
+
+  const from = "RESZEN8 <connect@reszen8.com>";
+
+  const mailOptions = {
+    from,
+    to: recipient,
+    bcc: cc,
+    subject,
+    html: `<div>${html}</div>`,
+  };
+
+  console.log("Sending email to", recipient);
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error("Email error:", err);
+      return res.status(500).send(err.toString());
+    }
+    console.log("Email sent:", info.response);
+    return res.status(200).send("Sent");
+  });
 });
 
 // Export the Express app as a Firebase Function

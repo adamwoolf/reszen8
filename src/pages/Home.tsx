@@ -2,8 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import PillarsCarousel from "../components/PillarsCarousel";
 import "./Home.scss";
 import useContentful from "../hooks/useContentful";
 import { getHomePage } from "../contentful";
@@ -19,7 +17,7 @@ const features = [
   {
     title: "AI Meditation Generator",
     description: "Create personalised meditation sessions with AI & save them to your dashboard for later",
-    path: "/ai-meditation",
+    path: "/bespoke-meditation-generator",
   },
   {
     title: "Personalised Dashboard",
@@ -53,16 +51,6 @@ const Home: React.FC = () => {
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
-
-  const handleCardClick = (path: string, title: string) => {
-    if (currentUser) {
-      if (title === "AI Meditation Generator") {
-        navigate("/ai-meditation-generator");
-      } else {
-        navigate(path);
-      }
-    }
   };
 
   return (

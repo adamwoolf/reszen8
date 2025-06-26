@@ -148,7 +148,8 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
   const godSignUp = () => {
 if(currentUser?.subscription && currentUser.firebaseId) {
-  const newUserData = {...currentUser, basket: [], subscription: {
+  const newUserData = {...currentUser, basket: [], 
+    subscription: {
     duration: 30,
     hasCompletedTrial: true,
     isActiveSub: true,
@@ -157,6 +158,7 @@ if(currentUser?.subscription && currentUser.firebaseId) {
   }}
   addOrUpdate(currentUser.firebaseId, newUserData)
   setCurrentUser(newUserData)
+  setTimeout(() => navigate('/members'), 500)
 
 }
   }

@@ -6,6 +6,7 @@ import { FaBars } from "react-icons/fa";
 import "./Navbar.scss";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import AccountStatus from "../components/AccountStatus/AccountStatus";
+import useSendMail from "../hooks/useSendEmail";
 
 const Navbar: React.FC = () => {
   const { currentUser, logout, setCurrentUser } = useAuth();
@@ -14,6 +15,8 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { addOrUpdate } = useFirebasedatabase("USERS");
+  const { sendMail } = useSendMail();
+
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -54,16 +57,23 @@ const Navbar: React.FC = () => {
     startDate: Date.now(),
     subscription: "free-trial",
   };
-  console.log(currentUser);
+
   const resetTrial = () => {
     if (currentUser && currentUser.firebaseId && currentUser?.isGod && window.godControls) {
       const reset = () => {
         const newUserData = {
           ...currentUser,
           subscription: newTrial,
+          purchasedItems: [{ name: "Free Trial", price: 0, purchasedDate: Date.now() }],
         };
         addOrUpdate(currentUser.firebaseId, newUserData);
         setCurrentUser(newUserData);
+        sendMail(`welcome, ${currentUser?.name}`, "Welcome to your RESZEN8 Free Trial!", currentUser?.email);
+        sendMail(
+          `${currentUser?.name} just started a free trial`,
+          `New user: ${currentUser?.name}: ${currentUser?.email}:`,
+          "connect@reszen8.com"
+        );
       };
       return (
         <button style={{ marginRight: 8 }} onClick={reset}>
@@ -85,6 +95,12 @@ const Navbar: React.FC = () => {
         };
         addOrUpdate(currentUser.firebaseId, newUserData);
         setCurrentUser(newUserData);
+        sendMail("we are sorry to see you go", "RESZEN8 cancellation", currentUser?.email);
+        sendMail(
+          `${currentUser?.name} just cancelled`,
+          `${currentUser?.name}: ${currentUser?.email}:  RESZEN8 cancellation`,
+          "connect@reszen8.com"
+        );
       };
       return (
         <button style={{ marginRight: 8 }} onClick={reset}>

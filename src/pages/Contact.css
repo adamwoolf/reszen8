@@ -42,15 +42,19 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group {
   padding: 0.8rem 1rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background-color: var(--bg-tertiary);
-  color: var(--text-color);
+  color: black;
   font-family: var(--font-stack);
   font-size: 1rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-grou textarea {
+  color: white;
 }
 
 .form-group input:focus,
@@ -96,16 +100,16 @@
   .contact-container {
     padding: 1.5rem;
   }
-  
+
   .contact-form {
     gap: 1.2rem;
   }
-  
+
   .form-group input,
   .form-group textarea {
     padding: 0.7rem 1rem;
   }
-  
+
   .submit-btn {
     padding: 0.9rem 1.5rem;
     font-size: 0.95rem;

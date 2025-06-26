@@ -12,7 +12,6 @@ export const useRealtimeDatabase = (path: string) => {
 
   useEffect(() => {
     const dbRef = ref(db, path);
-
     const unsubscribe = onValue(
       dbRef,
       (snapshot) => {

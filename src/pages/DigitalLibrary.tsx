@@ -10,7 +10,6 @@ type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
   const { currentUser } = useAuth();
-  // const { add } = useFirebaseDatabase('USERS')
   const navigate = useNavigate();
   const { addItem } = useSavedItems();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");

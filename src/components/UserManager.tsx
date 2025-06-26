@@ -10,16 +10,15 @@ const UserManager = ({ children }) => {
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const [isActiveSub, setisActiveSub] = useState(false);
   const [hasInitUser, setHasIniUser] = useState(false);
-  useEffect(() => {
-    // MOVE THIS TO USER CONTEXT
+  // useEffect(() => {
+  //   // MOVE THIS TO USER CONTEXT
 
-    if (users && currentUser && !hasInitUser) {
-      console.log("HERE");
-      const allDetails: User | any = Object.values(users).find((u) => u.email === currentUser.email) || {};
-      setCurrentUser({ ...currentUser, ...allDetails });
-      setHasIniUser(true);
-    }
-  }, [users, currentUser]);
+  //   if (users && currentUser && !hasInitUser) {
+  //     const allDetails: User | any = Object.values(users).find((u) => u.email === currentUser.email) || {};
+  //     setCurrentUser({ ...currentUser, ...allDetails });
+  //     setHasIniUser(true);
+  //   }
+  // }, [users, currentUser]);
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {
     const created = new Date(subscription?.startDate);
