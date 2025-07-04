@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const UserManager = ({ children }) => {
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const [isActiveSub, setisActiveSub] = useState(false);
   const [hasInitUser, setHasIniUser] = useState(false);

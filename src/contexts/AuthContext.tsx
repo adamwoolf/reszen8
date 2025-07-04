@@ -14,7 +14,7 @@ import useSendMail from "../hooks/useSendEmail";
 
 interface AuthContextType {
   currentUser: User | null;
-  setCurrentUser: () => void;
+  setCurrentUser: (user: any) => void;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signup: (email: string, password: string, firstName: string, surName: string) => Promise<void>;
   logout: () => Promise<void>;

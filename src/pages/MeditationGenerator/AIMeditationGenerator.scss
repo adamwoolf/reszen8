@@ -58,6 +58,12 @@
   margin-bottom: 1.75rem;
 }
 
+.form-group-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 0.75rem;
@@ -144,6 +150,15 @@ input[type="number"]:focus {
   transform: none;
   box-shadow: none;
   opacity: 0.7;
+}
+
+.practice-type {
+  display: flex;
+  flex-direction: column;
+
+  &__name {
+    color: orange;
+  }
 }
 
 .start-over-btn {
@@ -427,4 +442,90 @@ input[type="number"]:focus {
   .form-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+/* slider.css */
+.slider-container {
+  padding: 2rem;
+  max-width: 400px;
+  font-family: sans-serif;
+}
+
+.slider-label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.custom-slider {
+  width: 100%;
+  height: 20px; /* Provide enough height for thumb */
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+/* === Chrome, Safari, Edge === */
+.custom-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: orange;
+  border-radius: 2px;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  background: orange;
+  border-radius: 50%;
+  margin-top: -6px; /* center thumb on track */
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 2px white; /* optional white outline */
+}
+
+/* === Firefox === */
+.custom-slider::-moz-range-track {
+  height: 4px;
+  background: orange;
+  border-radius: 2px;
+}
+
+.custom-slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background: orange;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* === IE & Edge Legacy (optional) === */
+.custom-slider::-ms-track {
+  height: 4px;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+.custom-slider::-ms-fill-lower,
+.custom-slider::-ms-fill-upper {
+  background: orange;
+  border-radius: 2px;
+}
+
+.custom-slider::-ms-thumb {
+  height: 16px;
+  width: 16px;
+  background: orange;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0 2px;
 }

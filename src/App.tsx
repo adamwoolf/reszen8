@@ -19,7 +19,7 @@ import DigitalLibrary from "./pages/DigitalLibrary";
 import AIChat from "./pages/AIChat";
 import Apparel from "./pages/Apparel/Apparel";
 import Meditations from "./pages/Meditations";
-import AIMeditationGenerator from "./pages/AIMeditationGenerator";
+import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Memberships from "./pages/Memberships";

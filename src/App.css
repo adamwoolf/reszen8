@@ -376,6 +376,22 @@ div {
   font-size: 0.9rem;
 }
 
+.btn--text {
+  background-color: transparent;
+  color: orange;
+  width: fit-content;
+  text-decoration: underline;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+}
+
+.btn--text:hover {
+  text-decoration: none;
+  background-color: transparent;
+}
+
 .logout-btn {
   background: none;
   border: 1px solid var(--border-color);

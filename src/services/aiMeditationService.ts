@@ -2,6 +2,7 @@ import axios from "axios";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, db } from "../firebase"; // adjust path as needed
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "./helpers";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string;
@@ -166,4 +167,77 @@ export const generateMeditation = async (
     throw new Error("Failed to generate meditation. Please try again later.");
     // Try to parse the content directly as JSON
   }
+};
+
+export const generateScript = async (
+  meditationType: string,
+  duration: string,
+  language: string = "en",
+  practiceType: string
+) => {
+  console.log(duration);
+  const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
+  const type = PracticeTypes.find((p) => p.name === practiceType);
+  const wordsAndBreaks = mapDurationToWords[+duration as keyof typeof mapDurationToWords];
+  const prompt = `You are a skilled meditation script writer. Write a calming, natural-sounding guided meditation script in English (UK) that matches the following parameters:
+
+
+  • Meditation Type: ${meditationType} for ${practiceType} - which is ${type?.description}
+  • Overview: ${details?.description}
+  • Tone: Warm, gentle, and soothing  
+  • Pacing: Moderate to slow, suitable for audio narration  
+  • Structure: Introduction → Gentle body and breath awareness → Thematic guided section → Closing wind-down  
+  • Duration: ${duration} minutes (use approximately ${wordsAndBreaks.words} words)  
+  • Audience: General adult audience, no spiritual or religious language  
+  • Voice: The script should be suitable for Eleven Labs voice ${details?.voice?.name} with ID ${details?.voice?.id} 
+  • Make the meditation unique.  
+  • Content repetition: Keep repetition low or none. Do not repeat affirmations, phrases, or transitions unless purposefully reflective.  
+  • Identify natural pause points (after important thoughts, transitions, affirmations, breath cues, etc.).
+  • Insert approximately ${
+    wordsAndBreaks.breaks
+  } breaks, formatted as <break time='X.Xs'/>, and lasting between 1 and  3 seconds each time, as is appropriate, to create a more realistic and calming delivery, especially for meditations.  No two breaks should have the same duration and they should always be on their own in a paragraph.
+  • Make sure that every <break time='X.Xs'/> to its own separate paragraph, as this ensures clean XML parsing and successful rendering in the final audio.
+  • Affirmations: Include affirmations appropriate to the meditation type. These should be brief, realistic, and uplifting. Integrate them naturally during the guided portion. Avoid listing them — instead, weave them into the flow. For example:
+ ${details?.affirmations.map((a) => a)}  
+  
+  Only output the final meditation script, formatted as plain text with the <break time='X.Xs'/> tags each as its own paragraph. Do not include explanations or formatting notes.`;
+
+  // Map language codes to full language names for the prompt
+  const languageNames: Record<string, string> = {
+    en: "English",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    it: "Italian",
+    pt: "Portuguese",
+  };
+  const languageName = languageNames[language] || "English";
+  console.log(prompt);
+  const response = await axios.post(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+        {
+          role: "user",
+          content: `Please generate a ${duration}-minute ${meditationType} meditation`,
+        },
+      ],
+      temperature: 0.7,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+    }
+  );
+  console.log(response.data.choices);
+  const content = response.data.choices[0].message.content.trim();
+  console.log("SCRIPT:", content);
+  return content;
 };

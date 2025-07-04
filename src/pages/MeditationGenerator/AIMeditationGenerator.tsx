@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSavedItems } from "../contexts/SavedItemsContext";
+import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { v4 as uuidv4 } from "uuid";
-import { generateMeditation } from "../services/aiMeditationService";
-import { convertTextToSpeech, VOICE_OPTIONS } from "../services/ttsService";
+import { generateMeditation, generateScript } from "../../services/aiMeditationService";
+import { convertTextToSpeech, VOICE_OPTIONS } from "../../services/ttsService";
 import { toast } from "react-toastify";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
+import ScriptLab from "../../components/ScriptLab";
+import { MedTypesAndAffirmations, PracticeTypes } from "../../services/helpers";
+import Popup from "./Popup";
 
 interface MeditationState {
   title: string;
@@ -17,10 +20,14 @@ interface MeditationState {
 
 const AIMeditationGenerator: React.FC = () => {
   // State management
-  const [meditationType, setMeditationType] = useState("mindfulness");
+  const [meditationType, setMeditationType] = useState("Mindfulness");
   const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [duration, setDuration] = useState("5");
+  const [practiceType, setPracticeType] = useState(PracticeTypes[0]);
+  const allowedValues = [3, 5, 8, 10, 15];
+
+  const [duration, setDuration] = useState(allowedValues[0]);
+  const [durationIndex, setDurationIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -28,7 +35,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser } = useAuth();
-
+  const [showPopup, setShowPopup] = useState(false);
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
 
   // Refs
@@ -38,18 +45,6 @@ const AIMeditationGenerator: React.FC = () => {
   // Hooks
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
-
-  // Constants
-  const meditationTypes = [
-    { value: "mindfulness", label: "Mindfulness" },
-    { value: "sleep", label: "Sleep" },
-    { value: "anxiety", label: "Anxiety Relief" },
-    { value: "gratitude", label: "Gratitude" },
-    { value: "focus", label: "Focus & Concentration" },
-    { value: "loving-kindness", label: "Loving-Kindness" },
-  ];
-
-  const durations = ["5", "10"];
 
   const languageOptions = [
     { value: "en", label: "English" },
@@ -69,6 +64,10 @@ const AIMeditationGenerator: React.FC = () => {
       setSelectedVoice(filteredVoices[0].id);
     }
   }, [selectedLanguage, filteredVoices]);
+
+  useEffect(() => {
+    setDuration(allowedValues[durationIndex]);
+  }, [durationIndex]);
 
   // Format time in seconds to MM:SS
   const formatTime = (timeInSeconds: number) => {
@@ -277,8 +276,21 @@ const AIMeditationGenerator: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className='generator-form'>
+        <div className='form-group'>
+          <label htmlFor='duration'>Duration {allowedValues[durationIndex]} (minutes)</label>
+          <input
+            className='custom-slider'
+            type='range'
+            min={0}
+            max={allowedValues.length - 1}
+            step={1}
+            value={durationIndex}
+            onChange={(e) => setDurationIndex(Number(e.target.value))}
+            style={{ width: "100%" }}
+          />{" "}
+        </div>
         <div className='form-grid'>
-          <div className='form-group'>
+          <div className='form-group form-group-block'>
             <label htmlFor='meditation-type'>Meditation Type</label>
             <select
               id='meditation-type'
@@ -286,47 +298,37 @@ const AIMeditationGenerator: React.FC = () => {
               onChange={(e) => setMeditationType(e.target.value)}
               disabled={isGenerating}
             >
-              {meditationTypes.map((type, i) => (
-                <option key={type.value + i} value={type.value}>
-                  {type.label}
+              {MedTypesAndAffirmations.map((type, i) => (
+                <option key={type.title + i} value={type.type}>
+                  {type.type}
                 </option>
               ))}
             </select>
           </div>
 
           <div className='form-group'>
-            <label htmlFor='duration'>Duration (seconds)</label>
+            <div>
+              <label htmlFor='practiceType'>Practice Type</label>
+              <button type='button' onClick={() => setShowPopup(true)} className='btn--text'>
+                learn more
+              </button>
+            </div>
+            <Popup show={showPopup} onClose={() => setShowPopup(false)} />
             <select
-              id='duration'
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
+              id='practiceType'
+              value={practiceType.name}
+              onChange={(e) => setPracticeType(e.target.value)}
               disabled={isGenerating}
             >
-              {durations.map((dur, i) => (
-                <option key={dur + i} value={dur}>
-                  {dur} sec
+              {PracticeTypes.map((lang, i) => (
+                <option key={lang.name + i} value={lang.name}>
+                  <p> {lang.name}</p>
                 </option>
               ))}
             </select>
           </div>
 
-          <div className='form-group'>
-            <label htmlFor='language'>Language</label>
-            <select
-              id='language'
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              disabled={isGenerating}
-            >
-              {languageOptions.map((lang, i) => (
-                <option key={lang.value + i} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className='form-group'>
+          {/* <div className='form-group'>
             <label htmlFor='voice'>Voice</label>
             <select
               id='voice'
@@ -347,11 +349,11 @@ const AIMeditationGenerator: React.FC = () => {
                 ))
               )}
             </select>
-          </div>
+          </div> */}
         </div>
 
         <div className='flex justify-center mt-8 space-x-8'>
-          <button type='submit' className='generate-btn' disabled={isGenerating}>
+          {/* <button type='submit' className='generate-btn' disabled={isGenerating}>
             {isGenerating ? (
               <>
                 <span className='spinner'></span>
@@ -360,9 +362,15 @@ const AIMeditationGenerator: React.FC = () => {
             ) : (
               "Generate Meditation"
             )}
-          </button>
+          </button> */}
         </div>
       </form>
+      <ScriptLab
+        duration={duration}
+        selectedLanguage={selectedLanguage}
+        meditationType={meditationType}
+        practiceType={practiceType}
+      />
 
       {isGenerating && (
         <div className='loading-animation'>
