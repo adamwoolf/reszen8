@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -50,7 +50,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const UserRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-  console.log(currentUser);
+
   if (loading) return <p>LOADING</p>;
   return currentUser ? <>{children}</> : <Navigate to='/login' replace />;
 };

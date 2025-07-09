@@ -196,7 +196,7 @@ export const generateScript = async (
   • Insert approximately ${
     wordsAndBreaks.breaks
   } breaks, formatted as <break time='X.Xs'/>, and lasting between 1 and  3 seconds each time, as is appropriate, to create a more realistic and calming delivery, especially for meditations.  No two breaks should have the same duration and they should always be on their own in a paragraph.
-  • Make sure that every <break time='X.Xs'/> to its own separate paragraph, as this ensures clean XML parsing and successful rendering in the final audio.
+  • Total pause time should be around ${wordsAndBreaks.totalPauseTime} seconds.
   • Affirmations: Include affirmations appropriate to the meditation type. These should be brief, realistic, and uplifting. Integrate them naturally during the guided portion. Avoid listing them — instead, weave them into the flow. For example:
  ${details?.affirmations.map((a) => a)}  
   

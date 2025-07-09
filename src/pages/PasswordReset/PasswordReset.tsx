@@ -43,17 +43,15 @@ export default function PasswordResetPage() {
             required
           />
         </div>
-
-        <button type='submit' disabled={submitting}>
-          {submitting ? "Sending..." : "Send Reset Email"}
-        </button>
+        <div className='reset-cta-container'>
+          <button type='submit' disabled={submitting || !email}>
+            {submitting ? "Sending..." : "Send Reset Email"}
+          </button>
+          <button className='login-cta' type='button' onClick={() => navigate("/login")}>
+            Back to login
+          </button>
+        </div>
       </form>
-
-      <div className='back-link'>
-        <button type='button' onClick={() => navigate("/login")}>
-          Back to login
-        </button>
-      </div>
     </div>
   );
 }

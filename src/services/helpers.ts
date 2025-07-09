@@ -103,16 +103,18 @@ export const PracticeTypes = [
   },
 ];
 
-export const mapDurationToWords = {
-  3: { words: 375, breaks: 17 },
-  5: { words: 625, breaks: 19 },
-  8: { words: 1000, breaks: 28 },
-  10: { words: 1250, breaks: 35 },
-  15: { words: 1900, breaks: 55 },
-};
+// export const mapDurationToWords = {
+//   3: { words: 375, breaks: 17 },
+//   5: { words: 625, breaks: 19 },
+//   8: { words: 1000, breaks: 28 },
+//   10: { words: 1250, breaks: 35 },
+//   15: { words: 1900, breaks: 55 },
+// };
 
-// - 3 minutes (~375 words, 10–15 breaks) SHORT
-// - 5 minutes (~625 words, 15–20 breaks) SHORT
-// - 8 minutes (~1000 words, 25–30 breaks) MEDIUM
-// - 10 minutes (~1250 words, 30–40 breaks) MEDIUM
-// - 15 minutes (~1900 words, 50–60 breaks)
+export const mapDurationToWords = {
+  3: { words: "350–380", breaks: 17, totalPauseTime: "40" },
+  5: { words: "550–600", breaks: 19, totalPauseTime: "70" },
+  8: { words: "900–950", breaks: 28, totalPauseTime: "90" },
+  10: { words: "1100–1150", breaks: 35, totalPauseTime: "100" },
+  // 15: { words: 1900, breaks: 55 },
+};

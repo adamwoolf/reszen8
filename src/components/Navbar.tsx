@@ -209,9 +209,9 @@ const Navbar: React.FC = () => {
             </span>
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
-              {/* <button className='user-address' onClick={handleLogout}>
+              <button className='user-address' onClick={handleLogout}>
                 Logout
-              </button> */}
+              </button>
             </span>
           </div>
         )}

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
 import ScriptLab from "../../components/ScriptLab";
-import { MedTypesAndAffirmations, PracticeTypes } from "../../services/helpers";
+import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "./Popup";
 
 interface MeditationState {
@@ -24,7 +24,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0]);
-  const allowedValues = [3, 5, 8, 10, 15];
+  const allowedValues = Object.keys(mapDurationToWords);
 
   const [duration, setDuration] = useState(allowedValues[0]);
   const [durationIndex, setDurationIndex] = useState(0);

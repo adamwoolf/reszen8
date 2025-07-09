@@ -4,7 +4,7 @@ import { auth } from "../firebase";
 import { Navigate } from "react-router-dom";
 import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import "./AIChat.css";
+import "./AIChat.scss";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 interface TopPrompt {
@@ -406,7 +406,12 @@ const AIChat: React.FC = () => {
 
         {/* Common Questions Dropdown */}
         <div className='prompts-container'>
-          <button ref={promptButtonRef} className='prompts-toggle' onClick={togglePrompts} type='button'>
+          <button
+            ref={promptButtonRef}
+            className={!showPrompts ? "prompts-toggle" : "prompts-toggle prompts-toggle--active"}
+            onClick={togglePrompts}
+            type='button'
+          >
             {showPrompts ? "Hide Common Questions" : "Show Common Questions"}
           </button>
 

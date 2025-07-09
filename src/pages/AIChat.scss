@@ -100,13 +100,17 @@
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
-  margin: 10px auto;
+  margin: 40px auto;
   box-sizing: border-box;
+
+  &--active {
+    background-color: orange;
+  }
 }
 
 .prompts-dropdown {
   position: absolute;
-  bottom: 100%;
+  bottom: 120%;
   left: 0;
   right: 0;
   width: 100%;
@@ -114,7 +118,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 14px 14px 25px rgba(0, 0, 0, 0.8);
   z-index: 1000;
   max-height: 500px;
   overflow-y: auto;
@@ -402,8 +406,14 @@
 
 /* Animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive adjustments */
@@ -411,12 +421,12 @@
   .prompts-dropdown {
     grid-template-columns: 1fr;
   }
-  
+
   .prompts-toggle {
     padding: 10px 15px;
     font-size: 0.9rem;
   }
-  
+
   .prompt-item {
     padding: 8px 12px;
     font-size: 0.85rem;

@@ -149,14 +149,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resetPassword = useCallback(async (email: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       clearError();
       await sendPasswordResetEmail(auth, email);
-    } catch (err: any) {
+    } catch (err) {
       setError(err?.message || "Failed to send password reset email");
       throw err;
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   }, []);
 
