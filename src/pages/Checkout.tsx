@@ -149,6 +149,8 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   const godSignUp = () => {
 if(currentUser?.subscription && currentUser.firebaseId) {
   const newUserData = {...currentUser, basket: [], 
+    purchasedItems: [{ name: "Monthly Sub", price: 13, purchasedDate: Date.now() }],
+
     subscription: {
     duration: 30,
     hasCompletedTrial: true,

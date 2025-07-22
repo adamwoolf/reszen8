@@ -139,9 +139,9 @@ const DigitalLibrary = () => {
         >
           Browse Meditations
         </button>
-        <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
+        {/* <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
           Browse E-Books
-        </button>
+        </button> */}
         {/* <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}

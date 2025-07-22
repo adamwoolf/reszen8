@@ -54,11 +54,12 @@ const Publications = () => {
   };
 
   const showAll = () => {
+    setActiveFilter("");
     setSearch("");
     setDisplayPubs(content);
   };
 
-  const keyWords = ["Mindfulness", "Awareness", "Stress", "Anger"];
+  const keyWords = ["Mindfulness", "Growth", "Awareness", "Stress", "Anger"];
 
   return (
     <div className='publications'>
@@ -78,7 +79,11 @@ const Publications = () => {
             </button>
           ))}
         </div>
-        {displayPubs.length > 0 && <span className='publications__count'>Showing: {displayPubs.length}</span>}
+        {displayPubs.length > 0 && (
+          <span className='publications__count'>
+            Showing: {displayPubs.length} publications {activeFilter && `for ${activeFilter}`}
+          </span>
+        )}
       </div>
       {!displayPubs.length && (
         <span className='publications__no-results'>
