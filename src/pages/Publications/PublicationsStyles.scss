@@ -44,6 +44,18 @@
       color: orange;
       display: block;
     }
+
+    &__add {
+      background-color: transparent;
+      color: orange;
+      padding-left: 0;
+
+      &:hover {
+        background-color: transparent;
+        transform: none;
+        text-decoration: underline;
+      }
+    }
   }
   &__grid {
     display: grid;

@@ -45,7 +45,9 @@ const FullPublication = () => {
         Saved to <Link to='/dashboard'> my Dashboard</Link>
       </span>
     ) : (
-      <button onClick={savePublication}>Save to my dashboard</button>
+      <button className='publication__full__add' onClick={savePublication}>
+        Save to my dashboard
+      </button>
     );
 
   if (!title) return null;

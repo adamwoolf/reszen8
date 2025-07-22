@@ -60,7 +60,7 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   };
 
   return (
-    <div className='w-full max-w-md p-4 bg-gray-100 rounded shadow'>
+    <div>
       <audio
         ref={audioRef}
         src={audioUrl}
@@ -69,7 +69,7 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
         onPause={() => setIsPlaying(false)}
       />
 
-      <button onClick={togglePlayPause} className='dashboard-button mb-2 flex items-center gap-2'>
+      <button onClick={togglePlayPause} className='dashboard-button audio-btn '>
         {isPlaying ? (
           <>
             <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
@@ -106,7 +106,7 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
           value={currentTime}
           onChange={handleProgressChange}
         />
-        <span className='text-xs w-10'>{formatTime(duration)}</span>
+        <span>{formatTime(duration)}</span>
       </div>
     </div>
   );
