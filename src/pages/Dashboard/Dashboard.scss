@@ -88,6 +88,16 @@
   align-items: center;
 }
 
+.read-link {
+  display: flex;
+  align-items: center;
+}
+
+.read-link-text {
+  color: orange;
+  margin-right: 8px;
+}
+
 /* Cards */
 
 .dashboard-card:hover {

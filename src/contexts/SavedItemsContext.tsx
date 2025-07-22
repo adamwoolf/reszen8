@@ -66,7 +66,8 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // set savedItems with data from db
   useEffect(() => {
-    if (meditations && currentUser && currentUser.savedItems) {
+    if (currentUser && currentUser.savedItems) {
+      console.log("USER", currentUser.savedItems);
       setSavedItems({
         ebooks: currentUser?.savedItems?.ebooks || [],
         publications: currentUser?.savedItems?.publications || [],
@@ -105,17 +106,25 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   const removeItem = (item: any, type: keyof SavedItemsType) => {
-    const newItemsArray = [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt);
+    console.log("item", item);
+
+    const newItemsArray =
+      type !== "publications"
+        ? [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)
+        : [...currentUser?.savedItems[type]].filter((i) => i.id !== item.id);
+
+    console.log([...currentUser?.savedItems[type]].filter((i) => i.id !== item.id));
 
     let newSavedItems = { ...currentUser?.savedItems, [type]: newItemsArray };
     if (!newItemsArray.length) delete newSavedItems[type];
-    console.log(newSavedItems);
+
     const newUserObj = Object.keys(newSavedItems).length
       ? {
           ...currentUser,
           savedItems: newSavedItems,
         }
       : { ...currentUser, savedItems: {} };
+
     addOrUpdate(currentUser.firebaseId, newUserObj);
     setCurrentUser(newUserObj);
   };

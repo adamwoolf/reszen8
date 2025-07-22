@@ -95,17 +95,15 @@
 }
 
 .feature-item {
+  position: relative;
+  overflow: hidden;
   background-color: #333333;
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #444444;
-}
-
-.feature-item {
-  position: relative;
-  overflow: hidden;
+  font-size: 0.8rem;
 }
 
 .feature-item::after {

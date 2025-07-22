@@ -1,0 +1,92 @@
+.publications {
+  padding: 30px;
+
+  h1 {
+    text-align: center;
+    margin: 40px;
+  }
+
+  &__filters {
+    margin: 30px 0;
+  }
+
+  &__search {
+    margin-right: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  &__filter {
+    margin: 8px;
+  }
+
+  &__count {
+    color: orange;
+  }
+
+  &__no-results {
+    color: orange;
+    padding-top: 30px;
+    display: block;
+  }
+}
+
+.publication {
+  &__full {
+    padding: 30px;
+
+    &__back-cta {
+      margin-top: 50px;
+    }
+
+    &__added {
+      color: orange;
+      display: block;
+    }
+  }
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    @media (min-width: 769px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  &__card-saved {
+    color: orange;
+    font-size: 0.8rem;
+  }
+
+  &__card-content {
+    background-color: transparent;
+  }
+
+  &__card-date {
+    font-size: 0.8rem;
+    padding-bottom: 8px;
+    display: block;
+  }
+
+  &__card-divider {
+    height: 1px;
+    background-color: orange;
+    opacity: 0.6;
+    width: 100%;
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+}
+
+.non-active-filter {
+  opacity: 0.7;
+}

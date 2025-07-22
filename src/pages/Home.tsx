@@ -8,11 +8,17 @@ import { getHomePage } from "../contentful";
 import { marked } from "marked";
 
 const features = [
+  // {
+  //   title: "Digital Meditation Library",
+  //   description:
+  //     "Listen to your saved meditations, read meditation guides and customise your journey. Meditations for all requirements, from simple relaxation to focused practice",
+  //   path: "/digital-library",
+  // },
   {
-    title: "Digital Meditation Library",
+    title: "Publications",
     description:
-      "Listen to your saved meditations, read meditation guides and customise your journey. Meditations for all requirements, from simple relaxation to focused practice",
-    path: "/digital-library",
+      "Read meditation guides and customise your journey. Meditations for all requirements, from simple relaxation to focused practice",
+    path: "/publications",
   },
   {
     title: "AI Meditation Generator",
@@ -79,7 +85,11 @@ const Home: React.FC = () => {
               className={`feature-card ${currentUser || feature.isTrial ? "clickable" : ""}`}
               variants={item}
               whileHover={{ y: currentUser || feature.isTrial ? -10 : 0, transition: { duration: 0.2 } }}
-              onClick={currentUser || feature.isTrial ? () => navigate(feature.path) : undefined}
+              onClick={
+                currentUser || feature.isTrial || feature.path === "/publications"
+                  ? () => navigate(feature.path)
+                  : undefined
+              }
               style={{
                 cursor: currentUser || feature.isTrial ? "pointer" : "default",
                 border: feature.isTrial ? "2px solid #FFA500" : "1px solid rgba(255, 255, 255, 0.1)",

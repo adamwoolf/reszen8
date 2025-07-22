@@ -318,14 +318,23 @@
 }
 
 .input-wrapper {
-  display: flex;
+  // display: flex;
   gap: 0.5rem;
   position: relative;
 }
 
-.button-group {
+.chat-button-group {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   gap: 0.5rem;
+}
+
+.chat-button {
+  height: 50px;
+  margin: 8px;
+  flex: 1;
 }
 
 .chat-input-container input {
@@ -337,6 +346,8 @@
   color: var(--text-color);
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  width: 100%;
+  margin: 8px 0;
 }
 
 .chat-input-container input:focus {

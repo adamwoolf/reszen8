@@ -38,6 +38,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import PasswordResetPage from "./pages/PasswordReset/PasswordReset";
 import UserManager from "./components/UserManager";
+import Publications from "./pages/Publications/Publications";
+import FullPublication from "./pages/Publications/FullPublication";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -211,6 +213,22 @@ const AnimatedRoutes = () => {
           element={
             <Layout>
               <OrderSuccess />
+            </Layout>
+          }
+        />
+        <Route
+          path='/publications/:slug'
+          element={
+            <Layout>
+              <FullPublication />
+            </Layout>
+          }
+        />
+        <Route
+          path='/publications'
+          element={
+            <Layout>
+              <Publications />
             </Layout>
           }
         />

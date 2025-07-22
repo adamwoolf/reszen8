@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard/Dashboard.scss";
 import useContentful from "../hooks/useContentful";
@@ -142,12 +142,15 @@ const DigitalLibrary = () => {
         <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
           Browse E-Books
         </button>
-        <button
+        {/* <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}
         >
           Browse Publications
-        </button>
+        </button> */}
+        <Link to='/publications' className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}>
+          Browse Publications
+        </Link>
       </div>
 
       {renderTabContent()}

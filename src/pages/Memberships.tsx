@@ -81,10 +81,14 @@ const Memberships: React.FC = () => {
                       {currentUser?.subscription?.hasCompletedTrial ? "Completed" : tier?.badge}
                     </div>
                   )}
-                  <div className='price'>
-                    {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
-                    {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
-                  </div>
+                  {!tier.title.includes("Enterprise") ? (
+                    <div className='price'>
+                      {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
+                      {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
+                    </div>
+                  ) : (
+                    <h4 className='please-enquire'>{tier.billing}</h4>
+                  )}
                   <p className='description'>
                     {tier.description}
                     {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}

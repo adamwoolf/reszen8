@@ -55,7 +55,6 @@ const AIChat: React.FC = () => {
         "How do I sign up for RESZEN8?",
         "What are the system requirements?",
         "Is there a free trial available?",
-        "How do I install the RESZEN8 app?",
         "What makes RESZEN8 different from other solutions?",
       ],
     },
@@ -380,26 +379,26 @@ const AIChat: React.FC = () => {
               }
             }}
           />
-          <button
+          {/* <button
             type='button'
             className='prompt-button'
             onClick={() => setShowPrompts(!showPrompts)}
             ref={promptButtonRef}
           >
             <span>💡</span>
-          </button>
-          <div className='button-group'>
+          </button> */}
+          <div className='chat-button-group'>
             <button
               type='button'
               onClick={handleClearChat}
               disabled={messages.length === 0 || isLoading}
-              className='clear-button'
               title='Clear chat'
+              className='chat-button'
             >
               Clear
             </button>
-            <button type='submit' disabled={isLoading || !input.trim()} className='send-button' title='Send message'>
-              <FaPaperPlane className='send-icon' />
+            <button className='chat-button' type='submit' disabled={isLoading || !input.trim()} title='Send message'>
+              Send <FaPaperPlane className='send-icon' />
             </button>
           </div>
         </div>

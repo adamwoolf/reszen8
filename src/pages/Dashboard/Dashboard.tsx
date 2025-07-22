@@ -4,17 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
 import useFirebaseDatabase from "../../hooks/useFirestoreCollection";
+import { FaArrowRight } from "react-icons/fa";
 
 type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
-
-const mockAudioData = {
-  mindfulness: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  sleep: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-  anxiety: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-  gratitude: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-  focus: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-  "loving-kindness": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
-};
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -48,11 +40,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     setAllItems({ ...savedItems, myMeds });
+    console.log("SAVED", savedItems);
   }, [savedItems, myMeds]);
 
   useEffect(() => {
     if (data) {
-      console.log(data);
       console.log(currentUser);
       const meds = Object.values(data);
       const parsedMeds = meds
@@ -66,6 +58,7 @@ const Dashboard = () => {
       setMyMeds(Object.values(parsedMeds));
     }
   }, [data, currentUser]);
+  console.log("saved", savedItems, currentUser);
 
   const togglePlayPause = (item: any) => {
     if (currentlyPlaying === item.id) {
@@ -160,6 +153,7 @@ const Dashboard = () => {
   }
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
+    console.log(itemId);
     removeItem(itemId, type);
     setNotification({
       show: true,
@@ -171,8 +165,7 @@ const Dashboard = () => {
       setNotification((prev) => ({ ...prev, show: false }));
     }, 3000);
   };
-  console.log(allItems);
-  console.log(activeTab);
+
   const renderTabContent = () => {
     const data = allItems[activeTab];
     console.log(allItems);
@@ -210,6 +203,13 @@ const Dashboard = () => {
                         <AudioPlayer audioUrl={item.audioUrl} />
                       </div>
                     )}
+                    {activeTab === "publications" && (
+                      <Link className='read-link' to={`/publications/${item.slug}`}>
+                        <span className='read-link-text'> Read</span>
+                        <FaArrowRight />{" "}
+                      </Link>
+                    )}
+
                     <div className='flex gap-3'>
                       {activeTab !== "myMeds" && (
                         <button
