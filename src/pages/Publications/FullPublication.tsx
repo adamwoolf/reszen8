@@ -56,7 +56,7 @@ const FullPublication = () => {
   return (
     <div className='publication__full'>
       <LikeCta large id={content?.sys?.id} />
-      <h1>{title}</h1>
+      <h1 className='publication__title'>{title}</h1>
       <p>Published on {date.toDateString()}</p>
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />

@@ -125,7 +125,7 @@ const Publications = () => {
             <article className='feature-card clickable publication__card'>
               <div className='publication__card-content'>
                 <LikeCta id={sys.id} />
-                <h3>{fields.title}</h3>
+                <h3 className='publication__card-title'>{fields.title}</h3>
                 <span className='publication__card-date'>{date.toDateString()}</span>
                 {isSaved && <p className='publication__card-saved'>Saved to my dashboard</p>}
                 <div className='publication__card-divider' />
