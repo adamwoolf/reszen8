@@ -4,6 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { getFullPublication } from "../../contentful";
 import { useAuth } from "../../contexts/AuthContext";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
+import { FaHeart } from "react-icons/fa";
+import LikeCta from "./LikeCta";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -53,6 +55,7 @@ const FullPublication = () => {
   if (!title) return null;
   return (
     <div className='publication__full'>
+      <LikeCta large id={content?.sys?.id} />
       <h1>{title}</h1>
       <p>Published on {date.toDateString()}</p>
       {currentUser && showSaveUI()}

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { marked } from "marked";
 import "./PublicationsStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
-
+import LikeCta from "./LikeCta";
 interface Publication {
   fields: {
     title: string;
@@ -15,9 +15,10 @@ interface Publication {
 
 const Publications = () => {
   const content = useContentful(getPublications)?.content?.items || [];
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
+  const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");
   function truncateTo25Words(text: string) {
     const words = text.trim().split(/\s+/); // split on any whitespace
@@ -59,47 +60,71 @@ const Publications = () => {
     setDisplayPubs(content);
   };
 
+  const showFavourites = () => {
+    setShowingFavs(!showingFavs);
+    setActiveFilter("favourite");
+    const favPubs = currentUser?.favourites?.publications;
+    const favs = content.filter((item: any) => favPubs.includes(item.sys.id));
+    setDisplayPubs(favs);
+  };
+
   const keyWords = ["Mindfulness", "Growth", "Awareness", "Stress", "Anger"];
 
   return (
     <div className='publications'>
       <h1>Publications</h1>
-      <div className='publications__filters'>
-        <input className='publications__search' value={search} onChange={searchText} placeholder='Type to search' />
-        <div>
-          <button className='publications__filter' onClick={showAll}>
-            Show all
-          </button>
-          {keyWords.map((word) => (
-            <button
-              className={activeFilter !== word ? "publications__filter non-active-filter" : "publications__filter"}
-              onClick={() => filterPubs(word)}
-            >
-              {word}
-            </button>
-          ))}
+      {currentUser && (
+        <>
+          <div className='publications__filters'>
+            <input className='publications__search' value={search} onChange={searchText} placeholder='Type to search' />
+            <div>
+              <button className='publications__filter' onClick={showAll}>
+                Show all
+              </button>
+              <button
+                className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
+                onClick={showFavourites}
+              >
+                Only Favourites
+              </button>
+              {keyWords.map((word) => (
+                <button
+                  className={activeFilter !== word ? "publications__filter non-active-filter" : "publications__filter"}
+                  onClick={() => filterPubs(word)}
+                >
+                  {word}
+                </button>
+              ))}
+            </div>
+            {displayPubs.length > 0 && (
+              <span className='publications__count'>
+                Showing: {displayPubs.length} {activeFilter} publications.
+              </span>
+            )}
+          </div>
+          {!displayPubs.length && (
+            <span className='publications__no-results'>
+              Sorry, we couldn't find any publications that match your search
+            </span>
+          )}
+        </>
+      )}
+
+      {!currentUser && (
+        <div className='publications__user-prompt'>
+          <p>Sign up to enable filtering, searching and building a list of favourite articles in your User Dashboard</p>
         </div>
-        {displayPubs.length > 0 && (
-          <span className='publications__count'>
-            Showing: {displayPubs.length} publications {activeFilter && `for ${activeFilter}`}
-          </span>
-        )}
-      </div>
-      {!displayPubs.length && (
-        <span className='publications__no-results'>
-          Sorry, we couldn't find any publications that match your search
-        </span>
       )}
 
       <div className='publication__grid'>
         {displayPubs?.map(({ fields, sys }) => {
           const date = new Date(fields.publishDate);
           const truncatedBody = truncateTo25Words(fields.body);
-
           const isSaved = !!currentUser?.savedItems?.publications?.find((p) => p.id === sys.id);
           return (
             <article className='feature-card clickable publication__card'>
               <div className='publication__card-content'>
+                <LikeCta id={sys.id} />
                 <h3>{fields.title}</h3>
                 <span className='publication__card-date'>{date.toDateString()}</span>
                 {isSaved && <p className='publication__card-saved'>Saved to my dashboard</p>}

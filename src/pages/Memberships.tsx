@@ -108,7 +108,8 @@ const Memberships: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                {currentUser?.subscription?.subscription === tier.id ? (
+                {currentUser?.subscription?.subscription === tier.id ||
+                (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ? (
                   <></>
                 ) : (
                   <button
