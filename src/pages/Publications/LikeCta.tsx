@@ -11,7 +11,7 @@ const LikeCta = ({ id, large = false }: { id: string; large?: boolean }) => {
   const { currentUser, setCurrentUser } = useAuth();
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { data, addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
-  const numLikes = data.LIKES.find((like: Like) => like.id === id)?.likes || 0;
+  const numLikes = data?.LIKES?.find((like: Like) => like.id === id)?.likes || 0;
 
   if (!currentUser) return null;
   const isFavourite = currentUser?.favourites?.publications?.includes(id);

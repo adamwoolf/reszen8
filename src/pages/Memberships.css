@@ -39,7 +39,7 @@
   margin-bottom: 1rem;
   font-weight: 700;
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
-  animation: pulse 3s ease-in-out infinite;
+  margin-top: 30px;
 }
 
 @keyframes pulse {
