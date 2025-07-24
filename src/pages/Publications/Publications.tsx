@@ -123,15 +123,18 @@ const Publications = () => {
           const isSaved = !!currentUser?.savedItems?.publications?.find((p) => p.id === sys.id);
           return (
             <article className='feature-card clickable publication__card'>
-              <div className='publication__card-content'>
-                <LikeCta id={sys.id} />
-                <h3 className='publication__card-title'>{fields.title}</h3>
-                <span className='publication__card-date'>{date.toDateString()}</span>
-                {isSaved && <p className='publication__card-saved'>Saved to my dashboard</p>}
-                <div className='publication__card-divider' />
-                <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
-              </div>
-              <Link to={`/publications/${fields.slug}`}>read more</Link>
+              <LikeCta id={sys.id} />
+
+              <Link to={`/publications/${fields.slug}`}>
+                <div className='publication__card-content'>
+                  <h3 className='publication__card-title'>{fields.title}</h3>
+                  <span className='publication__card-date'>{date.toDateString()}</span>
+                  {isSaved && <p className='publication__card-saved'>Saved to my dashboard</p>}
+                  <div className='publication__card-divider' />
+                  <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
+                </div>
+                read more...
+              </Link>
             </article>
           );
         })}

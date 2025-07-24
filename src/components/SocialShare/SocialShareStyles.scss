@@ -1,0 +1,19 @@
+.share {
+  margin: 50px 0;
+  text-align: center;
+  &-divider {
+    height: 1px;
+    width: 100%;
+    background-color: orange;
+    opacity: 0.6;
+  }
+
+  &-icon {
+    height: 40px;
+    width: auto;
+  }
+
+  &-button {
+    margin: 8px;
+  }
+}

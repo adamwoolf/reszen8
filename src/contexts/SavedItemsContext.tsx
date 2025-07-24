@@ -67,7 +67,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   // set savedItems with data from db
   useEffect(() => {
     if (currentUser && currentUser.savedItems) {
-      console.log("USER", currentUser.savedItems);
       setSavedItems({
         ebooks: currentUser?.savedItems?.ebooks || [],
         publications: currentUser?.savedItems?.publications || [],

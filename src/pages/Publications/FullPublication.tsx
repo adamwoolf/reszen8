@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { FaHeart } from "react-icons/fa";
 import LikeCta from "./LikeCta";
+import SocialShare from "../../components/SocialShare/SocialShare";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -61,6 +62,7 @@ const FullPublication = () => {
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}
+      <SocialShare title={title} quote={title} />
       <Link className='btn publication__full__back-cta ' to={"/publications"}>
         View all publications
       </Link>

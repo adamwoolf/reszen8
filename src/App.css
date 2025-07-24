@@ -681,3 +681,19 @@ p {
   font-size: 0.9rem;
   padding: 0 2px;
 }
+
+.animate-in {
+  /* animation: fadeInUp 300ms ease-in-out;
+  animation-fill-mode: both; */
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
