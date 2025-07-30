@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { marked } from "marked";
 import { useParams, Link } from "react-router-dom";
-import { getFullPublication } from "../../contentful";
 import { useAuth } from "../../contexts/AuthContext";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
-import { FaHeart } from "react-icons/fa";
 import LikeCta from "./LikeCta";
 import SocialShare from "../../components/SocialShare/SocialShare";
+import { useContentStore } from "../../store/contentStore";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -14,8 +13,10 @@ const FullPublication = () => {
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { currentUser, setCurrentUser } = useAuth();
   const [saved, setSaved] = useState(false);
+  const { publications } = useContentStore();
+
   useEffect(() => {
-    getFullPublication(slug).then((data) => setContent(data?.items?.[0]));
+    setContent(publications.find((pub) => pub.fields.slug === slug));
   }, [slug]);
 
   useEffect(() => {
@@ -58,7 +59,6 @@ const FullPublication = () => {
     <div className='publication__full'>
       <LikeCta large id={content?.sys?.id} />
       <h1 className='publication__title'>{title}</h1>
-      <p>Published on {date.toDateString()}</p>
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}

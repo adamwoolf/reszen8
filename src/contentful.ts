@@ -20,15 +20,13 @@ const getMembershipPage = () =>
 const getCarouselSlides = () => client.getEntries({ content_type: "carouselSlide" }).then((response) => response);
 const getPublications = () =>
   client.getEntries({ content_type: "publications", order: "-fields.publishDate" }).then((response) => response);
-const getFullPublication = (slug: string) =>
-  client.getEntries({ content_type: "publications", "fields.slug": slug }).then((response) => response);
+
 const getFAQs = () => client.getEntries({ content_type: "faq" }).then((response) => response);
 const getMembershipTiers = () =>
   client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
 
 export {
   getPublications,
-  getFullPublication,
   getMeditationItems,
   getStoreItems,
   getMeditationPage,

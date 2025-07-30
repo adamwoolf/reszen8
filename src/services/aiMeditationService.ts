@@ -38,11 +38,13 @@ export const generateMeditation = async (
   meditationType: string,
   duration: string,
   language: string = "en",
-  voiceId: string = ELEVENLABS_VOICE_ID, // Use provided voice ID or fallback to default
+  practiceType: { description: string; name: string },
   userId: string
 ): Promise<{ title: string; content: string; audioUrl: string; downloadLink: string }> => {
   try {
-    // Map language codes to full language names for the prompt
+    const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
+
+    // // Map language codes to full language names for the prompt
     const languageNames: Record<string, string> = {
       en: "English",
       es: "Spanish",
@@ -54,54 +56,56 @@ export const generateMeditation = async (
 
     const languageName = languageNames[language] || "English";
 
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content:
-              `You are an AI meditation guide. Create a guided meditation script in ${languageName}. ` +
-              "The meditation should flow naturally and be suitable for the specified duration. " +
-              'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
-              "The response must be valid JSON with no additional text before or after the JSON object. " +
-              `The entire meditation must be in ${languageName} language.`,
-          },
-          {
-            role: "user",
-            content: `Create a ${duration}-second ${meditationType} meditation in ${languageName}. 
-              The meditation should be exactly ${duration} seconds when spoken at a natural pace.
-              Keep the content focused and appropriate for the short duration.
-              Format the response as a valid JSON object with 'title' and 'content' properties.`,
-          },
-        ],
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-      }
-    );
+    // const response = await axios.post(
+    //   "https://api.openai.com/v1/chat/completions",
+    //   {
+    //     model: "gpt-4",
+    //     messages: [
+    //       {
+    //         role: "system",
+    //         content:
+    //           `You are an AI meditation guide. Create a guided meditation script in ${languageName}. ` +
+    //           "The meditation should flow naturally and be suitable for the specified duration. " +
+    //           'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
+    //           "The response must be valid JSON with no additional text before or after the JSON object. " +
+    //           `The entire meditation must be in ${languageName} language.`,
+    //       },
+    //       {
+    //         role: "user",
+    //         content: `Create a ${duration}-second ${meditationType} meditation in ${languageName}.
+    //           The meditation should be exactly ${duration} seconds when spoken at a natural pace.
+    //           Keep the content focused and appropriate for the short duration.
+    //           Format the response as a valid JSON object with 'title' and 'content' properties.`,
+    //       },
+    //     ],
+    //     temperature: 0.7,
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${OPENAI_API_KEY}`,
+    //     },
+    //   }
+    // );
 
-    const content = response.data.choices[0].message.content.trim();
+    // const content = response.data.choices[0].message.content.trim();
 
-    let meditationData: Omit<MeditationResponse, "audioUrl">;
+    // let meditationData: Omit<MeditationResponse, "audioUrl">;
 
-    try {
-      meditationData = JSON.parse(content);
-    } catch {
-      meditationData = {
-        title: `${meditationType} Meditation`,
-        content,
-      };
-    }
+    // try {
+    //   meditationData = JSON.parse(content);
+    // } catch {
+    //   meditationData = {
+    //     title: `${meditationType} Meditation`,
+    //     content,
+    //   };
+    // }
+
+    const meditationData = await generateScript(meditationType, duration, "en", practiceType);
 
     // Generate audio from script via ElevenLabs using the provided voiceId
     const audioResponse = await axios.post(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, // Use the provided voiceId
+      `https://api.elevenlabs.io/v1/text-to-speech/${details?.voice.id}`, // Use the provided voiceId
       {
         text: meditationData.content,
         model_id: "eleven_monolingual_v1",
@@ -173,12 +177,11 @@ export const generateScript = async (
   meditationType: string,
   duration: string,
   language: string = "en",
-  practiceType: string
+  practiceType: { description: string; name: string }
 ) => {
-  console.log(duration);
   const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
-  const type = PracticeTypes.find((p) => p.name === practiceType);
-  const wordsAndBreaks = mapDurationToWords[+duration as keyof typeof mapDurationToWords];
+  const type = PracticeTypes.find((p) => p.name === practiceType.name);
+  const wordsAndBreaks = mapDurationToWords[duration as keyof typeof mapDurationToWords];
   const prompt = `You are a skilled meditation script writer. Write a calming, natural-sounding guided meditation script in English (UK) that matches the following parameters:
 
 
@@ -187,7 +190,7 @@ export const generateScript = async (
   • Tone: Warm, gentle, and soothing  
   • Pacing: Moderate to slow, suitable for audio narration  
   • Structure: Introduction → Gentle body and breath awareness → Thematic guided section → Closing wind-down  
-  • Duration: ${duration} minutes (use approximately ${wordsAndBreaks.words} words)  
+  • Duration: ${wordsAndBreaks.duration} minutes (use approximately ${wordsAndBreaks.words} words)  
   • Audience: General adult audience, no spiritual or religious language  
   • Voice: The script should be suitable for Eleven Labs voice ${details?.voice?.name} with ID ${details?.voice?.id} 
   • Make the meditation unique.  
@@ -236,8 +239,11 @@ export const generateScript = async (
       },
     }
   );
-  console.log(response.data.choices);
+
   const content = response.data.choices[0].message.content.trim();
   console.log("SCRIPT:", content);
-  return content;
+  return {
+    title: `${meditationType} Meditation`,
+    content,
+  };
 };

@@ -21,7 +21,7 @@ interface MeditationState {
 const AIMeditationGenerator: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("Mindfulness");
-  const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
+  // const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0]);
   const allowedValues = Object.keys(mapDurationToWords);
@@ -58,12 +58,12 @@ const AIMeditationGenerator: React.FC = () => {
   // Get filtered voices based on selected language
   const filteredVoices = VOICE_OPTIONS.filter((voice) => voice.supportedLanguages.includes(selectedLanguage));
 
-  // Reset selected voice if it's not in the filtered list
-  useEffect(() => {
-    if (filteredVoices.length > 0 && !filteredVoices.some((voice) => voice.id === selectedVoice)) {
-      setSelectedVoice(filteredVoices[0].id);
-    }
-  }, [selectedLanguage, filteredVoices]);
+  // // Reset selected voice if it's not in the filtered list
+  // useEffect(() => {
+  //   if (filteredVoices.length > 0 && !filteredVoices.some((voice) => voice.id === selectedVoice)) {
+  //     setSelectedVoice(filteredVoices[0].id);
+  //   }
+  // }, [selectedLanguage, filteredVoices]);
 
   useEffect(() => {
     setDuration(allowedValues[durationIndex]);
@@ -158,8 +158,8 @@ const AIMeditationGenerator: React.FC = () => {
     if (isGenerating) return;
 
     // Get the selected voice details
-    const selectedVoiceDetails = VOICE_OPTIONS.find((voice) => voice.id === selectedVoice);
-    console.log("Selected voice details:", selectedVoiceDetails);
+    // const selectedVoiceDetails = VOICE_OPTIONS.find((voice) => voice.id === selectedVoice);
+    // console.log("Selected voice details:", selectedVoiceDetails);
 
     // Reset any existing meditation
     setGeneratedMeditation(null);
@@ -180,7 +180,7 @@ const AIMeditationGenerator: React.FC = () => {
         meditationType,
         duration,
         selectedLanguage,
-        selectedVoice, // Pass the selected voice ID
+        practiceType,
         currentUser?.uid || "anonymous"
       );
 
@@ -231,39 +231,39 @@ const AIMeditationGenerator: React.FC = () => {
   };
 
   // Handle saving to dashboard
-  const handleSaveToDashboard = () => {
-    if (!generatedMeditation || !currentUser) return;
+  // const handleSaveToDashboard = () => {
+  //   if (!generatedMeditation || !currentUser) return;
 
-    const newItem = {
-      id: Date.now(),
-      title: generatedMeditation.title,
-      type: "meditation" as const,
-      duration: duration,
-      savedDate: new Date().toISOString(),
-      audioUrl: generatedMeditation.audioUrl,
-      content: generatedMeditation.content,
-    };
+  //   const newItem = {
+  //     id: Date.now(),
+  //     title: generatedMeditation.title,
+  //     type: "meditation" as const,
+  //     duration: duration,
+  //     savedDate: new Date().toISOString(),
+  //     audioUrl: generatedMeditation.audioUrl,
+  //     content: generatedMeditation.content,
+  //   };
 
-    addItem(newItem);
-    toast.success("Saved to your dashboard");
-  };
+  //   addItem(newItem);
+  //   toast.success("Saved to your dashboard");
+  // };
 
-  // Function to reset the form
-  const handleStartOver = () => {
-    setGeneratedMeditation(null);
-    setIsPlaying(false);
-    setProgress(0);
-    setCurrentTime(0);
+  // // Function to reset the form
+  // const handleStartOver = () => {
+  //   setGeneratedMeditation(null);
+  //   setIsPlaying(false);
+  //   setProgress(0);
+  //   setCurrentTime(0);
 
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+  //   if (audioRef.current) {
+  //     audioRef.current.pause();
+  //     audioRef.current = null;
+  //   }
 
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-    }
-  };
+  //   if (progressInterval.current) {
+  //     clearInterval(progressInterval.current);
+  //   }
+  // };
 
   return (
     <div className='ai-meditation-generator'>
@@ -277,7 +277,7 @@ const AIMeditationGenerator: React.FC = () => {
 
       <form onSubmit={handleSubmit} className='generator-form'>
         <div className='form-group'>
-          <label htmlFor='duration'>Duration {allowedValues[durationIndex]} (minutes)</label>
+          <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
           <input
             className='custom-slider'
             type='range'
@@ -353,24 +353,32 @@ const AIMeditationGenerator: React.FC = () => {
         </div>
 
         <div className='flex justify-center mt-8 space-x-8'>
-          {/* <button type='submit' className='generate-btn' disabled={isGenerating}>
-            {isGenerating ? (
-              <>
-                <span className='spinner'></span>
-                Generating...
-              </>
-            ) : (
-              "Generate Meditation"
-            )}
-          </button> */}
+          {currentUser && currentUser?.isGod ? (
+            <button type='submit' className='generate-btn' disabled={isGenerating}>
+              {isGenerating ? (
+                <>
+                  <span className='spinner'></span>
+                  Generating...
+                </>
+              ) : (
+                "Generate Meditation"
+              )}
+            </button>
+          ) : (
+            <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
+          )}
         </div>
       </form>
-      <ScriptLab
-        duration={duration}
-        selectedLanguage={selectedLanguage}
-        meditationType={meditationType}
-        practiceType={practiceType}
-      />
+      {/* {currentUser && currentUser?.isGod ? (
+        <ScriptLab
+          duration={duration}
+          selectedLanguage={selectedLanguage}
+          meditationType={meditationType}
+          practiceType={practiceType}
+        />
+      ) : (
+        <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
+      )} */}
 
       {isGenerating && (
         <div className='loading-animation'>

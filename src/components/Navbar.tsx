@@ -56,6 +56,7 @@ const Navbar: React.FC = () => {
     isActiveSub: true,
     startDate: Date.now(),
     subscription: "free-trial",
+    meditationCredits: 8,
   };
 
   const resetTrial = () => {
@@ -129,6 +130,11 @@ const Navbar: React.FC = () => {
               <li>
                 <NavLink to='/memberships' className={getNavLinkClass}>
                   Memberships
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/publications' className={getNavLinkClass}>
+                  Publications
                 </NavLink>
               </li>
               <li>

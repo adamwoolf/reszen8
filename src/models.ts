@@ -4,6 +4,7 @@ export type Subscription = {
   isActiveSub?: boolean;
   subscription: "free-trial" | "monthly";
   hasCompletedTrial: boolean;
+  meditationCredits?: number;
 };
 
 export interface User {
@@ -17,4 +18,14 @@ export interface User {
   surName?: string;
   savedItems?: {};
   subscription?: Subscription;
+  isGod?: boolean;
+}
+
+export interface Meditation {
+  generatedBy?: string;
+  audioUrl: string;
+  createdAt?: number;
+  language?: string;
+  title: string;
+  type: string;
 }

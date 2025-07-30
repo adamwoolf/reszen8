@@ -41,12 +41,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     setAllItems({ ...savedItems, myMeds });
-    console.log("SAVED", savedItems);
   }, [savedItems, myMeds]);
 
   useEffect(() => {
     if (data) {
-      console.log(currentUser);
       const meds = Object.values(data);
       const parsedMeds = meds
         .filter((item) => item.generatedBy === currentUser.uid)
@@ -56,7 +54,7 @@ const Dashboard = () => {
           id: `${m.type}-${i}`,
           meditationType: m.type,
         }));
-      setMyMeds(Object.values(parsedMeds));
+      setMyMeds(Object.values(parsedMeds).reverse());
     }
   }, [data, currentUser]);
 
@@ -185,7 +183,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data?.map((item, i) => (
+            {data?.reverse().map((item, i) => (
               <div key={`dashboard-item ${i}`} className='dashboard-card'>
                 <div className='dashboard-card__content'>
                   <div>

@@ -5,6 +5,7 @@ import "./Memberships.css";
 import useContentful from "../hooks/useContentful";
 import { getMembershipTiers, getMembershipPage, getFAQs } from "../contentful";
 import { useAuth } from "../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 type MembershipTier = {
   id: string;
@@ -109,7 +110,8 @@ const Memberships: React.FC = () => {
                   ))}
                 </ul>
                 {currentUser?.subscription?.subscription === tier.id ||
-                (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ? (
+                (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ||
+                tier.title.includes("Enterprise") ? (
                   <></>
                 ) : (
                   <button
@@ -122,6 +124,11 @@ const Memberships: React.FC = () => {
                       ? "Start Free Trial"
                       : "Get Started"}
                   </button>
+                )}
+                {tier.title.includes("Enterprise") && (
+                  <Link style={{ textAlign: "center" }} className='subscribe-button' to='/contact'>
+                    Make an enquiry
+                  </Link>
                 )}
               </div>
             );

@@ -112,9 +112,9 @@ export const PracticeTypes = [
 // };
 
 export const mapDurationToWords = {
-  3: { words: "350–380", breaks: 17, totalPauseTime: "40" },
-  5: { words: "550–600", breaks: 19, totalPauseTime: "70" },
-  8: { words: "900–950", breaks: 28, totalPauseTime: "90" },
-  10: { words: "1100–1150", breaks: 35, totalPauseTime: "100" },
+  MiniMed: { words: "350–380", breaks: 17, totalPauseTime: "40", duration: 1 },
+  Reset: { words: "550–600", breaks: 19, totalPauseTime: "70", duration: 4 },
+  Timeout: { words: "900–950", breaks: 28, totalPauseTime: "90", duration: 8 },
+  "Total Relax": { words: "1100–1150", breaks: 35, totalPauseTime: "100", duration: 12 },
   // 15: { words: 1900, breaks: 55 },
 };

@@ -10,7 +10,7 @@ const ScriptLab = ({
   meditationType: string;
   duration: string;
   selectedLanguage: string;
-  practiceType: string;
+  practiceType: { name: string; description: string };
 }) => {
   const [script, setScript] = useState("");
   const [generating, setGenerating] = useState(false);

@@ -5,6 +5,9 @@ import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard/Dashboard.scss";
 import useContentful from "../hooks/useContentful";
 import { getMeditationItems } from "../contentful";
+import useFirebaseDatabase from "../hooks/useFirestoreCollection";
+import { Meditation } from "../models";
+import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -15,52 +18,35 @@ const DigitalLibrary = () => {
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const staticMeditations = useContentful(getMeditationItems)?.content;
+  const { data: bespokeMeds } = useFirebaseDatabase("meditations");
 
   // Redirect to login if not authenticated
   if (!currentUser) {
     navigate("/login");
     return null;
   }
-  const [libraryData, setLibraryData] = useState({
+  const [libraryData, setLibraryData] = useState<{ meditations: Meditation[] }>({
     meditations: [],
-    ebooks: [
-      {
-        createdAt: 12343,
-        id: 201,
-        title: "Mindfulness for Beginners",
-        author: "Dr. Sarah Johnson",
-        type: "ebook" as const,
-      },
-      { createdAt: 12344, id: 202, title: "The Art of Breathing", author: "Michael Chen", type: "ebook" as const },
-    ],
-    publications: [
-      {
-        createdAt: 12345,
-        id: 301,
-        title: "The Science of Mindfulness",
-        author: "Dr. Jane Smith",
-        type: "publication" as const,
-      },
-      {
-        createdAt: 123466,
-        id: 302,
-        title: "Meditation and Mental Health",
-        author: "Dr. John Doe",
-        type: "publication" as const,
-      },
-      {
-        createdAt: 12347,
-        id: 303,
-        title: "Modern Meditation Techniques",
-        author: "Dr. Emily Wilson",
-        type: "publication" as const,
-      },
-    ],
   });
 
   useEffect(() => {
+    const normalisedBespoke = bespokeMeds
+      ? Object.values(bespokeMeds)
+          .reverse()
+          ?.map((med: Meditation) => {
+            return {
+              ...med,
+              type: "meditation",
+            };
+          })
+      : [];
+    console.log(normalisedBespoke);
+    setLibraryData({ ...libraryData, meditations: [...libraryData.meditations, ...normalisedBespoke] });
+  }, [bespokeMeds]);
+
+  useEffect(() => {
     if (!libraryData?.meditations.length) {
-      const staticMeds = staticMeditations?.map(({ fields }) => ({
+      const staticMeds: Meditation[] = staticMeditations?.map(({ fields }: Meditation) => ({
         audioUrl: fields.audioFile.fields.file.url,
         type: fields.type,
         title: fields.title,
@@ -110,16 +96,12 @@ const DigitalLibrary = () => {
               {item.duration && <p className='text-gray-300'>Duration: {item.duration}</p>}
               {item.meditationType && <p className='text-gray-300'>Meditation Type: {item.meditationType}</p>}
               {item.language && <p className='text-gray-300'>Language: {item.language}</p>}
-
+              {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
               <button
                 onClick={() => handleAddItem(item)}
                 className='mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'
               >
-                {item.type === "meditation"
-                  ? "Add Meditation"
-                  : item.type === "ebook"
-                  ? "Add E-Book"
-                  : "Add Publication"}
+                Add to my dashboard
               </button>
             </div>
           ))}
