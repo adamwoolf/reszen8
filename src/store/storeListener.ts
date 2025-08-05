@@ -19,7 +19,6 @@ export const startDatabaseListeners = () => (dispatch: AppDispatch) => {
       const data = snapshot.val() || {};
       switch (key) {
         case "meta":
-          console.log(data);
           dispatch(setMeta(data));
           break;
 

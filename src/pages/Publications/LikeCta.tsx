@@ -116,7 +116,9 @@ const LikeCta = ({
       <button onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
         <FaHeart
           size={large ? 30 : 15}
-          className={isFavourite ? "publication__heart publication__heart--favourite" : "publication--heart"}
+          className={
+            isFavourite && numLikes ? "publication__heart publication__heart--favourite" : "publication--heart"
+          }
         />
       </button>
       <span className='likes__count'>{numLikes} likes</span>
