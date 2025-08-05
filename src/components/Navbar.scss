@@ -181,6 +181,7 @@
 }
 
 .nav-link {
+  position: relative;
   text-decoration: none;
   color: #ffffff;
   font-weight: 500;
@@ -190,6 +191,14 @@
   position: relative;
   display: flex;
   align-items: center;
+
+  &__count {
+    color: orange;
+    font-size: 10px;
+    position: absolute;
+    top: 4px;
+    right: -8px;
+  }
 }
 
 .nav-icon {

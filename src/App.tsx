@@ -301,7 +301,6 @@ function App() {
 
   useEffect(() => {
     getPublications().then((data) => {
-      console.log(data);
       dispatch(setPublications(data.items));
     });
   }, []);

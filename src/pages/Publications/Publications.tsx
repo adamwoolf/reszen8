@@ -19,8 +19,6 @@ const Publications = () => {
   const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");
 
-  console.log(publications);
-
   useEffect(() => {
     if (publications && !displayPubs?.length) setDisplayPubs(publications);
   }, [setDisplayPubs, displayPubs, publications]);

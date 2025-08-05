@@ -3,24 +3,28 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
-import useFirebaseDatabase from "../../hooks/useFirestoreCollection";
 import { FaArrowRight } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import { useSelector } from "react-redux";
-type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
+import { CONTENT_TYPES } from "../../constants";
+
+type TabType = "meditations" | "publications" | "myMeds";
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const { removeItem, savedItems } = useSavedItems();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>("meditations");
+  const [activeTab, setActiveTab] = useState<TabType>(CONTENT_TYPES.meditations as TabType);
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [myMeds, setMyMeds] = useState([]);
-  const data = useSelector((state) => state.content.dashboard);
+  const data = useSelector((state) => state.content.meditations);
   const [allItems, setAllItems] = useState({});
+
+  const [search, setSearch] = useState("");
+
   // Redirect to login if not authenticated
   if (!currentUser) {
     navigate("/login");
@@ -158,7 +162,8 @@ const Dashboard = () => {
   return (
     <div className='dashboard-container'>
       <h1 className='text-3xl font-bold mb-6 text-white'>My Dashboard</h1>
-
+      {/* <input placeholder='Type to search Dashboard items' className='dashboard__search' /> */}
+      {/* <button>Search Dashboard Items</button> */}
       <div className='tabs mb-8'>
         <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
           Bespoke Meditations

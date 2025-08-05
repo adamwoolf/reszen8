@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { setMeta } from "../../store/contentSlice";
+import { CONTENT_TYPES } from "../../constants";
 interface Like {
   id: string;
   likes: number;
@@ -25,7 +26,7 @@ const LikeCta = ({
 
   const numPublicationLikes = data?.LIKES?.find((like: Like) => like.id === id)?.likes || 0;
   const numMeditationLikes = data?.meditationLIKES?.find((like: Like) => like.id === id)?.likes || 0;
-  const numLikes = content === "publications" ? numPublicationLikes : numMeditationLikes;
+  const numLikes = content === CONTENT_TYPES.publications ? numPublicationLikes : numMeditationLikes;
 
   if (!currentUser) return null;
 
@@ -34,8 +35,7 @@ const LikeCta = ({
 
   // handles global likes for item
   const handleLikeClick = (id: string) => {
-    console.log(data);
-    if (content === "publications") {
+    if (content === CONTENT_TYPES.publications) {
       if (!data?.LIKES?.map((item: Like) => item.id).includes(id)) {
         addOrUpdateMeta("LIKES", [...data?.LIKES, { id, likes: 1 }]);
         dispatch(setMeta({ ...data, LIKES: [{ id, likes: 1 }] }));
@@ -66,7 +66,7 @@ const LikeCta = ({
   };
 
   const removeLike = (id: string) => {
-    if (content === "publications") {
+    if (content === CONTENT_TYPES.publications) {
       const likes = data?.LIKES?.map((like: Like) => {
         if (like.id !== id) return like;
         return { ...like, likes: like.likes - 1 };
@@ -76,6 +76,7 @@ const LikeCta = ({
     } else {
       const likes = data?.meditationLIKES?.map((like: Like) => {
         if (like.id !== id) return like;
+        if (like.likes === 0) return like;
         return { ...like, likes: like.likes - 1 };
       });
       addOrUpdateMeta("meditationLIKES", likes);

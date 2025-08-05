@@ -1,3 +1,15 @@
+.dashboard {
+  &__search {
+    padding: 12px;
+    margin: 16px 0;
+    width: 50%;
+
+    &::placeholder {
+      color: orange;
+    }
+  }
+}
+
 /* Dashboard Container */
 .dashboard-container {
   max-width: 1200px;

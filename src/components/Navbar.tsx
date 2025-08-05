@@ -8,6 +8,7 @@ import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import AccountStatus from "../components/AccountStatus/AccountStatus";
 import useSendMail from "../hooks/useSendEmail";
 import Search from "./Search/Search";
+import { useSelector } from "react-redux";
 
 const Navbar: React.FC = () => {
   const { currentUser, logout, setCurrentUser } = useAuth();
@@ -17,7 +18,11 @@ const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { sendMail } = useSendMail();
+  const dashboardCount = currentUser?.savedItems?.meditations?.length + currentUser?.savedItems?.publications?.length;
+  const meds = useSelector((state) => state?.content?.meditations);
+  const userBespokeMeds = meds ? Object.values(meds).filter((med) => med.generatedBy === currentUser.uid)?.length : 0;
 
+  const dashboardTotal = dashboardCount + userBespokeMeds;
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -158,7 +163,7 @@ const Navbar: React.FC = () => {
                   </li>
                   <li>
                     <NavLink to='/dashboard' className={getNavLinkClass}>
-                      My Dashboard
+                      My Dashboard <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
                     </NavLink>
                   </li>
                 </>
