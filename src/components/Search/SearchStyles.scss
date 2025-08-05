@@ -1,0 +1,65 @@
+.search {
+  height: 100%;
+  &-cta {
+    background-color: transparent;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &__results-section {
+    padding: 24px 0;
+  }
+
+  &__results-container {
+    overflow: auto;
+    height: 80%;
+    width: 100%;
+    scroll-behavior: smooth;
+    a {
+      color: orange;
+    }
+  }
+
+  &__clear {
+    margin-left: 8px;
+  }
+
+  &__input {
+    flex: 1;
+  }
+
+  &__inputs {
+    width: 100%;
+    display: flex;
+  }
+
+  &__results-count {
+    display: flex;
+    padding: 17px 0;
+  }
+
+  &__results-tab {
+    margin-right: 16px;
+    text-decoration: underline;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__result {
+    margin: 16px 0;
+
+    &--meditation {
+      margin: 24px 0;
+      padding: 12px 0;
+    }
+  }
+
+  &__result-link {
+    margin-left: 12px;
+  }
+}

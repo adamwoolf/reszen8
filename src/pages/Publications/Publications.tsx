@@ -14,7 +14,7 @@ interface Publication {
 }
 
 const Publications = () => {
-  const { publications, setPublications } = useContentStore();
+  const { publications } = useContentStore();
   const { currentUser, setCurrentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
@@ -25,14 +25,6 @@ const Publications = () => {
     if (words.length <= 25) return text;
     return words.slice(0, 25).join(" ") + "…";
   }
-
-  useEffect(() => {
-    if (!publications?.length) {
-      getPublications().then((data) => {
-        setPublications(data.items);
-      });
-    }
-  }, [publications]);
 
   useEffect(() => {
     if (publications && !displayPubs?.length) setDisplayPubs(publications);

@@ -3,22 +3,14 @@ import { useAuth } from "../contexts/AuthContext";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { Subscription, User } from "../models";
 import { useNavigate } from "react-router-dom";
+import { useContentStore } from "../store/contentStore";
+import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 const UserManager = ({ children }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const [isActiveSub, setisActiveSub] = useState(false);
-  const [hasInitUser, setHasIniUser] = useState(false);
-  // useEffect(() => {
-  //   // MOVE THIS TO USER CONTEXT
-
-  //   if (users && currentUser && !hasInitUser) {
-  //     const allDetails: User | any = Object.values(users).find((u) => u.email === currentUser.email) || {};
-  //     setCurrentUser({ ...currentUser, ...allDetails });
-  //     setHasIniUser(true);
-  //   }
-  // }, [users, currentUser]);
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {
     const created = new Date(subscription?.startDate);

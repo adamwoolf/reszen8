@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -18,7 +18,6 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import DigitalLibrary from "./pages/DigitalLibrary";
 import AIChat from "./pages/AIChat";
 import Apparel from "./pages/Apparel/Apparel";
-import Meditations from "./pages/Meditations";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
@@ -40,6 +39,11 @@ import PasswordResetPage from "./pages/PasswordReset/PasswordReset";
 import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
+import { Helmet } from "react-helmet";
+import MeditationLoader from "./components/LoadingScene/LoadingScene";
+import { useContentStore } from "./store/contentStore";
+import { getPublications } from "./contentful";
+import useFirebaseDatabase from "./hooks/useFirestoreCollection";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -61,6 +65,12 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
     <div className='app-container flex flex-col min-h-screen'>
+      <Helmet>
+        <title>Welcome to Reszen8</title>
+        <meta name='description' content='Your destination for meditative experiences.' />
+        <meta name='robots' content='index, follow' />
+      </Helmet>
+
       <Navbar />
       <main className='main-content flex-grow'>
         <PageTransition>
@@ -174,14 +184,7 @@ const AnimatedRoutes = () => {
             </Layout>
           }
         />
-        <Route
-          path='/guided-meditations'
-          element={
-            <Layout>
-              <Meditations />
-            </Layout>
-          }
-        />
+
         <Route
           path='/bespoke-meditation-generator'
           element={
@@ -288,6 +291,16 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+  const { publications, setPublications } = useContentStore();
+
+  useEffect(() => {
+    if (!publications?.length) {
+      getPublications().then((data) => {
+        setPublications(data.items);
+      });
+    }
+  }, [publications]);
+
   return (
     <ErrorBoundary>
       <AuthProvider>

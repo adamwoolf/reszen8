@@ -19,6 +19,10 @@ export interface User {
   savedItems?: {};
   subscription?: Subscription;
   isGod?: boolean;
+  favourites?: {
+    publications?: [];
+    meditations?: [];
+  };
 }
 
 export interface Meditation {
@@ -28,4 +32,12 @@ export interface Meditation {
   language?: string;
   title: string;
   type: string;
+  content?: string;
+}
+
+export interface Publication {
+  fields: {
+    title: string;
+    body: string;
+  };
 }

@@ -7,6 +7,7 @@ import "./Navbar.scss";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import AccountStatus from "../components/AccountStatus/AccountStatus";
 import useSendMail from "../hooks/useSendEmail";
+import Search from "./Search/Search";
 
 const Navbar: React.FC = () => {
   const { currentUser, logout, setCurrentUser } = useAuth();
@@ -218,6 +219,7 @@ const Navbar: React.FC = () => {
               <button className='user-address' onClick={handleLogout}>
                 Logout
               </button>
+              <Search />
             </span>
           </div>
         )}

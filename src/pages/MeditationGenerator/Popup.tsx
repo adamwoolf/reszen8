@@ -1,24 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 
-import { PracticeTypes } from "../../services/helpers";
 import "./PopupStyles.scss";
-const Popup = ({ show, onClose }: { show: boolean; onClose: () => void }) => {
+const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void; children: React.ReactNode }) => {
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [show]);
+
   if (!show) return null;
-  console.log(document.getElementById("modal-root"));
-
+  const rootElement = document.getElementById("modal-root");
+  if (!rootElement) return null;
   return ReactDOM.createPortal(
-    <div className='popup'>
-      {PracticeTypes.map((type) => (
-        <div className='popup__list-item' key={type.name}>
-          <h4 className='popup__list-title'>{type.name}</h4>
-          <p className='popup__list-desc'>{type.description}</p>
-        </div>
-      ))}
-
-      <button onClick={onClose}>close</button>
-    </div>,
-    document.getElementById("modal-root")
+    <>
+      <div className='popup'>
+        <div className='popup__content-container'>{children}</div>
+        <button className='popup__close' onClick={onClose}>
+          close
+        </button>
+      </div>
+      <div className='popup__backdrop' />
+    </>,
+    rootElement
   );
 };
 

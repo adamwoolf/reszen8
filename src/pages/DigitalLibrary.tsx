@@ -8,6 +8,8 @@ import { getMeditationItems } from "../contentful";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 import { Meditation } from "../models";
 import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
+import LikeCta from "./Publications/LikeCta";
+import { useContentStore } from "../store/contentStore";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -18,7 +20,11 @@ const DigitalLibrary = () => {
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const staticMeditations = useContentful(getMeditationItems)?.content;
-  const { data: bespokeMeds } = useFirebaseDatabase("meditations");
+  const { data } = useFirebaseDatabase("meditations");
+
+  const { meditations: bespokeMeds, setMeditations } = useContentStore();
+
+ 
 
   // Redirect to login if not authenticated
   if (!currentUser) {
@@ -37,19 +43,21 @@ const DigitalLibrary = () => {
             return {
               ...med,
               type: "meditation",
+              id: med.audioUrl,
             };
           })
       : [];
-    console.log(normalisedBespoke);
+
     setLibraryData({ ...libraryData, meditations: [...libraryData.meditations, ...normalisedBespoke] });
   }, [bespokeMeds]);
 
   useEffect(() => {
     if (!libraryData?.meditations.length) {
-      const staticMeds: Meditation[] = staticMeditations?.map(({ fields }: Meditation) => ({
+      const staticMeds: Meditation[] = staticMeditations?.map(({ fields, sys }: Meditation) => ({
         audioUrl: fields.audioFile.fields.file.url,
         type: fields.type,
         title: fields.title,
+        id: sys.id,
       }));
       setLibraryData({
         ...libraryData,
@@ -103,6 +111,7 @@ const DigitalLibrary = () => {
               >
                 Add to my dashboard
               </button>
+              {currentUser && <LikeCta id={item.id} content='meditations' />}
             </div>
           ))}
         </div>

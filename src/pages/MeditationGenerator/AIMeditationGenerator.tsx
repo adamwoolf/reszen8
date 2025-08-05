@@ -35,7 +35,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser } = useAuth();
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState("");
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
 
   // Refs
@@ -230,41 +230,6 @@ const AIMeditationGenerator: React.FC = () => {
     }
   };
 
-  // Handle saving to dashboard
-  // const handleSaveToDashboard = () => {
-  //   if (!generatedMeditation || !currentUser) return;
-
-  //   const newItem = {
-  //     id: Date.now(),
-  //     title: generatedMeditation.title,
-  //     type: "meditation" as const,
-  //     duration: duration,
-  //     savedDate: new Date().toISOString(),
-  //     audioUrl: generatedMeditation.audioUrl,
-  //     content: generatedMeditation.content,
-  //   };
-
-  //   addItem(newItem);
-  //   toast.success("Saved to your dashboard");
-  // };
-
-  // // Function to reset the form
-  // const handleStartOver = () => {
-  //   setGeneratedMeditation(null);
-  //   setIsPlaying(false);
-  //   setProgress(0);
-  //   setCurrentTime(0);
-
-  //   if (audioRef.current) {
-  //     audioRef.current.pause();
-  //     audioRef.current = null;
-  //   }
-
-  //   if (progressInterval.current) {
-  //     clearInterval(progressInterval.current);
-  //   }
-  // };
-
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
@@ -278,6 +243,22 @@ const AIMeditationGenerator: React.FC = () => {
       <form onSubmit={handleSubmit} className='generator-form'>
         <div className='form-group'>
           <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
+          <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
+            learn more
+          </button>
+          {showPopup === "size" && (
+            <Popup show={showPopup} onClose={() => setShowPopup("")}>
+              {Object.keys(mapDurationToWords).map((key) => {
+                const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
+                return (
+                  <div className='popup__list-item' key={key}>
+                    <h4 className='popup__list-title'>{key}</h4>
+                    <p className='popup__list-desc'>{type.description}</p>
+                  </div>
+                );
+              })}
+            </Popup>
+          )}
           <input
             className='custom-slider'
             type='range'
@@ -287,11 +268,19 @@ const AIMeditationGenerator: React.FC = () => {
             value={durationIndex}
             onChange={(e) => setDurationIndex(Number(e.target.value))}
             style={{ width: "100%" }}
-          />{" "}
+          />
+          <div className='slider-markers'>
+            {allowedValues.map((value, index) => (
+              <span key={index} className='marker'>
+                {value}
+              </span>
+            ))}
+          </div>
         </div>
         <div className='form-grid'>
           <div className='form-group form-group-block'>
             <label htmlFor='meditation-type'>Meditation Type</label>
+
             <select
               id='meditation-type'
               value={meditationType}
@@ -309,11 +298,20 @@ const AIMeditationGenerator: React.FC = () => {
           <div className='form-group'>
             <div>
               <label htmlFor='practiceType'>Practice Type</label>
-              <button type='button' onClick={() => setShowPopup(true)} className='btn--text'>
+              <button type='button' onClick={() => setShowPopup("practiceType")} className='btn--text'>
                 learn more
               </button>
             </div>
-            <Popup show={showPopup} onClose={() => setShowPopup(false)} />
+            {showPopup === "practiceType" && (
+              <Popup show={showPopup} onClose={() => setShowPopup("")}>
+                {PracticeTypes.map((type) => (
+                  <div className='popup__list-item' key={type.name}>
+                    <h4 className='popup__list-title'>{type.name}</h4>
+                    <p className='popup__list-desc'>{type.description}</p>
+                  </div>
+                ))}
+              </Popup>
+            )}
             <select
               id='practiceType'
               value={practiceType.name}
