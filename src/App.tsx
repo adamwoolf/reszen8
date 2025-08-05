@@ -41,9 +41,11 @@ import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
 import MeditationLoader from "./components/LoadingScene/LoadingScene";
-import { useContentStore } from "./store/contentStore";
 import { getPublications } from "./contentful";
-import useFirebaseDatabase from "./hooks/useFirestoreCollection";
+import { useDispatch } from "react-redux";
+import { startDatabaseListeners } from "./store/storeListener";
+import { RootState } from "./store/reduxStore";
+import { setPublications } from "./store/contentSlice";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -291,15 +293,18 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  const { publications, setPublications } = useContentStore();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!publications?.length) {
-      getPublications().then((data) => {
-        setPublications(data.items);
-      });
-    }
-  }, [publications]);
+    dispatch(startDatabaseListeners());
+  }, [dispatch]);
+
+  useEffect(() => {
+    getPublications().then((data) => {
+      console.log(data);
+      dispatch(setPublications(data.items));
+    });
+  }, []);
 
   return (
     <ErrorBoundary>

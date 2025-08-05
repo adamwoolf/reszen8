@@ -16,23 +16,11 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   // Audio player state
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const [myMeds, setMyMeds] = useState([]);
   const { data } = useFirebaseDatabase("meditations");
   const [allItems, setAllItems] = useState({});
-
-  // Format time from seconds to MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
-
   // Redirect to login if not authenticated
   if (!currentUser) {
     navigate("/login");
@@ -58,78 +46,7 @@ const Dashboard = () => {
     }
   }, [data, currentUser]);
 
-  // const togglePlayPause = (item: any) => {
-  //   if (currentlyPlaying === item.id) {
-  //     // Toggle play/pause for the current item
-  //     if (audioRef.current) {
-  //       if (isPlaying) {
-  //         audioRef.current.pause();
-  //         if (progressInterval.current) {
-  //           clearInterval(progressInterval.current);
-  //         }
-  //       } else {
-  //         audioRef.current.play();
-  //         startProgressTimer();
-  //       }
-  //       setIsPlaying(!isPlaying);
-  //     }
-  //   } else {
-  //     // Stop any currently playing audio and start the new one
-  //     if (audioRef.current) {
-  //       audioRef.current.pause();
-  //       audioRef.current = null;
-  //     }
-
-  //     // Set up new audio
-  //     // const audioUrl = mockAudioData[item.type as keyof typeof mockAudioData] || mockAudioData.mindfulness;
-  //     const audioUrl = savedItems?.meditations[0].audioUrl;
-  //     audioRef.current = new Audio(audioUrl);
-
-  //     // Set up event listeners
-  //     audioRef.current.onended = () => {
-  //       setIsPlaying(false);
-  //       setProgress(0);
-  //       setCurrentTime(0);
-  //       setCurrentlyPlaying(null);
-  //       if (progressInterval.current) {
-  //         clearInterval(progressInterval.current);
-  //       }
-  //     };
-
-  //     // Start playing
-  //     audioRef.current
-  //       .play()
-  //       .then(() => {
-  //         setCurrentlyPlaying(item.id);
-  //         setIsPlaying(true);
-  //         startProgressTimer();
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error playing audio:", error);
-  //         setNotification({
-  //           show: true,
-  //           message: "Error playing meditation. Please try again.",
-  //         });
-  //       });
-  //   }
-  // };
-
-  // // Update progress bar
-  // const startProgressTimer = () => {
-  //   if (progressInterval.current) {
-  //     clearInterval(progressInterval.current);
-  //   }
-
-  //   progressInterval.current = setInterval(() => {
-  //     if (audioRef.current) {
-  //       const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-  //       setProgress(isNaN(currentProgress) ? 0 : currentProgress);
-  //       setCurrentTime(audioRef.current.currentTime);
-  //     }
-  //   }, 100);
-  // };
-
-  // //
+  //
 
   // Clean up on unmount
   useEffect(() => {
@@ -151,7 +68,6 @@ const Dashboard = () => {
   }
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
-    console.log(itemId);
     removeItem(itemId, type);
     setNotification({
       show: true,
@@ -255,10 +171,7 @@ const Dashboard = () => {
           Library Meditations
           {savedItems?.meditations?.length > 0 && <span className='tab-count'>{savedItems?.meditations.length}</span>}
         </button>
-        {/* <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
-          My E-Books
-          {savedItems.ebooks.length > 0 && <span className='tab-count'>{savedItems.ebooks.length}</span>}
-        </button> */}
+
         <button
           className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
           onClick={() => setActiveTab("publications")}

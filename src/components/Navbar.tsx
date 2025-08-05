@@ -214,12 +214,13 @@ const Navbar: React.FC = () => {
               {endSub()}
               {<AccountStatus user={currentUser} />}
             </span>
+            <Search />
+
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
               <button className='user-address' onClick={handleLogout}>
                 Logout
               </button>
-              <Search />
             </span>
           </div>
         )}

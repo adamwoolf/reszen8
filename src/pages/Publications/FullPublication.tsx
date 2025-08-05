@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import LikeCta from "./LikeCta";
 import SocialShare from "../../components/SocialShare/SocialShare";
-import { useContentStore } from "../../store/contentStore";
+import { useSelector } from "react-redux";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -13,7 +13,7 @@ const FullPublication = () => {
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { currentUser, setCurrentUser } = useAuth();
   const [saved, setSaved] = useState(false);
-  const { publications } = useContentStore();
+  const publications = useSelector((state) => state.content.publications);
 
   useEffect(() => {
     setContent(publications.find((pub) => pub.fields.slug === slug));

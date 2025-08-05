@@ -82,6 +82,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [savedItems]);
 
   const addItem = (item: ItemType) => {
+    console.log(item);
     const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
 

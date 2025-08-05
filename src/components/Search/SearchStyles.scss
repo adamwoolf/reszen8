@@ -2,14 +2,32 @@
   height: 100%;
   &-cta {
     background-color: transparent;
+    display: flex;
+    align-items: center;
 
+    span {
+      color: orange;
+      margin-right: 8px;
+    }
     &:hover {
       background-color: transparent;
     }
   }
 
+  &__no-results {
+    color: orange;
+    margin: auto;
+  }
+
   &__results-section {
-    padding: 24px 0;
+    padding-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__results-container {
@@ -28,6 +46,10 @@
 
   &__input {
     flex: 1;
+
+    &::placeholder {
+      color: orange;
+    }
   }
 
   &__inputs {

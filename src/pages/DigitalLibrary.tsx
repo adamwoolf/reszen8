@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { useSavedItems } from "../contexts/SavedItemsContext";
 import "./Dashboard/Dashboard.scss";
+import { useSavedItems } from "../contexts/SavedItemsContext";
+
 import useContentful from "../hooks/useContentful";
 import { getMeditationItems } from "../contentful";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 import { Meditation } from "../models";
-import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
-import LikeCta from "./Publications/LikeCta";
-import { useContentStore } from "../store/contentStore";
-
+import MeditationCard from "../components/MeditationCard/MeditationCard";
+import { useSelector } from "react-redux";
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const { addItem } = useSavedItems();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const staticMeditations = useContentful(getMeditationItems)?.content;
-  const { data } = useFirebaseDatabase("meditations");
+  const { data: bespokeMeds } = useFirebaseDatabase("meditations");
+  const { addItem } = useSavedItems();
 
-  const { meditations: bespokeMeds, setMeditations } = useContentStore();
-
- 
+  const meditations = useSelector((state) => state.content.meditations);
 
   // Redirect to login if not authenticated
   if (!currentUser) {
@@ -34,6 +31,10 @@ const DigitalLibrary = () => {
   const [libraryData, setLibraryData] = useState<{ meditations: Meditation[] }>({
     meditations: [],
   });
+
+  useEffect(() => {
+    if (!meditations && bespokeMeds) setMeditations(bespokeMeds);
+  }, [bespokeMeds, meditations]);
 
   useEffect(() => {
     const normalisedBespoke = bespokeMeds
@@ -67,6 +68,7 @@ const DigitalLibrary = () => {
   }, [staticMeditations]);
 
   const handleAddItem = (item: any) => {
+    console.log("ADDING", item);
     const wasAdded = addItem(item);
     if (wasAdded) {
       setNotification({
@@ -99,20 +101,7 @@ const DigitalLibrary = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {data.map((item, i) => (
-            <div key={item.id + i} className='dashboard-card p-6 bg-gray-800 rounded-lg'>
-              <h3 className='text-xl font-semibold mb-2 text-white'>{item.title}</h3>
-              {item.duration && <p className='text-gray-300'>Duration: {item.duration}</p>}
-              {item.meditationType && <p className='text-gray-300'>Meditation Type: {item.meditationType}</p>}
-              {item.language && <p className='text-gray-300'>Language: {item.language}</p>}
-              {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
-              <button
-                onClick={() => handleAddItem(item)}
-                className='mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'
-              >
-                Add to my dashboard
-              </button>
-              {currentUser && <LikeCta id={item.id} content='meditations' />}
-            </div>
+            <MeditationCard key={item.id + i} handleAddItem={handleAddItem} item={item} i={i} />
           ))}
         </div>
       </div>
@@ -130,15 +119,7 @@ const DigitalLibrary = () => {
         >
           Browse Meditations
         </button>
-        {/* <button className={`tab-btn ${activeTab === "ebooks" ? "active" : ""}`} onClick={() => setActiveTab("ebooks")}>
-          Browse E-Books
-        </button> */}
-        {/* <button
-          className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
-          onClick={() => setActiveTab("publications")}
-        >
-          Browse Publications
-        </button> */}
+
         <Link to='/publications' className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}>
           Browse Publications
         </Link>

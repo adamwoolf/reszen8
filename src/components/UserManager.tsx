@@ -3,7 +3,6 @@ import { useAuth } from "../contexts/AuthContext";
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { Subscription, User } from "../models";
 import { useNavigate } from "react-router-dom";
-import { useContentStore } from "../store/contentStore";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 const UserManager = ({ children }) => {

@@ -65,7 +65,7 @@ export const useRealtimeDatabase = (path: string) => {
   );
 
   return {
-    data,
+    data: loading ? null : data,
     loading,
     error,
     addOrUpdate,

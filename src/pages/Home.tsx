@@ -21,8 +21,9 @@ const features = [
     path: "/publications",
   },
   {
-    title: "AI Meditation Generator",
-    description: "Create personalised meditation sessions with AI & save them to your dashboard for later",
+    title: "Bespoke Meditation Generator",
+    description:
+      "Create personalised meditation sessions with Reszen8's unique,  bespoke Meditation Generator & save them to your dashboard for later",
     path: "/bespoke-meditation-generator",
   },
   {

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { getPublications } from "../../contentful";
-import { Link } from "react-router-dom";
-import { marked } from "marked";
 import "./PublicationsStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
-import LikeCta from "./LikeCta";
-import { useContentStore } from "../../store/contentStore";
+import PublicationCard from "../../components/PublicationCard/PublicationCard";
+import { useSelector } from "react-redux";
+
 interface Publication {
   fields: {
     title: string;
@@ -14,17 +12,14 @@ interface Publication {
 }
 
 const Publications = () => {
-  const { publications } = useContentStore();
+  const publications = useSelector((state) => state.content.publications);
   const { currentUser, setCurrentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
   const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");
-  function truncateTo25Words(text: string) {
-    const words = text.trim().split(/\s+/); // split on any whitespace
-    if (words.length <= 25) return text;
-    return words.slice(0, 25).join(" ") + "…";
-  }
+
+  console.log(publications);
 
   useEffect(() => {
     if (publications && !displayPubs?.length) setDisplayPubs(publications);
@@ -73,21 +68,26 @@ const Publications = () => {
   return (
     <div className='publications'>
       <h1>Publications</h1>
-      {currentUser && (
-        <>
-          <div className='publications__filters'>
-            <input className='publications__search' value={search} onChange={searchText} placeholder='Type to search' />
-            <div>
-              <button className='publications__filter' onClick={showAll}>
-                Show all
-              </button>
-              <button
-                className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
-                onClick={showFavourites}
-              >
-                Only Favourites
-              </button>
-              {keyWords.map((word) => (
+      <div className='publications__filters'>
+        <input
+          className='publications__search'
+          value={search}
+          onChange={searchText}
+          placeholder='Type to search publications'
+        />
+        <div>
+          <button className='publications__filter' onClick={showAll}>
+            Show all
+          </button>
+          {currentUser && (
+            <button
+              className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
+              onClick={showFavourites}
+            >
+              Only Favourites
+            </button>
+          )}
+          {/* {keyWords.map((word) => (
                 <button
                   key={word}
                   className={activeFilter !== word ? "publications__filter non-active-filter" : "publications__filter"}
@@ -95,48 +95,33 @@ const Publications = () => {
                 >
                   {word}
                 </button>
-              ))}
-            </div>
-            {displayPubs?.length > 0 && (
-              <span className='publications__count'>
-                Showing: {displayPubs?.length} {activeFilter} publications.
-              </span>
-            )}
-          </div>
-          {!displayPubs?.length && (
-            <span className='publications__no-results'>
-              Sorry, we couldn't find any publications that match your search
-            </span>
-          )}
-        </>
+              ))} */}
+        </div>
+        {displayPubs?.length > 0 && (
+          <span className='publications__count'>
+            Showing: {displayPubs?.length} {activeFilter} publications.
+          </span>
+        )}
+      </div>
+      {!displayPubs?.length && (
+        <span className='publications__no-results'>
+          Sorry, we couldn't find any publications that match your search
+        </span>
       )}
 
       {!currentUser && (
         <div className='publications__user-prompt'>
-          <p>Sign up to enable filtering, searching and building a list of favourite articles in your User Dashboard</p>
+          <p>
+            Sign up to enable site-wide filtering and searching and building a list of favourite articles in your User
+            Dashboard
+          </p>
         </div>
       )}
 
       <div className='publication__grid'>
-        {displayPubs?.map(({ fields, sys }) => {
-          const truncatedBody = truncateTo25Words(fields.body);
-          const isSaved = !!currentUser?.savedItems?.publications?.find((p) => p.id === sys.id);
-          return (
-            <article key={sys.id} className='feature-card clickable publication__card'>
-              <LikeCta id={sys.id} />
-
-              <Link to={`/publications/${fields.slug}`}>
-                <div className='publication__card-content'>
-                  <h3 className='publication__card-title'>{fields.title}</h3>
-                  {isSaved && <p className='publication__card-saved'>Saved to my dashboard</p>}
-                  <div className='publication__card-divider' />
-                  <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
-                </div>
-                read more...
-              </Link>
-            </article>
-          );
-        })}
+        {displayPubs?.map(({ fields, sys }) => (
+          <PublicationCard key={sys.id} fields={fields} sys={sys} />
+        ))}
       </div>
     </div>
   );
