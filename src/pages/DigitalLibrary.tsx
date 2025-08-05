@@ -68,7 +68,6 @@ const DigitalLibrary = () => {
   }, [staticMeditations]);
 
   const handleAddItem = (item: any) => {
-    console.log("ADDING", item);
     const wasAdded = addItem(item);
     if (wasAdded) {
       setNotification({

@@ -1,7 +1,7 @@
 // store/databaseListener.ts
 import { ref, onValue, off } from "firebase/database";
 import { db } from "../firebase";
-import { AppDispatch } from "./store";
+import { AppDispatch } from "./reduxStore";
 import { setMeta, setMeditations } from "./contentSlice";
 
 const paths = {
@@ -32,7 +32,7 @@ export const startDatabaseListeners = () => (dispatch: AppDispatch) => {
     };
 
     const errorHandler = (err: any) => {
-      console.log(error);
+      console.log(err);
       // switch (key) {
       //   case "meta":
       //     dispatch(setMetaError(err));

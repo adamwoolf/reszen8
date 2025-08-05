@@ -6,7 +6,7 @@ import "./Dashboard.scss";
 import useFirebaseDatabase from "../../hooks/useFirestoreCollection";
 import { FaArrowRight } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
-
+import { useSelector } from "react-redux";
 type TabType = "meditations" | "ebooks" | "publications" | "myMeds";
 
 const Dashboard = () => {
@@ -19,7 +19,7 @@ const Dashboard = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [myMeds, setMyMeds] = useState([]);
-  const { data } = useFirebaseDatabase("meditations");
+  const data = useSelector((state) => state.content.dashboard);
   const [allItems, setAllItems] = useState({});
   // Redirect to login if not authenticated
   if (!currentUser) {

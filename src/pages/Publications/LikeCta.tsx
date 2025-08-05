@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
@@ -22,7 +22,7 @@ const LikeCta = ({
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
   const data = useSelector((state) => state.content.meta);
-  console.log(data);
+
   const numPublicationLikes = data?.LIKES?.find((like: Like) => like.id === id)?.likes || 0;
   const numMeditationLikes = data?.meditationLIKES?.find((like: Like) => like.id === id)?.likes || 0;
   const numLikes = content === "publications" ? numPublicationLikes : numMeditationLikes;

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { useAuth } from "../contexts/AuthContext";
 import { useBasketStore } from "../store/basketStore";
+import { useSelector, useDispatch } from "react-redux";
+import { setDashboard } from "../store/contentSlice";
 
 type ItemType = {
   id: number;
@@ -29,29 +31,15 @@ const LOCAL_STORAGE_KEY = "reszen8_saved_items";
 const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undefined);
 
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { data: meditations } = useFirebasedatabase("meditations");
+  const { meditations, dashboard } = useSelector((state) => state.content);
   const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const { currentUser, setCurrentUser } = useAuth();
   const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
   const { items, setItems } = useBasketStore();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     if (currentUser && currentUser.firebaseId) {
       addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
-      // setCurrentUser(
-      //   currentUser.subscriptions
-      //     ? { ...currentUser, basket: items }
-      //     : {
-      //         ...currentUser,
-      //         basket: items,
-      //         subscription: {
-      //           hasCompletedTrial: false,
-      //           subscription: "free-trial",
-      //           duration: 7,
-      //           startDate: Date.now(),
-      //         },
-      //       }
-      // );
     }
   }, [items]);
 
@@ -92,12 +80,20 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
+      setCurrentUser({
+        ...currentUser,
+        savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
+      });
     } else {
       const newItems = !currentUser.savedItems
         ? { [itemType]: [item] }
         : { ...currentUser?.savedItems, [itemType]: [item] };
 
       addOrUpdate(currentUser.firebaseId, {
+        ...currentUser,
+        savedItems: newItems,
+      });
+      setCurrentUser({
         ...currentUser,
         savedItems: newItems,
       });
