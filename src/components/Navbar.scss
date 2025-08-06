@@ -37,9 +37,17 @@
     position: relative;
     z-index: 2000;
     background-color: transparent;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
   .mobile-menu-button:focus {
     outline: none;
+  }
+
+  .navbar-container {
+    padding-right: 0 !important;
   }
 
   .nav-links {

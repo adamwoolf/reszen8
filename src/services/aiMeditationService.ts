@@ -144,6 +144,7 @@ export const generateMeditation = async (
               generatedBy: userId,
               type: meditationType,
               language: languageName,
+              style: practiceType.name,
             }
           );
 

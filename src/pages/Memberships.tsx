@@ -28,7 +28,7 @@ const Memberships: React.FC = () => {
 
   // Define the standard features for Digital Hub memberships
   const digitalHubFeatures = [
-    "Full digital library access",
+    "Full Meditation Library access",
     "AI Meditation Generator",
     "Personalized 'My Dashboard'",
     "New content when available",

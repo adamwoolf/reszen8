@@ -28,12 +28,10 @@ const DigitalLibrary = () => {
     navigate("/login");
     return null;
   }
-  const [libraryData, setLibraryData] = useState<{ meditations: Meditation[] }>({
-    meditations: [],
-  });
+  const [libraryMeditations, setLibraryMeditations] = useState<Meditation[]>([]);
 
   useEffect(() => {
-    if (!meditations && bespokeMeds) setMeditations(bespokeMeds);
+    if (!meditations && bespokeMeds) setLibraryMeditations(bespokeMeds);
   }, [bespokeMeds, meditations]);
 
   useEffect(() => {
@@ -43,27 +41,24 @@ const DigitalLibrary = () => {
           ?.map((med: Meditation) => {
             return {
               ...med,
-              type: "meditation",
+              contentType: "meditation",
               id: med.audioUrl,
             };
           })
       : [];
 
-    setLibraryData({ ...libraryData, meditations: [...libraryData.meditations, ...normalisedBespoke] });
+    setLibraryMeditations([...libraryMeditations, ...normalisedBespoke]);
   }, [bespokeMeds]);
 
   useEffect(() => {
-    if (!libraryData?.meditations.length) {
+    if (!libraryMeditations.length) {
       const staticMeds: Meditation[] = staticMeditations?.map(({ fields, sys }: Meditation) => ({
         audioUrl: fields.audioFile.fields.file.url,
         type: fields.type,
         title: fields.title,
         id: sys.id,
       }));
-      setLibraryData({
-        ...libraryData,
-        meditations: [...libraryData.meditations, ...staticMeds],
-      });
+      setLibraryMeditations([...libraryMeditations, ...staticMeds]);
     }
   }, [staticMeditations]);
 
@@ -86,10 +81,7 @@ const DigitalLibrary = () => {
       setNotification((prev) => ({ ...prev, show: false }));
     }, 3000);
   };
-
   const renderTabContent = () => {
-    const data = libraryData[activeTab];
-
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -99,7 +91,7 @@ const DigitalLibrary = () => {
         )}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {data.map((item, i) => (
+          {libraryMeditations?.map((item, i) => (
             <MeditationCard key={item.id + i} handleAddItem={handleAddItem} item={item} i={i} />
           ))}
         </div>
@@ -109,20 +101,7 @@ const DigitalLibrary = () => {
 
   return (
     <div className='dashboard-container'>
-      <h1 className='text-3xl font-bold mb-6 text-white'>Digital Library</h1>
-
-      <div className='tabs mb-8'>
-        <button
-          className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
-          onClick={() => setActiveTab("meditations")}
-        >
-          Browse Meditations
-        </button>
-
-        <Link to='/publications' className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}>
-          Browse Publications
-        </Link>
-      </div>
+      <h1 className='page-header'>Meditation Library</h1>
 
       {renderTabContent()}
     </div>

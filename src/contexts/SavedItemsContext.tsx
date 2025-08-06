@@ -8,7 +8,7 @@ import { setDashboard } from "../store/contentSlice";
 type ItemType = {
   id: number;
   title: string;
-  type: "meditation" | "ebook" | "publication";
+  contentType: "meditation" | "publication";
   duration?: string;
   author?: string;
   savedDate?: string;
@@ -71,7 +71,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const addItem = (item: ItemType) => {
     console.log(item);
-    const itemType = item.type === "meditation" ? "meditations" : item.type === "ebook" ? "ebooks" : "publications";
+    const itemType = item.contentType === "meditation" ? "meditations" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
 
     if (itemExists) return false;

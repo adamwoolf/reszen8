@@ -235,8 +235,8 @@ const AIMeditationGenerator: React.FC = () => {
       <div className='generator-header'>
         <h1>Bespoke Meditation Generator</h1>
         <p className='text-white'>
-          Create a personalized meditation session tailored to your needs. Select your preferences below and let our AI
-          craft the perfect meditation for you.
+          Create a personalised meditation session tailored to your needs. Select your preferences below and let our
+          Bespoke Meditation Generator craft the perfect guided meditation for you.
         </p>
       </div>
 

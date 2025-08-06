@@ -66,7 +66,7 @@ const Home: React.FC = () => {
         <div className='mission-content'>
           <h2>{content?.title}</h2>
           <div className='mission-text'>
-            <p>{content?.description}</p>
+            {content?.description && <p dangerouslySetInnerHTML={{ __html: marked(content?.description) }} />}
           </div>
         </div>
       </section>

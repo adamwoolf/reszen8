@@ -104,8 +104,8 @@ const Dashboard = () => {
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data?.reverse().map((item, i) => (
-              <div key={`dashboard-item ${i}`} className='dashboard-card'>
-                <div className='dashboard-card__content'>
+              <div key={`dashboard-item ${i}`} className='feature-card publication__card'>
+                <div className='publications__card-content publication__card-inner'>
                   <div>
                     <h3>{item.title}</h3>
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
@@ -161,7 +161,7 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard-container'>
-      <h1 className='text-3xl font-bold mb-6 text-white'>My Dashboard</h1>
+      <h1 className='page-header'>My Dashboard</h1>
       {/* <input placeholder='Type to search Dashboard items' className='dashboard__search' /> */}
       {/* <button>Search Dashboard Items</button> */}
       <div className='tabs mb-8'>
@@ -194,16 +194,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-// const DownloadButton = ({ downloadLink }: { downloadLink: string }) => {
-//   const handleDownload = () => {
-//     const link = document.createElement("a");
-//     link.href = downloadLink;
-//     link.download = "meditation.mp3";
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   };
-
-//   return <button onClick={handleDownload}>Download Meditation Audio</button>;
-// };

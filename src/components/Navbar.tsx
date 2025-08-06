@@ -18,9 +18,11 @@ const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { sendMail } = useSendMail();
-  const dashboardCount = currentUser?.savedItems?.meditations?.length + currentUser?.savedItems?.publications?.length;
+  const dashboardCount =
+    currentUser?.savedItems?.meditations?.length || 0 + currentUser?.savedItems?.publications?.length || 0;
   const meds = useSelector((state) => state?.content?.meditations);
-  const userBespokeMeds = meds ? Object.values(meds).filter((med) => med.generatedBy === currentUser.uid)?.length : 0;
+  const userBespokeMeds =
+    meds && currentUser ? Object.values(meds).filter((med) => med.generatedBy === currentUser?.uid)?.length : 0;
 
   const dashboardTotal = dashboardCount + userBespokeMeds;
   // Close mobile menu when route changes
@@ -157,8 +159,8 @@ const Navbar: React.FC = () => {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink to='/digital-library' className={getNavLinkClass}>
-                      Digital Library
+                    <NavLink to='/meditation-library' className={getNavLinkClass}>
+                      Meditation Library
                     </NavLink>
                   </li>
                   <li>
@@ -180,9 +182,11 @@ const Navbar: React.FC = () => {
             <div className='nav-right'>
               <div className='flex items-center space-x-4'>
                 <ul className='auth-links'>
-                  <li className='flex items-center'>
-                    <CartIcon />
-                  </li>
+                  {currentUser && (
+                    <li className='flex items-center'>
+                      <CartIcon />
+                    </li>
+                  )}
 
                   {!currentUser && (
                     <>

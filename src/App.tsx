@@ -151,7 +151,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path='/digital-library'
+          path='/meditation-library'
           element={
             <ProtectedRoute>
               <Layout>

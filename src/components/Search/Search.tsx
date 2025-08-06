@@ -56,6 +56,20 @@ const Search = () => {
     setMeds([]);
   };
 
+  const ScrollLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      const el = document.getElementById(to);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+
+    return (
+      <a href={`#${to}`} onClick={handleClick}>
+        {children}
+      </a>
+    );
+  };
+
   return (
     <div>
       <button onClick={() => setShow(true)} className='search-cta'>
@@ -77,14 +91,14 @@ const Search = () => {
           </div>
           <div className='search__results-count'>
             {results.length > 0 && (
-              <a className='search__results-tab' href='#publications'>
-                Publications {results.length}
-              </a>
+              <ScrollLink to='publications'>
+                <span className='search__results-tab'>Publications {results.length}</span>
+              </ScrollLink>
             )}
             {meds.length > 0 && (
-              <a className='search__results-tab' href='#meditations'>
-                Meditations: {meds.length}
-              </a>
+              <ScrollLink to='meditations'>
+                <span className='search__results-tab'> Meditations: {meds.length}</span>
+              </ScrollLink>
             )}
             {query && meds.length === 0 && results.length === 0 && (
               <p className='search__no-results'>
@@ -93,9 +107,9 @@ const Search = () => {
             )}
           </div>
           <div className='search__results-container'>
-            {results.length > 0 && <h3>PUBLICATIONS</h3>}
+            {results.length > 0 && <h3 id='publications'>PUBLICATIONS</h3>}
 
-            <div className='search__results-section' id='publications'>
+            <div className='search__results-section'>
               {results.length > 0 &&
                 results.map((r, i) => {
                   return (
@@ -105,9 +119,9 @@ const Search = () => {
                   );
                 })}
             </div>
-            {meds.length > 0 && <h3>MEDITATIONS</h3>}
+            {meds.length > 0 && <h3 id='meditations'>MEDITATIONS</h3>}
 
-            <div className='search__results-section' id='meditations'>
+            <div className='search__results-section'>
               {meds.length > 0 &&
                 meds.map((item, i) => {
                   return (

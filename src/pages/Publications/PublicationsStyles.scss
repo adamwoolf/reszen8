@@ -133,8 +133,46 @@
     height: 100%;
   }
 
+  &__card-inner {
+    background-color: transparent;
+  }
+
   &__card-title {
     padding-right: 30px;
+  }
+
+  &__card-save-cta {
+    background-color: transparent;
+    color: orange;
+    width: fit-content;
+  }
+
+  &__card__added {
+    color: orange;
+    display: block;
+    position: absolute;
+    bottom: 31px;
+    right: 4px;
+  }
+
+  &__card__add {
+    background-color: transparent;
+    color: orange;
+    padding-left: 0;
+    position: absolute;
+    bottom: 26px;
+    right: 4px;
+
+    &:hover {
+      background-color: transparent;
+      transform: none;
+      text-decoration: underline;
+    }
+  }
+
+  &__card-meditation-type {
+    color: orange;
+    font-size: 0.8rem;
   }
 
   &__card-saved {
@@ -148,6 +186,7 @@
 
   &__card-content {
     background-color: transparent;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;

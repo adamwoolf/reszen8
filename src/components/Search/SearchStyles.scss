@@ -38,6 +38,13 @@
     a {
       color: orange;
     }
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
   }
 
   &__clear {
@@ -66,6 +73,7 @@
     margin-right: 16px;
     text-decoration: underline;
     font-weight: 600;
+    color: orange;
 
     &:hover {
       text-decoration: none;
