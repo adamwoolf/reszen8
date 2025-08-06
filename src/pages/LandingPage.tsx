@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingPage.scss";
 
-const LandingPage: React.FC = ({ onClose }) => {
+const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-
+  const [show, setShow] = useState(false);
   const handleLogoClick = () => {
-    // navigate("/home");
-    onClose();
+    sessionStorage.setItem("hideLandingpage", "true");
+    setShow(false);
   };
+
+  useEffect(() => {
+    const shouldHide = !!sessionStorage.getItem("hideLandingpage");
+    console.log(shouldHide);
+    setShow(!shouldHide);
+  }, []);
+
+  if (!show) return null;
 
   return (
     <div className='landing-page'>

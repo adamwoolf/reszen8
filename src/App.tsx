@@ -64,7 +64,6 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [showSplashscreen, setShowSplashscreen] = useState(true);
   return (
     <ErrorBoundary>
       <div className='app-container flex flex-col min-h-screen'>
@@ -73,7 +72,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <meta name='description' content='Your destination for meditative experiences.' />
           <meta name='robots' content='index, follow' />
         </Helmet>
-        {/* {showSplashscreen && <LandingPage onClose={() => setShowSplashscreen(false)} />} */}
+        <LandingPage />
 
         <Navbar />
         <main className='main-content flex-grow'>
@@ -96,7 +95,6 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
-        {/* <Route path='/' element={<LandingPage />} /> */}
         <Route
           path='/'
           element={
