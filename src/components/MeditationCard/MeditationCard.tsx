@@ -16,7 +16,6 @@ const MeditationCard = ({
 }) => {
   const { currentUser } = useAuth();
   const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.id === item.id);
-  console.log(item);
   return (
     <article className='feature-card publication__card '>
       <div className='publication__card-content'>

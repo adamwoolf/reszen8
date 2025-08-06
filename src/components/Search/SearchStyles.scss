@@ -53,6 +53,7 @@
 
   &__input {
     flex: 1;
+    font-size: 16px;
 
     &::placeholder {
       color: orange;
@@ -65,15 +66,21 @@
   }
 
   &__results-count {
+    // padding: 17px 0;
+    text-align: center;
     display: flex;
-    padding: 17px 0;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
   }
 
   &__results-tab {
-    margin-right: 16px;
+    margin: 8px;
     text-decoration: underline;
     font-weight: 600;
     color: orange;
+    display: block;
 
     &:hover {
       text-decoration: none;

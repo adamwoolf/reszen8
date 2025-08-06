@@ -135,6 +135,11 @@
 
   &__card-inner {
     background-color: transparent;
+    h3 {
+      @media (max-width: 768px) {
+        padding-right: 15px;
+      }
+    }
   }
 
   &__card-title {
