@@ -127,11 +127,13 @@ const Navbar: React.FC = () => {
           <div className='nav-brand'>
             <NavLink to='/'>RESZEN8</NavLink>
           </div>
-
+          <div className='navbar__search-mobile'>
+            <Search />
+          </div>
           <div className='nav-sections'>
             <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
               <li>
-                <NavLink to='/home' end className={getNavLinkClass}>
+                <NavLink to='/' end className={getNavLinkClass}>
                   Home
                 </NavLink>
               </li>
@@ -223,7 +225,9 @@ const Navbar: React.FC = () => {
               {endSub()}
               {<AccountStatus user={currentUser} />}
             </span>
-            <Search />
+            <div className='navbar__search-desktop'>
+              <Search />
+            </div>
 
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>

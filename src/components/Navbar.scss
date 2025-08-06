@@ -399,3 +399,19 @@
   margin: 0 30px;
   color: orange;
 }
+
+.navbar__search-desktop {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: block;
+  }
+}
+
+.navbar__search-mobile {
+  display: block;
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}

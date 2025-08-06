@@ -73,7 +73,7 @@ const Search = () => {
   return (
     <div>
       <button onClick={() => setShow(true)} className='search-cta'>
-        <span>Sitewide Search</span> <FaSearch size={20} color='orange' />
+        <span>MultiSearch</span> <FaSearch size={20} color='orange' />
       </button>
       <Popup show={show} onClose={closeOverlay}>
         <div className='search'>

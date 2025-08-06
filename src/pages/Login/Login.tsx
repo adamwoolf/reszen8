@@ -9,7 +9,7 @@ const Login = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    // if (currentUser) navigate("/dashboard");
+    if (currentUser) navigate("/dashboard");
   }, [currentUser]);
 
   return (

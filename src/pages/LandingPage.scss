@@ -1,5 +1,7 @@
 /* Reset and base styles */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -7,6 +9,9 @@ html, body, #root {
 }
 
 .landing-page {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,16 +38,21 @@ html, body, #root {
   animation: float 3s ease-in-out infinite;
   position: relative;
   z-index: 2;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
 }
 
 .logo {
   font-size: 4.5rem;
   font-weight: 800;
-  color: #FFA500;
+  color: #ffa500;
   margin: 0;
   letter-spacing: 0.5rem;
   text-transform: uppercase;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
   transition: transform 0.3s ease, text-shadow 0.3s ease;
   position: relative;
@@ -54,7 +64,7 @@ html, body, #root {
 }
 
 .click-prompt {
-  color: #FFFFFF;
+  color: #ffffff;
   margin-top: 1rem;
   font-size: 1.2rem;
   opacity: 0.8;
@@ -81,7 +91,7 @@ html, body, #root {
   .logo {
     font-size: 4rem;
   }
-  
+
   .click-prompt {
     font-size: 1.2rem;
   }
@@ -91,7 +101,7 @@ html, body, #root {
   .logo {
     font-size: 3rem;
   }
-  
+
   .click-prompt {
     font-size: 1rem;
   }

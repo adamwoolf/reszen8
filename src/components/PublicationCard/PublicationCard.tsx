@@ -51,7 +51,6 @@ const PublicationCard = ({ fields, sys, showLike = true }) => {
   return (
     <article key={sys.id} className='feature-card clickable publication__card'>
       {showLike && currentUser && <LikeCta id={sys.id} />}
-      {currentUser && showSaveUI()}
 
       <Link className='publication__card-content' to={`/publications/${fields.slug}`}>
         <div>
@@ -61,6 +60,7 @@ const PublicationCard = ({ fields, sys, showLike = true }) => {
         </div>
         <span className='publication__card-readmore'> read more...</span>
       </Link>
+      {currentUser && showSaveUI()}
     </article>
   );
 };

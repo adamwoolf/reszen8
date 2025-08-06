@@ -63,28 +63,31 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
   return currentUser ? <>{children}</> : <Navigate to='/login' replace />;
 };
 
-// Layout component that wraps all pages except LandingPage
-const Layout = ({ children }: { children: React.ReactNode }) => (
-  <ErrorBoundary>
-    <div className='app-container flex flex-col min-h-screen'>
-      <Helmet>
-        <title>Welcome to Reszen8</title>
-        <meta name='description' content='Your destination for meditative experiences.' />
-        <meta name='robots' content='index, follow' />
-      </Helmet>
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const [showSplashscreen, setShowSplashscreen] = useState(true);
+  return (
+    <ErrorBoundary>
+      <div className='app-container flex flex-col min-h-screen'>
+        <Helmet>
+          <title>Welcome to Reszen8</title>
+          <meta name='description' content='Your destination for meditative experiences.' />
+          <meta name='robots' content='index, follow' />
+        </Helmet>
+        {/* {showSplashscreen && <LandingPage onClose={() => setShowSplashscreen(false)} />} */}
 
-      <Navbar />
-      <main className='main-content flex-grow'>
-        <PageTransition>
-          <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
-        </PageTransition>
-      </main>
-      <Footer />
-      <FloatingCTA />
-      <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
-    </div>
-  </ErrorBoundary>
-);
+        <Navbar />
+        <main className='main-content flex-grow'>
+          <PageTransition>
+            <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+          </PageTransition>
+        </main>
+        <Footer />
+        <FloatingCTA />
+        <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
+      </div>
+    </ErrorBoundary>
+  );
+};
 
 // AnimatedRoutes component to handle page transitions
 const AnimatedRoutes = () => {
@@ -93,9 +96,9 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
-        <Route path='/' element={<LandingPage />} />
+        {/* <Route path='/' element={<LandingPage />} /> */}
         <Route
-          path='/home'
+          path='/'
           element={
             <Layout>
               <Home />
@@ -110,14 +113,7 @@ const AnimatedRoutes = () => {
             </Layout>
           }
         />
-        <Route
-          path='/photos'
-          element={
-            <Layout>
-              <Photos />
-            </Layout>
-          }
-        />
+
         <Route
           path='/contact'
           element={

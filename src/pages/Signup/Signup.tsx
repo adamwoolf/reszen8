@@ -146,7 +146,7 @@ export default function Signup() {
             </Link>
           </p>
           <div className='pt-2'>
-            <Link to='/home' className='text-sm font-medium text-gray-600 hover:text-gray-900'>
+            <Link to='/' className='text-sm font-medium text-gray-600 hover:text-gray-900'>
               Back to Homepage
             </Link>
           </div>
