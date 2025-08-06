@@ -7,16 +7,45 @@ import { Meditation, Publication } from "../../models";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import MeditationCard from "../MeditationCard/MeditationCard";
 import { useSelector } from "react-redux";
-const Search = () => {
+import { useSavedItems } from "../../contexts/SavedItemsContext";
+import { useAuth } from "../../contexts/AuthContext";
+
+const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
   const meditations = useSelector((state) => state.content.meditations);
   const publications = useSelector((state) => state.content.publications);
+  const [bespokeMeds, setBespokeMeds] = useState([]);
   const { data } = useFirebaseDatabase("meditations");
+  const { savedItems } = useSavedItems();
+  const { currentUser } = useAuth();
+
+  const searchDashboardItems = () => {
+    const { meditations: dashboardMeditations, publications: dashBoardPubs } = savedItems || {};
+
+    const pubs = dashBoardPubs.filter((pub: Publication) => pub?.body.toLowerCase().includes(query.toLowerCase()));
+    const normalisedPubs = pubs.map((pub) => ({ fields: { ...pub }, sys: { ...pub } }));
+    setResults(normalisedPubs);
+    const ms = dashboardMeditations.filter(
+      (med) =>
+        med.content?.toLowerCase().includes(query?.toLowerCase()) ||
+        med.title.toLowerCase().includes(query?.toLowerCase())
+    );
+    setMeds(ms);
+    if (!currentUser) return;
+    const myMs = Object.values(meditations).filter((m) => m.generatedBy === currentUser.uid);
+    const filtered = myMs.filter(
+      (med) =>
+        med.content?.toLowerCase().includes(query?.toLowerCase()) ||
+        med.title.toLowerCase().includes(query?.toLowerCase())
+    );
+    setBespokeMeds(filtered);
+  };
 
   const search = () => {
+    if (dashboard) return searchDashboardItems();
     const pubs = publications.filter((pub: Publication) => pub.fields.body.toLowerCase().includes(query.toLowerCase()));
 
     const normalisedBespoke = data
@@ -73,11 +102,11 @@ const Search = () => {
   return (
     <div>
       <button onClick={() => setShow(true)} className='search-cta'>
-        <span>MultiSearch</span> <FaSearch size={20} color='orange' />
+        <span>{text ?? "Site Search"}</span> <FaSearch size={20} color='orange' />
       </button>
       <Popup show={show} onClose={closeOverlay}>
         <div className='search'>
-          <h3>Search</h3>
+          <h3>{text ?? "Search"}</h3>
           <div className='search__inputs'>
             <input
               className='search__input'
@@ -90,6 +119,11 @@ const Search = () => {
             </button>
           </div>
           <div className='search__results-count'>
+            {bespokeMeds.length > 0 && (
+              <ScrollLink to='bespokeMeditations'>
+                <span className='search__results-tab'>Bespoke Meditations {bespokeMeds.length}</span>
+              </ScrollLink>
+            )}
             {results.length > 0 && (
               <ScrollLink to='publications'>
                 <span className='search__results-tab'>Publications {results.length}</span>
@@ -100,13 +134,25 @@ const Search = () => {
                 <span className='search__results-tab'> Meditations: {meds.length}</span>
               </ScrollLink>
             )}
-            {query && meds.length === 0 && results.length === 0 && (
+            {query && meds.length === 0 && results.length === 0 && bespokeMeds.length === 0 && (
               <p className='search__no-results'>
                 Sorry, there are no items which match your search text. Please try different search text.
               </p>
             )}
           </div>
           <div className='search__results-container'>
+            {bespokeMeds.length > 0 && <h3 id='bespokeMeditations'>Bespoke Meditations</h3>}
+
+            <div className='search__results-section'>
+              {bespokeMeds.length > 0 &&
+                bespokeMeds.map((item, i) => {
+                  return (
+                    <div className='search__result search__result--meditation' key={i}>
+                      <MeditationCard item={item} i={i} />
+                    </div>
+                  );
+                })}
+            </div>
             {results.length > 0 && <h3 id='publications'>PUBLICATIONS</h3>}
 
             <div className='search__results-section'>

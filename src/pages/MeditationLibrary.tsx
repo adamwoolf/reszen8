@@ -22,6 +22,8 @@ const DigitalLibrary = () => {
   const { addItem } = useSavedItems();
 
   const meditations = useSelector((state) => state.content.meditations);
+  const likes = useSelector((state) => state.content.meta.meditationLIKES);
+  console.log(likes);
 
   // Redirect to login if not authenticated
   if (!currentUser) {
@@ -43,12 +45,12 @@ const DigitalLibrary = () => {
               ...med,
               contentType: "meditation",
               id: med.audioUrl,
+              likes: likes?.find((l) => l.id === med.audioUrl)?.likes,
             };
           })
       : [];
-
     setLibraryMeditations([...libraryMeditations, ...normalisedBespoke]);
-  }, [bespokeMeds]);
+  }, [bespokeMeds, likes]);
 
   useEffect(() => {
     if (!libraryMeditations.length) {
@@ -57,6 +59,7 @@ const DigitalLibrary = () => {
         type: fields.type,
         title: fields.title,
         id: sys.id,
+        likes: likes?.find((l) => l.id === sys.id)?.likes,
       }));
       setLibraryMeditations([...libraryMeditations, ...staticMeds]);
     }
@@ -91,9 +94,11 @@ const DigitalLibrary = () => {
         )}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {libraryMeditations?.map((item, i) => (
-            <MeditationCard key={item.id + i} handleAddItem={handleAddItem} item={item} i={i} />
-          ))}
+          {[...new Set(libraryMeditations)]
+            ?.sort((a, b) => b?.likes - a?.likes)
+            ?.map((item, i) => (
+              <MeditationCard key={item.id + i} handleAddItem={handleAddItem} item={item} i={i} />
+            ))}
         </div>
       </div>
     );

@@ -13,12 +13,12 @@ interface Publication {
 
 const Publications = () => {
   const publications = useSelector((state) => state.content.publications);
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
   const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");
-  console.log(publications);
+
   useEffect(() => {
     if (publications && !displayPubs?.length) setDisplayPubs(publications);
   }, [setDisplayPubs, displayPubs, publications]);

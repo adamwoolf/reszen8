@@ -3,7 +3,17 @@ import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { useAuth } from "../../contexts/AuthContext";
 import LikeCta from "../../pages/Publications/LikeCta";
 
-const MeditationCard = ({ item, i, showLike = true, handleAddItem }) => {
+const MeditationCard = ({
+  item,
+  i,
+  showLike = true,
+  handleAddItem,
+}: {
+  handleAddItem?: () => void;
+  showLike?: boolean;
+  i: number;
+  item: any;
+}) => {
   const { currentUser } = useAuth();
   const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.id === item.id);
   console.log(item);
@@ -17,11 +27,14 @@ const MeditationCard = ({ item, i, showLike = true, handleAddItem }) => {
           {item.duration && <p>Duration: {item.duration}</p>}
           {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
           {/* {item.language && <p>Language: {item.language}</p>} */}
-          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
         </div>
-        <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
-          {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
-        </button>
+        <div>
+          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
+
+          <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
+            {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
+          </button>
+        </div>
         {currentUser && showLike && <LikeCta id={item.id} content='meditations' />}
       </div>
     </article>

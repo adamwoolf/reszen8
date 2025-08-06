@@ -7,6 +7,7 @@ import { FaArrowRight } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import { useSelector } from "react-redux";
 import { CONTENT_TYPES } from "../../constants";
+import Search from "../../components/Search/Search";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
@@ -23,8 +24,6 @@ const Dashboard = () => {
   const data = useSelector((state) => state.content.meditations);
   const [allItems, setAllItems] = useState({});
 
-  const [search, setSearch] = useState("");
-
   // Redirect to login if not authenticated
   if (!currentUser) {
     navigate("/login");
@@ -35,6 +34,7 @@ const Dashboard = () => {
     setAllItems({ ...savedItems, myMeds });
   }, [savedItems, myMeds]);
 
+  // user generated meditations
   useEffect(() => {
     if (data) {
       const meds = Object.values(data);
@@ -162,8 +162,9 @@ const Dashboard = () => {
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>My Dashboard</h1>
-      {/* <input placeholder='Type to search Dashboard items' className='dashboard__search' /> */}
-      {/* <button>Search Dashboard Items</button> */}
+      <div className='dashboard__search-container'>
+        <Search dashboard text='Search Dashboard Items' />
+      </div>
       <div className='tabs mb-8'>
         <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
           Bespoke Meditations

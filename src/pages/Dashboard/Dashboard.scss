@@ -1,12 +1,8 @@
 .dashboard {
-  &__search {
-    padding: 12px;
-    margin: 16px 0;
-    width: 50%;
-
-    &::placeholder {
-      color: orange;
-    }
+  &__search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
   }
 }
 

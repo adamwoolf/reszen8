@@ -21,6 +21,12 @@ const UserManager = ({ children }) => {
   };
 
   useEffect(() => {
+    const isActive = isSubscriptionActive(currentUser?.subscription);
+    setisActiveSub(isActive);
+    // if (currentUser && !isActive) navigate("/members");
+  }, [currentUser]);
+
+  useEffect(() => {
     if (currentUser && currentUser?.firebaseId) {
       addOrUpdate(currentUser.firebaseId, {
         ...currentUser,
