@@ -1,10 +1,19 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "./PopupStyles.scss";
 
 const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void; children: React.ReactNode }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [leaving, setLeaving] = useState(false);
 
+  const handleAnimationEnd = () => {
+    if (leaving) {
+      onClose();
+      setLeaving(false);
+    }
+  };
+
+  const fadeOut = () => setLeaving(true);
   useEffect(() => {
     if (show) {
       // Lock scroll
@@ -47,7 +56,7 @@ const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void
         }
 
         if (e.key === "Escape") {
-          onClose();
+          fadeOut();
         }
       };
 
@@ -69,9 +78,9 @@ const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void
 
   return ReactDOM.createPortal(
     <>
-      <div className='popup' ref={modalRef}>
+      <div onAnimationEnd={handleAnimationEnd} className={!leaving ? "popup" : "popup popup--leaving"} ref={modalRef}>
         <div className='popup__content-container'>{children}</div>
-        <button className='popup__close' onClick={onClose}>
+        <button className='popup__close' onClick={fadeOut}>
           close
         </button>
       </div>
