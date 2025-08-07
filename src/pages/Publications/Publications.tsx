@@ -3,6 +3,7 @@ import "./PublicationsStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import PublicationCard from "../../components/PublicationCard/PublicationCard";
 import { useSelector } from "react-redux";
+import { getPublicationsWithLikes } from "./Publications.selector";
 
 interface Publication {
   fields: {
@@ -12,7 +13,7 @@ interface Publication {
 }
 
 const Publications = () => {
-  const publications = useSelector((state) => state.content.publications);
+  const publications = useSelector(getPublicationsWithLikes);
   const { currentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
@@ -77,14 +78,14 @@ const Publications = () => {
           <button className='publications__filter' onClick={showAll}>
             Show all
           </button>
-          {currentUser && (
+          {/* {currentUser && (
             <button
               className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
               onClick={showFavourites}
             >
               Only Favourites
             </button>
-          )}
+          )} */}
           {/* {keyWords.map((word) => (
                 <button
                   key={word}

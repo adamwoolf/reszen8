@@ -75,6 +75,21 @@ body,
   opacity: 1;
 }
 
+.landing-page--leaving {
+  animation: fadeOut;
+  animation-fill-mode: both;
+  animation-duration: 800ms;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes float {
   0% {
     transform: translateY(0px);
