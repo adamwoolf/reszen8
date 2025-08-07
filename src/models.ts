@@ -32,7 +32,8 @@ export interface Meditation {
   language?: string;
   title: string;
   type: string;
-  content?: string;
+  content: string;
+  likes?: number;
 }
 
 export interface Publication {
@@ -40,4 +41,9 @@ export interface Publication {
     title: string;
     body: string;
   };
+}
+
+export interface Like {
+  likes: number;
+  id: string;
 }

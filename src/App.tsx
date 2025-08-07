@@ -15,7 +15,7 @@ import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 import MembersArea from "./pages/MembersArea/MembersArea";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import DigitalLibrary from "./pages/MeditationLibrary";
+import DigitalLibrary from "./pages/MeditationLibrary/MeditationLibrary";
 import AIChat from "./pages/AIChat";
 import Apparel from "./pages/Apparel/Apparel";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
@@ -40,11 +40,11 @@ import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
-import { getPublications } from "./contentful";
+import { getPublications, getMeditationItems } from "./contentful";
 import { useDispatch } from "react-redux";
 import { startDatabaseListeners } from "./store/storeListener";
 import { RootState } from "./store/reduxStore";
-import { setPublications } from "./store/contentSlice";
+import { setPublications, setStaticMeditations } from "./store/contentSlice";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -293,9 +293,8 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    getPublications().then((data) => {
-      dispatch(setPublications(data.items));
-    });
+    getPublications().then((data) => dispatch(setPublications(data.items)));
+    getMeditationItems().then((data) => dispatch(setStaticMeditations(data)));
   }, []);
 
   return (

@@ -36,9 +36,11 @@ const Footer: React.FC = () => {
               Privacy Policy
             </Link>
           </div>
-          <button className='logout-cta' onClick={handleLogout}>
-            logout
-          </button>
+          {currentUser && (
+            <button className='logout-cta' onClick={handleLogout}>
+              logout
+            </button>
+          )}
         </div>
       </div>
     </footer>

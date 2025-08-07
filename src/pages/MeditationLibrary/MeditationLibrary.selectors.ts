@@ -1,0 +1,31 @@
+import { createSelector } from "@reduxjs/toolkit";
+import { Meditation, Like } from "../../models";
+
+export const getMeditationsWithLikes = createSelector(
+  (state: any) => state.content.meditations,
+  (state) => state.content.meta.meditationLIKES,
+  (state) => state.content.staticMeditations,
+  (meditations: any[], likes: Like[], staticMs): Meditation[] => {
+    if (!meditations && !staticMs) return [];
+    console.log(staticMs);
+    const staticMeds: Meditation[] = staticMs?.map(({ fields, sys }: Meditation) => ({
+      audioUrl: fields.audioFile.fields.file.url,
+      type: fields.type,
+      title: fields.title,
+      id: sys.id,
+      likes: likes?.find((l) => l.id === sys.id)?.likes,
+      content: fields.content,
+    }));
+    const normalized = Object.values(meditations)
+      .reverse()
+      ?.map((med: Meditation) => {
+        return {
+          ...med,
+          contentType: "meditation",
+          id: med.audioUrl,
+          likes: likes?.find((l) => l.id === med.audioUrl)?.likes || 0,
+        };
+      });
+    return [...staticMeds, ...normalized].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  }
+);
