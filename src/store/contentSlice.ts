@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Publication } from "../models";
 
-interface ContentState {
+export interface ContentState {
   meditations: any[];
   publications: any[];
   meta: any;

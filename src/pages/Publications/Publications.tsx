@@ -15,7 +15,7 @@ interface Publication {
 const Publications = () => {
   const publications = useSelector(getPublicationsWithLikes);
   const { currentUser } = useAuth();
-  const [displayPubs, setDisplayPubs] = useState([]);
+  const [displayPubs, setDisplayPubs] = useState<[]>([]);
   const [activeFilter, setActiveFilter] = useState("");
   const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");

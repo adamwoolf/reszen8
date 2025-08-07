@@ -105,13 +105,13 @@ const Dashboard = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data?.reverse().map((item, i) => (
               <div key={`dashboard-item ${i}`} className='feature-card publication__card'>
-                <div className='publications__card-content publication__card-inner'>
+                <div className='publications__card-content dashboard__card-inner'>
                   <div>
                     <h3>{item.title}</h3>
                     <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
-                      {item.createdAt && (
+                      {/* {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
-                      )}
+                      )} */}
                     </div>
                   </div>
                   <div className='dashboard-buttons'>

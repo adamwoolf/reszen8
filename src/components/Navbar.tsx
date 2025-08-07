@@ -127,9 +127,11 @@ const Navbar: React.FC = () => {
           <div className='nav-brand'>
             <NavLink to='/'>RESZEN8</NavLink>
           </div>
-          <div className='navbar__search-mobile'>
-            <Search />
-          </div>
+          {currentUser && (
+            <div className='navbar__search-mobile'>
+              <Search />
+            </div>
+          )}
           <div className='nav-sections'>
             <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
               <li>

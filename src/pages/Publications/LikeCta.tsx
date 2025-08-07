@@ -5,6 +5,7 @@ import { FaHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { setMeta } from "../../store/contentSlice";
 import { CONTENT_TYPES } from "../../constants";
+import { getMeditationLikes, getPublicationLikes, getMeta } from "../../store/contentSelectors";
 interface Like {
   id: string;
   likes: number;
@@ -22,10 +23,12 @@ const LikeCta = ({
   const { currentUser, setCurrentUser } = useAuth();
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const { addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
-  const data = useSelector((state) => state.content.meta);
+  const data = useSelector(getMeta);
+  const medLikes = useSelector(getMeditationLikes);
+  const pubLikes = useSelector(getPublicationLikes);
 
-  const numPublicationLikes = data?.LIKES?.find((like: Like) => like.id === id)?.likes || 0;
-  const numMeditationLikes = data?.meditationLIKES?.find((like: Like) => like.id === id)?.likes || 0;
+  const numPublicationLikes = pubLikes.find((like: Like) => like.id === id)?.likes || 0;
+  const numMeditationLikes = medLikes?.find((like: Like) => like.id === id)?.likes || 0;
   const numLikes = content === CONTENT_TYPES.publications ? numPublicationLikes : numMeditationLikes;
 
   if (!currentUser) return null;
@@ -38,7 +41,7 @@ const LikeCta = ({
     if (content === CONTENT_TYPES.publications) {
       if (!data?.LIKES?.map((item: Like) => item.id).includes(id)) {
         addOrUpdateMeta("LIKES", [...data?.LIKES, { id, likes: 1 }]);
-        dispatch(setMeta({ ...data, LIKES: [{ id, likes: 1 }] }));
+        dispatch(setMeta({ ...data, LIKES: [...data.LIKES, { id, likes: 1 }] }));
         return;
       }
       const likes = data?.LIKES?.map((like: Like) => {

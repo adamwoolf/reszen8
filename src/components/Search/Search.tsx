@@ -141,7 +141,11 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
             )}
           </div>
           <div className='search__results-container'>
-            {bespokeMeds.length > 0 && <h3 id='bespokeMeditations'>Bespoke Meditations</h3>}
+            {bespokeMeds.length > 0 && (
+              <h3 className='search__results-heading' id='bespokeMeditations'>
+                Bespoke Meditations
+              </h3>
+            )}
 
             <div className='search__results-section'>
               {bespokeMeds.length > 0 &&
@@ -153,7 +157,11 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
                   );
                 })}
             </div>
-            {results.length > 0 && <h3 id='publications'>PUBLICATIONS</h3>}
+            {results.length > 0 && (
+              <h3 className='search__results-heading' id='publications'>
+                PUBLICATIONS
+              </h3>
+            )}
 
             <div className='search__results-section'>
               {results.length > 0 &&
@@ -165,7 +173,11 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
                   );
                 })}
             </div>
-            {meds.length > 0 && <h3 id='meditations'>MEDITATIONS</h3>}
+            {meds.length > 0 && (
+              <h3 className='search__results-heading' id='meditations'>
+                MEDITATIONS
+              </h3>
+            )}
 
             <div className='search__results-section'>
               {meds.length > 0 &&

@@ -1,13 +1,14 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { Meditation, Like } from "../../models";
+import { getMeditations, getMeditationLikes } from "../../store/contentSelectors";
 
 export const getMeditationsWithLikes = createSelector(
-  (state: any) => state.content.meditations,
-  (state) => state.content.meta.meditationLIKES,
+  getMeditations,
+  getMeditationLikes,
   (state) => state.content.staticMeditations,
   (meditations: any[], likes: Like[], staticMs): Meditation[] => {
     if (!meditations && !staticMs) return [];
-    console.log(staticMs);
+
     const staticMeds: Meditation[] = staticMs?.map(({ fields, sys }: Meditation) => ({
       audioUrl: fields.audioFile.fields.file.url,
       type: fields.type,

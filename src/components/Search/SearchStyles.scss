@@ -30,6 +30,13 @@
     }
   }
 
+  &__results-heading {
+    padding-top: 20px;
+    @media (max-width: 768px) {
+      text-align: center;
+    }
+  }
+
   &__results-container {
     overflow: auto;
     height: 80%;
@@ -66,13 +73,10 @@
   }
 
   &__results-count {
-    // padding: 17px 0;
     text-align: center;
     display: flex;
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-    }
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   &__results-tab {
@@ -84,6 +88,10 @@
 
     &:hover {
       text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      margin: 8px 4px;
     }
   }
 
