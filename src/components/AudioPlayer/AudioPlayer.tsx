@@ -1,10 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AudioPlayerStyles.scss";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentAudio } from "../../store/contentSlice";
+import { getCurrentAudio } from "../../store/contentSelectors";
+
 const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const currentAudio = useSelector(getCurrentAudio);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -29,18 +35,35 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   }, [audioUrl]);
 
   const togglePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current?.pause();
+      dispatch(setCurrentAudio("")); // stop globally
+    } else {
+      dispatch(setCurrentAudio(audioUrl)); // request to play — let effect handle playback
+    }
+  };
+
+  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying) {
-      audio.pause();
+    if (currentAudio === audioUrl) {
+      // We're the selected player, so play
+      audio
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.error("Playback error:", err);
+          setIsPlaying(false);
+        });
     } else {
-      audio.play().catch((err) => {
-        console.error("Error playing audio:", err);
-        setIsPlaying(false);
-      });
+      // Not the selected player, pause
+      audio.pause();
+      setIsPlaying(false);
     }
-  };
+  }, [currentAudio, audioUrl]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);

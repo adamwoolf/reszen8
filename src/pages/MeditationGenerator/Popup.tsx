@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "./PopupStyles.scss";
+import LiquidWrapper from "../../components/LiquidWrapper/LiquidWrapper";
 
 const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void; children: React.ReactNode }) => {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -79,11 +80,14 @@ const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void
   return ReactDOM.createPortal(
     <>
       <div onAnimationEnd={handleAnimationEnd} className={!leaving ? "popup" : "popup popup--leaving"} ref={modalRef}>
+        {/* <LiquidWrapper> */}
         <div className='popup__content-container'>{children}</div>
         <button className='popup__close' onClick={fadeOut}>
           close
         </button>
+        {/* </LiquidWrapper> */}
       </div>
+
       <div className='popup__backdrop' />
     </>,
     rootElement

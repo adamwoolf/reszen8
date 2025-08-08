@@ -29,10 +29,17 @@
 
   &__filter {
     margin: 8px;
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 
   &__count {
     color: orange;
+    margin-top: 40px;
   }
 
   &__no-results {
@@ -47,6 +54,12 @@
       text-align: center;
     }
     margin: 60px 0;
+  }
+
+  &__tiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
@@ -76,6 +89,12 @@
     max-width: 1200px;
     margin: auto;
     min-height: 100vh;
+
+    &__icon-container {
+      margin-top: -20px;
+      margin-left: -20px;
+      margin-bottom: 20px;
+    }
 
     &__back-cta {
       margin-top: 50px;
@@ -144,6 +163,13 @@
 
   &__card-title {
     padding-right: 30px;
+    height: 50px;
+  }
+
+  &__card-icon-container {
+    position: absolute;
+    bottom: 14px;
+    right: 8px;
   }
 
   &__card-save-cta {
@@ -151,6 +177,8 @@
     color: orange;
     width: fit-content;
     margin-bottom: -20px;
+    text-align: center;
+    padding-left: 0;
 
     &:hover {
       background-color: transparent;
@@ -167,6 +195,7 @@
     background-color: transparent;
     color: orange;
     padding-left: 0;
+    text-align: left;
 
     &:hover {
       background-color: transparent;

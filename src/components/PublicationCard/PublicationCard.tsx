@@ -4,8 +4,11 @@ import LikeCta from "../../pages/Publications/LikeCta";
 import { Link } from "react-router-dom";
 import { marked } from "marked";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
+import { categoriser } from "../../Util";
+import Icon from "../Icon/Icon";
 
-const PublicationCard = ({ fields, sys, showLike = true }) => {
+const PublicationCard = ({ item, showLike = true }) => {
+  const { fields, sys, category } = item;
   const { currentUser, setCurrentUser } = useAuth();
   const { addOrUpdate } = useFirebasedatabase("USERS");
   const [saved, setSaved] = useState(false);
@@ -54,6 +57,9 @@ const PublicationCard = ({ fields, sys, showLike = true }) => {
 
       <Link className='publication__card-content' to={`/publications/${fields.slug}`}>
         <div>
+          <div className='publication__card-icon-container'>
+            <Icon type={category[0].category} />
+          </div>
           <h3 className='publication__card-title'>{fields.title}</h3>
           <div className='publication__card-divider' />
           <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />

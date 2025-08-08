@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./PublicationsStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import PublicationCard from "../../components/PublicationCard/PublicationCard";
 import { useSelector } from "react-redux";
 import { getPublicationsWithLikes } from "./Publications.selector";
-
+import Icon, { getIcon } from "../../components/Icon/Icon";
 interface Publication {
   fields: {
     title: string;
@@ -19,7 +19,7 @@ const Publications = () => {
   const [activeFilter, setActiveFilter] = useState("");
   const [showingFavs, setShowingFavs] = useState(false);
   const [search, setSearch] = useState("");
-
+  const resultsContainer = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (publications && !displayPubs?.length) setDisplayPubs(publications);
   }, [setDisplayPubs, displayPubs, publications]);
@@ -27,12 +27,22 @@ const Publications = () => {
   const filterPubs = (word: string) => {
     setActiveFilter(word);
     setDisplayPubs(
-      publications.filter(
-        (pub: Publication) =>
-          pub.fields.body.toLowerCase().includes(word.toLowerCase()) ||
-          pub.fields.title.toLowerCase().includes(word.toLowerCase())
-      )
+      publications.filter((pub: Publication) => {
+        const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
+        return cats.includes(word);
+      })
     );
+
+    const isMobile = window.innerWidth < 768;
+    const headerHeight = isMobile ? 300 : 240; // increased for taller header
+
+    if (resultsContainer?.current) {
+      const elementTop = resultsContainer.current.getBoundingClientRect().top + window.scrollY; // absolute Y position in document
+
+      const scrollTarget = elementTop - headerHeight;
+
+      window.scrollTo({ top: scrollTarget, behavior: "smooth" });
+    }
   };
 
   const searchText = (e) => {
@@ -52,6 +62,7 @@ const Publications = () => {
     setActiveFilter("");
     setSearch("");
     setDisplayPubs(publications);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const showFavourites = () => {
@@ -75,9 +86,6 @@ const Publications = () => {
           placeholder='Type to search publications'
         />
         <div>
-          <button className='publications__filter' onClick={showAll}>
-            Show all
-          </button>
           {/* {currentUser && (
             <button
               className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
@@ -86,18 +94,26 @@ const Publications = () => {
               Only Favourites
             </button>
           )} */}
-          {/* {keyWords.map((word) => (
-                <button
-                  key={word}
-                  className={activeFilter !== word ? "publications__filter non-active-filter" : "publications__filter"}
-                  onClick={() => filterPubs(word)}
-                >
-                  {word}
-                </button>
-              ))} */}
         </div>
+
+        <div className='publications__tiles'>
+          {Object.keys(getIcon).map((icon) => (
+            <button
+              key={icon}
+              className={activeFilter !== icon ? "publications__filter non-active-filter" : "publications__filter"}
+              onClick={() => filterPubs(icon)}
+            >
+              <Icon large type={icon} />
+            </button>
+          ))}
+        </div>
+        {activeFilter && (
+          <button className='publications__filter' onClick={showAll}>
+            clear filter
+          </button>
+        )}
         {displayPubs?.length > 0 && (
-          <span className='publications__count'>
+          <span ref={resultsContainer} className='publications__count'>
             Showing: {displayPubs?.length} {activeFilter} publications.
           </span>
         )}
@@ -118,8 +134,8 @@ const Publications = () => {
       )}
 
       <div className='publication__grid'>
-        {displayPubs?.map(({ fields, sys }) => (
-          <PublicationCard key={sys.id} fields={fields} sys={sys} />
+        {displayPubs?.map((item) => (
+          <PublicationCard key={item.sys.id} item={item} />
         ))}
       </div>
     </div>

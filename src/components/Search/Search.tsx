@@ -9,14 +9,16 @@ import MeditationCard from "../MeditationCard/MeditationCard";
 import { useSelector } from "react-redux";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { useAuth } from "../../contexts/AuthContext";
-
+import { getPublicationsWithLikes } from "../../pages/Publications/Publications.selector";
+import Icon, { getIcon } from "../Icon/Icon";
+import { getMeditationsWithLikes } from "../../pages/MeditationLibrary/MeditationLibrary.selectors";
 const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
-  const meditations = useSelector((state) => state.content.meditations);
-  const publications = useSelector((state) => state.content.publications);
+  const meditations = useSelector(getMeditationsWithLikes);
+  const publications = useSelector(getPublicationsWithLikes);
   const [bespokeMeds, setBespokeMeds] = useState([]);
   const { data } = useFirebaseDatabase("meditations");
   const { savedItems } = useSavedItems();
@@ -99,6 +101,19 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
     );
   };
 
+  const filterContent = (word: string) => {
+    const filtered = publications.filter((pub: Publication) => {
+      const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
+      return cats.includes(word);
+    });
+    const filteredMeds = meditations.filter((pub: Publication) => {
+      const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
+      return cats.includes(word);
+    });
+    setResults(filtered);
+    setMeds(filteredMeds);
+  };
+
   return (
     <div>
       <button onClick={() => setShow(true)} className='search-cta'>
@@ -110,7 +125,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
           <div className='search__inputs'>
             <input
               className='search__input'
-              placeholder='Type to find publications and meditations'
+              placeholder='Type to find content'
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -118,6 +133,20 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
               clear
             </button>
           </div>
+          {!results.length && (
+            <div className='search__tile-container'>
+              {Object.keys(getIcon).map((icon, i) => (
+                <button
+                  style={{ animationDelay: `${i * 40}ms` }}
+                  key={icon}
+                  className='search__tile'
+                  onClick={() => filterContent(icon)}
+                >
+                  <Icon large type={icon} />
+                </button>
+              ))}
+            </div>
+          )}
           <div className='search__results-count'>
             {bespokeMeds.length > 0 && (
               <ScrollLink to='bespokeMeditations'>
@@ -168,7 +197,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
                 results.map((r, i) => {
                   return (
                     <div className='search__result' key={i}>
-                      <PublicationCard fields={r.fields} sys={r.sys} />
+                      <PublicationCard item={r} />
                     </div>
                   );
                 })}

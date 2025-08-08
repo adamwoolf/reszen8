@@ -14,16 +14,16 @@ type TabType = "meditations" | "ebooks" | "publications";
 const DigitalLibrary = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const [displayMeds, setDisplayMeds] = useState([]);
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const [search, setSearch] = useState("");
 
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getMeditationsWithLikes);
+  const [displayMeds, setDisplayMeds] = useState(libraryMeditations);
 
-  useEffect(() => {
-    if (libraryMeditations && !displayMeds?.length) setDisplayMeds(libraryMeditations);
-  }, [setDisplayMeds, displayMeds, libraryMeditations]);
+  // useEffect(() => {
+  //   if (libraryMeditations && !displayMeds?.length) setDisplayMeds(libraryMeditations);
+  // }, [setDisplayMeds, displayMeds, libraryMeditations]);
 
   const searchText = (e) => {
     const query = e.target.value;

@@ -6,6 +6,8 @@ import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import LikeCta from "./LikeCta";
 import SocialShare from "../../components/SocialShare/SocialShare";
 import { useSelector } from "react-redux";
+import Icon from "../../components/Icon/Icon";
+import { categoriser } from "../../Util";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -54,10 +56,15 @@ const FullPublication = () => {
       </button>
     );
 
+  const category = categoriser(`${title}-${body}`);
+
   if (!title) return null;
   return (
     <div className='publication__full'>
       <LikeCta large id={content?.sys?.id} />
+      {/* <div className='publication__full__icon-container'>
+        <Icon large type={category?.[0]?.category} />
+      </div> */}
       <h1 className='publication__title'>{title}</h1>
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />

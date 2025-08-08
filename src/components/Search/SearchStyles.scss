@@ -15,6 +15,29 @@
     }
   }
 
+  &__tile-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 100px;
+  }
+
+  &__tile {
+    background-color: transparent;
+    animation: stagger;
+    animation-duration: 200ms;
+    animation-fill-mode: both;
+    margin: 20px;
+
+    @media (max-width: 768px) {
+      margin: 0;
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
   &__no-results {
     color: orange;
     margin: auto;
@@ -107,5 +130,16 @@
 
   &__result-link {
     margin-left: 12px;
+  }
+}
+
+@keyframes stagger {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
   }
 }

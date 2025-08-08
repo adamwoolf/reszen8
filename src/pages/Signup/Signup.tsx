@@ -33,8 +33,7 @@ export default function Signup() {
   }
 
   useEffect(() => {
-    console.log(currentUser);
-    if (currentUser) navigate("/members");
+    if (currentUser && !window.location.href.includes("/members")) navigate("/members");
   }, [currentUser]);
 
   return (

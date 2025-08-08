@@ -6,6 +6,7 @@ export interface ContentState {
   publications: any[];
   meta: any;
   staticMeditations: any[];
+  currentAudio: string;
 }
 
 const initialState: ContentState = {
@@ -16,6 +17,7 @@ const initialState: ContentState = {
     meditationLikes: [],
   },
   staticMeditations: [],
+  currentAudio: "",
 };
 
 export const contentSlice = createSlice({
@@ -34,8 +36,11 @@ export const contentSlice = createSlice({
     setStaticMeditations: (state, action: PayloadAction<any>) => {
       state.staticMeditations = action.payload;
     },
+    setCurrentAudio: (state, action: PayloadAction<string>) => {
+      state.currentAudio = action.payload;
+    },
   },
 });
 
-export const { setMeditations, setPublications, setMeta, setStaticMeditations } = contentSlice.actions;
+export const { setMeditations, setCurrentAudio, setPublications, setMeta, setStaticMeditations } = contentSlice.actions;
 export default contentSlice.reducer;

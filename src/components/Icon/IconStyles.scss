@@ -1,0 +1,18 @@
+.icon {
+  height: 50px;
+  width: 50px;
+
+  &--large {
+    height: 100px;
+    width: 100px;
+
+    @media (max-width: 768px) {
+      height: 90px;
+      width: 90px;
+    }
+  }
+  max-width: unset;
+  &__container {
+    display: inline;
+  }
+}

@@ -247,11 +247,11 @@ const AIMeditationGenerator: React.FC = () => {
             learn more
           </button>
           {showPopup === "size" && (
-            <Popup show={showPopup} onClose={() => setShowPopup("")}>
+            <Popup show={!!showPopup} onClose={() => setShowPopup("")}>
               {Object.keys(mapDurationToWords).map((key) => {
                 const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
                 return (
-                  <div className='popup__list-item' key={key}>
+                  <div className='popup__list-item' key={`list-item-${key}`}>
                     <h4 className='popup__list-title'>{key}</h4>
                     <p className='popup__list-desc'>{type.description}</p>
                   </div>
@@ -271,7 +271,7 @@ const AIMeditationGenerator: React.FC = () => {
           />
           <div className='slider-markers'>
             {allowedValues.map((value, index) => (
-              <span key={index} className='marker'>
+              <span key={`marker ${index}`} className='marker'>
                 {value}
               </span>
             ))}
@@ -304,8 +304,8 @@ const AIMeditationGenerator: React.FC = () => {
             </div>
             {showPopup === "practiceType" && (
               <Popup show={showPopup} onClose={() => setShowPopup("")}>
-                {PracticeTypes.map((type) => (
-                  <div className='popup__list-item' key={type.name}>
+                {PracticeTypes.map((type, i) => (
+                  <div className='popup__list-item' key={`${type.name}${i}`}>
                     <h4 className='popup__list-title'>{type.name}</h4>
                     <p className='popup__list-desc'>{type.description}</p>
                   </div>
@@ -325,29 +325,6 @@ const AIMeditationGenerator: React.FC = () => {
               ))}
             </select>
           </div>
-
-          {/* <div className='form-group'>
-            <label htmlFor='voice'>Voice</label>
-            <select
-              id='voice'
-              value={selectedVoice}
-              onChange={(e) => setSelectedVoice(e.target.value)}
-              disabled={isGenerating || filteredVoices.length === 0}
-            >
-              {filteredVoices.length === 0 ? (
-                <option value=''>
-                  No voices available for{" "}
-                  {languageOptions.find((lang) => lang.value === selectedLanguage)?.label || "selected language"}
-                </option>
-              ) : (
-                filteredVoices.map((voice, i) => (
-                  <option key={voice.id + i} value={voice.id}>
-                    {voice.name} - {voice.gender} ({voice.style})
-                  </option>
-                ))
-              )}
-            </select>
-          </div> */}
         </div>
 
         <div className='flex justify-center mt-8 space-x-8'>

@@ -26,9 +26,9 @@ const LoginForm: React.FC = () => {
       clearError();
 
       await login(email, password, rememberMe);
-
+      console.log("logged in");
       // Redirect to Members Area after successful login
-      navigate("/dashboard");
+      navigate("/");
       toast.success("Successfully logged in!");
     } catch (error) {
       // Error is already handled by AuthContext

@@ -21,5 +21,10 @@ export const getMeta = createSelector(
   (meta) => meta
 );
 
+export const getCurrentAudio = createSelector(
+  (state) => state.content.currentAudio,
+  (audio): string => audio
+);
+
 export const getPublicationLikes = createSelector(getMeta, (meta): Like[] => meta.LIKES);
 export const getMeditationLikes = createSelector(getMeta, (meta): Like[] => meta.meditationLIKES);

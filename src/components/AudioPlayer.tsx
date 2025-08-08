@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
-import './AudioPlayer.css';
+import React, { useState, useRef, useEffect } from "react";
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
+
+import "./AudioPlayer.css";
 
 const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -9,7 +10,7 @@ const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Calm wave audio URL (you can replace this with your own audio file)
-  const audioSrc = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+  const audioSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -52,30 +53,24 @@ const AudioPlayer = () => {
   }, []);
 
   return (
-    <div className="audio-player">
-      <audio
-        ref={audioRef}
-        src={audioSrc}
-        loop
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-      />
-      <button onClick={togglePlay} className="audio-control" aria-label={isPlaying ? 'Pause' : 'Play'}>
+    <div className='audio-player'>
+      <audio ref={audioRef} src={audioSrc} loop onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
+      <button onClick={togglePlay} className='audio-control' aria-label={isPlaying ? "Pause" : "Play"}>
         {isPlaying ? <FaPause /> : <FaPlay />}
       </button>
-      <div className="volume-control">
-        <button onClick={toggleMute} className="volume-button" aria-label={isMuted ? 'Unmute' : 'Mute'}>
+      <div className='volume-control'>
+        <button onClick={toggleMute} className='volume-button' aria-label={isMuted ? "Unmute" : "Mute"}>
           {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
         </button>
         <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
+          type='range'
+          min='0'
+          max='1'
+          step='0.01'
           value={volume}
           onChange={handleVolumeChange}
-          className="volume-slider"
-          aria-label="Volume control"
+          className='volume-slider'
+          aria-label='Volume control'
         />
       </div>
     </div>

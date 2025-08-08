@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { Meditation, Like } from "../../models";
 import { getMeditations, getMeditationLikes } from "../../store/contentSelectors";
-
+import { categoriser } from "../../Util";
 export const getMeditationsWithLikes = createSelector(
   getMeditations,
   getMeditationLikes,
@@ -16,6 +16,7 @@ export const getMeditationsWithLikes = createSelector(
       id: sys.id,
       likes: likes?.find((l) => l.id === sys.id)?.likes,
       content: fields.content,
+      category: categoriser(`${fields.title}`),
     }));
     const normalized = Object.values(meditations)
       .reverse()
@@ -25,6 +26,7 @@ export const getMeditationsWithLikes = createSelector(
           contentType: "meditation",
           id: med.audioUrl,
           likes: likes?.find((l) => l.id === med.audioUrl)?.likes || 0,
+          category: categoriser(`${med.title}-${med.body}`),
         };
       });
     return [...staticMeds, ...normalized].sort((a, b) => (b.likes || 0) - (a.likes || 0));

@@ -24,11 +24,11 @@ const Dashboard = () => {
   const data = useSelector((state) => state.content.meditations);
   const [allItems, setAllItems] = useState({});
 
-  // Redirect to login if not authenticated
-  if (!currentUser) {
-    navigate("/login");
-    return null;
-  }
+  // // Redirect to login if not authenticated
+  // if (!currentUser) {
+  //   navigate("/");
+  //   return null;
+  // }
 
   useEffect(() => {
     setAllItems({ ...savedItems, myMeds });
@@ -66,10 +66,10 @@ const Dashboard = () => {
   }, []);
 
   // Redirect to login if not authenticated
-  if (!currentUser) {
-    navigate("/login");
-    return null;
-  }
+  // if (!currentUser) {
+  //   navigate("/login");
+  //   return null;
+  // }
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
     removeItem(itemId, type);
