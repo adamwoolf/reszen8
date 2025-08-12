@@ -1,7 +1,7 @@
 import React from "react";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { useAuth } from "../../contexts/AuthContext";
-import LikeCta from "../../pages/Publications/LikeCta";
+import LikeCta from "../LikeCta/LikeCta";
 import LiquidWrapper from "../LiquidWrapper/LiquidWrapper";
 import Icon from "../Icon/Icon";
 
@@ -18,7 +18,7 @@ const MeditationCard = ({
 }) => {
   const { currentUser } = useAuth();
   const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.id === item.id);
-  console.log(item);
+
   return (
     <LiquidWrapper>
       <article className='feature-card publication__card '>
@@ -31,7 +31,7 @@ const MeditationCard = ({
             {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
             {/* {item.language && <p>Language: {item.language}</p>} */}
           </div>
-          <div>
+          <div className='publication__card-inner'>
             {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
 
             <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>

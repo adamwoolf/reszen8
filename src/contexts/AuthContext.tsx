@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (firebaseUser && users) {
       const authEmail = firebaseUser.email?.toLowerCase();
-      const matchedUser = Object.values(users).find((u: any) => u?.email?.toLowerCase() === authEmail);
+      const matchedUser = Object.values(users)?.find((u: any) => u?.email?.toLowerCase() === authEmail);
 
       const baseUser: User = {
         uid: firebaseUser.uid,
@@ -164,10 +164,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signup,
     logout,
     loading,
-    error,
+    error: "",
     clearError,
     resetPassword,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

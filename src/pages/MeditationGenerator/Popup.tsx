@@ -18,7 +18,7 @@ const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void
   useEffect(() => {
     if (show) {
       // Lock scroll
-      document.body.style.overflow = "hidden";
+      // document.body.style.overflow = "hidden";
 
       // Focus trap setup
       const modal = modalRef.current;
@@ -65,10 +65,10 @@ const Popup = ({ show, onClose, children }: { show: boolean; onClose: () => void
 
       return () => {
         document.removeEventListener("keydown", handleTab);
-        document.body.style.overflow = "auto"; // Clean up scroll lock
+        // document.body.style.overflow = "auto"; // Clean up scroll lock
       };
     } else {
-      document.body.style.overflow = "auto";
+      // document.body.style.overflow = "auto";
     }
   }, [show, onClose]);
 

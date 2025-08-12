@@ -20,6 +20,21 @@ const LandingPage: React.FC = () => {
     if (leaving) setShow(false);
   };
 
+  useEffect(() => {
+    if (show) {
+      document.documentElement.style.overflow = "hidden"; // lock html
+      document.body.style.overflow = "hidden"; // lock body
+    } else {
+      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "auto";
+    };
+  }, [show]);
+
   if (!show) return null;
 
   return (

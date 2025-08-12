@@ -2,7 +2,7 @@
 .checkout-page {
   max-width: 100%;
   min-height: calc(100vh - 180px);
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: #ffffff;
   padding: 2rem 1.5rem 4rem;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
@@ -39,7 +39,7 @@
 
 /* Form Container */
 .checkout-form {
-  background-color: #000000;
+  background-color: var(--bg-color);
   border-radius: 12px;
   padding: 2.5rem;
   margin: 0 auto 2rem;

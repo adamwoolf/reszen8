@@ -28,12 +28,10 @@ export const getIcon = {
   Trauma,
 };
 
-const Icon = ({ type, large }: { type: string; large?: boolean }) => {
-  return (
-    <div className='icon__container'>
-      <img className={!large ? "icon" : "icon icon--large"} src={getIcon[type?.replace(/\s+/g, "")]} />
-    </div>
-  );
-};
+const Icon = ({ type, large, gridItem }: { type: string; large?: boolean; gridItem?: boolean }) => (
+  <div className='icon__container'>
+    <img className={!large ? "icon" : "icon icon--large"} src={getIcon[type?.replace(/\s+/g, "")]} />
+  </div>
+);
 
 export default Icon;

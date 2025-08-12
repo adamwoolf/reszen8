@@ -11,20 +11,23 @@ const paths = {
 
 const listeners: Record<string, () => void> = {};
 
-export const startDatabaseListeners = () => (dispatch: AppDispatch) => {
+export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispatch) => {
   Object.entries(paths).forEach(([key, path]) => {
     const dbRef = ref(db, path);
-
     const handler = (snapshot: any) => {
       const data = snapshot.val() || {};
       switch (key) {
         case "meta":
           dispatch(setMeta(data));
+          localStorage.setItem("myData", data);
           break;
 
         case "meditations":
           dispatch(setMeditations(data));
+          localStorage.setItem("myData", data);
+
           break;
+
         default:
           break;
       }
@@ -32,19 +35,6 @@ export const startDatabaseListeners = () => (dispatch: AppDispatch) => {
 
     const errorHandler = (err: any) => {
       console.log(err);
-      // switch (key) {
-      //   case "meta":
-      //     dispatch(setMetaError(err));
-      //     break;
-      //   case "users":
-      //     dispatch(setUsersError(err));
-      //     break;
-      //   case "settings":
-      //     dispatch(setSettingsError(err));
-      //     break;
-      //   default:
-      //     break;
-      // }
     };
 
     onValue(dbRef, handler, errorHandler);

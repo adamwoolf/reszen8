@@ -30,7 +30,8 @@
   &__filter {
     margin: 8px;
     background-color: transparent;
-    border: 1px solid var(--primary-color);
+    scale: 1.2;
+    transform: 300ms;
 
     &:hover {
       background-color: transparent;
@@ -63,21 +64,6 @@
   }
 }
 
-.likes {
-  position: absolute;
-  right: 0;
-  top: 12px;
-  display: flex;
-  z-index: 1000;
-  flex-direction: column;
-  align-items: center;
-
-  &__count {
-    font-size: 0.6rem;
-    margin-top: -5px;
-  }
-}
-
 .publication {
   position: relative;
 
@@ -94,6 +80,7 @@
       margin-top: -20px;
       margin-left: -20px;
       margin-bottom: 20px;
+      background-color: transparent;
     }
 
     &__back-cta {
@@ -163,13 +150,17 @@
 
   &__card-title {
     padding-right: 30px;
-    height: 50px;
+    min-height: 50px;
+    @media (max-width: 768px) {
+      height: auto;
+    }
   }
 
   &__card-icon-container {
     position: absolute;
     bottom: 14px;
     right: 8px;
+    background-color: transparent;
   }
 
   &__card-save-cta {
@@ -238,5 +229,7 @@
 }
 
 .non-active-filter {
-  opacity: 0.7;
+  opacity: 0.9;
+  scale: 1;
+  transition: 300ms;
 }

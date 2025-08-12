@@ -3,7 +3,7 @@ import { marked } from "marked";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
-import LikeCta from "./LikeCta";
+import LikeCta from "../../components/LikeCta/LikeCta";
 import SocialShare from "../../components/SocialShare/SocialShare";
 import { useSelector } from "react-redux";
 import Icon from "../../components/Icon/Icon";
@@ -18,12 +18,12 @@ const FullPublication = () => {
   const publications = useSelector((state) => state.content.publications);
 
   useEffect(() => {
-    setContent(publications.find((pub) => pub.fields.slug === slug));
+    setContent(publications?.find((pub) => pub.fields.slug === slug));
   }, [slug]);
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && content?.sys) {
-      const exists = !!currentUser?.savedItems?.publications.find((pub) => pub.id === content?.sys?.id);
+      const exists = !!currentUser?.savedItems?.publications?.find((pub) => pub.id === content?.sys?.id);
       setSaved(exists);
     }
   }, [content, currentUser?.savedItems?.publications, slug]);

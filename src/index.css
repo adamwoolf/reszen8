@@ -7,7 +7,7 @@
   --accent-color: #ff8c00;
   --text-color: #ffffff;
   --text-secondary: #cccccc;
-  --bg-color: #000000;
+  --bg-color: #05011f;
   --bg-secondary: #121212;
   --bg-tertiary: #1a1a1a;
   --border-color: #333333;
@@ -33,7 +33,7 @@ body,
 #root {
   min-height: 100vh;
   width: 100%;
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -42,7 +42,7 @@ body {
   font-family: var(--font-stack);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
   line-height: 1.6;
 }
@@ -54,7 +54,7 @@ body {
 .section,
 .container,
 .content {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -62,7 +62,7 @@ body {
 input,
 textarea,
 select {
-  background-color: var(--bg-secondary);
+  background-color: transparent;
   color: var(--text-color);
   border: 1px solid var(--border-color);
 }
@@ -74,16 +74,13 @@ aside,
 header,
 footer,
 main {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
-/* Make sure all divs inherit the black background */
 div {
-  background-color: inherit;
-}
-
-/* Update card styles */
+  background-color: var(--bg-color);
+} /* Update card styles */
 .card,
 .panel,
 .box {

@@ -28,7 +28,7 @@ export const useSavedItemsStore = create<SavedItemsStore>()(
       saveItem: (item) =>
         set((state) => {
           // Check if item with same ID and size already exists
-          const existingIndex = state.savedItems.findIndex(
+          const existingIndex = state.savedItems?.findIndex(
             (i) => i.id === item.id && i.size === item.size
           );
 

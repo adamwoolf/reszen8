@@ -8,6 +8,15 @@ import { Provider } from "react-redux";
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 
+// if ("serviceWorker" in navigator) {
+//   window.addEventListener("load", () => {
+//     navigator.serviceWorker
+//       .register("/service-worker.js")
+//       .then(() => console.log("Service Worker registered"))
+//       .catch((err) => console.error("SW registration failed:", err));
+//   });
+// }
+
 const root = createRoot(container);
 
 root.render(

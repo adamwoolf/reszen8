@@ -1,11 +1,11 @@
-/* Base Styles */
+/* Base Styles - index.cxx seems to override this */
 :root {
   --primary-color: #ffa500;
   --secondary-color: #ff8c00;
   --accent-color: #ff8c00;
   --text-color: #ffffff;
   --text-secondary: #cccccc;
-  --bg-color: #000000;
+  /* --bg-color: #110c3b; */
   --bg-secondary: #121212;
   --bg-tertiary: #1a1a1a;
   --border-color: #333333;
@@ -28,7 +28,7 @@ body {
   font-family: var(--font-stack);
   line-height: 1.6;
   color: var(--text-color);
-  background-color: #000000;
+  background-color: var(--bg-color);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -54,7 +54,7 @@ body::after {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -180,7 +180,7 @@ a:hover {
   margin-top: 100px; /* Adjust based on header height */
   box-sizing: border-box;
   overflow-x: hidden;
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -422,6 +422,7 @@ div {
   border-radius: 4px;
   margin-left: 0.5rem;
   transition: var(--transition);
+  white-space: nowrap;
 }
 
 .signup-btn:hover {
@@ -431,7 +432,7 @@ div {
 
 /* Footer Styles */
 .footer {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: #ffffff;
   text-align: center;
   padding: 1.5rem 0;
@@ -479,7 +480,7 @@ select {
 .container,
 section,
 .section {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -488,7 +489,7 @@ section,
 .section,
 .container,
 .content {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
   flex: 1;
   width: 100%;
@@ -510,7 +511,7 @@ aside,
 header,
 footer,
 main {
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 

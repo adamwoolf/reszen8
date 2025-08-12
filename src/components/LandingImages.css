@@ -3,7 +3,7 @@
   justify-content: center;
   gap: 2rem;
   padding: 4rem 2rem;
-  background-color: #000000;
+  background-color: var(--bg-color);
   flex-wrap: wrap;
 }
 
@@ -31,7 +31,7 @@
 }
 
 .landing-image-wrapper h3 {
-  color: #FFA500;
+  color: #ffa500;
   font-size: 1.25rem;
   margin-top: 0.5rem;
   font-weight: 600;
@@ -43,7 +43,7 @@
     gap: 1.5rem;
     padding: 3rem 1.5rem;
   }
-  
+
   .landing-image-wrapper {
     max-width: 250px;
   }
@@ -56,13 +56,13 @@
     gap: 2.5rem;
     padding: 2rem 1rem;
   }
-  
+
   .landing-image-wrapper {
     max-width: 100%;
     width: 100%;
     max-width: 350px;
   }
-  
+
   .landing-image {
     max-height: 180px;
   }

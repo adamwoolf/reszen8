@@ -3,6 +3,7 @@ import "./AudioPlayerStyles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentAudio } from "../../store/contentSlice";
 import { getCurrentAudio } from "../../store/contentSelectors";
+import MakeAvailableOfflineButton from "../AvailableOfflineCta";
 
 const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -82,8 +83,16 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     return `${minutes}:${seconds}`;
   };
 
+  // src/utils/cacheAudio.js
+  const cacheAudio = async (url: string) => {
+    const cache = await caches.open("firebase-audio");
+    await cache.add(url);
+    console.log(`Cached audio: ${url}`);
+  };
+
   return (
-    <div>
+    <div className='audio-player__inner'>
+
       <audio
         ref={audioRef}
         src={audioUrl}

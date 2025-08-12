@@ -85,16 +85,7 @@ const Publications = () => {
           onChange={searchText}
           placeholder='Type to search publications'
         />
-        <div>
-          {/* {currentUser && (
-            <button
-              className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
-              onClick={showFavourites}
-            >
-              Only Favourites
-            </button>
-          )} */}
-        </div>
+        <div></div>
 
         <div className='publications__tiles'>
           {Object.keys(getIcon).map((icon) => (
@@ -114,7 +105,7 @@ const Publications = () => {
         )}
         {displayPubs?.length > 0 && (
           <span ref={resultsContainer} className='publications__count'>
-            Showing: {displayPubs?.length} {activeFilter} publications.
+            Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}.
           </span>
         )}
       </div>

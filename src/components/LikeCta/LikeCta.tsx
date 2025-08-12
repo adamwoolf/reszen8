@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { setMeta } from "../../store/contentSlice";
 import { CONTENT_TYPES } from "../../constants";
 import { getMeditationLikes, getPublicationLikes, getMeta } from "../../store/contentSelectors";
+import "./LikeCtaStyles.scss";
+
 interface Like {
   id: string;
   likes: number;
@@ -27,7 +29,7 @@ const LikeCta = ({
   const medLikes = useSelector(getMeditationLikes);
   const pubLikes = useSelector(getPublicationLikes);
 
-  const numPublicationLikes = pubLikes.find((like: Like) => like.id === id)?.likes || 0;
+  const numPublicationLikes = pubLikes?.find((like: Like) => like.id === id)?.likes || 0;
   const numMeditationLikes = medLikes?.find((like: Like) => like.id === id)?.likes || 0;
   const numLikes = content === CONTENT_TYPES.publications ? numPublicationLikes : numMeditationLikes;
 

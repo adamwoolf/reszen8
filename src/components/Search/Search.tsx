@@ -15,6 +15,7 @@ import { getMeditationsWithLikes } from "../../pages/MeditationLibrary/Meditatio
 const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
   const meditations = useSelector(getMeditationsWithLikes);
@@ -85,6 +86,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
     setQuery("");
     setResults([]);
     setMeds([]);
+    setFilter("");
   };
 
   const ScrollLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
@@ -102,6 +104,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   };
 
   const filterContent = (word: string) => {
+    setFilter(word);
     const filtered = publications.filter((pub: Publication) => {
       const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
       return cats.includes(word);
@@ -168,57 +171,68 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
                 Sorry, there are no items which match your search text. Please try different search text.
               </p>
             )}
+            {filter && (meds.length > 0 || results.length > 0 || bespokeMeds.length > 0) && (
+              <p className='search__no-results'>Showing results related to {filter}</p>
+            )}
           </div>
-          <div className='search__results-container'>
-            {bespokeMeds.length > 0 && (
-              <h3 className='search__results-heading' id='bespokeMeditations'>
-                Bespoke Meditations
-              </h3>
-            )}
+          {(bespokeMeds.length > 0 || results.length > 0 || meds.length > 0) && (
+            <div className='search__results-container'>
+              {bespokeMeds.length > 0 && (
+                <h3 className='search__results-heading' id='bespokeMeditations'>
+                  Bespoke Meditations
+                </h3>
+              )}
 
-            <div className='search__results-section'>
-              {bespokeMeds.length > 0 &&
-                bespokeMeds.map((item, i) => {
-                  return (
-                    <div className='search__result search__result--meditation' key={i}>
-                      <MeditationCard item={item} i={i} />
-                    </div>
-                  );
-                })}
-            </div>
-            {results.length > 0 && (
-              <h3 className='search__results-heading' id='publications'>
-                PUBLICATIONS
-              </h3>
-            )}
+              {bespokeMeds.length > 0 && (
+                <div className='search__results-section'>
+                  {bespokeMeds.length > 0 &&
+                    bespokeMeds.map((item, i) => {
+                      return (
+                        <div className='search__result search__result--meditation' key={i}>
+                          <MeditationCard item={item} i={i} />
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+              {results.length > 0 && (
+                <h3 className='search__results-heading' id='publications'>
+                  PUBLICATIONS
+                </h3>
+              )}
 
-            <div className='search__results-section'>
-              {results.length > 0 &&
-                results.map((r, i) => {
-                  return (
-                    <div className='search__result' key={i}>
-                      <PublicationCard item={r} />
-                    </div>
-                  );
-                })}
-            </div>
-            {meds.length > 0 && (
-              <h3 className='search__results-heading' id='meditations'>
-                MEDITATIONS
-              </h3>
-            )}
+              {results.length > 0 && (
+                <div className='search__results-section'>
+                  {results.length > 0 &&
+                    results.map((r, i) => {
+                      return (
+                        <div className='search__result' key={i}>
+                          <PublicationCard item={r} />
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+              {meds.length > 0 && (
+                <h3 className='search__results-heading' id='meditations'>
+                  MEDITATIONS
+                </h3>
+              )}
 
-            <div className='search__results-section'>
-              {meds.length > 0 &&
-                meds.map((item, i) => {
-                  return (
-                    <div className='search__result search__result--meditation' key={i}>
-                      <MeditationCard item={item} i={i} />
-                    </div>
-                  );
-                })}
+              {meds.length > 0 && (
+                <div className='search__results-section'>
+                  {meds.length > 0 &&
+                    meds.map((item, i) => {
+                      return (
+                        <div className='search__result search__result--meditation' key={i}>
+                          <MeditationCard item={item} i={i} />
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </Popup>
     </div>

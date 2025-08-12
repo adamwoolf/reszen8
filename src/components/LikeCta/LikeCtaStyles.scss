@@ -1,0 +1,15 @@
+.likes {
+  position: absolute;
+  right: 0;
+  top: 12px;
+  display: flex;
+  z-index: 1000;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+
+  &__count {
+    font-size: 0.6rem;
+    margin-top: -5px;
+  }
+}

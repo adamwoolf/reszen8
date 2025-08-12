@@ -1,7 +1,14 @@
 .audio-slider-container {
   display: flex;
+  background-color: transparent;
 }
 
 .audio-btn {
   margin-bottom: 12px;
+}
+
+.audio-player {
+  &__inner {
+    background-color: transparent;
+  }
 }

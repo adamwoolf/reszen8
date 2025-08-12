@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import LikeCta from "../../pages/Publications/LikeCta";
+import LikeCta from "../LikeCta/LikeCta";
 import { Link } from "react-router-dom";
 import { marked } from "marked";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
@@ -22,7 +22,7 @@ const PublicationCard = ({ item, showLike = true }) => {
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && sys) {
-      const exists = !!currentUser?.savedItems?.publications.find((pub) => pub.id === sys?.id);
+      const exists = !!currentUser?.savedItems?.publications?.find((pub) => pub.id === sys?.id);
       setSaved(exists);
     }
   }, [fields, sys, currentUser?.savedItems?.publications]);
@@ -56,7 +56,7 @@ const PublicationCard = ({ item, showLike = true }) => {
       {showLike && currentUser && <LikeCta id={sys.id} />}
 
       <Link className='publication__card-content' to={`/publications/${fields.slug}`}>
-        <div>
+        <div className='publication__card-inner'>
           <div className='publication__card-icon-container'>
             <Icon type={category[0].category} />
           </div>

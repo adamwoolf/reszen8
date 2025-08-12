@@ -121,7 +121,7 @@
 }
 
 .membership-card {
-  background: #333333;
+  background-color: var(--bg-color);
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -225,7 +225,6 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #ffa500;
   color: #000000;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -460,7 +459,7 @@
 @media (prefers-color-scheme: dark) {
   .membership-card,
   .faq-item {
-    background: #1e1e1e;
+    background-color: var(--bg-color);
     border-color: #333333;
   }
 

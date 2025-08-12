@@ -2,7 +2,7 @@
 .ai-meditation-generator {
   max-width: 100%;
   min-height: calc(100vh - 180px);
-  background-color: #000000;
+  background-color: var(--bg-color);
   color: #ffffff;
   padding: 2rem 1.5rem 4rem;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
@@ -43,7 +43,7 @@
 
 /* Form Container */
 .generator-form {
-  background-color: #000000;
+  background-color: var(--bg-color);
   border-radius: 12px;
   padding: 2.5rem;
   margin: 0 auto 2rem;
@@ -78,7 +78,7 @@ select,
 input[type="number"] {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: #000000;
+  background-color: var(--bg-color);
   border: 1px solid rgba(75, 85, 99, 0.6);
   border-radius: 8px;
   color: #f3f4f6;
@@ -93,7 +93,7 @@ input[type="number"] {
 
 /* Style the dropdown options */
 select option {
-  background: #000000;
+  background-color: var(--bg-color);
   color: #f3f4f6;
   padding: 0.5rem 1rem;
 }
@@ -181,7 +181,7 @@ input[type="number"]:focus {
 
 /* Results Section */
 .results-container {
-  background-color: #000000;
+  background-color: var(--bg-color);
   border-radius: 12px;
   padding: 2.5rem;
   margin: 2rem auto;
@@ -216,7 +216,7 @@ input[type="number"]:focus {
 }
 
 .meditation-content .bg-gray-800 {
-  background-color: #000000 !important;
+  background-color: var(--bg-color);
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -224,7 +224,7 @@ input[type="number"]:focus {
 }
 
 .audio-player {
-  background-color: #000000 !important;
+  background-color: var(--bg-color);
   color: #ffffff;
   padding: 0;
   margin-top: 2rem;
@@ -332,7 +332,7 @@ input[type="number"]:focus {
 
 /* Loading Animation */
 .loading-animation {
-  background-color: #000000;
+  background-color: var(--bg-color);
   border-radius: 12px;
   padding: 3rem 2rem;
   margin: 2rem auto;
@@ -556,7 +556,7 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #000;
+  background-color: var(--bg-color);
   font-family: "Helvetica Neue", sans-serif;
 }
 

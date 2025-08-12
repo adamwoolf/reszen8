@@ -9,7 +9,6 @@ import PageTransition from "./components/PageTransition";
 import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import AboutMe from "./pages/AboutMe";
-import Photos from "./pages/Photos";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
@@ -49,7 +48,7 @@ import { setPublications, setStaticMeditations } from "./store/contentSlice";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-
+  console.log(loading);
   if (loading) return null;
 
   return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
@@ -287,9 +286,23 @@ const AnimatedRoutes = () => {
 
 function App() {
   const dispatch = useDispatch();
+  const [offline, setOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
-    dispatch(startDatabaseListeners());
+    const handleOffline = () => setOffline(true);
+    const handleOnline = () => setOffline(false);
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch(startDatabaseListeners(offline));
   }, [dispatch]);
 
   useEffect(() => {
@@ -298,19 +311,19 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <BasketProvider>
-          <SavedItemsProvider>
-            <Router>
-              <UserManager>
-                <AnimatedRoutes />
-              </UserManager>
-            </Router>
-          </SavedItemsProvider>
-        </BasketProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+    // <ErrorBoundary>
+    <AuthProvider>
+      <BasketProvider>
+        <SavedItemsProvider>
+          <Router>
+            <UserManager>
+              <AnimatedRoutes />
+            </UserManager>
+          </Router>
+        </SavedItemsProvider>
+      </BasketProvider>
+    </AuthProvider>
+    // </ErrorBoundary>
   );
 }
 

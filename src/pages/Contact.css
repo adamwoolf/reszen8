@@ -5,7 +5,7 @@
   align-items: flex-start;
   min-height: calc(100vh - 70px);
   padding: 2rem 1rem;
-  background-color: #000000;
+  background-color: var(--bg-color);
 }
 
 .contact-container {
@@ -16,6 +16,7 @@
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
+  background-color: transparent;
 }
 
 .contact-intro {
@@ -46,7 +47,7 @@
   padding: 0.8rem 1rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-color);
   color: black;
   font-family: var(--font-stack);
   font-size: 1rem;
