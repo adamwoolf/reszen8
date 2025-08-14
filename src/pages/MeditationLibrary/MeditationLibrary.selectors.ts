@@ -10,7 +10,7 @@ export const getMeditationsWithLikes = createSelector(
     if (!meditations && !staticMs) return [];
 
     const staticMeds: Meditation[] = staticMs?.map(({ fields, sys }: Meditation) => ({
-      audioUrl: fields.audioFile.fields.file.url,
+      audioUrl: fields?.audioFile?.fields?.file?.url,
       type: fields.type,
       title: fields.title,
       id: sys.id,

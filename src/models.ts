@@ -40,6 +40,7 @@ export interface Publication {
   fields: {
     title: string;
     body: string;
+    slug: string;
   };
 }
 

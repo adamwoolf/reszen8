@@ -1,0 +1,62 @@
+.cookie-banner {
+  position: fixed;
+  bottom: 0px;
+  // height: 250px;
+  z-index: 1000;
+  color: white;
+  width: 100vw;
+  backdrop-filter: blur(40px);
+  background-color: transparent;
+  border-top: 1px solid orange;
+  padding: 30px;
+  animation: slideInUp 300ms ease-in-out;
+  animation-delay: 0.5s;
+  animation-fill-mode: both;
+
+  button {
+    margin-right: 8px;
+  }
+
+  &__text {
+    font-size: 0.8rem;
+  }
+
+  &__dismiss {
+    background-color: transparent;
+    border: 1px solid orange;
+    color: orange;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  &--leaving {
+    animation: slideInDown 300ms ease-in-out;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+    animation-duration: 0;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}

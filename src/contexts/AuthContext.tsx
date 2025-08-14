@@ -6,11 +6,14 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   User as FirebaseUser,
+  setPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 import { User } from "../models";
 import useSendMail from "../hooks/useSendEmail";
+import { ref, query, orderByChild, equalTo, get } from "firebase/database";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -39,49 +42,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: users, addOrUpdate } = useFirebaseDatabase("USERS") || {};
+  const { addOrUpdate } = useFirebaseDatabase("USERS") || {};
   const { sendMail } = useSendMail();
-
   const clearError = useCallback(() => setError(null), []);
 
-  // State to temporarily hold the Firebase user
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+  const USER_CACHE_KEY = "currentUserDoc";
 
-  // First effect: store firebase user (no access to Firestore user info yet)
+  async function getUserByUidField(uid: string) {
+    const usersRef = ref(db, "USERS");
+    const q = query(usersRef, orderByChild("uid"), equalTo(uid));
+
+    try {
+      const snapshot = await get(q);
+      if (snapshot.exists()) {
+        const usersObj = snapshot.val();
+        const firstKey = Object.keys(usersObj)[0];
+        console.log(firstKey);
+        return usersObj[firstKey];
+      }
+    } catch (err) {
+      console.warn("Firebase get() failed, probably offline:", err);
+    }
+
+    // Fallback to cached merged user
+    const cached = localStorage.getItem(USER_CACHE_KEY);
+    console.log("offline fallback cache:", cached);
+    return cached ? JSON.parse(cached) : null;
+  }
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setFirebaseUser(user);
+    setLoading(true);
+
+    if (!navigator.onLine) {
+      const cached = localStorage.getItem(USER_CACHE_KEY);
+      if (cached) {
+        console.log("Offline: loading cached user", JSON.parse(cached));
+        setCurrentUser(JSON.parse(cached));
+      } else {
+        console.log("Offline: no cached user, fallback to basic auth user");
+      }
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        // No user signed in
+        localStorage.removeItem(USER_CACHE_KEY);
         setCurrentUser(null);
         setLoading(false);
+        return;
       }
+
+      try {
+        // Try to get the user's DB data (online)
+        const userDoc = await getUserByUidField(user.uid);
+        const mergedUser = userDoc ? { ...user, ...userDoc } : user;
+
+        // Cache merged user for offline use
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify(mergedUser));
+
+        setCurrentUser(mergedUser);
+      } catch (err) {
+        // Offline fallback: load last cached user
+      }
+
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
-
-  // Second effect: combine Firebase user with Firestore data once both are ready
-  useEffect(() => {
-    if (firebaseUser && users) {
-      const authEmail = firebaseUser.email?.toLowerCase();
-      const matchedUser = Object.values(users)?.find((u: any) => u?.email?.toLowerCase() === authEmail);
-
-      const baseUser: User = {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email ?? "",
-        emailVerified: firebaseUser.emailVerified,
-      };
-
-      if (matchedUser) {
-        setCurrentUser({ ...baseUser, ...matchedUser });
-      } else {
-        console.warn("No matching user found in Firestore for:", authEmail);
-        setCurrentUser(baseUser); // fallback if needed
-      }
-
-      setLoading(false);
-    }
-  }, [firebaseUser, users]);
 
   const signup = useCallback(
     async (email: string, password: string, firstName: string, surName: string) => {
@@ -139,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       await signOut(auth);
+      localStorage.removeItem("offlineUser");
     } catch (err: any) {
       setError(err?.message || "Failed to log out");
       throw err;
@@ -164,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signup,
     logout,
     loading,
-    error: "",
+    error,
     clearError,
     resetPassword,
   };

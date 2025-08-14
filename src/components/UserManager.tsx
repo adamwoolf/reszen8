@@ -27,12 +27,12 @@ const UserManager = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (currentUser && currentUser?.firebaseId) {
-      addOrUpdate(currentUser.firebaseId, {
-        ...currentUser,
-        subscription: { ...currentUser?.subscription, isActiveSub },
-      });
-    }
+    // if (currentUser && currentUser?.firebaseId) {
+    //   addOrUpdate(currentUser.firebaseId, {
+    //     ...currentUser,
+    //     subscription: { ...currentUser?.subscription, isActiveSub },
+    //   });
+    // }
   }, [isActiveSub]);
 
   return <div>{children}</div>;

@@ -8,6 +8,7 @@ import SocialShare from "../../components/SocialShare/SocialShare";
 import { useSelector } from "react-redux";
 import Icon from "../../components/Icon/Icon";
 import { categoriser } from "../../Util";
+import { Publication } from "../../models";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -18,12 +19,12 @@ const FullPublication = () => {
   const publications = useSelector((state) => state.content.publications);
 
   useEffect(() => {
-    setContent(publications?.find((pub) => pub.fields.slug === slug));
+    setContent(publications?.find((pub: Publication) => pub.fields.slug.trim() === slug?.trim()));
   }, [slug]);
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && content?.sys) {
-      const exists = !!currentUser?.savedItems?.publications?.find((pub) => pub.id === content?.sys?.id);
+      const exists = !!currentUser?.savedItems?.publications?.find((pub: any) => pub.id === content?.sys?.id);
       setSaved(exists);
     }
   }, [content, currentUser?.savedItems?.publications, slug]);

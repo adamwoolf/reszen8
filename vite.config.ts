@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), VitePWA({ registerType: "autoUpdate" })],
+    plugins: [react()],
+
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),

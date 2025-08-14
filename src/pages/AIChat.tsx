@@ -238,7 +238,7 @@ const AIChat: React.FC = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length) scrollToBottom();
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {

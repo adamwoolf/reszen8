@@ -42,10 +42,10 @@ const DigitalLibrary = () => {
     setDisplayMeds(libraryMeditations);
   };
   // Redirect to login if not authenticated
-  if (!currentUser) {
-    navigate("/login");
-    return null;
-  }
+  // if (!currentUser) {
+  //   navigate("/login");
+  //   return null;
+  // }
 
   const handleAddItem = (item: any) => {
     const wasAdded = addItem(item);

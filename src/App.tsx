@@ -41,14 +41,14 @@ import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
 import { getPublications, getMeditationItems } from "./contentful";
 import { useDispatch } from "react-redux";
-import { startDatabaseListeners } from "./store/storeListener";
-import { RootState } from "./store/reduxStore";
-import { setPublications, setStaticMeditations } from "./store/contentSlice";
+import { startDatabaseListeners, getMeditationItemsREST, getMetaREST } from "./store/storeListener";
+import { setPublications, setStaticMeditations, setMeta, setMeditations } from "./store/contentSlice";
+import CookieBanner from "./components/CookieBanner/CookieBanner";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-  console.log(loading);
+
   if (loading) return null;
 
   return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
@@ -73,6 +73,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <LandingPage />
 
         <Navbar />
+        <CookieBanner />
+
         <main className='main-content flex-grow'>
           <PageTransition>
             <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
@@ -89,7 +91,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 // AnimatedRoutes component to handle page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
-
+  const { currentUser, loading } = useAuth();
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -302,12 +304,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(startDatabaseListeners(offline));
+    // dispatch(startDatabaseListeners(offline));
   }, [dispatch]);
 
   useEffect(() => {
     getPublications().then((data) => dispatch(setPublications(data.items)));
     getMeditationItems().then((data) => dispatch(setStaticMeditations(data)));
+  }, []);
+
+  useEffect(() => {
+    getMetaREST().then((data) => {
+      if (data) dispatch(setMeta(data));
+    });
+
+    getMeditationItemsREST().then((data) => {
+      if (data) dispatch(setMeditations(data));
+    });
   }, []);
 
   return (
