@@ -120,7 +120,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   return (
     <div>
       <button onClick={() => setShow(true)} className='search-cta'>
-        <span>{text ?? "Site Search"}</span> <FaSearch size={20} color='orange' />
+        <span className='search__header-text'>{text ?? "Site Search"}</span> <FaSearch size={20} color='orange' />
       </button>
       <Popup show={show} onClose={closeOverlay}>
         <div className='search'>

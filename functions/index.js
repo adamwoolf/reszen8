@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const { onRequest } = require("firebase-functions/v2/https");
 const express = require("express");
 const cors = require("cors");
 const { OpenAI } = require("openai");
@@ -7,13 +7,14 @@ const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
+// Initialize Firebase Admin
 admin.initializeApp();
 
 const bucket = admin.storage().bucket(); // Uses default bucket
 
-// Configure environment variables (set OPENAI_API_KEY via `firebase functions:config:set`)
+// ✅ Use environment variable from .env file
 const openai = new OpenAI({
-  apiKey: functions?.config()?.openai?.key,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const app = express();
@@ -47,7 +48,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// ✅ NEW: Upload audio to Firebase Storage and save Firestore doc
+// ✅ Upload audio endpoint
 app.post("/uploadAudio", async (req, res) => {
   try {
     const { audioBase64, title, content, generatedBy, type, language } = req.body;
@@ -56,29 +57,23 @@ app.post("/uploadAudio", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Convert base64 string back to buffer
     const buffer = Buffer.from(audioBase64, "base64");
     const fileName = `meditations/${title.replace(/\s+/g, "_")}_${Date.now()}.mp3`;
     const file = bucket.file(fileName);
 
-    // Upload to Firebase Storage
     await file.save(buffer, {
       metadata: {
         contentType: "audio/mp3",
       },
     });
 
-    // Make file publicly accessible (optional)
     await file.makePublic();
-
-    // const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
     const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(
       fileName
     )}?alt=media`;
 
-    // Save metadata to Realtime Database
-    const dbRef = admin.database().ref("meditations").push(); // Auto-generate a new key
+    const dbRef = admin.database().ref("meditations").push();
     await dbRef.set({
       title,
       content,
@@ -100,8 +95,8 @@ app.post("/uploadAudio", async (req, res) => {
   }
 });
 
-exports.sendMail = functions.https.onRequest((req, res) => {
-  // Handle CORS preflight
+// ✅ sendMail as V2 function
+exports.sendMail = onRequest((req, res) => {
   if (req.method === "OPTIONS") {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Methods", "GET, POST");
@@ -115,7 +110,7 @@ exports.sendMail = functions.https.onRequest((req, res) => {
     service: "gmail",
     auth: {
       user: "connect@reszen8.com",
-      pass: "jqsvxbqvsdxljuba",
+      pass: "jqsvxbqvsdxljuba", // ⚠️ Should move to environment variable
     },
   });
 
@@ -143,5 +138,5 @@ exports.sendMail = functions.https.onRequest((req, res) => {
   });
 });
 
-// Export the Express app as a Firebase Function
-exports.api = functions.https.onRequest(app);
+// ✅ Export Express app as a V2 HTTPS function
+exports.api = onRequest(app);

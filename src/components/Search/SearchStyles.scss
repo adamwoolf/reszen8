@@ -15,6 +15,12 @@
     }
   }
 
+  &__header-text {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
   &__tile-container {
     display: flex;
     justify-content: center;

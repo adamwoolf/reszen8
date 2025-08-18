@@ -113,6 +113,7 @@ const AIChat: React.FC = () => {
   async function callChatFunction(messages: { role: string; content: string }[]) {
     try {
       const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/chat";
+      // const endpoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api/chat";
 
       const response = await fetch(endpoint, {
         method: "POST",

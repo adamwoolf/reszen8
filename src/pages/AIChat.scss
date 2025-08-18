@@ -13,6 +13,10 @@
   min-height: 700px;
   border: 1px solid var(--border-color);
   position: relative;
+
+  div {
+    background-color: transparent;
+  }
 }
 
 /* Chat Header */
