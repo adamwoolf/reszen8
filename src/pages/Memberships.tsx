@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBasketStore } from "../store/basketStore";
-import "./Memberships.css";
+import "./Memberships.scss";
 import useContentful from "../hooks/useContentful";
 import { getMembershipTiers, getMembershipPage, getFAQs } from "../contentful";
 import { useAuth } from "../contexts/AuthContext";

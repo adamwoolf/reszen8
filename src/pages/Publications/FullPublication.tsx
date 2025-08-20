@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import Icon from "../../components/Icon/Icon";
 import { categoriser } from "../../Util";
 import { Publication } from "../../models";
+import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -20,7 +21,7 @@ const FullPublication = () => {
 
   useEffect(() => {
     setContent(publications?.find((pub: Publication) => pub.fields.slug.trim() === slug?.trim()));
-  }, [slug]);
+  }, [slug, publications]);
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && content?.sys) {
@@ -69,6 +70,13 @@ const FullPublication = () => {
       <h1 className='publication__title'>{title}</h1>
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
+
+      {currentUser && content.fields.audioFile && (
+        <div className='publication__audio'>
+          <h3>Listen</h3>
+          <AudioPlayer audioUrl={content.fields.audioFile.fields.file.url} />
+        </div>
+      )}
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}
       <SocialShare title={title} quote={title} />
       <Link className='btn publication__full__back-cta ' to={"/publications"}>

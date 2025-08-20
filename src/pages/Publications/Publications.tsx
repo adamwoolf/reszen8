@@ -37,11 +37,13 @@ const Publications = () => {
     const headerHeight = isMobile ? 300 : 240; // increased for taller header
 
     if (resultsContainer?.current) {
+      console.log("here");
       const elementTop = resultsContainer.current.getBoundingClientRect().top + window.scrollY; // absolute Y position in document
 
       const scrollTarget = elementTop - headerHeight;
 
-      window.scrollTo({ top: scrollTarget, behavior: "smooth" });
+      // window.scrollTo({ top: scrollTarget, behavior: "smooth" });
+      resultsContainer.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -98,15 +100,16 @@ const Publications = () => {
             </button>
           ))}
         </div>
-        {activeFilter && (
-          <button className='publications__filter' onClick={showAll}>
-            clear filter
-          </button>
-        )}
+
         {displayPubs?.length > 0 && (
           <span ref={resultsContainer} className='publications__count'>
             Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}.
           </span>
+        )}
+        {activeFilter && (
+          <button className='publications__filter' onClick={showAll}>
+            clear filter
+          </button>
         )}
       </div>
       {!displayPubs?.length && (

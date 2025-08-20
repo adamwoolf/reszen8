@@ -6,6 +6,8 @@ import { marked } from "marked";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { categoriser } from "../../Util";
 import Icon from "../Icon/Icon";
+import AudioPlayer from "../AudioPlayer/AudioPlayer";
+import { FaAudible, FaFileAudio, FaSpeakap, FaSoundcloud, FaVolumeUp } from "react-icons/fa";
 
 const PublicationCard = ({ item, showLike = true }) => {
   const { fields, sys, category } = item;
@@ -61,10 +63,13 @@ const PublicationCard = ({ item, showLike = true }) => {
             <Icon type={category[0].category} />
           </div>
           <h3 className='publication__card-title'>{fields.title}</h3>
+          {currentUser && fields.audioFile && <FaVolumeUp color='orange' />}
+
           <div className='publication__card-divider' />
           <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
         </div>
         <span className='publication__card-readmore'> read more...</span>
+        {/* {currentUser && fields.audioFile && <AudioPlayer audioUrl={fields.audioFile.fields.file.url} />} */}
       </Link>
       {currentUser && showSaveUI()}
     </article>

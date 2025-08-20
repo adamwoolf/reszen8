@@ -4,7 +4,7 @@ import { storage, db } from "../firebase"; // adjust path as needed
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "./helpers";
 
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
+// const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string;
 const ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Default voice ID (Rachel)
 
@@ -25,155 +25,257 @@ type AxiosErrorWithResponse = Error & {
   request?: any;
 };
 
-/**
- * Generates meditation content using OpenAI's GPT-4 model
- * @param type Type of meditation (e.g., 'mindfulness', 'sleep')
- * @param duration Duration in seconds
- * @param language Language code (e.g., 'en', 'es', 'fr')
- * @param voiceId The ID of the voice to use for text-to-speech
- * @param userId User ID for tracking
- * @returns Promise with generated meditation content
- */
-export const generateMeditation = async (
-  meditationType: string,
-  duration: string,
-  language: string = "en",
-  practiceType: { description: string; name: string },
-  userId: string
-): Promise<{ title: string; content: string; audioUrl: string; downloadLink: string }> => {
-  try {
-    const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
+// /**
+//  * Generates meditation content using OpenAI's GPT-4 model
+//  * @param type Type of meditation (e.g., 'mindfulness', 'sleep')
+//  * @param duration Duration in seconds
+//  * @param language Language code (e.g., 'en', 'es', 'fr')
+//  * @param voiceId The ID of the voice to use for text-to-speech
+//  * @param userId User ID for tracking
+//  * @returns Promise with generated meditation content
+//  */
+// export const generateMeditation = async (
+//   meditationType: string,
+//   duration: string,
+//   language: string = "en",
+//   practiceType: { description: string; name: string },
+//   userId: string
+// ): Promise<{ title: string; content: string; audioUrl: string; downloadLink: string }> => {
+//   try {
+//     const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
 
-    // // Map language codes to full language names for the prompt
-    const languageNames: Record<string, string> = {
-      en: "English",
-      es: "Spanish",
-      fr: "French",
-      de: "German",
-      it: "Italian",
-      pt: "Portuguese",
-    };
+//     // // Map language codes to full language names for the prompt
+//     const languageNames: Record<string, string> = {
+//       en: "English",
+//       es: "Spanish",
+//       fr: "French",
+//       de: "German",
+//       it: "Italian",
+//       pt: "Portuguese",
+//     };
 
-    const languageName = languageNames[language] || "English";
+//     const languageName = languageNames[language] || "English";
 
-    // const response = await axios.post(
-    //   "https://api.openai.com/v1/chat/completions",
-    //   {
-    //     model: "gpt-4",
-    //     messages: [
-    //       {
-    //         role: "system",
-    //         content:
-    //           `You are an AI meditation guide. Create a guided meditation script in ${languageName}. ` +
-    //           "The meditation should flow naturally and be suitable for the specified duration. " +
-    //           'Include guidance on breathing and body awareness. Format the response as a valid JSON object with "title" and "content" fields. ' +
-    //           "The response must be valid JSON with no additional text before or after the JSON object. " +
-    //           `The entire meditation must be in ${languageName} language.`,
-    //       },
-    //       {
-    //         role: "user",
-    //         content: `Create a ${duration}-second ${meditationType} meditation in ${languageName}.
-    //           The meditation should be exactly ${duration} seconds when spoken at a natural pace.
-    //           Keep the content focused and appropriate for the short duration.
-    //           Format the response as a valid JSON object with 'title' and 'content' properties.`,
-    //       },
-    //     ],
-    //     temperature: 0.7,
-    //   },
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${OPENAI_API_KEY}`,
-    //     },
-    //   }
-    // );
+//     const meditationData = await generateScript(meditationType, duration, "en", practiceType);
 
-    // const content = response.data.choices[0].message.content.trim();
+//     // Generate audio from script via ElevenLabs using the provided voiceId
+//     // const audioResponse = await axios.post(
+//     //   `https://api.elevenlabs.io/v1/text-to-speech/${details?.voice.id}`, // Use the provided voiceId
+//     //   {
+//     //     text: meditationData.content,
+//     //     model_id: "eleven_monolingual_v1",
+//     //     voice_settings: {
+//     //       stability: 0.5,
+//     //       similarity_boost: 0.75,
+//     //     },
+//     //   },
+//     //   {
+//     //     headers: {
+//     //       "Content-Type": "application/json",
+//     //       "xi-api-key": ELEVENLABS_API_KEY,
+//     //     },
+//     //     responseType: "arraybuffer",
+//     //   }
+//     // );
 
-    // let meditationData: Omit<MeditationResponse, "audioUrl">;
+//     // if (!audioResponse.data) {
+//     //   throw new Error("No audio data received from ElevenLabs");
+//     // }
 
-    // try {
-    //   meditationData = JSON.parse(content);
-    // } catch {
-    //   meditationData = {
-    //     title: `${meditationType} Meditation`,
-    //     content,
-    //   };
-    // }
+//     const audioBlob = await generateAudio(meditationData.content);
 
-    const meditationData = await generateScript(meditationType, duration, "en", practiceType);
+//     // STEP 3: Upload to Firebase via Cloud Function
+//     const firebaseAudioUrl = await new Promise<string>((resolve, reject) => {
+//       console.log("uploading");
+//       reader.onloadend = async () => {
+//         const audioBase64 = (reader.result as string).split(",")[1];
+//         try {
+//           const uploadResponse = await axios.post(
+//             "https://us-central1-reszen8-1d832.cloudfunctions.net/api/uploadAudio",
+//             {
+//               audioBase64,
+//               title: `${meditationData.title}-Azure`,
+//               content: meditationData.content,
+//               generatedBy: userId,
+//               type: meditationType,
+//               language: languageName,
+//               style: practiceType.name,
+//               beskpokeMed: true,
+//               generatedDate: Date.now(),
+//             }
+//           );
 
-    // Generate audio from script via ElevenLabs using the provided voiceId
-    const audioResponse = await axios.post(
-      `https://api.elevenlabs.io/v1/text-to-speech/${details?.voice.id}`, // Use the provided voiceId
-      {
-        text: meditationData.content,
-        model_id: "eleven_monolingual_v1",
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": ELEVENLABS_API_KEY,
-        },
-        responseType: "arraybuffer",
-      }
-    );
+//           resolve(uploadResponse.data.audioUrl);
+//           console.log("uploaded");
+//         } catch (err) {
+//           reject(err);
+//         }
+//       };
+//       reader.onerror = reject;
+//       reader.readAsDataURL(audioBlob);
+//     });
 
-    if (!audioResponse.data) {
-      throw new Error("No audio data received from ElevenLabs");
-    }
-    const audioBlob = new Blob([audioResponse.data], { type: "audio/mp3" });
-    const reader = new FileReader();
+//     // Optional: trigger download
+//     // saveAudioToFile(audioBlob, `${meditationData.title}.mp3`);
+//     console.log("audio", firebaseAudioUrl);
+//     return {
+//       ...meditationData,
+//       audioUrl: firebaseAudioUrl,
+//       downloadLink: firebaseAudioUrl,
+//       audioBlob,
+//     };
+//   } catch (error) {
+//     console.error("Failed to generate meditation:", error);
+//     throw new Error("Failed to generate meditation. Please try again later.");
+//     // Try to parse the content directly as JSON
+//   }
+// };
 
-    // STEP 3: Upload to Firebase via Cloud Function
-    const firebaseAudioUrl = await new Promise<string>((resolve, reject) => {
-      console.log("uploading");
-      reader.onloadend = async () => {
-        const audioBase64 = (reader.result as string).split(",")[1];
-        try {
-          const uploadResponse = await axios.post(
-            "https://us-central1-reszen8-1d832.cloudfunctions.net/api/uploadAudio",
-            {
-              audioBase64,
-              title: meditationData.title,
-              content: meditationData.content,
-              generatedBy: userId,
-              type: meditationType,
-              language: languageName,
-              style: practiceType.name,
-            }
-          );
+// export const generateAudio = async (rawText: string): Promise<Blob> => {
+//   const key = import.meta.env.VITE_AZURE_TTS_KEY;
+//   const region = "uksouth";
 
-          resolve(uploadResponse.data.audioUrl);
-          console.log("uploaded");
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(audioBlob);
-    });
+//   const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
+//   const ssml = `
+//     <speak version="1.0" xml:lang="en-US">
+//       <voice name="en-GB-OllieMultilingualNeural">
+//         ${rawText}
+//       </voice>
+//     </speak>`;
 
-    // Optional: trigger download
-    // saveAudioToFile(audioBlob, `${meditationData.title}.mp3`);
-    console.log("audio", firebaseAudioUrl);
-    return {
-      ...meditationData,
-      audioUrl: firebaseAudioUrl,
-      downloadLink: firebaseAudioUrl,
-      audioBlob,
-    };
-  } catch (error) {
-    console.error("Failed to generate meditation:", error);
-    throw new Error("Failed to generate meditation. Please try again later.");
-    // Try to parse the content directly as JSON
+//   const response = await fetch(url, {
+//     method: "POST",
+//     headers: {
+//       "Ocp-Apim-Subscription-Key": key,
+//       "Content-Type": "application/ssml+xml",
+//       "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
+//     },
+//     body: ssml,
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Azure TTS failed: " + (await response.text()));
+//   }
+
+//   const audioBlob = await response.blob();
+//   return audioBlob; // <-- return the actual blob
+// };
+
+// export const generateScript = async (
+//   meditationType: string,
+//   duration: string,
+//   language: string = "en",
+//   practiceType: { description: string; name: string }
+// ) => {
+//   const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
+//   const type = PracticeTypes.find((p) => p.name === practiceType.name);
+//   const wordsAndBreaks = mapDurationToWords[duration as keyof typeof mapDurationToWords];
+//   const prompt = `You are a skilled meditation script writer. Write a calming, natural-sounding guided meditation script in English (UK) that matches the following parameters:
+
+//   • Meditation Type: ${meditationType} for ${practiceType} - which is ${type?.description}
+//   • Overview: ${details?.description}
+//   • Tone: Warm, gentle, and soothing
+//   • Pacing: Moderate to slow, suitable for audio narration
+//   • Structure: Introduction → Gentle body and breath awareness → Thematic guided section → Closing wind-down
+//   • Duration: ${wordsAndBreaks.duration} minutes (use approximately ${wordsAndBreaks.words} words)
+//   • Audience: General adult audience, no spiritual or religious language
+//   • Voice: The script should be suitable for Eleven Labs voice ${details?.voice?.name} with ID ${details?.voice?.id}
+//   • Make the meditation unique.
+//   • Content repetition: Keep repetition low or none. Do not repeat affirmations, phrases, or transitions unless purposefully reflective.
+//   • Identify natural pause points (after important thoughts, transitions, affirmations, breath cues, etc.).
+//   • Insert approximately ${
+//     wordsAndBreaks.breaks
+//   } breaks, formatted as <break time='X.Xs'/>, and lasting between 1 and  3 seconds each time, as is appropriate, to create a more realistic and calming delivery, especially for meditations.  No two breaks should have the same duration and they should always be on their own in a paragraph.
+//   • Total pause time should be around ${wordsAndBreaks.totalPauseTime} seconds.
+//   • Affirmations: Include affirmations appropriate to the meditation type. These should be brief, realistic, and uplifting. Integrate them naturally during the guided portion. Avoid listing them — instead, weave them into the flow. For example:
+//  ${details?.affirmations.map((a) => a)}
+
+//   Only output the final meditation script, formatted as plain text with the <break time='X.Xs'/> tags each as its own paragraph. Do not include explanations or formatting notes.`;
+
+//   // Map language codes to full language names for the prompt
+//   const languageNames: Record<string, string> = {
+//     en: "English",
+//     es: "Spanish",
+//     fr: "French",
+//     de: "German",
+//     it: "Italian",
+//     pt: "Portuguese",
+//   };
+//   const languageName = languageNames[language] || "English";
+//   console.log(prompt);
+//   const response = await axios.post(
+//     "https://api.openai.com/v1/chat/completions",
+//     {
+//       model: "gpt-4",
+//       messages: [
+//         {
+//           role: "system",
+//           content: prompt,
+//         },
+//         {
+//           role: "user",
+//           content: `Please generate a ${duration}-minute ${meditationType} meditation`,
+//         },
+//       ],
+//       temperature: 0.7,
+//     },
+//     {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${OPENAI_API_KEY}`,
+//       },
+//     }
+//   );
+
+//   const content = response.data.choices[0].message.content.trim();
+//   console.log("SCRIPT:", content);
+//   return {
+//     title: `${meditationType} Meditation`,
+//     content,
+//   };
+// };
+
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
+
+export interface MeditationResponse {
+  title: string;
+  content: string;
+  audioUrl?: string;
+  downloadLink?: string;
+  audioBlob?: Blob;
+}
+
+// ---------- Azure TTS ----------
+export const generateAudio = async (rawText: string): Promise<Blob> => {
+  const key = import.meta.env.VITE_AZURE_TTS_KEY;
+  const region = "uksouth";
+
+  const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
+  const ssml = `
+    <speak version="1.0" xml:lang="en-US">
+      <voice name="en-GB-OllieMultilingualNeural">
+        ${rawText}
+      </voice>
+    </speak>`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Ocp-Apim-Subscription-Key": key,
+      "Content-Type": "application/ssml+xml",
+      "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
+    },
+    body: ssml,
+  });
+
+  if (!response.ok) {
+    throw new Error("Azure TTS failed: " + (await response.text()));
   }
+
+  return await response.blob();
 };
 
+// ---------- Generate Meditation Script ----------
 export const generateScript = async (
   meditationType: string,
   duration: string,
@@ -183,68 +285,91 @@ export const generateScript = async (
   const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
   const type = PracticeTypes.find((p) => p.name === practiceType.name);
   const wordsAndBreaks = mapDurationToWords[duration as keyof typeof mapDurationToWords];
+
   const prompt = `You are a skilled meditation script writer. Write a calming, natural-sounding guided meditation script in English (UK) that matches the following parameters:
-
-
-  • Meditation Type: ${meditationType} for ${practiceType} - which is ${type?.description}
+  • Meditation Type: ${meditationType} for ${practiceType.name} - ${type?.description}
   • Overview: ${details?.description}
   • Tone: Warm, gentle, and soothing  
-  • Pacing: Moderate to slow, suitable for audio narration  
-  • Structure: Introduction → Gentle body and breath awareness → Thematic guided section → Closing wind-down  
-  • Duration: ${wordsAndBreaks.duration} minutes (use approximately ${wordsAndBreaks.words} words)  
-  • Audience: General adult audience, no spiritual or religious language  
-  • Voice: The script should be suitable for Eleven Labs voice ${details?.voice?.name} with ID ${details?.voice?.id} 
-  • Make the meditation unique.  
-  • Content repetition: Keep repetition low or none. Do not repeat affirmations, phrases, or transitions unless purposefully reflective.  
-  • Identify natural pause points (after important thoughts, transitions, affirmations, breath cues, etc.).
-  • Insert approximately ${
-    wordsAndBreaks.breaks
-  } breaks, formatted as <break time='X.Xs'/>, and lasting between 1 and  3 seconds each time, as is appropriate, to create a more realistic and calming delivery, especially for meditations.  No two breaks should have the same duration and they should always be on their own in a paragraph.
-  • Total pause time should be around ${wordsAndBreaks.totalPauseTime} seconds.
-  • Affirmations: Include affirmations appropriate to the meditation type. These should be brief, realistic, and uplifting. Integrate them naturally during the guided portion. Avoid listing them — instead, weave them into the flow. For example:
- ${details?.affirmations.map((a) => a)}  
-  
-  Only output the final meditation script, formatted as plain text with the <break time='X.Xs'/> tags each as its own paragraph. Do not include explanations or formatting notes.`;
+  • Duration: ${wordsAndBreaks.duration} minutes (~${wordsAndBreaks.words} words)  
+  • Voice: Suitable for voice ${details?.voice?.name} 
+  • Insert ${wordsAndBreaks.breaks} natural breaks <break time='X.Xs'/>
+  • Include affirmations: ${details?.affirmations.join(", ")}
+  Only output the final meditation script, formatted as plain text with <break> tags each in its own paragraph.`;
 
-  // Map language codes to full language names for the prompt
-  const languageNames: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    fr: "French",
-    de: "German",
-    it: "Italian",
-    pt: "Portuguese",
-  };
-  const languageName = languageNames[language] || "English";
-  console.log(prompt);
   const response = await axios.post(
     "https://api.openai.com/v1/chat/completions",
     {
       model: "gpt-4",
       messages: [
-        {
-          role: "system",
-          content: prompt,
-        },
-        {
-          role: "user",
-          content: `Please generate a ${duration}-minute ${meditationType} meditation`,
-        },
+        { role: "system", content: prompt },
+        { role: "user", content: `Please generate a ${duration}-minute ${meditationType} meditation` },
       ],
       temperature: 0.7,
     },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-    }
+    { headers: { "Content-Type": "application/json", Authorization: `Bearer ${OPENAI_API_KEY}` } }
   );
 
   const content = response.data.choices[0].message.content.trim();
-  console.log("SCRIPT:", content);
-  return {
-    title: `${meditationType} Meditation`,
-    content,
-  };
+
+  return { title: `${meditationType} Meditation`, content };
+};
+
+// ---------- Main Meditation Generator ----------
+export const generateMeditation = async (
+  meditationType: string,
+  duration: string,
+  language: string = "en",
+  practiceType: { description: string; name: string },
+  userId: string
+): Promise<MeditationResponse> => {
+  try {
+    console.log("generating");
+    const meditationData = await generateScript(meditationType, duration, language, practiceType);
+    console.log("meditationData", meditationData);
+    // Generate audio via Azure TTS
+    const audioBlob = await generateAudio(meditationData.content);
+    console.log("BLOB", audioBlob);
+    // Convert Blob -> base64 for Firebase upload
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    let binary = "";
+    const bytes = new Uint8Array(arrayBuffer);
+    const chunkSize = 0x8000; // 32KB chunks
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, i + chunkSize);
+      binary += String.fromCharCode(...chunk);
+    }
+    const base64Audio = btoa(binary);
+
+    // Upload to Firebase Cloud Function
+    const storageEndoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/uploadAudio";
+    // const storageEndoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api";
+    const uploadResponse = await axios.post(storageEndoint, {
+      audioBase64: base64Audio,
+      title: `${meditationData.title}`,
+      content: meditationData.content,
+      generatedBy: userId,
+      type: meditationType,
+      language,
+      style: practiceType.name,
+      bespokeMed: true,
+      generatedDate: Date.now(),
+    });
+
+    const audioUrl = uploadResponse.data.audioUrl;
+    console.log({
+      ...meditationData,
+      audioUrl,
+      downloadLink: audioUrl,
+      audioBlob,
+    });
+    return {
+      ...meditationData,
+      audioUrl,
+      downloadLink: audioUrl,
+      audioBlob,
+    };
+  } catch (error) {
+    console.error("Failed to generate meditation:", error);
+    throw new Error("Failed to generate meditation. Please try again later.");
+  }
 };

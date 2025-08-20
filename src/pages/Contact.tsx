@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, isValidElement } from "react";
 import "./Contact.css";
 import useSendMail from "../hooks/useSendEmail";
 
@@ -37,13 +37,13 @@ const Contact: React.FC = () => {
     setFormData({ name: "", email: "", phone: "", message: "" });
   };
 
-  console.log("sent", sent);
-
   const getCtaLabel = () => {
     if (sending) return "SENDING MESSAGE";
     if (!sending && !sent) return "SEND MESSAGE";
     if (sent) return "THANKYOU FOR YOUR MESSAGE";
   };
+
+  const isValid = () => formData.email && formData.name && formData.message;
 
   return (
     <div className='contact-page'>
@@ -53,7 +53,9 @@ const Contact: React.FC = () => {
 
         <form onSubmit={handleSubmit} className='contact-form'>
           <div className='form-group'>
-            <label htmlFor='name'>Full Name</label>
+            <label htmlFor='name'>
+              Full Name<sup>*</sup>
+            </label>
             <input
               type='text'
               id='name'
@@ -66,7 +68,9 @@ const Contact: React.FC = () => {
           </div>
 
           <div className='form-group'>
-            <label htmlFor='email'>Email Address</label>
+            <label htmlFor='email'>
+              Email Address<sup>*</sup>
+            </label>
             <input
               type='email'
               id='email'
@@ -91,7 +95,9 @@ const Contact: React.FC = () => {
           </div>
 
           <div className='form-group'>
-            <label htmlFor='message'>Your Message</label>
+            <label htmlFor='message'>
+              Your Message<sup>*</sup>
+            </label>
             <textarea
               id='message'
               name='message'
@@ -102,7 +108,7 @@ const Contact: React.FC = () => {
               placeholder='Type your message here...'
             ></textarea>
           </div>
-          <button disabled={sending || sent} type='submit' className='submit-btn'>
+          <button disabled={sending || sent || !isValid()} type='submit' className='submit-btn'>
             {getCtaLabel()}
           </button>
         </form>

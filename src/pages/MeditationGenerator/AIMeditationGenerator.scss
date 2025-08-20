@@ -403,6 +403,9 @@ input[type="number"]:focus {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .ai-meditation-generator {
+    padding: 40px 0;
+  }
   .generator-form,
   .results-container {
     padding: 0.5rem;
@@ -525,7 +528,7 @@ input[type="number"]:focus {
 
 .slider-marks {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
   font-size: 0.9rem;
   padding: 0 2px;
 }
@@ -533,22 +536,31 @@ input[type="number"]:focus {
 .slider-markers {
   display: flex;
   justify-content: space-between;
+  padding: 0 16px;
 }
 
 .marker {
   font-size: 0.7rem;
+  width: 25%;
+  // text-align: center;
 }
 
 .marker:nth-child(2) {
   text-align: center;
-  transform: translateX(50%);
-  width: max-content;
+  transform: translateX(-14%);
+  // width: max-content;
 }
 
 .marker:nth-child(3) {
   text-align: center;
-  transform: translateX(50%);
-  width: max-content;
+  transform: translateX(16%);
+  // width: max-content;
+}
+.marker:nth-child(4) {
+  // text-align: center;
+  // transform: translateX(12%);
+  text-align: right;
+  // width: max-content;
 }
 
 body,

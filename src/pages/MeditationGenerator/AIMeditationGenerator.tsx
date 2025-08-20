@@ -55,16 +55,6 @@ const AIMeditationGenerator: React.FC = () => {
     { value: "pt", label: "Portuguese" },
   ];
 
-  // Get filtered voices based on selected language
-  const filteredVoices = VOICE_OPTIONS.filter((voice) => voice.supportedLanguages.includes(selectedLanguage));
-
-  // // Reset selected voice if it's not in the filtered list
-  // useEffect(() => {
-  //   if (filteredVoices.length > 0 && !filteredVoices.some((voice) => voice.id === selectedVoice)) {
-  //     setSelectedVoice(filteredVoices[0].id);
-  //   }
-  // }, [selectedLanguage, filteredVoices]);
-
   useEffect(() => {
     setDuration(allowedValues[durationIndex]);
   }, [durationIndex]);
@@ -208,6 +198,7 @@ const AIMeditationGenerator: React.FC = () => {
         type: "success",
         isLoading: false,
         autoClose: 3000,
+        className: "toast",
       });
 
       // Scroll to the generated content
@@ -224,6 +215,7 @@ const AIMeditationGenerator: React.FC = () => {
         type: "error",
         isLoading: false,
         autoClose: 5000,
+        className: "toast",
       });
     } finally {
       setIsGenerating(false);
@@ -239,7 +231,6 @@ const AIMeditationGenerator: React.FC = () => {
           Bespoke Meditation Generator craft the perfect guided meditation for you.
         </p>
       </div>
-
       <form onSubmit={handleSubmit} className='generator-form'>
         <div className='form-group'>
           <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
@@ -344,16 +335,13 @@ const AIMeditationGenerator: React.FC = () => {
           )}
         </div>
       </form>
-      {/* {currentUser && currentUser?.isGod ? (
-        <ScriptLab
-          duration={duration}
-          selectedLanguage={selectedLanguage}
-          meditationType={meditationType}
-          practiceType={practiceType}
-        />
-      ) : (
-        <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
-      )} */}
+
+      {/* <ScriptLab
+        duration={duration}
+        selectedLanguage={selectedLanguage}
+        meditationType={meditationType}
+        practiceType={practiceType}
+      /> */}
 
       {isGenerating && (
         <div className='loading-animation'>
@@ -398,10 +386,10 @@ const AIMeditationGenerator: React.FC = () => {
                 </div>
 
                 <div className='progress-container flex-1 ml-4'>
-                  <div className='time-display flex justify-between text-sm text-gray-400 mb-1'>
+                  {/* <div className='time-display flex justify-between text-sm text-gray-400 mb-1'>
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(parseInt(duration))}</span>
-                  </div>
+                  </div> */}
                   <div className='progress-bar bg-gray-700 rounded-full h-2 w-full overflow-hidden'>
                     <div
                       className='progress bg-orange-500 h-full transition-all duration-300'
@@ -420,7 +408,9 @@ const AIMeditationGenerator: React.FC = () => {
                     ? "Saved to Dashboard"
                     : "Save to Dashboard"}
                 </button> */}
-                <span className='message'>Your meditation has been saved to the My Meditations tab in dashboard</span>
+                <span className='message'>
+                  Your meditation has been saved to the Bespoke Meditations tab in dashboard
+                </span>
               </div>
 
               {!currentUser && (

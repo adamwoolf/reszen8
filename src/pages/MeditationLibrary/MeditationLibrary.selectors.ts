@@ -16,8 +16,10 @@ export const getMeditationsWithLikes = createSelector(
       id: sys.id,
       likes: likes?.find((l) => l.id === sys.id)?.likes,
       content: fields.content,
-      category: categoriser(`${fields.title}`),
+      category: categoriser(`${fields.content}`),
     }));
+
+    console.log(staticMeds);
     const normalized = Object.values(meditations)
       .reverse()
       ?.map((med: Meditation) => {

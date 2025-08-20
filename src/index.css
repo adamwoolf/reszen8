@@ -78,7 +78,7 @@ main {
   color: var(--text-color);
 }
 
-div {
+div:not(.toast) {
   background-color: var(--bg-color);
 } /* Update card styles */
 .card,
@@ -99,6 +99,10 @@ h6 {
   margin-bottom: 1rem;
   line-height: 1.2;
   color: var(--primary-color);
+}
+
+.toast {
+  background-color: white;
 }
 
 h1 {

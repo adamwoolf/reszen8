@@ -195,7 +195,7 @@ const Navbar: React.FC = () => {
                   {!currentUser && (
                     <>
                       <li>
-                        <NavLink to='/login' className={getNavLinkClass}>
+                        <NavLink className='nav-link login-btn' to='/login'>
                           Login
                         </NavLink>
                       </li>

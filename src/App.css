@@ -415,7 +415,7 @@ div {
   color: white;
 }
 
-.signup-btn {
+.login-btn {
   background-color: var(--primary-color);
   color: #000000;
   padding: 0.5rem 1rem;
@@ -425,9 +425,19 @@ div {
   white-space: nowrap;
 }
 
-.signup-btn:hover {
+@media (max-width: 768px) {
+  .signup-btn {
+    display: none;
+  }
+}
+
+.login-btn:hover {
   background-color: var(--secondary-color);
-  color: white;
+  /* color: white; */
+  color: black !important;
+}
+
+.login-btn {
 }
 
 /* Footer Styles */

@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import { useSelector } from "react-redux";
 import { CONTENT_TYPES } from "../../constants";
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [myMeds, setMyMeds] = useState([]);
   const data = useSelector((state) => state.content.meditations);
   const [allItems, setAllItems] = useState({});
+  const tabsRef = useRef();
 
   // // Redirect to login if not authenticated
   // if (!currentUser) {
@@ -158,6 +159,62 @@ const Dashboard = () => {
       </div>
     );
   };
+  const [showLeftChevron, setShowLeftChevron] = useState(false);
+  const [showRightChevron, setShowRightChevron] = useState(false);
+
+  const updateChevronVisibility = () => {
+    if (!tabsRef.current) return;
+
+    const container = tabsRef.current;
+    const firstTab = container.firstElementChild as HTMLElement;
+    const lastTab = container.lastElementChild as HTMLElement;
+
+    const isFirstVisible = container.scrollLeft <= firstTab.offsetLeft;
+    const isLastVisible = container.scrollLeft + container.offsetWidth >= lastTab.offsetLeft + lastTab.offsetWidth - 10;
+    console.log(isFirstVisible);
+    console.log("last visible", isLastVisible);
+    setShowLeftChevron(!isFirstVisible);
+    setShowRightChevron(!isLastVisible);
+  };
+
+  useEffect(() => {
+    const container = tabsRef.current;
+    if (!container) return;
+
+    updateChevronVisibility(); // Initial check
+
+    container.addEventListener("scroll", updateChevronVisibility);
+    window.addEventListener("resize", updateChevronVisibility);
+
+    return () => {
+      container.removeEventListener("scroll", updateChevronVisibility);
+      window.removeEventListener("resize", updateChevronVisibility);
+    };
+  }, []);
+
+  const scrollTabs = (direction: "left" | "right") => {
+    if (!tabsRef.current) return;
+
+    const container = tabsRef.current;
+
+    if (direction === "right") {
+      const lastTab = container.lastElementChild as HTMLElement;
+      if (lastTab) {
+        const scrollLeft = lastTab.offsetLeft + lastTab.offsetWidth - container.offsetWidth;
+
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: "smooth",
+        });
+      }
+    } else {
+      // Scroll all the way to the left
+      container.scrollTo({
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <div className='dashboard-container'>
@@ -165,26 +222,48 @@ const Dashboard = () => {
       <div className='dashboard__search-container'>
         <Search dashboard text='Search Dashboard Items' />
       </div>
-      <div className='tabs mb-8'>
-        <button className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`} onClick={() => setActiveTab("myMeds")}>
-          Bespoke Meditations
-          {myMeds?.length > 0 && <span className='tab-count'>{myMeds?.length}</span>}
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
-          onClick={() => setActiveTab("meditations")}
-        >
-          Library Meditations
-          {savedItems?.meditations?.length > 0 && <span className='tab-count'>{savedItems?.meditations.length}</span>}
-        </button>
+      <div className='tabs__container'>
+        {showLeftChevron && (
+          <button onClick={() => scrollTabs("left")} className='tabs__arrow tabs__arrow--left'>
+            <FaChevronLeft />
+          </button>
+        )}
+        <div ref={tabsRef} className='tabs'>
+          <button
+            className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
+            onClick={() => setActiveTab("myMeds")}
+          >
+            Bespoke Meditations
+            {myMeds?.length > 0 && <span className='tab-count'>{myMeds?.length}</span>}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
+            onClick={() => setActiveTab("meditations")}
+          >
+            Library Meditations
+            {savedItems?.meditations?.length > 0 && <span className='tab-count'>{savedItems?.meditations.length}</span>}
+          </button>
 
-        <button
-          className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
-          onClick={() => setActiveTab("publications")}
-        >
-          My Publications
-          {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
-        </button>
+          <button
+            className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
+            onClick={() => setActiveTab("publications")}
+          >
+            My Publications
+            {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
+            onClick={() => setActiveTab("publications")}
+          >
+            My Playlist
+            <span className='tab-count'>0</span>
+          </button>
+        </div>
+        {showRightChevron && (
+          <button onClick={() => scrollTabs("right")} className='tabs__arrow tabs__arrow--right'>
+            <FaChevronRight />
+          </button>
+        )}
       </div>
 
       {renderTabContent()}

@@ -10,7 +10,6 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 80px);
-  min-height: 700px;
   border: 1px solid var(--border-color);
   position: relative;
 
@@ -93,20 +92,17 @@
 }
 
 .prompts-toggle {
-  display: block;
+  // display: block;
   width: calc(100% - 30px);
   max-width: 900px;
-  padding: 12px 20px;
+  // padding: 12px 20px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-color);
-  font-size: 0.95rem;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
-  margin: 40px auto;
-  box-sizing: border-box;
 
   &--active {
     background-color: orange;
@@ -133,6 +129,8 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
   box-sizing: border-box;
+  backdrop-filter: blur(40px);
+  background-color: rgba(var(--bg-color), 0.7) !important;
 }
 
 .prompt-section {

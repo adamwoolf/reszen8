@@ -35,8 +35,36 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #374151;
   padding-bottom: 0.5rem;
+  &__container {
+    position: relative;
+  }
+
+  &__arrow {
+    position: absolute;
+    top: 0;
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    height: 100%;
+    z-index: 100;
+
+    &:hover {
+      background-color: transparent;
+    }
+
+    // @media (min-width: 768px) {
+    //   display: none;
+    // }
+    &--left {
+      left: -20px;
+      right: auto;
+    }
+
+    &--right {
+      right: -20px;
+      left: auto;
+    }
+  }
 }
 
 .tab-btn {
@@ -56,7 +84,7 @@
 }
 
 .tab-btn.active {
-  color: #f97316;
+  color: var(--primary-color);
   background: rgba(249, 115, 22, 0.1);
   font-weight: 600;
 }

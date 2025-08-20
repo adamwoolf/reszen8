@@ -38,6 +38,7 @@ const MeditationCard = ({
               {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
             </button>
           </div>
+
           <div className='publication__card-icon-container'>
             <Icon type={item.category[0].category} />
           </div>

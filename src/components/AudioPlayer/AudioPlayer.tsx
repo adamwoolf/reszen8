@@ -35,12 +35,16 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     };
   }, [audioUrl]);
 
+  const [wasManuallyPlayed, setWasManuallyPlayed] = useState(false);
+
   const togglePlayPause = () => {
     if (isPlaying) {
       audioRef.current?.pause();
       dispatch(setCurrentAudio("")); // stop globally
+      setWasManuallyPlayed(false);
     } else {
       dispatch(setCurrentAudio(audioUrl)); // request to play — let effect handle playback
+      setWasManuallyPlayed(true);
     }
   };
 
@@ -48,8 +52,8 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (currentAudio === audioUrl) {
-      // We're the selected player, so play
+    if (currentAudio === audioUrl && wasManuallyPlayed) {
+      // Only auto-play if it was manually triggered
       audio
         .play()
         .then(() => {
@@ -60,11 +64,10 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
           setIsPlaying(false);
         });
     } else {
-      // Not the selected player, pause
       audio.pause();
       setIsPlaying(false);
     }
-  }, [currentAudio, audioUrl]);
+  }, [currentAudio, audioUrl, wasManuallyPlayed]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
@@ -92,7 +95,6 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
 
   return (
     <div className='audio-player__inner'>
-
       <audio
         ref={audioRef}
         src={audioUrl}
