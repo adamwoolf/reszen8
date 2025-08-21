@@ -547,16 +547,16 @@ input[type="number"]:focus {
 
 .marker:nth-child(2) {
   text-align: center;
-  transform: translateX(-14%);
+  // transform: translateX(-14%);
   // width: max-content;
 }
 
+// .marker:nth-child(3) {
+//   text-align: center;
+//   transform: translateX(16%);
+//   // width: max-content;
+// }
 .marker:nth-child(3) {
-  text-align: center;
-  transform: translateX(16%);
-  // width: max-content;
-}
-.marker:nth-child(4) {
   // text-align: center;
   // transform: translateX(12%);
   text-align: right;
@@ -642,5 +642,19 @@ html {
   }
   100% {
     transform: translateX(140vw);
+  }
+}
+
+.static-med-panel {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid orange;
+  border-radius: 5px;
+  padding: 20px;
+  input,
+  textarea {
+    margin-bottom: 20px;
+    background-color: whitesmoke;
+    color: black;
   }
 }

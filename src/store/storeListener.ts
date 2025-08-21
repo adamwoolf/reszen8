@@ -37,6 +37,10 @@ export async function getMeditationItemsREST() {
   return fetchFromFirebase("meditations");
 }
 
+export async function getStaticMeditationsREST() {
+  return fetchFromFirebase("meditations-static");
+}
+
 export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispatch) => {
   Object.entries(paths).forEach(([key, path]) => {
     const dbRef = ref(db, path);

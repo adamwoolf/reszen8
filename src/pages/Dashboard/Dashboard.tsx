@@ -87,6 +87,7 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = allItems[activeTab];
+
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -104,56 +105,74 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data?.reverse().map((item, i) => (
-              <div key={`dashboard-item ${i}`} className='feature-card publication__card'>
-                <div className='publications__card-content dashboard__card-inner'>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <div className='flex items-center gap-4 text-sm text-gray-400 mb-4'>
-                      {/* {item.createdAt && (
+            {data?.map((item, i) => {
+              function isToday(timestamp) {
+                const today = new Date();
+                const dateToCheck = new Date(timestamp);
+
+                return (
+                  today.getFullYear() === dateToCheck.getFullYear() &&
+                  today.getMonth() === dateToCheck.getMonth() &&
+                  today.getDate() === dateToCheck.getDate()
+                );
+              }
+              return (
+                <div key={`dashboard-item-${item.id}`} className='feature-card publication__card'>
+                  <div className='publications__card-content dashboard__card-inner'>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <div>
+                        {/* {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
                       )} */}
-                    </div>
-                  </div>
-                  <div className='dashboard-buttons'>
-                    {item.audioUrl && (
-                      <div className='mb-2'>
-                        <AudioPlayer audioUrl={item.audioUrl} />
+                        {item.style && <p>{item.style}</p>}
+                        {item.createdAt && (
+                          <span className='dashboard__date'>
+                            Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
+                          </span>
+                        )}
                       </div>
-                    )}
-                    {activeTab === "publications" && (
-                      <Link className='read-link' to={`/publications/${item.slug}`}>
-                        <span className='read-link-text'> Read</span>
-                        <FaArrowRight />{" "}
-                      </Link>
-                    )}
-
-                    <div className='flex gap-3'>
-                      {activeTab !== "myMeds" && (
-                        <button
-                          onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
-                          className='dashboard-button'
-                        >
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            className='h-4 w-4'
-                            viewBox='0 0 20 20'
-                            fill='currentColor'
-                          >
-                            <path
-                              fillRule='evenodd'
-                              d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                              clipRule='evenodd'
-                            />
-                          </svg>
-                          <span>Remove</span>
-                        </button>
+                    </div>
+                    <div className='dashboard-buttons'>
+                      {item.audioUrl && (
+                        <div className='mb-2'>
+                          <AudioPlayer audioUrl={item.audioUrl} />
+                        </div>
                       )}
+                      {activeTab === "publications" && (
+                        <Link className='read-link' to={`/publications/${item.slug}`}>
+                          <span className='read-link-text'> Read</span>
+                          <FaArrowRight />{" "}
+                        </Link>
+                      )}
+
+                      <div className='flex gap-3'>
+                        {activeTab !== "myMeds" && (
+                          <button
+                            onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
+                            className='dashboard-button'
+                          >
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='h-4 w-4'
+                              viewBox='0 0 20 20'
+                              fill='currentColor'
+                            >
+                              <path
+                                fillRule='evenodd'
+                                d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
+                                clipRule='evenodd'
+                              />
+                            </svg>
+                            <span>Remove</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -171,8 +190,7 @@ const Dashboard = () => {
 
     const isFirstVisible = container.scrollLeft <= firstTab.offsetLeft;
     const isLastVisible = container.scrollLeft + container.offsetWidth >= lastTab.offsetLeft + lastTab.offsetWidth - 10;
-    console.log(isFirstVisible);
-    console.log("last visible", isLastVisible);
+
     setShowLeftChevron(!isFirstVisible);
     setShowRightChevron(!isLastVisible);
   };

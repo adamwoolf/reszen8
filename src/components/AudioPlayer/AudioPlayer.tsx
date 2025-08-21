@@ -5,6 +5,51 @@ import { setCurrentAudio } from "../../store/contentSlice";
 import { getCurrentAudio } from "../../store/contentSelectors";
 import MakeAvailableOfflineButton from "../AvailableOfflineCta";
 
+function NowPlaying() {
+  return (
+    <div className='now-playing'>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  );
+}
+
+function RadiatingWaves({
+  size = 48, // px
+  color = "#ffffff", // white
+  count = 3, // number of ripples
+  duration = 5, // seconds per ripple
+  isActive = true, // pause/play animation
+  border = 4, // ring stroke width (px)
+}) {
+  // Stagger each circle so they loop seamlessly
+  const circles = Array.from({ length: count });
+
+  return (
+    <div
+      className={`ripple ${!isActive ? "paused" : ""}`}
+      style={{
+        // expose as CSS vars so CSS can read them
+        "--size": `${size}px`,
+        "--color": color,
+        "--duration": `${duration}s`,
+        "--border": `${border}px`,
+      }}
+    >
+      {circles.map((_, i) => (
+        <span
+          key={i}
+          className='circle'
+          style={{
+            animationDelay: `${(duration / count) * i}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -103,17 +148,14 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
         onPause={() => setIsPlaying(false)}
       />
 
-      <button onClick={togglePlayPause} className='dashboard-button audio-btn '>
+      <button
+        onClick={togglePlayPause}
+        className={!isPlaying ? "dashboard-button audio-btn " : "dashboard-button audio-btn audio-btn--playing"}
+      >
         {isPlaying ? (
           <>
-            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
-              <path
-                fillRule='evenodd'
-                d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z'
-                clipRule='evenodd'
-              />
-            </svg>
-            <span>Pause</span>
+            <RadiatingWaves />
+            {/* <span>Pause</span> */}
           </>
         ) : (
           <>
@@ -124,7 +166,7 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
                 clipRule='evenodd'
               />
             </svg>
-            <span>Play</span>
+            {/* <span>Play</span> */}
           </>
         )}
       </button>

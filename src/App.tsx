@@ -39,9 +39,14 @@ import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
-import { getPublications, getMeditationItems } from "./contentful";
+import { getPublications } from "./contentful";
 import { useDispatch } from "react-redux";
-import { startDatabaseListeners, getMeditationItemsREST, getMetaREST } from "./store/storeListener";
+import {
+  startDatabaseListeners,
+  getMeditationItemsREST,
+  getMetaREST,
+  getStaticMeditationsREST,
+} from "./store/storeListener";
 import { setPublications, setStaticMeditations, setMeta, setMeditations } from "./store/contentSlice";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 
@@ -309,7 +314,6 @@ function App() {
 
   useEffect(() => {
     getPublications().then((data) => dispatch(setPublications(data.items)));
-    getMeditationItems().then((data) => dispatch(setStaticMeditations(data)));
   }, []);
 
   useEffect(() => {
@@ -319,6 +323,10 @@ function App() {
 
     getMeditationItemsREST().then((data) => {
       if (data) dispatch(setMeditations(data));
+    });
+    getStaticMeditationsREST().then((data) => {
+      console.log(data);
+      if (data) dispatch(setStaticMeditations(data));
     });
   }, []);
 

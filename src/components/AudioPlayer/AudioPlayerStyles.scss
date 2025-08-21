@@ -5,10 +5,76 @@
 
 .audio-btn {
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 15px;
+  &--playing {
+    animation: glowing var(--duration, 2s) infinite ease-out;
+  }
 }
 
 .audio-player {
   &__inner {
     background-color: transparent;
+  }
+}
+
+.ripple {
+  position: relative;
+  width: var(--size, 48px);
+  height: var(--size, 48px);
+}
+
+.ripple .circle {
+  position: absolute;
+  inset: 0;
+  border: var(--border, 2px) solid var(--color, #fff);
+  border-radius: 50%;
+  transform: scale(0.1);
+  opacity: 0.9;
+  animation: ripple var(--duration, 2s) infinite ease-out;
+  box-sizing: border-box;
+  /* Improves animation performance on mobile/GPU */
+  will-change: transform, opacity;
+}
+
+.ripple.paused .circle {
+  animation-play-state: paused;
+}
+
+@keyframes glowing {
+  0% {
+    background-color: rgb(252, 170, 19);
+  }
+  50% {
+    background-color: rgb(226, 134, 12);
+  }
+  100% {
+    background-color: orange;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .ripple .circle {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
   }
 }

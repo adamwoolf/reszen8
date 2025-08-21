@@ -9,17 +9,6 @@ export const getMeditationsWithLikes = createSelector(
   (meditations: any[], likes: Like[], staticMs): Meditation[] => {
     if (!meditations && !staticMs) return [];
 
-    const staticMeds: Meditation[] = staticMs?.map(({ fields, sys }: Meditation) => ({
-      audioUrl: fields?.audioFile?.fields?.file?.url,
-      type: fields.type,
-      title: fields.title,
-      id: sys.id,
-      likes: likes?.find((l) => l.id === sys.id)?.likes,
-      content: fields.content,
-      category: categoriser(`${fields.content}`),
-    }));
-
-    console.log(staticMeds);
     const normalized = Object.values(meditations)
       .reverse()
       ?.map((med: Meditation) => {
@@ -31,6 +20,20 @@ export const getMeditationsWithLikes = createSelector(
           category: categoriser(`${med.title}-${med.body}`),
         };
       });
+
+    const staticMeds = Object.keys(staticMs)
+      .reverse()
+      ?.map((key: string) => {
+        return {
+          ...staticMs[key],
+          contentType: "meditation",
+          id: staticMs[key].audioUrl,
+          likes: likes?.find((l) => l.id === staticMs[key].audioUrl)?.likes || 0,
+          category: categoriser(`${staticMs[key].title}-${staticMs[key].body}`),
+          firebaseId: key,
+        };
+      });
+
     return [...staticMeds, ...normalized].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   }
 );

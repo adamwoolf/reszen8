@@ -9,6 +9,7 @@
   position: relative;
   overflow: hidden;
   flex-direction: column;
+  margin-left: -30px;
 }
 
 /* Concentric circles */
@@ -54,7 +55,7 @@
 .loader-text--top {
   position: absolute;
   color: #ff9900;
-  font-size: 1.9rem;
+  font-size: 0.9rem;
   top: 120px;
   text-align: center;
   letter-spacing: 1px;

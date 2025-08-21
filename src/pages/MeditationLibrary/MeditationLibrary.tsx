@@ -21,10 +21,6 @@ const DigitalLibrary = () => {
   const libraryMeditations = useSelector(getMeditationsWithLikes);
   const [displayMeds, setDisplayMeds] = useState(libraryMeditations);
 
-  // useEffect(() => {
-  //   if (libraryMeditations && !displayMeds?.length) setDisplayMeds(libraryMeditations);
-  // }, [setDisplayMeds, displayMeds, libraryMeditations]);
-
   const searchText = (e) => {
     const query = e.target.value;
     setSearch(query);
@@ -41,11 +37,6 @@ const DigitalLibrary = () => {
     setSearch("");
     setDisplayMeds(libraryMeditations);
   };
-  // Redirect to login if not authenticated
-  // if (!currentUser) {
-  //   navigate("/login");
-  //   return null;
-  // }
 
   const handleAddItem = (item: any) => {
     const wasAdded = addItem(item);
@@ -77,11 +68,21 @@ const DigitalLibrary = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {displayMeds?.map((item, i) => (
-            <MeditationCard key={item.id + i} handleAddItem={handleAddItem} item={item} i={i} />
+            <MeditationCard key={item.id} handleAddItem={handleAddItem} item={item} i={i} />
           ))}
         </div>
       </div>
     );
+  };
+
+  const showStatic = () => {
+    setSearch("static only");
+    setDisplayMeds(libraryMeditations.filter((m) => m.staticMed));
+  };
+
+  const showNonVerified = () => {
+    setSearch("non - verified");
+    setDisplayMeds(libraryMeditations.filter((m) => m.staticMed && !m.verified));
   };
 
   const renderSearch = () => {
@@ -96,9 +97,19 @@ const DigitalLibrary = () => {
         <span className='meditation-library__search-results'>
           Showing {displayMeds.length} of {libraryMeditations?.length}
         </span>
-        <button className='publications__filter' onClick={showAll}>
-          Show all
-        </button>
+        {search.length > 0 && (
+          <button className='publications__filter' onClick={showAll}>
+            Show all
+          </button>
+        )}
+        {currentUser && currentUser.isGod && (
+          <div style={{ display: "flex" }}>
+            <button style={{ marginRight: 12 }} onClick={showStatic}>
+              Only Static
+            </button>
+            <button onClick={showNonVerified}>Only Non-verified</button>
+          </div>
+        )}
       </div>
     );
     {

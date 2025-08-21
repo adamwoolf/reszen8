@@ -2,15 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { v4 as uuidv4 } from "uuid";
-import { generateMeditation, generateScript } from "../../services/aiMeditationService";
-import { convertTextToSpeech, VOICE_OPTIONS } from "../../services/ttsService";
+import { generateMeditation, generateScript, generateStaticMedFromScript } from "../../services/aiMeditationService";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
 import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "./Popup";
-
+import LoadingScene from "../../components/LoadingScene/LoadingScene";
+import { getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
+import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 interface MeditationState {
   title: string;
   content: string;
@@ -23,7 +26,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [meditationType, setMeditationType] = useState("Mindfulness");
   // const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [practiceType, setPracticeType] = useState(PracticeTypes[0]);
+  const [practiceType, setPracticeType] = useState(PracticeTypes[0].name);
   const allowedValues = Object.keys(mapDurationToWords);
 
   const [duration, setDuration] = useState(allowedValues[0]);
@@ -37,11 +40,14 @@ const AIMeditationGenerator: React.FC = () => {
   const { currentUser } = useAuth();
   const [showPopup, setShowPopup] = useState("");
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
-
+  const dispatch = useDispatch();
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Static Med generation data
+  const [script, setScript] = useState("");
+  const [title, setTitle] = useState("");
   // Hooks
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
@@ -58,13 +64,6 @@ const AIMeditationGenerator: React.FC = () => {
   useEffect(() => {
     setDuration(allowedValues[durationIndex]);
   }, [durationIndex]);
-
-  // Format time in seconds to MM:SS
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
 
   // Clean up on unmount
   useEffect(() => {
@@ -109,7 +108,7 @@ const AIMeditationGenerator: React.FC = () => {
         }
       } catch (e) {
         console.error("Error playing audio:", e);
-        toast.error("Failed to play audio. Please try again.");
+        // toast.error("Failed to play audio. Please try again.");
       }
     }
     setIsPlaying(!isPlaying);
@@ -147,10 +146,6 @@ const AIMeditationGenerator: React.FC = () => {
     e.preventDefault();
     if (isGenerating) return;
 
-    // Get the selected voice details
-    // const selectedVoiceDetails = VOICE_OPTIONS.find((voice) => voice.id === selectedVoice);
-    // console.log("Selected voice details:", selectedVoiceDetails);
-
     // Reset any existing meditation
     setGeneratedMeditation(null);
     setIsPlaying(false);
@@ -163,7 +158,7 @@ const AIMeditationGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    const toastId = toast.loading("Generating your meditation...");
+    // const toastId = toast.loading("Generating your meditation...");
 
     try {
       const result = await generateMeditation(
@@ -191,15 +186,18 @@ const AIMeditationGenerator: React.FC = () => {
         content: result.content,
         audioUrl: result.audioUrl,
       });
+      getMeditationItemsREST().then((data) => {
+        if (data) dispatch(setMeditations(data));
+      });
 
       // Show success message
-      toast.update(toastId, {
-        render: "Meditation generated successfully!",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-        className: "toast",
-      });
+      // toast.update(toastId, {
+      //   render: "Meditation generated successfully!",
+      //   type: "success",
+      //   isLoading: false,
+      //   autoClose: 3000,
+      //   className: "toast",
+      // });
 
       // Scroll to the generated content
       setTimeout(() => {
@@ -210,13 +208,43 @@ const AIMeditationGenerator: React.FC = () => {
       }, 100);
     } catch (error) {
       console.error("Error generating meditation:", error);
-      toast.update(toastId, {
-        render: "Failed to generate meditation. Please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-        className: "toast",
+      // toast.update(toastId, {
+      //   render: "Failed to generate meditation. Please try again.",
+      //   type: "error",
+      //   isLoading: false,
+      //   autoClose: 5000,
+      //   className: "toast",
+      // });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const generateStatic = async () => {
+    if (isGenerating) return;
+
+    setIsGenerating(true);
+    // const toastId = toast.loading("Generating your meditation...");
+
+    try {
+      await generateStaticMedFromScript(title, meditationType, practiceType, script);
+
+      console.log("Meditation generation result:", result);
+
+      getStaticMeditationsREST().then((data) => {
+        if (data) dispatch(setStaticMeditations(data));
       });
+
+      // Show success message
+      // toast.update(toastId, {
+      //   render: "Meditation generated successfully!",
+      //   type: "success",
+      //   isLoading: false,
+      //   autoClose: 3000,
+      //   className: "toast",
+      // });
+    } catch (error) {
+      console.error("Error generating meditation:", error);
     } finally {
       setIsGenerating(false);
     }
@@ -231,122 +259,124 @@ const AIMeditationGenerator: React.FC = () => {
           Bespoke Meditation Generator craft the perfect guided meditation for you.
         </p>
       </div>
-      <form onSubmit={handleSubmit} className='generator-form'>
-        <div className='form-group'>
-          <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
-          <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
-            learn more
-          </button>
-          {showPopup === "size" && (
-            <Popup show={!!showPopup} onClose={() => setShowPopup("")}>
-              {Object.keys(mapDurationToWords).map((key) => {
-                const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
-                return (
-                  <div className='popup__list-item' key={`list-item-${key}`}>
-                    <h4 className='popup__list-title'>{key}</h4>
-                    <p className='popup__list-desc'>{type.description}</p>
-                  </div>
-                );
-              })}
-            </Popup>
-          )}
-          <input
-            className='custom-slider'
-            type='range'
-            min={0}
-            max={allowedValues.length - 1}
-            step={1}
-            value={durationIndex}
-            onChange={(e) => setDurationIndex(Number(e.target.value))}
-            style={{ width: "100%" }}
-          />
-          <div className='slider-markers'>
-            {allowedValues.map((value, index) => (
-              <span key={`marker ${index}`} className='marker'>
-                {value}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className='form-grid'>
-          <div className='form-group form-group-block'>
-            <label htmlFor='meditation-type'>Meditation Type</label>
-
-            <select
-              id='meditation-type'
-              value={meditationType}
-              onChange={(e) => setMeditationType(e.target.value)}
-              disabled={isGenerating}
-            >
-              {MedTypesAndAffirmations.map((type, i) => (
-                <option key={type.title + i} value={type.type}>
-                  {type.type}
-                </option>
-              ))}
-            </select>
-          </div>
-
+      {isGenerating && <LoadingScene />}
+      {!isGenerating && (
+        <form onSubmit={handleSubmit} className='generator-form'>
           <div className='form-group'>
-            <div>
-              <label htmlFor='practiceType'>Practice Type</label>
-              <button type='button' onClick={() => setShowPopup("practiceType")} className='btn--text'>
-                learn more
-              </button>
-            </div>
-            {showPopup === "practiceType" && (
-              <Popup show={showPopup} onClose={() => setShowPopup("")}>
-                {PracticeTypes.map((type, i) => (
-                  <div className='popup__list-item' key={`${type.name}${i}`}>
-                    <h4 className='popup__list-title'>{type.name}</h4>
-                    <p className='popup__list-desc'>{type.description}</p>
-                  </div>
-                ))}
+            <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
+            <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
+              learn more
+            </button>
+            {showPopup === "size" && (
+              <Popup show={!!showPopup} onClose={() => setShowPopup("")}>
+                {Object.keys(mapDurationToWords).map((key) => {
+                  const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
+                  return (
+                    <div className='popup__list-item' key={`list-item-${key}`}>
+                      <h4 className='popup__list-title'>{key}</h4>
+                      <p className='popup__list-desc'>{type.description}</p>
+                    </div>
+                  );
+                })}
               </Popup>
             )}
-            <select
-              id='practiceType'
-              value={practiceType.name}
-              onChange={(e) => setPracticeType(e.target.value)}
-              disabled={isGenerating}
-            >
-              {PracticeTypes.map((lang, i) => (
-                <option key={lang.name + i} value={lang.name}>
-                  <p> {lang.name}</p>
-                </option>
+            <input
+              className='custom-slider'
+              type='range'
+              min={0}
+              max={allowedValues.length - 1}
+              step={1}
+              value={durationIndex}
+              onChange={(e) => setDurationIndex(Number(e.target.value))}
+              style={{ width: "100%" }}
+            />
+            <div className='slider-markers'>
+              {allowedValues.map((value, index) => (
+                <span key={`marker ${index}`} className='marker'>
+                  {value}
+                </span>
               ))}
-            </select>
+            </div>
           </div>
-        </div>
+          <div className='form-grid'>
+            <div className='form-group form-group-block'>
+              <label htmlFor='meditation-type'>Meditation Type</label>
 
-        <div className='flex justify-center mt-8 space-x-8'>
-          {currentUser && currentUser?.isGod ? (
-            <button type='submit' className='generate-btn' disabled={isGenerating}>
-              {isGenerating ? (
-                <>
-                  <span className='spinner'></span>
-                  Generating...
-                </>
-              ) : (
-                "Generate Meditation"
+              <select
+                id='meditation-type'
+                value={meditationType}
+                onChange={(e) => setMeditationType(e.target.value)}
+                disabled={isGenerating}
+              >
+                {MedTypesAndAffirmations.map((type, i) => (
+                  <option key={type.title + i} value={type.type}>
+                    {type.type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className='form-group'>
+              <div>
+                <label htmlFor='practiceType'>Practice Type</label>
+                <button type='button' onClick={() => setShowPopup("practiceType")} className='btn--text'>
+                  learn more
+                </button>
+              </div>
+              {showPopup === "practiceType" && (
+                <Popup show={showPopup} onClose={() => setShowPopup("")}>
+                  {PracticeTypes.map((type, i) => (
+                    <div className='popup__list-item' key={`${type.name}${i}`}>
+                      <h4 className='popup__list-title'>{type.name}</h4>
+                      <p className='popup__list-desc'>{type.description}</p>
+                    </div>
+                  ))}
+                </Popup>
               )}
-            </button>
-          ) : (
-            <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
-          )}
-        </div>
-      </form>
+              <select
+                id='practiceType'
+                value={practiceType.name}
+                onChange={(e) => setPracticeType(e.target.value)}
+                disabled={isGenerating}
+              >
+                {PracticeTypes.map((lang, i) => (
+                  <option key={lang.name + i} value={lang.name}>
+                    <p> {lang.name}</p>
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-      {/* <ScriptLab
-        duration={duration}
-        selectedLanguage={selectedLanguage}
-        meditationType={meditationType}
-        practiceType={practiceType}
-      /> */}
-
-      {isGenerating && (
-        <div className='loading-animation'>
-          <div className='spinner'></div>
-          <p>Creating your personalized meditation...</p>
+          <div className='flex justify-center mt-8 space-x-8'>
+            {currentUser && currentUser?.isGod ? (
+              <button type='submit' className='generate-btn' disabled={isGenerating}>
+                {isGenerating ? (
+                  <>
+                    <span className='spinner'></span>
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Meditation"
+                )}
+              </button>
+            ) : (
+              <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
+            )}
+          </div>
+        </form>
+      )}
+      {/* STATIC MED GEN  */}
+      {currentUser && currentUser.isGod && (
+        <div className='static-med-panel'>
+          <h3>Static Med Gen </h3>
+          <p>Select a Meditation Type and Practice Type above, then add the title and script.</p>
+          {isGenerating ? "api status: GENERATING" : "api status: idle"}
+          <input value={title} placeholder='Enter title for static med' onChange={(e) => setTitle(e.target.value)} />
+          <textarea rows={30} value={script} onChange={(e) => setScript(e.target.value)} />
+          <button disabled={!title || !meditationType || !script || !practiceType} onClick={generateStatic}>
+            {isGenerating ? "GENERATING" : "Generate Static Med"}
+          </button>
         </div>
       )}
 
@@ -361,7 +391,6 @@ const AIMeditationGenerator: React.FC = () => {
                   className='play-btn'
                   role='button'
                   onClick={togglePlayPause}
-                  disabled={isAudioGenerating}
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isAudioGenerating ? (
@@ -386,10 +415,6 @@ const AIMeditationGenerator: React.FC = () => {
                 </div>
 
                 <div className='progress-container flex-1 ml-4'>
-                  {/* <div className='time-display flex justify-between text-sm text-gray-400 mb-1'>
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(parseInt(duration))}</span>
-                  </div> */}
                   <div className='progress-bar bg-gray-700 rounded-full h-2 w-full overflow-hidden'>
                     <div
                       className='progress bg-orange-500 h-full transition-all duration-300'
@@ -400,16 +425,9 @@ const AIMeditationGenerator: React.FC = () => {
               </div>
 
               <div className='flex justify-center mt-10 space-x-8'>
-                {/* <button type='button' className='start-over-btn' onClick={handleStartOver}>
-                  Start Over
-                </button>
-                <button className='generate-btn' onClick={handleSaveToDashboard} disabled={!currentUser}>
-                  {savedItems.meditations.some((item) => item.title === generatedMeditation?.title)
-                    ? "Saved to Dashboard"
-                    : "Save to Dashboard"}
-                </button> */}
                 <span className='message'>
-                  Your meditation has been saved to the Bespoke Meditations tab in dashboard
+                  Your meditation has been saved to the Bespoke Meditations tab in your{" "}
+                  <Link to='/dashboard'>Dashboard</Link>
                 </span>
               </div>
 
@@ -435,7 +453,7 @@ const AIMeditationGenerator: React.FC = () => {
                 }}
                 onError={(e) => {
                   console.error("Audio playback error:", e);
-                  toast.error("Error playing audio. The text-to-speech service might be unavailable.");
+                  // toast.error("Error playing audio. The text-to-speech service might be unavailable.");
                 }}
               />
             </div>

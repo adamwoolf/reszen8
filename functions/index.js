@@ -51,8 +51,8 @@ app.post("/chat", async (req, res) => {
 // ✅ Upload audio endpoint
 app.post("/uploadAudio", async (req, res) => {
   try {
-    const { audioBase64, title, content, generatedBy, type, language } = req.body;
-
+    const { audioBase64, title, content, generatedBy, style, type, language } = req.body;
+    console.log(req.body);
     if (!audioBase64 || !title || !content) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -82,6 +82,55 @@ app.post("/uploadAudio", async (req, res) => {
       generatedBy,
       type,
       language,
+      style,
+    });
+
+    return res.status(200).json({
+      message: "Upload successful",
+      audioUrl: downloadUrl,
+      dbKey: dbRef.key,
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({ error: "Upload failed", details: error.message });
+  }
+});
+
+app.post("/uploadStaticAudio", async (req, res) => {
+  try {
+    const { audioBase64, title, content, generatedBy, style, type, language } = req.body;
+
+    if (!audioBase64 || !title || !content) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const buffer = Buffer.from(audioBase64, "base64");
+    const fileName = `meditations/${title.replace(/\s+/g, "_")}_${Date.now()}.mp3`;
+    const file = bucket.file(fileName);
+
+    await file.save(buffer, {
+      metadata: {
+        contentType: "audio/mp3",
+      },
+    });
+
+    await file.makePublic();
+
+    const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(
+      fileName
+    )}?alt=media`;
+
+    const dbRef = admin.database().ref("meditations-static").push();
+    await dbRef.set({
+      title,
+      content,
+      audioUrl: downloadUrl,
+      createdAt: Date.now(),
+      generatedBy,
+      type,
+      style,
+      staticMed: true,
+      verified: false,
     });
 
     return res.status(200).json({

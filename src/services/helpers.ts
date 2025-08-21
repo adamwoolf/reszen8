@@ -128,12 +128,12 @@ export const mapDurationToWords = {
     duration: 8,
     description: "Enough to forget the business surrounding you and return to your safe space.",
   },
-  Relax: {
-    words: "1100–1150",
-    breaks: 35,
-    totalPauseTime: "100",
-    duration: 12,
-    description: "Change gear completely. Perfect wind-down at the end of the day",
-  },
+  // Relax: {
+  //   words: "1100–1150",
+  //   breaks: 35,
+  //   totalPauseTime: "100",
+  //   duration: 12,
+  //   description: "Change gear completely. Perfect wind-down at the end of the day",
+  // },
   // 15: { words: 1900, breaks: 55 },
 };

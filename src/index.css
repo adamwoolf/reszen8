@@ -78,7 +78,7 @@ main {
   color: var(--text-color);
 }
 
-div:not(.toast) {
+div {
   background-color: var(--bg-color);
 } /* Update card styles */
 .card,
