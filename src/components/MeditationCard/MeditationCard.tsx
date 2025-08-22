@@ -32,6 +32,7 @@ const MeditationCard = ({
     addOrUpdate(item.firebaseId, { ...item, verified: true });
     setTimeout(() => window.location.reload(), 1000);
   };
+
   return (
     <LiquidWrapper>
       <article
@@ -49,7 +50,6 @@ const MeditationCard = ({
           </div>
           <div className='publication__card-inner'>
             {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
-
             <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
               {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
             </button>

@@ -51,7 +51,7 @@ app.post("/chat", async (req, res) => {
 // ✅ Upload audio endpoint
 app.post("/uploadAudio", async (req, res) => {
   try {
-    const { audioBase64, title, content, generatedBy, style, type, language } = req.body;
+    const { audioBase64, title, content, generatedBy, voiceCode, style, type, language } = req.body;
     console.log(req.body);
     if (!audioBase64 || !title || !content) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -83,6 +83,7 @@ app.post("/uploadAudio", async (req, res) => {
       type,
       language,
       style,
+      voiceCode,
     });
 
     return res.status(200).json({
@@ -98,7 +99,7 @@ app.post("/uploadAudio", async (req, res) => {
 
 app.post("/uploadStaticAudio", async (req, res) => {
   try {
-    const { audioBase64, title, content, generatedBy, style, type, language } = req.body;
+    const { audioBase64, title, content, generatedBy, voiceCode, style, type, language } = req.body;
 
     if (!audioBase64 || !title || !content) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -131,6 +132,7 @@ app.post("/uploadStaticAudio", async (req, res) => {
       style,
       staticMed: true,
       verified: false,
+      voiceCode,
     });
 
     return res.status(200).json({

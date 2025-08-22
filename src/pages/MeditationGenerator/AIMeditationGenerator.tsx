@@ -48,6 +48,7 @@ const AIMeditationGenerator: React.FC = () => {
   // Static Med generation data
   const [script, setScript] = useState("");
   const [title, setTitle] = useState("");
+  const [voiceCode, setVoiceCode] = useState("en-GB-OllieMultilingualNeural");
   // Hooks
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
@@ -227,9 +228,9 @@ const AIMeditationGenerator: React.FC = () => {
     // const toastId = toast.loading("Generating your meditation...");
 
     try {
-      await generateStaticMedFromScript(title, meditationType, practiceType, script);
+      await generateStaticMedFromScript(title, meditationType, practiceType, script, voiceCode);
 
-      console.log("Meditation generation result:", result);
+      console.log("Static generated");
 
       getStaticMeditationsREST().then((data) => {
         if (data) dispatch(setStaticMeditations(data));
@@ -372,7 +373,11 @@ const AIMeditationGenerator: React.FC = () => {
           <h3>Static Med Gen </h3>
           <p>Select a Meditation Type and Practice Type above, then add the title and script.</p>
           {isGenerating ? "api status: GENERATING" : "api status: idle"}
+          <label>Title</label>
           <input value={title} placeholder='Enter title for static med' onChange={(e) => setTitle(e.target.value)} />
+          <label>Voice code</label>
+          <input value={voiceCode} placeholder='Enter voice code' onChange={(e) => setVoiceCode(e.target.value)} />
+          <label>Script</label>
           <textarea rows={30} value={script} onChange={(e) => setScript(e.target.value)} />
           <button disabled={!title || !meditationType || !script || !practiceType} onClick={generateStatic}>
             {isGenerating ? "GENERATING" : "Generate Static Med"}

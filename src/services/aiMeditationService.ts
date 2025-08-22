@@ -21,14 +21,16 @@ export interface MeditationResponse {
 }
 
 // ---------- Azure TTS ----------
-export const generateAudio = async (rawText: string): Promise<Blob> => {
+export const generateAudio = async (rawText: string, voiceCode = "en-GB-OllieMultilingualNeural"): Promise<Blob> => {
   const key = import.meta.env.VITE_AZURE_TTS_KEY;
   const region = "uksouth";
 
   const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
   const ssml = `
     <speak version="1.0" xml:lang="en-US">
-      <voice name="en-GB-OllieMultilingualNeural">
+       
+
+      <voice name="${voiceCode}">
         ${rawText}
       </voice>
     </speak>`;
@@ -94,14 +96,15 @@ export const generateMeditation = async (
   duration: string,
   language: string = "en",
   practiceType: string,
-  userId: string
+  userId: string,
+  voiceCode = "en-GB-OllieMultilingualNeural"
 ): Promise<MeditationResponse> => {
   try {
     console.log("generating", practiceType);
     const meditationData = await generateScript(meditationType, duration, language, practiceType);
     console.log("meditationData generated", meditationData);
     // Generate audio via Azure TTS
-    const audioBlob = await generateAudio(meditationData.content);
+    const audioBlob = await generateAudio(meditationData.content, voiceCode);
     console.log("audio generated", audioBlob);
     // Convert Blob -> base64 for Firebase upload
     const arrayBuffer = await audioBlob.arrayBuffer();
@@ -126,6 +129,7 @@ export const generateMeditation = async (
       language,
       style: practiceType || "Bespoke",
       bespokeMed: true,
+      voiceCode,
     });
 
     const audioUrl = uploadResponse.data.audioUrl;
@@ -146,11 +150,12 @@ export const generateStaticMedFromScript = async (
   title: string,
   meditationType: string,
   practiceType: string,
-  script: string
+  script: string,
+  voiceCode: string
 ) => {
   try {
     // Generate audio via Azure TTS
-    const audioBlob = await generateAudio(script);
+    const audioBlob = await generateAudio(script, voiceCode);
     console.log("audio generated", audioBlob);
     // Convert Blob -> base64 for Firebase upload
     const arrayBuffer = await audioBlob.arrayBuffer();
@@ -174,6 +179,7 @@ export const generateStaticMedFromScript = async (
       type: meditationType,
       style: practiceType,
       id: uuidv4(),
+      voiceCode,
     });
 
     console.log(uploadResponse);
