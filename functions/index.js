@@ -32,61 +32,52 @@ const MedTypesAndAffirmations = [
     description:
       "Focus on helping the listener gently release physical and mental tension. Guide them through deep breathing, body scanning, and grounding visualisation.",
     affirmations: ["I am safe in this moment.", "I let go of what I can’t control.", "I allow myself to relax."],
-    voice: { name: "Kaine", id: "9agwA7PWqxuZ6L2Difh5" },
   },
   {
     type: "Loving & Kindness",
     description:
       "Guide the listener to cultivate warmth and goodwill toward themselves and others. Use gentle imagery and offer affirmations.",
     affirmations: ["May I be happy.", "May you be well.", "May we all feel love and peace."],
-    voice: { name: "Archer", id: "xGDJhCwcqw94ypljc95Z" },
   },
   {
     type: "Better Sleep",
     description:
       "Help the listener transition toward rest with slow, soft narration. Use breathwork, body relaxation, and fading visualisation.",
     affirmations: ["My body is ready for rest.", "I welcome calm and stillness.", "I release the day with ease."],
-    voice: { name: "Kaine", id: "9agwA7PWqxuZ6L2Difh5" },
   },
   {
     type: "Focus & Concentration",
     description:
       "Strengthen the listener’s mental clarity using breath anchoring and focused attention. Encourage stillness and returning to the present.",
     affirmations: ["I am focused and clear.", "My mind is steady.", "I return to the moment with ease."],
-    voice: { name: "Leanne", id: "HXOwtW4XU7Ne6iOiDHTl" },
   },
   {
     type: "Mindfulness",
     description:
       "Support the listener in being fully present. Guide them through breath and sensory awareness, with non-judgmental observation.",
     affirmations: ["I am here, now.", "I notice, without judgment.", "Each moment is enough."],
-    voice: { name: "Archer", id: "xGDJhCwcqw94ypljc95Z" },
   },
   {
     type: "Compassion",
     description: "Help the listener open their heart to others and themselves. Use gentle, empathetic language.",
     affirmations: ["I meet myself with kindness.", "I care deeply for others.", "Compassion flows through me."],
-    voice: { name: "Archer", id: "xGDJhCwcqw94ypljc95Z" },
   },
   {
     type: "Gratitude",
     description:
       "Encourage the listener to reflect on what they’re thankful for. Use grounding moments and warm imagery.",
     affirmations: ["I appreciate the small things.", "I am grateful for this moment.", "Gratitude fills my heart."],
-    voice: { name: "Leanne", id: "HXOwtW4XU7Ne6iOiDHTl" },
   },
   {
     type: "Anxiety Relief",
     description:
       "Gently guide the listener to calm anxious thoughts. Use breath control, grounding imagery, and reassurance.",
     affirmations: ["I am grounded and safe.", "This feeling will pass.", "I trust myself to handle this moment."],
-    voice: { name: "Kaine", id: "9agwA7PWqxuZ6L2Difh5" },
   },
   {
     type: "Resilience",
     description: "Empower the listener to connect with inner strength and calm. Use confident, reassuring language.",
     affirmations: ["I am stronger than I think.", "I can rise and begin again.", "I bend, but I do not break."],
-    voice: { name: "Leanne", id: "HXOwtW4XU7Ne6iOiDHTl" },
   },
   {
     type: "Relationships",
@@ -97,14 +88,12 @@ const MedTypesAndAffirmations = [
       "I bring presence to my relationships.",
       "I give and receive love freely.",
     ],
-    voice: { name: "Archer", id: "xGDJhCwcqw94ypljc95Z" },
   },
   {
     type: "Anger",
     description:
       "Support the listener in recognising and soothing anger. Use grounding breath and emotional awareness.",
     affirmations: ["I am calm and centred.", "I respond with clarity, not reaction.", "I allow this feeling to pass."],
-    voice: { name: "Kaine", id: "9agwA7PWqxuZ6L2Difh5" },
   },
 ];
 
@@ -158,10 +147,7 @@ const mapDurationToWords = {
   // 15: { words: 1900, breaks: 55 },
 };
 
-const generateAIScript = async (meditationType, duration, practiceType) => {
-  console.log(meditationType, duration, practiceType);
-  console.log("generating script");
-
+const generateAIScript = async (meditationType, duration, practiceType, title) => {
   const details = MedTypesAndAffirmations.find((m) => m.type === meditationType);
   const type = PracticeTypes.find((p) => p.name === practiceType);
   const wordsAndBreaks = mapDurationToWords[duration];
@@ -190,43 +176,8 @@ const generateAIScript = async (meditationType, duration, practiceType) => {
 
   const content = response.data.choices[0].message.content.trim();
 
-  return { title: `${meditationType} Meditation`, content };
+  return { title, content };
 };
-
-// const generateAIAudio = async (rawText, voiceCode = "en-GB-BellaNeural") => {
-//   console.log("generating audio");
-//   const key = process.env.AZURE_TTS_KEY;
-//   const region = "uksouth";
-
-//   const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
-//   const ssml = `
-//     <speak version="1.0" xml:lang="en-US"
-//       xmlns:mstts="https://www.w3.org/2001/mstts">
-//       <voice name="${voiceCode}">
-//         <mstts:express-as style="calm" styledegree="1.2">
-//           ${rawText}
-//         </mstts:express-as>
-//       </voice>
-//     </speak>`;
-
-//   const response = await fetch(url, {
-//     method: "POST",
-//     headers: {
-//       "Ocp-Apim-Subscription-Key": key,
-//       "Content-Type": "application/ssml+xml",
-//       "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
-//     },
-//     body: ssml,
-//   });
-
-//   if (!response.ok) {
-//     throw new Error("Azure TTS failed: " + (await response.text()));
-//   }
-
-//   // ✅ Return Node Buffer directly
-//   const arrayBuffer = await response.arrayBuffer();
-//   return Buffer.from(arrayBuffer);
-// };
 
 function splitTextByLimit(text, limit = 9000) {
   const chunks = [];
@@ -293,11 +244,11 @@ app.post("/generateMeditation", async (req, res) => {
   try {
     console.log("endpoint hit");
 
-    const { meditationType, practiceType, duration, voiceCode, language, userId } = req.body;
-
+    const { meditationType, practiceType, duration, voiceCode, language, userId, title } = req.body;
+    console.log("getting script");
     // Generate script
-    const script = await generateAIScript(meditationType, duration, practiceType);
-
+    const script = await generateAIScript(meditationType, duration, practiceType, title);
+    console.log("script", script);
     // Generate audio as Buffer
     const buffer = await generateAIAudio(script.content, voiceCode);
 
@@ -315,21 +266,10 @@ app.post("/generateMeditation", async (req, res) => {
       expires: "03-01-2500", // basically "never expires"
     });
 
-    console.log("SAVING", {
-      title: script.title,
-      content: script.content,
-      audioUrl: downloadUrl,
-      createdAt: Date.now(),
-      generatedBy: userId,
-      type: meditationType,
-      language,
-      style: practiceType,
-      voiceCode,
-    });
     // Save metadata to Realtime DB
     const dbRef = admin.database().ref("meditations").push();
     await dbRef.set({
-      title: script.title,
+      title,
       content: script.content,
       audioUrl: downloadUrl,
       createdAt: Date.now(),

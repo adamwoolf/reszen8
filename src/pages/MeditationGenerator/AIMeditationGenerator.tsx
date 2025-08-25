@@ -14,6 +14,7 @@ import { getMeditationItemsREST, getStaticMeditationsREST } from "../../store/st
 import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { profanityFilter } from "./helper";
 interface MeditationState {
   title: string;
   content: string;
@@ -168,7 +169,9 @@ const AIMeditationGenerator: React.FC = () => {
         duration,
         selectedLanguage,
         practiceType,
-        currentUser?.uid || "anonymous"
+        currentUser?.uid || "anonymous",
+        voiceCode,
+        title
       );
 
       console.log("Meditation generation result:", result);
@@ -266,6 +269,7 @@ const AIMeditationGenerator: React.FC = () => {
         <form onSubmit={handleSubmit} className='generator-form'>
           <div className='form-group'>
             <label>Title</label>
+            {profanityFilter(title) && <p className='ai-meditation-generator__warning'>Title must not contain profanities</p>}
             <input value={title} placeholder='Enter a title' onChange={(e) => setTitle(e.target.value)} />
             <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
             <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
@@ -354,7 +358,11 @@ const AIMeditationGenerator: React.FC = () => {
 
           <div className='flex justify-center mt-8 space-x-8'>
             {currentUser && currentUser?.isGod ? (
-              <button type='submit' className='generate-btn' disabled={isGenerating}>
+              <button
+                type='submit'
+                className='generate-btn'
+                disabled={isGenerating || !title || profanityFilter(title)}
+              >
                 {isGenerating ? (
                   <>
                     <span className='spinner'></span>
