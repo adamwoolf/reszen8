@@ -2,11 +2,12 @@
 import { ref, onValue, off } from "firebase/database";
 import { db, auth } from "../firebase";
 import { AppDispatch } from "./reduxStore";
-import { setMeta, setMeditations } from "./contentSlice";
+import { setMeta, setMeditations, setStaticMeditations } from "./contentSlice";
 
 const paths = {
   meta: "meta",
   meditations: "meditations",
+  meditationsStatic: "meditations-static",
 };
 
 const listeners: Record<string, () => void> = {};
@@ -46,6 +47,8 @@ export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispat
     const dbRef = ref(db, path);
     const handler = (snapshot: any) => {
       const data = snapshot.val() || {};
+      console.log(data);
+
       switch (key) {
         case "meta":
           dispatch(setMeta(data));
@@ -54,6 +57,10 @@ export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispat
 
         case "meditations":
           dispatch(setMeditations(data));
+          localStorage.setItem("myData", data);
+          break;
+        case "meditationsStatic":
+          dispatch(setStaticMeditations(data));
           localStorage.setItem("myData", data);
 
           break;

@@ -34,44 +34,44 @@ const MeditationCard = ({
   };
 
   return (
-    <LiquidWrapper>
-      <article
-        className={!item.staticMed ? "feature-card publication__card " : "feature-card publication__card static-med"}
-      >
-        <div className='publication__card-content'>
-          <div className='publication__card-inner'>
-            <h3 className='publication__card-title'>{item.title}</h3>
-            <div className='publication__card-divider' />
+    // <LiquidWrapper>
+    <article
+      className={!item.staticMed ? "feature-card publication__card " : "feature-card publication__card static-med"}
+    >
+      <div className='publication__card-content'>
+        <div className='publication__card-inner'>
+          <h3 className='publication__card-title'>{item.title}</h3>
+          <div className='publication__card-divider' />
 
-            {item.duration && <p>Duration: {item.duration}</p>}
-            {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
-            {item.style && <p className='publication__card-meditation-type'>Meditation Style: {item.style}</p>}
-            {/* {item.language && <p>Language: {item.language}</p>} */}
-          </div>
-          <div className='publication__card-inner'>
-            {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
-            <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
-              {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
-            </button>
-          </div>
-
-          <div className='publication__card-icon-container'>
-            <Icon type={item.category[0].category} />
-          </div>
-          {currentUser && showLike && <LikeCta id={item.id} content='meditations' />}
+          {item.duration && <p>Duration: {item.duration}</p>}
+          {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
+          {item.style && <p className='publication__card-meditation-type'>Meditation Style: {item.style}</p>}
+          {/* {item.language && <p>Language: {item.language}</p>} */}
         </div>
-        {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
-          <div>
-            <button onClick={verifyM} style={{ marginRight: 12 }}>
-              verify
-            </button>
-            <button onClick={() => handleDelete(item.firebaseId)} style={{ background: "red" }}>
-              delete
-            </button>
-          </div>
-        )}
-      </article>
-    </LiquidWrapper>
+        <div className='publication__card-inner'>
+          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
+          <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
+            {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
+          </button>
+        </div>
+
+        <div className='publication__card-icon-container'>
+          <Icon type={item.category[0].category} />
+        </div>
+        {currentUser && showLike && <LikeCta id={item.id} content='meditations' />}
+      </div>
+      {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
+        <div>
+          <button onClick={verifyM} style={{ marginRight: 12 }}>
+            verify
+          </button>
+          <button onClick={() => handleDelete(item.firebaseId)} style={{ background: "red" }}>
+            delete
+          </button>
+        </div>
+      )}
+    </article>
+    // </LiquidWrapper>
   );
 };
 

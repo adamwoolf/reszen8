@@ -9,18 +9,18 @@ import { registerSW } from "virtual:pwa-register";
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((registration) => {
-        console.log("Service Worker registered with scope:", registration.scope);
-      })
-      .catch((err) => {
-        console.error("Service Worker registration failed:", err);
-      });
-  });
-}
+// if ("serviceWorker" in navigator) {
+//   window.addEventListener("load", () => {
+//     navigator.serviceWorker
+//       .register("/service-worker.js")
+//       .then((registration) => {
+//         console.log("Service Worker registered with scope:", registration.scope);
+//       })
+//       .catch((err) => {
+//         console.error("Service Worker registration failed:", err);
+//       });
+//   });
+// }
 
 export function restoreOfflineUser(dispatch: any) {
   if (!navigator.onLine) {

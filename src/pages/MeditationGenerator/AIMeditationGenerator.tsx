@@ -41,14 +41,15 @@ const AIMeditationGenerator: React.FC = () => {
   const [showPopup, setShowPopup] = useState("");
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
   const dispatch = useDispatch();
+  const [title, setTitle] = useState("");
+
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Static Med generation data
   const [script, setScript] = useState("");
-  const [title, setTitle] = useState("");
-  const [voiceCode, setVoiceCode] = useState("en-GB-OllieMultilingualNeural");
+  const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
   // Hooks
   const { addItem } = useSavedItems();
   const navigate = useNavigate();
@@ -264,6 +265,8 @@ const AIMeditationGenerator: React.FC = () => {
       {!isGenerating && (
         <form onSubmit={handleSubmit} className='generator-form'>
           <div className='form-group'>
+            <label>Title</label>
+            <input value={title} placeholder='Enter a title' onChange={(e) => setTitle(e.target.value)} />
             <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
             <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
               learn more

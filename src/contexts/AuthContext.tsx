@@ -57,7 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (snapshot.exists()) {
         const usersObj = snapshot.val();
         const firstKey = Object.keys(usersObj)[0];
-        console.log(firstKey);
         return usersObj[firstKey];
       }
     } catch (err) {

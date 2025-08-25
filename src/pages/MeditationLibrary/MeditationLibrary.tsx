@@ -19,7 +19,12 @@ const DigitalLibrary = () => {
 
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getMeditationsWithLikes);
-  const [displayMeds, setDisplayMeds] = useState(libraryMeditations);
+  const [displayMeds, setDisplayMeds] = useState([]);
+  console.log(displayMeds.length);
+
+  useEffect(() => {
+    setDisplayMeds(libraryMeditations);
+  }, [libraryMeditations]);
 
   const searchText = (e) => {
     const query = e.target.value;
@@ -68,7 +73,7 @@ const DigitalLibrary = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {displayMeds?.map((item, i) => (
-            <MeditationCard key={item.id} handleAddItem={handleAddItem} item={item} i={i} />
+            <MeditationCard key={`meditation-card-${i}`} handleAddItem={handleAddItem} item={item} i={i} />
           ))}
         </div>
       </div>

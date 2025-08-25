@@ -309,26 +309,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // dispatch(startDatabaseListeners(offline));
+    dispatch(startDatabaseListeners(offline));
   }, [dispatch]);
 
   useEffect(() => {
     getPublications().then((data) => dispatch(setPublications(data.items)));
   }, []);
 
-  useEffect(() => {
-    getMetaREST().then((data) => {
-      if (data) dispatch(setMeta(data));
-    });
+  // useEffect(() => {
+  //   getMetaREST().then((data) => {
+  //     if (data) dispatch(setMeta(data));
+  //   });
 
-    getMeditationItemsREST().then((data) => {
-      if (data) dispatch(setMeditations(data));
-    });
-    getStaticMeditationsREST().then((data) => {
-      console.log(data);
-      if (data) dispatch(setStaticMeditations(data));
-    });
-  }, []);
+  //   getMeditationItemsREST().then((data) => {
+  //     if (data) dispatch(setMeditations(data));
+  //   });
+  //   getStaticMeditationsREST().then((data) => {
+  //     console.log(data);
+  //     if (data) dispatch(setStaticMeditations(data));
+  //   });
+  // }, []);
 
   return (
     // <ErrorBoundary>
