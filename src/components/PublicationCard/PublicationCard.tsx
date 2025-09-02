@@ -11,8 +11,7 @@ import { FaAudible, FaFileAudio, FaSpeakap, FaSoundcloud, FaVolumeUp } from "rea
 
 const PublicationCard = ({ item, showLike = true }) => {
   const { fields, sys, category } = item;
-  const { currentUser, setCurrentUser } = useAuth();
-  const { addOrUpdate } = useFirebasedatabase("USERS");
+  const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [saved, setSaved] = useState(false);
   function truncateTo25Words(text: string) {
     const words = text.trim().split(/\s+/); // split on any whitespace
@@ -39,7 +38,7 @@ const PublicationCard = ({ item, showLike = true }) => {
           : [{ ...fields, id: sys.id }],
       },
     };
-    addOrUpdate(currentUser?.firebaseId, newData);
+    // addOrUpdate(currentUser?.firebaseId, newData);
     setCurrentUser(newData);
   };
 
@@ -57,7 +56,7 @@ const PublicationCard = ({ item, showLike = true }) => {
     <article key={sys.id} className='feature-card clickable publication__card'>
       {showLike && currentUser && <LikeCta id={sys.id} />}
 
-      <Link className='publication__card-content' to={`/publications/${fields.slug}`}>
+      <Link className='publication__card-content' to={`/articles/${fields.slug}`}>
         <div className='publication__card-inner'>
           <div className='publication__card-icon-container'>
             <Icon type={category[0].category} />

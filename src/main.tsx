@@ -5,6 +5,7 @@ import "./index.css";
 import { reduxStore } from "./store/reduxStore";
 import { Provider } from "react-redux";
 import { registerSW } from "virtual:pwa-register";
+import { AuthProvider } from "react-oidc-context";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
@@ -22,28 +23,30 @@ if (!container) throw new Error("Failed to find the root element");
 //   });
 // }
 
-export function restoreOfflineUser(dispatch: any) {
-  if (!navigator.onLine) {
-    const saved = localStorage.getItem("offlineUser");
-    if (saved) {
-      const userData = JSON.parse(saved);
-      // Set your Redux/Zustand state here
-      dispatch({
-        type: "auth/loginSuccess",
-        payload: userData,
-      });
-    }
-  }
-}
+// export function restoreOfflineUser(dispatch: any) {
+//   if (!navigator.onLine) {
+//     const saved = localStorage.getItem("offlineUser");
+//     if (saved) {
+//       const userData = JSON.parse(saved);
+//       // Set your Redux/Zustand state here
+//       dispatch({
+//         type: "auth/loginSuccess",
+//         payload: userData,
+//       });
+//     }
+//   }
+// }
 
-restoreOfflineUser(reduxStore.dispatch);
+// restoreOfflineUser(reduxStore.dispatch);
 
 const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <Provider store={reduxStore}>
-      <App />
-    </Provider>
+    <AuthProvider {...cognitoAuthConfig}>
+      <Provider store={reduxStore}>
+        <App />
+      </Provider>
+    </AuthProvider>
   </React.StrictMode>
 );

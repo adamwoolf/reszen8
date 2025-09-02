@@ -79,8 +79,8 @@ const FullPublication = () => {
       )}
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}
       <SocialShare title={title} quote={title} />
-      <Link className='btn publication__full__back-cta ' to={"/publications"}>
-        View all publications
+      <Link className='btn publication__full__back-cta ' to={"/articles"}>
+        View all articles
       </Link>
     </div>
   );

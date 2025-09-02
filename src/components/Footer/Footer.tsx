@@ -41,6 +41,11 @@ const Footer: React.FC = () => {
               logout
             </button>
           )}
+          {currentUser && currentUser.isGod && (
+            <Link to='/admin' className='text-orange-400 hover:text-orange-300 text-sm transition-colors duration-200'>
+              Admin
+            </Link>
+          )}
         </div>
       </div>
     </footer>

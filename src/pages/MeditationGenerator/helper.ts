@@ -1,6 +1,8 @@
 export const profanityFilter = (text) => {
   const textArray = text.split(" ");
   const profanities = [
+    "arse",
+    "arsehode",
     "ass",
     "bastard",
     "bitch",
@@ -25,6 +27,10 @@ export const profanityFilter = (text) => {
     "whore",
     "minge",
     "wank",
+    "nigger",
+    "cum",
+    "shite",
+    "dickhead",
   ];
-  return textArray.find((word) => profanities.includes(word));
+  return textArray.find((word: string) => profanities.includes(word));
 };

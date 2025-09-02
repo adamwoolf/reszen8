@@ -19,6 +19,7 @@
     width: 90%;
   }
 
+
   &__list-title {
     margin: 0;
   }
@@ -74,4 +75,8 @@
   to {
     opacity: o;
   }
+}
+
+.locked-by-popup {
+  overflow: hidden;
 }

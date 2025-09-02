@@ -266,7 +266,7 @@ const Dashboard = () => {
             className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
             onClick={() => setActiveTab("publications")}
           >
-            My Publications
+            My Articles
             {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
           </button>
           <button

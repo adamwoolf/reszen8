@@ -144,11 +144,7 @@ const Navbar: React.FC = () => {
                   Memberships
                 </NavLink>
               </li>
-              <li>
-                <NavLink to='/publications' className={getNavLinkClass}>
-                  Publications
-                </NavLink>
-              </li>
+
               <li>
                 <NavLink to='/ai-chat' className={getNavLinkClass}>
                   RESZEN8 Chat
@@ -157,6 +153,11 @@ const Navbar: React.FC = () => {
 
               {currentUser?.subscription?.isActiveSub && (
                 <>
+                  <li>
+                    <NavLink to='/articles' className={getNavLinkClass}>
+                      Articles
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke Meditation Generator

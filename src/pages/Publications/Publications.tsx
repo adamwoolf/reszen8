@@ -79,13 +79,13 @@ const Publications = () => {
 
   return (
     <div className='publications'>
-      <h1>Publications</h1>
+      <h1>Articles</h1>
       <div className='publications__filters'>
         <input
           className='publications__search'
           value={search}
           onChange={searchText}
-          placeholder='Type to search publications'
+          placeholder='Type to search articles'
         />
         <div></div>
 
@@ -113,9 +113,7 @@ const Publications = () => {
         )}
       </div>
       {!displayPubs?.length && (
-        <span className='publications__no-results'>
-          Sorry, we couldn't find any publications that match your search
-        </span>
+        <span className='publications__no-results'>Sorry, we couldn't find any articles that match your search</span>
       )}
 
       {!currentUser && (

@@ -22,16 +22,14 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     if (show) {
-      document.documentElement.style.overflow = "hidden"; // lock html
-      document.body.style.overflow = "hidden"; // lock body
+      document.body.classList.add("lock-scroll");
     } else {
-      document.documentElement.style.overflow = "auto";
-      document.body.style.overflow = "auto";
+      document.body.classList.remove("lock-scroll");
     }
 
     return () => {
-      document.documentElement.style.overflow = "auto";
-      document.body.style.overflow = "auto";
+      // document.documentElement.style.overflow = "auto";
+      // document.body.style.overflow = "auto";
     };
   }, [show]);
 

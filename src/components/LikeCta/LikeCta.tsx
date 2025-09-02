@@ -22,8 +22,7 @@ const LikeCta = ({
   content?: "meditations" | "publications";
 }) => {
   const dispatch = useDispatch();
-  const { currentUser, setCurrentUser } = useAuth();
-  const { addOrUpdate } = useFirebasedatabase("USERS");
+  const { currentUser, setCurrentUser, updateUser } = useAuth();
   const { addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
   const data = useSelector(getMeta);
   const medLikes = useSelector(getMeditationLikes);
@@ -42,8 +41,8 @@ const LikeCta = ({
   const handleLikeClick = (id: string) => {
     if (content === CONTENT_TYPES.publications) {
       if (!data?.LIKES?.map((item: Like) => item.id).includes(id)) {
-        addOrUpdateMeta("LIKES", [...data?.LIKES, { id, likes: 1 }]);
-        dispatch(setMeta({ ...data, LIKES: [...data.LIKES, { id, likes: 1 }] }));
+        // addOrUpdateMeta("LIKES", [...data?.LIKES, { id, likes: 1 }]);
+        // dispatch(setMeta({ ...data, LIKES: [...data.LIKES, { id, likes: 1 }] }));
         return;
       }
       const likes = data?.LIKES?.map((like: Like) => {
@@ -51,12 +50,12 @@ const LikeCta = ({
         return { ...like, likes: like.likes + 1 };
       });
 
-      addOrUpdateMeta("LIKES", likes);
-      dispatch(setMeta({ ...data, LIKES: likes }));
+      // addOrUpdateMeta("LIKES", likes);
+      // dispatch(setMeta({ ...data, LIKES: likes }));
     } else {
       if (!data?.meditationLIKES?.map((item: Like) => item.id).includes(id)) {
         const newData = data?.meditationLIKES ? [...data?.meditationLIKES, { id, likes: 1 }] : [{ id, likes: 1 }];
-        addOrUpdateMeta("meditationLIKES", newData);
+        // addOrUpdateMeta("meditationLIKES", newData);
         dispatch(setMeta({ ...data, meditationLIKES: newData }));
 
         return;
@@ -65,7 +64,7 @@ const LikeCta = ({
         if (like.id !== id) return like;
         return { ...like, likes: like.likes + 1 };
       });
-      addOrUpdateMeta("meditationLIKES", likes);
+      // addOrUpdateMeta("meditationLIKES", likes);
       dispatch(setMeta({ ...data, meditationLIKES: likes }));
     }
   };
@@ -76,7 +75,7 @@ const LikeCta = ({
         if (like.id !== id) return like;
         return { ...like, likes: like.likes - 1 };
       });
-      addOrUpdateMeta("LIKES", likes);
+      // addOrUpdateMeta("LIKES", likes);
       dispatch(setMeta({ ...data, LIKES: likes }));
     } else {
       const likes = data?.meditationLIKES?.map((like: Like) => {
@@ -84,7 +83,7 @@ const LikeCta = ({
         if (like.likes === 0) return like;
         return { ...like, likes: like.likes - 1 };
       });
-      addOrUpdateMeta("meditationLIKES", likes);
+      // addOrUpdateMeta("meditationLIKES", likes);
       dispatch(setMeta({ ...data, meditationLIKES: likes }));
     }
   };
@@ -92,17 +91,19 @@ const LikeCta = ({
   // handles user data liked items
   const toggleFavourite = (id: string) => {
     const userFavs = currentUser?.favourites?.[content];
+    console.log("FAVS", userFavs);
     // remove like
     if (userFavs?.includes(id)) {
       removeLike(id);
       const updatedPubs = userFavs.filter((item) => item !== id);
       const newData = { ...currentUser, favourites: { ...currentUser?.favourites, [content]: updatedPubs } };
+      updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: updatedPubs } });
       setCurrentUser(newData);
-      addOrUpdate(currentUser.firebaseId, newData);
+
       return;
     }
     // add like
-    handleLikeClick(id);
+    // handleLikeClick(id);
 
     const newData = {
       ...currentUser,
@@ -112,7 +113,9 @@ const LikeCta = ({
       },
     };
 
-    addOrUpdate(currentUser.firebaseId, newData);
+    const newLikes = currentUser?.favourites?.[content] ? [...currentUser.favourites[content]!, id] : [id];
+
+    updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: newLikes } });
 
     setCurrentUser(newData);
   };
@@ -122,9 +125,7 @@ const LikeCta = ({
       <button onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
         <FaHeart
           size={large ? 30 : 15}
-          className={
-            isFavourite && numLikes ? "publication__heart publication__heart--favourite" : "publication--heart"
-          }
+          className={isFavourite ? "publication__heart publication__heart--favourite" : "publication--heart"}
         />
       </button>
       <span className='likes__count'>{numLikes} likes</span>

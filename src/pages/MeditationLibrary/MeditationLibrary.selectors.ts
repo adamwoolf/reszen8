@@ -20,7 +20,6 @@ export const getMeditationsWithLikes = createSelector(
           category: categoriser(`${med.title}-${med.body}`),
         };
       });
-    console.log(staticMs);
     const staticMeds = Object.keys(staticMs)
       .reverse()
       ?.map((key: string) => {

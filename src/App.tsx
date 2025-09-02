@@ -49,11 +49,11 @@ import {
 } from "./store/storeListener";
 import { setPublications, setStaticMeditations, setMeta, setMeditations } from "./store/contentSlice";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
+import Admin from "./pages/Admin/Admin";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-
   if (loading) return null;
 
   return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
@@ -68,35 +68,36 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ErrorBoundary>
-      <div className='app-container flex flex-col min-h-screen'>
-        <Helmet>
-          <title>Welcome to Reszen8</title>
-          <meta name='description' content='Your destination for meditative experiences.' />
-          <meta name='robots' content='index, follow' />
-        </Helmet>
-        <LandingPage />
+    // <ErrorBoundary>
+    <div className='app-container flex flex-col min-h-screen'>
+      <Helmet>
+        <title>Welcome to Reszen8</title>
+        <meta name='description' content='Your destination for meditative experiences.' />
+        <meta name='robots' content='index, follow' />
+      </Helmet>
+      <LandingPage />
 
-        <Navbar />
-        <CookieBanner />
+      <Navbar />
+      <CookieBanner />
 
-        <main className='main-content flex-grow'>
-          <PageTransition>
-            <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
-          </PageTransition>
-        </main>
-        <Footer />
-        <FloatingCTA />
-        <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
-      </div>
-    </ErrorBoundary>
+      <main className='main-content flex-grow'>
+        <PageTransition>
+          <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+        </PageTransition>
+      </main>
+      <Footer />
+      <FloatingCTA />
+      <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
+    </div>
+    // </ErrorBoundary>
   );
 };
 
 // AnimatedRoutes component to handle page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const { currentUser, loading } = useAuth();
+  const { currentUser } = useAuth();
+  console.log(currentUser);
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -155,6 +156,16 @@ const AnimatedRoutes = () => {
             <ProtectedRoute>
               <Layout>
                 <DigitalLibrary />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/admin'
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Admin />
               </Layout>
             </ProtectedRoute>
           }
@@ -221,7 +232,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path='/publications/:slug'
+          path='/articles/:slug'
           element={
             <Layout>
               <FullPublication />
@@ -229,7 +240,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path='/publications'
+          path='/articles'
           element={
             <Layout>
               <Publications />

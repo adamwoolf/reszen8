@@ -15,10 +15,10 @@ const features = [
   //   path: "/digital-library",
   // },
   {
-    title: "Publications",
+    title: "Articles",
     description:
       "Read meditation guides and customise your journey. Meditations for all requirements, from simple relaxation to focused practice",
-    path: "/publications",
+    path: "/articles",
   },
   {
     title: "Bespoke Meditation Generator",

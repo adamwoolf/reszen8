@@ -47,7 +47,6 @@ export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispat
     const dbRef = ref(db, path);
     const handler = (snapshot: any) => {
       const data = snapshot.val() || {};
-      console.log(data);
 
       switch (key) {
         case "meta":
