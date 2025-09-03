@@ -11,7 +11,7 @@ import Search from "./Search/Search";
 import { useSelector } from "react-redux";
 
 const Navbar: React.FC = () => {
-  const { currentUser, logout, setCurrentUser } = useAuth();
+  const { currentUser, setCurrentUser, signOutRedirect } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -234,7 +234,7 @@ const Navbar: React.FC = () => {
 
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
-              <button className='user-address' onClick={handleLogout}>
+              <button className='user-address' onClick={signOutRedirect}>
                 Logout
               </button>
             </span>

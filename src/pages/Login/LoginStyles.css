@@ -4,3 +4,15 @@
   max-width: 500px;
   min-width: 300px;
 }
+
+.login-cta-container {
+  display: flex;
+  height: 300px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-cta-container button {
+  margin: 12px;
+}

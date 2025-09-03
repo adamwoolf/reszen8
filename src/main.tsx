@@ -10,6 +10,14 @@ import { AuthProvider } from "react-oidc-context";
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 
+const cognitoAuthConfig = {
+  authority: import.meta.env.VITE_COGNITO_AUTHORITY,
+  client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+  redirect_uri: import.meta.env.VITE_BASE_URL,
+  response_type: "code",
+  scope: "phone openid email profile",
+};
+
 // if ("serviceWorker" in navigator) {
 //   window.addEventListener("load", () => {
 //     navigator.serviceWorker

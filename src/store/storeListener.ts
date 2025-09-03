@@ -7,7 +7,6 @@ import { AWS_DB_ENDPOINT } from "../constants";
 
 const paths = {
   meta: "meta",
-  meditationsStatic: "meditations-static",
 };
 
 const listeners: Record<string, () => void> = {};
@@ -41,7 +40,11 @@ export async function getMeditationItemsREST() {
 }
 
 export async function getStaticMeditationsREST() {
-  return fetchFromFirebase("meditations-static");
+  const res = await fetch(`${AWS_DB_ENDPOINT}/staticMeditations`);
+  const data = await res.json();
+  console.log("STATIC");
+  console.log(data);
+  return data.items;
 }
 
 export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispatch) => {

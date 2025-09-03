@@ -64,17 +64,16 @@ export const generateStaticMedFromScript = async (
     // Generate audio via Azure TTS
 
     // Upload to Firebase Cloud Function
-    const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
+    const endpoint = `${AWS_DB_ENDPOINT}/generateStaticMeditation`;
 
     const uploadResponse = await axios.post(endpoint, {
       title,
-      generatedBy: "God",
-      type: meditationType,
-      style: practiceType,
+      generatedBy: "RESZEN8",
       id: uuidv4(),
       voiceCode,
       script,
       meditationType,
+      practiceType,
     });
 
     console.log(uploadResponse);

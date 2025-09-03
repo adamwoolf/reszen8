@@ -12,15 +12,8 @@ const Login = () => {
   //   <LoginForm />
   // </div>
   const auth = useAuth();
-  const { currentUser, setCurrentUser } = useAuthContext();
-
-  const signOutRedirect = () => {
-    const clientId = "the72up8nv2sbq9tea7v5f0ai";
-    const logoutUri = "http://localhost:5173"; // or your deployed frontend URL
-    const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
-
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
+  const { currentUser, setCurrentUser, signOutRedirect } = useAuthContext();
+  console.log(import.meta.env.VITE_BASE_URL);
 
   if (auth.isLoading) {
     return <LoadingScene />;
@@ -48,7 +41,7 @@ const Login = () => {
   }
 
   return (
-    <div>
+    <div className='login-cta-container'>
       <button onClick={() => auth.signinRedirect()}>Sign in</button>
       <button onClick={() => signOutRedirect()}>Sign out</button>
     </div>

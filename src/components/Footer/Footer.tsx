@@ -5,13 +5,12 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  const { currentUser, logout, setCurrentUser } = useAuth();
+  const { currentUser, signOutRedirect, setCurrentUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout();
-      navigate("/");
+      await signOutRedirect();
     } catch (error) {
       console.error("Failed to log out", error);
     }

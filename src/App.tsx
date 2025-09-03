@@ -56,14 +56,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
   if (loading) return null;
 
-  return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
+  // return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
+  return currentUser ? <>{children}</> : <Navigate to='/' replace />;
 };
 
 const UserRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
 
   if (loading) return <p>LOADING</p>;
-  return currentUser ? <>{children}</> : <Navigate to='/login' replace />;
+  return currentUser ? <>{children}</> : <Navigate to='/' replace />;
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -338,10 +339,12 @@ function App() {
         dispatch(setMeditations(data));
       }
     });
-    // getStaticMeditationsREST().then((data) => {
-    //   console.log(data);
-    //   if (data) dispatch(setStaticMeditations(data));
-    // });
+    getStaticMeditationsREST().then((data) => {
+      console.log(data);
+      if (data) {
+        dispatch(setStaticMeditations(data));
+      }
+    });
   }, []);
 
   return (

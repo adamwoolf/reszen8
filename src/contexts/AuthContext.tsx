@@ -24,6 +24,7 @@ interface AuthContextType {
   error: string | null;
   clearError: () => void;
   updateUser: (id: string, update: any) => void;
+  signOutRedirect: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,15 +50,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // NEW
   useEffect(() => {
     setLoading(true);
-    console.log(awsAuth);
+    // console.log(awsAuth);
     const fetchUser = async () => {
       if (awsAuth.isAuthenticated && awsAuth.user?.profile?.sub) {
-        console.log("CALLING GETUSER");
         const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
-        console.log("RES", res);
         const data = await res.json();
-        console.log(data);
-        // setUser(data);
+        // console.log(data);
         setCurrentUser(data);
       }
       setLoading(false);
@@ -65,9 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, [awsAuth]);
 
-  console.log(currentUser);
+  const signOutRedirect = () => {
+    const clientId = "the72up8nv2sbq9tea7v5f0ai";
+    const logoutUri = import.meta.env.VITE_BASE_URL; // or your deployed frontend URL
+    const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
+
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
+
   const updateUser = async (uid: string, updates: any) => {
-    console.log("UPDATING", updates, uid);
     try {
       const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
         method: "POST",
@@ -142,6 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error,
     clearError,
     updateUser,
+    signOutRedirect,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

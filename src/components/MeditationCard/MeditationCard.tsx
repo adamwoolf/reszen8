@@ -2,10 +2,10 @@ import React from "react";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { useAuth } from "../../contexts/AuthContext";
 import LikeCta from "../LikeCta/LikeCta";
-import LiquidWrapper from "../LiquidWrapper/LiquidWrapper";
 import Icon from "../Icon/Icon";
 import "./MeditationCardStyles.scss";
 import useFirebasedatabase from "../../hooks/useFirestoreCollection";
+import { AWS_DB_ENDPOINT } from "../../constants";
 
 const MeditationCard = ({
   item,
@@ -19,22 +19,33 @@ const MeditationCard = ({
   item: any;
 }) => {
   const { currentUser } = useAuth();
-  const { addOrUpdate, deleteDocument } = useFirebasedatabase("meditations-static");
 
   const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.id === item.id);
 
-  const handleDelete = (id: string) => {
-    deleteDocument(id);
+  const handleDelete = async (id: string) => {
+    await fetch(`${AWS_DB_ENDPOINT}/deleteStaticMed`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid: item.uid }),
+    });
     setTimeout(() => window.location.reload(), 1000);
   };
 
-  const verifyM = () => {
-    addOrUpdate(item.firebaseId, { ...item, verified: true });
+  const verifyM = async () => {
+    await fetch(`${AWS_DB_ENDPOINT}/updateStaticMed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uid: item.uid,
+        verified: true,
+      }),
+    });
     setTimeout(() => window.location.reload(), 1000);
   };
 
   return (
-    // <LiquidWrapper>
     <article
       className={!item.staticMed ? "feature-card publication__card " : "feature-card publication__card static-med"}
     >
@@ -71,7 +82,6 @@ const MeditationCard = ({
         </div>
       )}
     </article>
-    // </LiquidWrapper>
   );
 };
 

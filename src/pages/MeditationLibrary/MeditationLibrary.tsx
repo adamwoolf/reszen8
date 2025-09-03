@@ -20,7 +20,6 @@ const DigitalLibrary = () => {
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getMeditationsWithLikes);
   const [displayMeds, setDisplayMeds] = useState([]);
-  console.log(displayMeds.length);
 
   useEffect(() => {
     setDisplayMeds(libraryMeditations);
