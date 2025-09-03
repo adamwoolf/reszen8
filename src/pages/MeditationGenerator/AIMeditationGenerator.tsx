@@ -204,26 +204,6 @@ const AIMeditationGenerator: React.FC = () => {
     }
   };
 
-  const generateStatic = async () => {
-    if (isGenerating) return;
-
-    setIsGenerating(true);
-
-    try {
-      await generateStaticMedFromScript(title, meditationType, practiceType, script, voiceCode);
-
-      console.log("Static generated");
-
-      getStaticMeditationsREST().then((data) => {
-        if (data) dispatch(setStaticMeditations(data));
-      });
-    } catch (error) {
-      console.error("Error generating meditation:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>

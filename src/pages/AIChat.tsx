@@ -6,6 +6,7 @@ import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./AIChat.scss";
 import useFirebaseDatabase from "../hooks/useFirestoreCollection";
+import { AWS_DB_ENDPOINT } from "../constants";
 
 interface TopPrompt {
   text: string;
@@ -112,7 +113,7 @@ const AIChat: React.FC = () => {
   };
   async function callChatFunction(messages: { role: string; content: string }[]) {
     try {
-      const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/chat";
+      const endpoint = `${AWS_DB_ENDPOINT}/chat`;
       // const endpoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api/chat";
 
       const response = await fetch(endpoint, {
@@ -122,13 +123,12 @@ const AIChat: React.FC = () => {
         },
         body: JSON.stringify({ messages }),
       });
-
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
 
       const data = await response.json();
-      return data.response;
+      return data.reply;
     } catch (error) {
       console.error("Failed to call chat function:", error);
       return null;
@@ -154,12 +154,12 @@ const AIChat: React.FC = () => {
         console.log(item);
         found = true;
         const updatedPrompt = { ...item, calls: item.calls + 1 };
-        addOrUpdate(prompt, updatedPrompt);
+        // addOrUpdate(prompt, updatedPrompt);
       }
     });
 
     if (!found) {
-      addOrUpdate(prompt, { text: prompt, calls: 1 });
+      // addOrUpdate(prompt, { text: prompt, calls: 1 });
     }
   };
 
@@ -190,9 +190,11 @@ const AIChat: React.FC = () => {
         { role: "user", content: prompt },
       ]);
 
+      console.log("DATA", data);
+
       const aiMessage: Message = {
         role: "assistant",
-        content: data || "I'm sorry, I couldn't process your request.",
+        content: data.content || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -218,9 +220,11 @@ const AIChat: React.FC = () => {
         ...messages.map(({ role, content }) => ({ role, content })),
         { role: "user", content: message },
       ]);
+
+      console.log("DATA", data);
       const aiMessage: Message = {
         role: "assistant",
-        content: data || "I'm sorry, I couldn't process your request.",
+        content: data.content || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -265,10 +269,11 @@ const AIChat: React.FC = () => {
         ...messages.map(({ role, content }) => ({ role, content })),
         { role: "user", content: input },
       ]);
+      console.log("DATA", data);
 
       const aiMessage: Message = {
         role: "assistant",
-        content: data || "I'm sorry, I couldn't process your request.",
+        content: data.content || "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 

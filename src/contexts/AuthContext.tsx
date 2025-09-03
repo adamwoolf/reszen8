@@ -15,6 +15,7 @@ import { User } from "../models";
 import useSendMail from "../hooks/useSendEmail";
 import { ref, query, orderByChild, equalTo, get } from "firebase/database";
 import { useAuth as useAwsAuth } from "react-oidc-context";
+import { AWS_DB_ENDPOINT } from "../constants";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -45,7 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { sendMail } = useSendMail();
   const clearError = useCallback(() => setError(null), []);
 
-  const AWS_DB_ENDPOINT = "https://r9icwulwxk.execute-api.eu-north-1.amazonaws.com";
   // NEW
   useEffect(() => {
     setLoading(true);

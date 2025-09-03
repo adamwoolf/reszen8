@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "./helpers";
 import { v4 as uuidv4 } from "uuid";
+import { AWS_DB_ENDPOINT } from "../constants";
 
 export interface MeditationResponse {
   title: string;
@@ -29,8 +30,8 @@ export const generateMeditation = async (
   title: string
 ) => {
   try {
-    const endpoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/generateMeditation";
-    // const endpoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api/generateMeditation";
+    const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
+
     const meditation = await axios.post(endpoint, {
       meditationType,
       duration,
@@ -63,9 +64,9 @@ export const generateStaticMedFromScript = async (
     // Generate audio via Azure TTS
 
     // Upload to Firebase Cloud Function
-    const storageEndoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/api/generateStaticMeditation";
-    // const storageEndoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api/generateStaticMeditation";
-    const uploadResponse = await axios.post(storageEndoint, {
+    const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
+
+    const uploadResponse = await axios.post(endpoint, {
       title,
       generatedBy: "God",
       type: meditationType,

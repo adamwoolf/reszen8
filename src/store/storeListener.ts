@@ -3,10 +3,10 @@ import { ref, onValue, off } from "firebase/database";
 import { db, auth } from "../firebase";
 import { AppDispatch } from "./reduxStore";
 import { setMeta, setMeditations, setStaticMeditations } from "./contentSlice";
+import { AWS_DB_ENDPOINT } from "../constants";
 
 const paths = {
   meta: "meta",
-  meditations: "meditations",
   meditationsStatic: "meditations-static",
 };
 
@@ -35,7 +35,9 @@ export async function getMetaREST() {
 }
 
 export async function getMeditationItemsREST() {
-  return fetchFromFirebase("meditations");
+  const res = await fetch(`${AWS_DB_ENDPOINT}/bespokeMeditations`);
+  const data = await res.json();
+  return data.items;
 }
 
 export async function getStaticMeditationsREST() {
@@ -54,10 +56,6 @@ export const startDatabaseListeners = (offline: boolean) => (dispatch: AppDispat
           localStorage.setItem("myData", data);
           break;
 
-        case "meditations":
-          dispatch(setMeditations(data));
-          localStorage.setItem("myData", data);
-          break;
         case "meditationsStatic":
           dispatch(setStaticMeditations(data));
           localStorage.setItem("myData", data);
