@@ -10,7 +10,7 @@ import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { FaAudible, FaFileAudio, FaSpeakap, FaSoundcloud, FaVolumeUp } from "react-icons/fa";
 
 const PublicationCard = ({ item, showLike = true }) => {
-  const { fields, sys, category } = item;
+  const { category } = item;
   const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [saved, setSaved] = useState(false);
   function truncateTo25Words(text: string) {
@@ -19,14 +19,14 @@ const PublicationCard = ({ item, showLike = true }) => {
     return words.slice(0, 25).join(" ") + "…";
   }
 
-  const truncatedBody = truncateTo25Words(fields.body);
+  const truncatedBody = truncateTo25Words(item.content);
 
   useEffect(() => {
-    if (currentUser?.savedItems?.publications && sys) {
-      const exists = !!currentUser?.savedItems?.publications?.find((pub) => pub.id === sys?.id);
+    if (currentUser?.savedItems?.publications) {
+      const exists = !!currentUser?.savedItems?.publications?.find((pub) => pub.id === item?.uid);
       setSaved(exists);
     }
-  }, [fields, sys, currentUser?.savedItems?.publications]);
+  }, [currentUser?.savedItems?.publications]);
 
   const savePublication = () => {
     const newData = {
@@ -34,8 +34,8 @@ const PublicationCard = ({ item, showLike = true }) => {
       savedItems: {
         ...currentUser?.savedItems,
         publications: currentUser?.savedItems?.publications
-          ? [...currentUser?.savedItems?.publications, { ...fields, id: sys.id }]
-          : [{ ...fields, id: sys.id }],
+          ? [...currentUser?.savedItems?.publications, { ...item, id: item.uid }]
+          : [{ ...item, id: item.uid }],
       },
     };
     // addOrUpdate(currentUser?.firebaseId, newData);
@@ -53,16 +53,16 @@ const PublicationCard = ({ item, showLike = true }) => {
       </button>
     );
   return (
-    <article key={sys.id} className='feature-card clickable publication__card'>
-      {showLike && currentUser && <LikeCta id={sys.id} />}
+    <article key={item.uid} className='feature-card clickable publication__card'>
+      {showLike && currentUser && <LikeCta item={item} id={item.uid} />}
 
-      <Link className='publication__card-content' to={`/articles/${fields.slug}`}>
+      <Link className='publication__card-content' to={`/articles/${item.title}`}>
         <div className='publication__card-inner'>
           <div className='publication__card-icon-container'>
             <Icon type={category[0].category} />
           </div>
-          <h3 className='publication__card-title'>{fields.title}</h3>
-          {currentUser && fields.audioFile && <FaVolumeUp color='orange' />}
+          <h3 className='publication__card-title'>{item.title}</h3>
+          {currentUser && item.audioFile && <FaVolumeUp color='orange' />}
 
           <div className='publication__card-divider' />
           <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />

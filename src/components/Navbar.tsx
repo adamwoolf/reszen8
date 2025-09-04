@@ -9,8 +9,10 @@ import AccountStatus from "../components/AccountStatus/AccountStatus";
 import useSendMail from "../hooks/useSendEmail";
 import Search from "./Search/Search";
 import { useSelector } from "react-redux";
+import { useAuth as useAwsAuth } from "react-oidc-context";
 
 const Navbar: React.FC = () => {
+  const auth = useAwsAuth();
   const { currentUser, setCurrentUser, signOutRedirect } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,14 +52,6 @@ const Navbar: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/");
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
   const newTrial = {
     duration: 7,
     hasCompletedTrial: false,
@@ -195,16 +189,18 @@ const Navbar: React.FC = () => {
 
                   {!currentUser && (
                     <>
-                      <li>
+                      {/* <li>
                         <NavLink className='nav-link login-btn' to='/login'>
                           Login
                         </NavLink>
-                      </li>
-                      <li>
+                      </li> */}
+                      <button onClick={() => auth.signinRedirect()}>Sign in</button>
+
+                      {/* <li>
                         <NavLink to='/signup' className='nav-link signup-btn'>
                           Sign Up
                         </NavLink>
-                      </li>
+                      </li> */}
                     </>
                   )}
                 </ul>

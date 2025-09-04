@@ -3,10 +3,17 @@ import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { setMeta } from "../../store/contentSlice";
-import { CONTENT_TYPES } from "../../constants";
-import { getMeditationLikes, getPublicationLikes, getMeta } from "../../store/contentSelectors";
+import { setMeta, setStaticMeditations, setMeditations, setArticles } from "../../store/contentSlice";
+import { CONTENT_TYPES, AWS_DB_ENDPOINT } from "../../constants";
+import {
+  getMeditationLikes,
+  getPublicationLikes,
+  getMeta,
+  getStaticMeditations,
+  getMeditations,
+} from "../../store/contentSelectors";
 import "./LikeCtaStyles.scss";
+import { getAWSArticles, getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
 
 interface Like {
   id: string;
@@ -16,85 +23,56 @@ const LikeCta = ({
   id,
   large = false,
   content = "publications",
+  item,
 }: {
   id: string;
   large?: boolean;
   content?: "meditations" | "publications";
+  item: any;
 }) => {
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser, updateUser } = useAuth();
   const { addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
   const data = useSelector(getMeta);
-  const medLikes = useSelector(getMeditationLikes);
-  const pubLikes = useSelector(getPublicationLikes);
+  const staticMeds = useSelector(getStaticMeditations);
+  const bespokeMeds = useSelector(getMeditations);
 
-  const numPublicationLikes = pubLikes?.find((like: Like) => like.id === id)?.likes || 0;
-  const numMeditationLikes = medLikes?.find((like: Like) => like.id === id)?.likes || 0;
-  const numLikes = content === CONTENT_TYPES.publications ? numPublicationLikes : numMeditationLikes;
+  const table =
+    content === "publications"
+      ? "Articles"
+      : "meditations" && !item.staticMed
+      ? "Bespoke_Meditations"
+      : "Static_Meditations";
 
-  if (!currentUser) return null;
+  console.log(item);
+  console.log(staticMeds);
+  console.log(bespokeMeds);
+  if (!currentUser || !item?.uid) return null;
 
   const isFavourite =
-    currentUser?.favourites?.publications?.includes(id) || currentUser?.favourites?.meditations?.includes(id);
-
-  // handles global likes for item
-  const handleLikeClick = (id: string) => {
-    if (content === CONTENT_TYPES.publications) {
-      if (!data?.LIKES?.map((item: Like) => item.id).includes(id)) {
-        // addOrUpdateMeta("LIKES", [...data?.LIKES, { id, likes: 1 }]);
-        // dispatch(setMeta({ ...data, LIKES: [...data.LIKES, { id, likes: 1 }] }));
-        return;
-      }
-      const likes = data?.LIKES?.map((like: Like) => {
-        if (like.id !== id) return like;
-        return { ...like, likes: like.likes + 1 };
-      });
-
-      // addOrUpdateMeta("LIKES", likes);
-      // dispatch(setMeta({ ...data, LIKES: likes }));
-    } else {
-      if (!data?.meditationLIKES?.map((item: Like) => item.id).includes(id)) {
-        const newData = data?.meditationLIKES ? [...data?.meditationLIKES, { id, likes: 1 }] : [{ id, likes: 1 }];
-        // addOrUpdateMeta("meditationLIKES", newData);
-        dispatch(setMeta({ ...data, meditationLIKES: newData }));
-
-        return;
-      }
-      const likes = data?.meditationLIKES?.map((like: Like) => {
-        if (like.id !== id) return like;
-        return { ...like, likes: like.likes + 1 };
-      });
-      // addOrUpdateMeta("meditationLIKES", likes);
-      dispatch(setMeta({ ...data, meditationLIKES: likes }));
-    }
-  };
-
-  const removeLike = (id: string) => {
-    if (content === CONTENT_TYPES.publications) {
-      const likes = data?.LIKES?.map((like: Like) => {
-        if (like.id !== id) return like;
-        return { ...like, likes: like.likes - 1 };
-      });
-      // addOrUpdateMeta("LIKES", likes);
-      dispatch(setMeta({ ...data, LIKES: likes }));
-    } else {
-      const likes = data?.meditationLIKES?.map((like: Like) => {
-        if (like.id !== id) return like;
-        if (like.likes === 0) return like;
-        return { ...like, likes: like.likes - 1 };
-      });
-      // addOrUpdateMeta("meditationLIKES", likes);
-      dispatch(setMeta({ ...data, meditationLIKES: likes }));
-    }
-  };
+    currentUser?.favourites?.publications?.includes(item.uid) ||
+    currentUser?.favourites?.meditations?.includes(item.uid);
 
   // handles user data liked items
-  const toggleFavourite = (id: string) => {
+  const toggleFavourite = async (id: string) => {
     const userFavs = currentUser?.favourites?.[content];
-    console.log("FAVS", userFavs);
+    if (!userFavs?.includes(item.uid)) {
+      const numLikes = item.likes ? item.likes + 1 : 1;
+      fetch(`${AWS_DB_ENDPOINT}/updateLike`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: item.uid, likes: numLikes, table: table }),
+      });
+    }
     // remove like
-    if (userFavs?.includes(id)) {
-      removeLike(id);
+    if (userFavs?.includes(item.uid)) {
+      if (item.likes > 0) {
+        fetch(`${AWS_DB_ENDPOINT}/updateLike`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: item.uid, likes: item.likes - 1, table: table }),
+        });
+      }
       const updatedPubs = userFavs.filter((item) => item !== id);
       const newData = { ...currentUser, favourites: { ...currentUser?.favourites, [content]: updatedPubs } };
       updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: updatedPubs } });
@@ -102,8 +80,6 @@ const LikeCta = ({
 
       return;
     }
-    // add like
-    // handleLikeClick(id);
 
     const newData = {
       ...currentUser,
@@ -119,7 +95,6 @@ const LikeCta = ({
 
     setCurrentUser(newData);
   };
-
   return (
     <div className='likes'>
       <button onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
@@ -128,7 +103,7 @@ const LikeCta = ({
           className={isFavourite ? "publication__heart publication__heart--favourite" : "publication--heart"}
         />
       </button>
-      <span className='likes__count'>{numLikes} likes</span>
+      <span className='likes__count'>{item.likes ? item.likes : 0} likes</span>
     </div>
   );
 };

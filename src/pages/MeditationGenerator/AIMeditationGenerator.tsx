@@ -381,14 +381,14 @@ const AIMeditationGenerator: React.FC = () => {
                 </span>
               </div>
 
-              {!currentUser && (
+              {/* {!currentUser && (
                 <p className='text-sm text-gray-400 mt-4 text-center'>
                   <button onClick={() => navigate("/login")} className='text-orange-400 hover:underline'>
                     Sign in
                   </button>{" "}
                   to save this meditation to your dashboard
                 </p>
-              )}
+              )} */}
 
               <audio
                 ref={audioRef}

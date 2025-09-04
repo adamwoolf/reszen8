@@ -56,10 +56,10 @@ export default function MembersArea() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  if (!currentUser) {
-    console.log("HERE");
-    return <Navigate to='/login' />;
-  }
+  // if (!currentUser) {
+  //   console.log("HERE");
+  //   return <Navigate to='/login' />;
+  // }
 
   return (
     <div className='home-page members-area'>

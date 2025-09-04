@@ -32,14 +32,14 @@ const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undef
 
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { meditations, dashboard } = useSelector((state) => state.content);
-  const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
   const { items, setItems } = useBasketStore();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (currentUser && currentUser.firebaseId) {
-      addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
+    if (currentUser) {
+      // REPLACE THIS AWS
+      // addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
     }
   }, [items]);
 
@@ -63,12 +63,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser?.savedItems]);
 
-  // Save to localStorage whenever savedItems changes - do this
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedItems));
-    // addOrUpdate(currentUser.firebaseId, { ...currentUser, savedItems });
-  }, [savedItems]);
-
   const addItem = (item: ItemType) => {
     console.log(item);
     const itemType = item.contentType === "meditation" ? "meditations" : "publications";
@@ -76,10 +70,10 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
 
     if (itemExists) return false;
     if (currentUser.savedItems && currentUser.savedItems[itemType]) {
-      addOrUpdate(currentUser.firebaseId, {
-        ...currentUser,
+      updateUser(currentUser?.uid, {
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
+
       setCurrentUser({
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
@@ -88,11 +82,8 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       const newItems = !currentUser.savedItems
         ? { [itemType]: [item] }
         : { ...currentUser?.savedItems, [itemType]: [item] };
+      updateUser(currentUser?.uid, { savedItems: newItems });
 
-      addOrUpdate(currentUser.firebaseId, {
-        ...currentUser,
-        savedItems: newItems,
-      });
       setCurrentUser({
         ...currentUser,
         savedItems: newItems,
@@ -120,8 +111,8 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
           savedItems: newSavedItems,
         }
       : { ...currentUser, savedItems: {} };
+    updateUser(currentUser?.uid, { savedItems: newSavedItems });
 
-    addOrUpdate(currentUser.firebaseId, newUserObj);
     setCurrentUser(newUserObj);
   };
 

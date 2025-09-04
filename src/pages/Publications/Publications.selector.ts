@@ -8,10 +8,9 @@ export const getPublicationsWithLikes = createSelector(
   (state) => state?.meta?.LIKES,
   (publications: Publication[], likes: Like[]) => {
     const pubsWithLikes = publications.map((pub) => {
-      const category = categoriser(`${pub.fields.title} - ${pub.fields.body}`);
+      const category = categoriser(`${pub.title} - ${pub.body}`);
       // console.log(category?.[0]);
-      const numLikes = likes?.find((like: Like) => like.id === pub.sys.id)?.likes || 0;
-      return { ...pub, likes: numLikes, category: category };
+      return { ...pub, category: category };
     });
     return pubsWithLikes.sort((a, b) => b.likes - a.likes);
   }

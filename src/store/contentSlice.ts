@@ -7,6 +7,7 @@ export interface ContentState {
   meta: any;
   staticMeditations: any[];
   currentAudio: string;
+  articles: any[];
 }
 
 const initialState: ContentState = {
@@ -18,6 +19,7 @@ const initialState: ContentState = {
   },
   staticMeditations: [],
   currentAudio: "",
+  articles: [],
 };
 
 export const contentSlice = createSlice({
@@ -39,8 +41,32 @@ export const contentSlice = createSlice({
     setCurrentAudio: (state, action: PayloadAction<string>) => {
       state.currentAudio = action.payload;
     },
+    setArticles: (state, action: PayloadAction<any[]>) => {
+      const awsArticles = action.payload.map((a) => ({
+        fields: { ...a, body: a.content, slug: a.title, audioFile: { fields: { file: { url: a.audioUrl } } } },
+        sys: { ...a },
+      }));
+      state.articles = action.payload;
+      state.publications = action.payload;
+    },
+    setLikes: (state, action) => {
+      const { likes, uid } = action.payload;
+      state.meditations = [...state.meditations].map((med) => {
+        console.log(likes, uid);
+        if (uid === med.uid) return { ...med, likes };
+        return med;
+      });
+    },
   },
 });
 
-export const { setMeditations, setCurrentAudio, setPublications, setMeta, setStaticMeditations } = contentSlice.actions;
+export const {
+  setMeditations,
+  setArticles,
+  setCurrentAudio,
+  setPublications,
+  setMeta,
+  setStaticMeditations,
+  setLikes,
+} = contentSlice.actions;
 export default contentSlice.reducer;

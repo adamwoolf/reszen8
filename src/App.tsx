@@ -46,8 +46,9 @@ import {
   getMeditationItemsREST,
   getMetaREST,
   getStaticMeditationsREST,
+  getAWSArticles,
 } from "./store/storeListener";
-import { setPublications, setStaticMeditations, setMeta, setMeditations } from "./store/contentSlice";
+import { setPublications, setStaticMeditations, setMeta, setMeditations, setArticles } from "./store/contentSlice";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
 
@@ -325,22 +326,19 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    getPublications().then((data) => dispatch(setPublications(data.items)));
-  }, []);
-
-  useEffect(() => {
     // getMetaREST().then((data) => {
     //   if (data) dispatch(setMeta(data));
     // });
+    getAWSArticles().then((data) => {
+      dispatch(setArticles(data));
+    });
 
     getMeditationItemsREST().then((data) => {
       if (data) {
-        console.log(data);
         dispatch(setMeditations(data));
       }
     });
     getStaticMeditationsREST().then((data) => {
-      console.log(data);
       if (data) {
         dispatch(setStaticMeditations(data));
       }

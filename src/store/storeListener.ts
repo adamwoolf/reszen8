@@ -42,8 +42,12 @@ export async function getMeditationItemsREST() {
 export async function getStaticMeditationsREST() {
   const res = await fetch(`${AWS_DB_ENDPOINT}/staticMeditations`);
   const data = await res.json();
-  console.log("STATIC");
-  console.log(data);
+  return data.items;
+}
+
+export async function getAWSArticles() {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/getArticles`);
+  const data = await res.json();
   return data.items;
 }
 

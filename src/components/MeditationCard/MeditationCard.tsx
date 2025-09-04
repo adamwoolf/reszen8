@@ -69,7 +69,7 @@ const MeditationCard = ({
         <div className='publication__card-icon-container'>
           <Icon type={item.category[0].category} />
         </div>
-        {currentUser && showLike && <LikeCta id={item.id} content='meditations' />}
+        {currentUser && showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
       </div>
       {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
         <div>

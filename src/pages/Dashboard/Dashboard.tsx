@@ -40,7 +40,7 @@ const Dashboard = () => {
     if (data) {
       const meds = Object.values(data);
       const parsedMeds = meds
-        .filter((item) => item.generatedBy === currentUser.uid)
+        .filter((item) => item.createdBy === currentUser.uid)
         .map((m, i) => ({
           ...(m as {}),
           type: "meditation",

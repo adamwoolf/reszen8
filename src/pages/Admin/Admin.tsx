@@ -164,10 +164,11 @@ const Admin: React.FC = () => {
     }
   };
 
-  const generateArticle = () => {
-    console.log("article");
-    // build this
-    generateArticleWithAudio(title, script);
+  const generateArticle = async () => {
+    setIsGenerating(true);
+    console.log("article", title, script, voiceCode, meditationType, practiceType);
+    await generateArticleWithAudio(title, script, voiceCode, meditationType, practiceType);
+    setIsGenerating(false);
   };
 
   return (
@@ -295,14 +296,6 @@ const Admin: React.FC = () => {
                 </span>
               </div>
 
-              {!currentUser && (
-                <p className='text-sm text-gray-400 mt-4 text-center'>
-                  <button onClick={() => navigate("/login")} className='text-orange-400 hover:underline'>
-                    Sign in
-                  </button>{" "}
-                  to save this meditation to your dashboard
-                </p>
-              )}
 
               <audio
                 ref={audioRef}

@@ -127,7 +127,7 @@ const Publications = () => {
 
       <div className='publication__grid'>
         {displayPubs?.map((item) => (
-          <PublicationCard key={item.sys.id} item={item} />
+          <PublicationCard key={item.uid} item={item} />
         ))}
       </div>
     </div>

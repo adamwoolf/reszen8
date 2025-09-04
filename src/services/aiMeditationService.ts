@@ -51,7 +51,36 @@ export const generateMeditation = async (
   }
 };
 
-export const generateArticleWithAudio = (title: string, text: string) => {};
+export const generateArticleWithAudio = async (
+  title: string,
+  text: string,
+  voiceCode = "en-GB-BellaNeural",
+  meditationType: string,
+  practiceType: string
+) => {
+  try {
+    // Generate audio via Azure TTS
+
+    // Upload to Firebase Cloud Function
+    const endpoint = `${AWS_DB_ENDPOINT}/generateArticle`;
+
+    const uploadResponse = await axios.post(endpoint, {
+      title,
+      generatedBy: "RESZEN8",
+      id: uuidv4(),
+      voiceCode,
+      text,
+      meditationType,
+      practiceType,
+    });
+
+    console.log(uploadResponse);
+    return uploadResponse;
+  } catch (error) {
+    console.error("Failed to generate meditation:", error);
+    throw new Error("Failed to generate meditation. Please try again later.");
+  }
+};
 
 export const generateStaticMedFromScript = async (
   title: string,
