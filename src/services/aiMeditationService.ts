@@ -54,6 +54,7 @@ export const generateMeditation = async (
 export const generateArticleWithAudio = async (
   title: string,
   text: string,
+  formattedText: string,
   voiceCode = "en-GB-BellaNeural",
   meditationType: string,
   practiceType: string
@@ -70,6 +71,7 @@ export const generateArticleWithAudio = async (
       id: uuidv4(),
       voiceCode,
       text,
+      formattedText,
       meditationType,
       practiceType,
     });

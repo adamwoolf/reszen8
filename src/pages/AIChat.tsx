@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { auth } from "../firebase";
 import { Navigate } from "react-router-dom";
 import { FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./AIChat.scss";
-import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 import { AWS_DB_ENDPOINT } from "../constants";
 
 interface TopPrompt {
@@ -29,7 +27,6 @@ const AIChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const promptButtonRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { data: firebaseData, addOrUpdate } = useFirebaseDatabase("AI-Prompts");
 
   // System prompt that helps the AI understand it's a site assistant
   const systemPrompt = `You are a helpful assistant for RESZEN8, a wellness and lifestyle platform. 
@@ -111,90 +108,95 @@ const AIChat: React.FC = () => {
     e.stopPropagation();
     setShowPrompts((prev) => !prev);
   };
-  async function callChatFunction(messages: { role: string; content: string }[]) {
+
+  /**
+   * Calls the chat endpoint and normalizes return value to a string (or null).
+   * Accepts response shapes like:
+   *  - { reply: "text" }
+   *  - { reply: { content: "text" } }
+   *  - { content: "text" }
+   *  - "plain text"
+   */
+  async function callChatFunction(messagesPayload: { role: string; content: string }[]) {
     try {
-      const endpoint = `${AWS_DB_ENDPOINT}/chat`;
-      // const endpoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/api/chat";
+      const endpoint = `${AWS_DB_ENDPOINT.replace(/\/$/, "")}/chat`;
+      console.log("[AIChat] calling endpoint:", endpoint, "payload:", messagesPayload);
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages: messagesPayload }),
       });
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+
+      const raw = await response.text();
+
+      // try parse JSON, fallback to raw text
+      let data: any = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        data = raw;
       }
 
-      const data = await response.json();
-      return data.reply;
-    } catch (error) {
-      console.error("Failed to call chat function:", error);
+      console.log("[AIChat] response status:", response.status, "body:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          `Server returned ${response.status} ${response.statusText} — ${
+            typeof data === "string" ? data : JSON.stringify(data)
+          }`
+        );
+      }
+
+      // Normalize possible shapes
+      if (data == null) return null;
+      if (typeof data === "string") return data;
+      if (data.reply) {
+        if (typeof data.reply === "string") return data.reply;
+        if (typeof data.reply === "object" && data.reply.content) return data.reply.content;
+      }
+      if (data.content && typeof data.content === "string") return data.content;
+
+      // fallback: stringify object
+      return typeof data === "object" ? JSON.stringify(data) : String(data);
+    } catch (err) {
+      console.error("Failed to call chat function:", err);
       return null;
     }
   }
-  // Close dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = (e: MouseEvent) => {
-  //     if (promptButtonRef.current && !promptButtonRef.current.contains(e.target as Node)) {
-  //       // setShowPrompts(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
-
-  const updateTopPrompts = (prompt: string) => {
-    let found = false;
-    if (!firebaseData) return;
-    Object.values(firebaseData).forEach((item: TopPrompt) => {
-      if (item.text === prompt) {
-        console.log(item);
-        found = true;
-        const updatedPrompt = { ...item, calls: item.calls + 1 };
-        // addOrUpdate(prompt, updatedPrompt);
-      }
-    });
-
-    if (!found) {
-      // addOrUpdate(prompt, { text: prompt, calls: 1 });
-    }
-  };
 
   // Handle prompt selection
   const handlePromptSelect = async (prompt: string) => {
     // Close the dropdown
     setShowPrompts(false);
 
-    // log the choice in topPrompts
-    updateTopPrompts(prompt);
-
-    // Create and add user message
+    // Create user message and append to a local newMessages array (avoid stale state)
     const userMessage: Message = {
       role: "user",
       content: prompt,
       timestamp: new Date(),
     };
-    // Add user message to chat
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+
+    // Optimistically update UI with the user message
+    setMessages(newMessages);
 
     // Process the message to get AI response
     try {
       setIsLoading(true);
 
-      const data = await callChatFunction([
+      const replyString = await callChatFunction([
         { role: "system", content: systemPrompt },
-        ...messages.map(({ role, content }) => ({ role, content })),
-        { role: "user", content: prompt },
+        ...newMessages.map(({ role, content }) => ({ role, content })),
       ]);
 
-      console.log("DATA", data);
+      console.log("REPLY (handlePromptSelect):", replyString);
 
       const aiMessage: Message = {
         role: "assistant",
-        content: data.content || "I'm sorry, I couldn't process your request.",
+        content: replyString ?? "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -211,20 +213,25 @@ const AIChat: React.FC = () => {
   const processMessage = async (message: string) => {
     if (!message.trim()) return;
 
+    // Build newMessages locally to avoid stale messages array
+    const userMessage: Message = { role: "user", content: message, timestamp: new Date() };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+
     setIsLoading(true);
     setError("");
 
     try {
-      const data = await callChatFunction([
+      const replyString = await callChatFunction([
         { role: "system", content: systemPrompt },
-        ...messages.map(({ role, content }) => ({ role, content })),
-        { role: "user", content: message },
+        ...newMessages.map(({ role, content }) => ({ role, content })),
       ]);
 
-      console.log("DATA", data);
+      console.log("REPLY (processMessage):", replyString);
+
       const aiMessage: Message = {
         role: "assistant",
-        content: data.content || "I'm sorry, I couldn't process your request.",
+        content: replyString ?? "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -250,13 +257,16 @@ const AIChat: React.FC = () => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
+    // Build local newMessages to avoid stale state
     const userMessage: Message = {
       role: "user",
       content: input,
       timestamp: new Date(),
     };
+    const newMessages = [...messages, userMessage];
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Update UI immediately
+    setMessages(newMessages);
     setInput("");
     setIsLoading(true);
     setError("");
@@ -264,16 +274,16 @@ const AIChat: React.FC = () => {
     try {
       console.log("Sending message to /api/chat");
 
-      const data = await callChatFunction([
+      const replyString = await callChatFunction([
         { role: "system", content: systemPrompt },
-        ...messages.map(({ role, content }) => ({ role, content })),
-        { role: "user", content: input },
+        ...newMessages.map(({ role, content }) => ({ role, content })),
       ]);
-      console.log("DATA", data);
+
+      console.log("REPLY (handleSubmit):", replyString);
 
       const aiMessage: Message = {
         role: "assistant",
-        content: data.content || "I'm sorry, I couldn't process your request.",
+        content: replyString ?? "I'm sorry, I couldn't process your request.",
         timestamp: new Date(),
       };
 
@@ -295,6 +305,7 @@ const AIChat: React.FC = () => {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
   return (
     <div className='ai-chat-container'>
       <div className='chat-header'>
@@ -310,11 +321,11 @@ const AIChat: React.FC = () => {
             <FaRobot className='empty-icon' />
             <p>Ask me anything about RESZEN8, our services, or how to get started!</p>
             <div className='suggested-questions'>
-              {firebaseData &&
+              {/* {firebaseData &&
                 Object.values(firebaseData)
-                  .sort((a, b) => b.calls - a.calls)
+                  .sort((a: TopPrompt, b: TopPrompt) => b.calls - a.calls)
                   .slice(0, 3)
-                  .map((prompt) => (
+                  .map((prompt: TopPrompt) => (
                     <button
                       key={prompt.text}
                       onClick={() => {
@@ -323,13 +334,14 @@ const AIChat: React.FC = () => {
                           content: prompt.text,
                           timestamp: new Date(),
                         };
-                        setMessages((prev) => [...prev, userMessage]);
+                        // reuse processMessage flow to ensure consistent payload
                         processMessage(prompt.text);
+                        setMessages((prev) => [...prev, userMessage]);
                       }}
                     >
                       {prompt.text}
                     </button>
-                  ))}
+                  ))} */}
             </div>
           </div>
         ) : (
@@ -385,14 +397,6 @@ const AIChat: React.FC = () => {
               }
             }}
           />
-          {/* <button
-            type='button'
-            className='prompt-button'
-            onClick={() => setShowPrompts(!showPrompts)}
-            ref={promptButtonRef}
-          >
-            <span>💡</span>
-          </button> */}
           <div className='chat-button-group'>
             <button
               type='button'
@@ -434,7 +438,6 @@ const AIChat: React.FC = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-
                         handlePromptSelect(prompt);
                       }}
                       onMouseDown={(e) => {

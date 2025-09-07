@@ -14,14 +14,15 @@ import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 const FullPublication = () => {
   const { slug } = useParams();
   const [content, setContent] = useState({});
-  const { addOrUpdate } = useFirebasedatabase("USERS");
+  const { updateUser } = useAuth();
   const { currentUser, setCurrentUser } = useAuth();
   const [saved, setSaved] = useState(false);
   const publications = useSelector((state) => state.content.publications);
 
   useEffect(() => {
-    setContent(publications?.find((pub: Publication) => pub.fields.slug.trim() === slug?.trim()));
+    setContent(publications?.find((pub: Publication) => pub.title.includes(slug)));
   }, [slug, publications]);
+  console.log(content);
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && content?.sys) {
@@ -30,20 +31,22 @@ const FullPublication = () => {
     }
   }, [content, currentUser?.savedItems?.publications, slug]);
 
-  const { body, publishDate, title } = content?.fields || {};
-  const date = publishDate ? new Date(publishDate) : new Date();
+  const { content: body, title } = content || {};
 
   const savePublication = () => {
+    const newPubs = {
+      ...currentUser?.savedItems,
+      publications: currentUser?.savedItems?.publications
+        ? [...currentUser?.savedItems?.publications, { ...content, id: content.uid }]
+        : [{ ...content, id: content.uid }],
+    };
     const newData = {
       ...currentUser,
-      savedItems: {
-        ...currentUser?.savedItems,
-        publications: currentUser?.savedItems?.publications
-          ? [...currentUser?.savedItems?.publications, { ...content?.fields, id: content.sys.id }]
-          : [{ ...content?.fields, id: content.sys.id }],
-      },
+      savedItems: newPubs,
     };
-    addOrUpdate(currentUser?.firebaseId, newData);
+    if (currentUser) updateUser(currentUser?.uid, { savedItems: newPubs });
+
+    // addOrUpdate(currentUser?.firebaseId, newData);
     setCurrentUser(newData);
   };
 
@@ -71,10 +74,10 @@ const FullPublication = () => {
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
 
-      {currentUser && content.fields.audioFile && (
+      {currentUser && (
         <div className='publication__audio'>
           <h3>Listen</h3>
-          <AudioPlayer audioUrl={content.fields.audioFile.fields.file.url} />
+          <AudioPlayer audioUrl={content.audioUrl} />
         </div>
       )}
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}

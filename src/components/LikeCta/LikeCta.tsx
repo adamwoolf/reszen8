@@ -3,7 +3,7 @@ import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { setMeta, setStaticMeditations, setMeditations, setArticles } from "../../store/contentSlice";
+import { setMeta, setStaticMeditations, setMeditations, setArticles, setLikes } from "../../store/contentSlice";
 import { CONTENT_TYPES, AWS_DB_ENDPOINT } from "../../constants";
 import {
   getMeditationLikes,
@@ -44,9 +44,6 @@ const LikeCta = ({
       ? "Bespoke_Meditations"
       : "Static_Meditations";
 
-  console.log(item);
-  console.log(staticMeds);
-  console.log(bespokeMeds);
   if (!currentUser || !item?.uid) return null;
 
   const isFavourite =
@@ -63,6 +60,7 @@ const LikeCta = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid: item.uid, likes: numLikes, table: table }),
       });
+      dispatch(setLikes({ uid: item.uid, likes: numLikes, content: table }));
     }
     // remove like
     if (userFavs?.includes(item.uid)) {
@@ -72,7 +70,9 @@ const LikeCta = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ uid: item.uid, likes: item.likes - 1, table: table }),
         });
+        dispatch(setLikes({ uid: item.uid, likes: item.likes - 1, content: table }));
       }
+
       const updatedPubs = userFavs.filter((item) => item !== id);
       const newData = { ...currentUser, favourites: { ...currentUser?.favourites, [content]: updatedPubs } };
       updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: updatedPubs } });

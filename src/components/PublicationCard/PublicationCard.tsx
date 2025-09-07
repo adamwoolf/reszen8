@@ -3,10 +3,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import LikeCta from "../LikeCta/LikeCta";
 import { Link } from "react-router-dom";
 import { marked } from "marked";
-import useFirebasedatabase from "../../hooks/useFirestoreCollection";
-import { categoriser } from "../../Util";
+
 import Icon from "../Icon/Icon";
-import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { FaAudible, FaFileAudio, FaSpeakap, FaSoundcloud, FaVolumeUp } from "react-icons/fa";
 
 const PublicationCard = ({ item, showLike = true }) => {
@@ -29,16 +27,17 @@ const PublicationCard = ({ item, showLike = true }) => {
   }, [currentUser?.savedItems?.publications]);
 
   const savePublication = () => {
+    const newPubs = {
+      ...currentUser?.savedItems,
+      publications: currentUser?.savedItems?.publications
+        ? [...currentUser?.savedItems?.publications, { ...item, id: item.uid }]
+        : [{ ...item, id: item.uid }],
+    };
     const newData = {
       ...currentUser,
-      savedItems: {
-        ...currentUser?.savedItems,
-        publications: currentUser?.savedItems?.publications
-          ? [...currentUser?.savedItems?.publications, { ...item, id: item.uid }]
-          : [{ ...item, id: item.uid }],
-      },
+      savedItems: newPubs,
     };
-    // addOrUpdate(currentUser?.firebaseId, newData);
+    if (currentUser) updateUser(currentUser?.uid, { savedItems: newPubs });
     setCurrentUser(newData);
   };
 
@@ -62,7 +61,11 @@ const PublicationCard = ({ item, showLike = true }) => {
             <Icon type={category[0].category} />
           </div>
           <h3 className='publication__card-title'>{item.title}</h3>
-          {currentUser && item.audioFile && <FaVolumeUp color='orange' />}
+          {currentUser && item.audioUrl && (
+            <span className='publication__card-audio-icon'>
+              <FaVolumeUp color='orange' />
+            </span>
+          )}
 
           <div className='publication__card-divider' />
           <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />

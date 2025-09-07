@@ -50,12 +50,29 @@ export const contentSlice = createSlice({
       state.publications = action.payload;
     },
     setLikes: (state, action) => {
-      const { likes, uid } = action.payload;
-      state.meditations = [...state.meditations].map((med) => {
-        console.log(likes, uid);
-        if (uid === med.uid) return { ...med, likes };
-        return med;
-      });
+      const { likes, uid, content } = action.payload;
+      console.log(content);
+      if (content === "Bespoke_Meditations") {
+        state.meditations = [...state.meditations].map((med) => {
+          console.log(likes, uid);
+          if (uid === med.uid) return { ...med, likes };
+          return med;
+        });
+      }
+      if (content === "Articles") {
+        state.publications = [...state.publications].map((med) => {
+          console.log(likes, uid);
+          if (uid === med.uid) return { ...med, likes };
+          return med;
+        });
+      }
+      if (content === "Static_Meditations") {
+        state.staticMeditations = [...state.staticMeditations].map((med) => {
+          console.log(likes, uid);
+          if (uid === med.uid) return { ...med, likes };
+          return med;
+        });
+      }
     },
   },
 });

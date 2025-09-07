@@ -1,0 +1,26 @@
+.editor {
+  * {
+    background-color: transparent;
+    color: black;
+  }
+  padding: 8px;
+  background-color: white;
+  border-radius: 5px;
+  height: 300px;
+  color: black;
+  overflow: auto;
+
+  &__format-cta {
+    margin: 4px;
+  }
+
+  &__panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+}

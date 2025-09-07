@@ -1,12 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
-import { v4 as uuidv4 } from "uuid";
-import { generateMeditation, generateScript, generateStaticMedFromScript } from "../../services/aiMeditationService";
-import { toast } from "react-toastify";
+import { generateMeditation } from "../../services/aiMeditationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
-import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "./Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
@@ -25,7 +22,6 @@ interface MeditationState {
 const AIMeditationGenerator: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("Mindfulness");
-  // const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0].name);
   const allowedValues = Object.keys(mapDurationToWords);
@@ -38,7 +34,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, updateUser } = useAuth();
   const [showPopup, setShowPopup] = useState("");
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
   const dispatch = useDispatch();
@@ -49,7 +45,6 @@ const AIMeditationGenerator: React.FC = () => {
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Static Med generation data
-  const [script, setScript] = useState("");
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
   // Hooks
   const { addItem } = useSavedItems();
@@ -175,7 +170,13 @@ const AIMeditationGenerator: React.FC = () => {
       );
 
       console.log("Meditation generation result:", result);
-
+      if (currentUser && currentUser.subscription?.meditationCredits)
+        updateUser(currentUser?.uid, {
+          subscription: {
+            ...currentUser?.subscription,
+            meditationCredits: currentUser?.subscription?.meditationCredits - 1,
+          },
+        });
       if (!result) {
         throw new Error("Failed to generate meditation");
       }
@@ -308,11 +309,16 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
 
           <div className='flex justify-center mt-8 space-x-8'>
+            {!currentUser?.subscription?.meditationCredits && (
+              <span>You have run out of meditation credits for this subscription period.</span>
+            )}
             {currentUser && currentUser?.isGod ? (
               <button
                 type='submit'
                 className='generate-btn'
-                disabled={isGenerating || !title || profanityFilter(title)}
+                disabled={
+                  isGenerating || !title || profanityFilter(title) || !currentUser?.subscription?.meditationCredits
+                }
               >
                 {isGenerating ? (
                   <>
@@ -380,15 +386,6 @@ const AIMeditationGenerator: React.FC = () => {
                   <Link to='/dashboard'>Dashboard</Link>
                 </span>
               </div>
-
-              {/* {!currentUser && (
-                <p className='text-sm text-gray-400 mt-4 text-center'>
-                  <button onClick={() => navigate("/login")} className='text-orange-400 hover:underline'>
-                    Sign in
-                  </button>{" "}
-                  to save this meditation to your dashboard
-                </p>
-              )} */}
 
               <audio
                 ref={audioRef}

@@ -54,8 +54,8 @@ const Publications = () => {
     setDisplayPubs(
       publications.filter(
         (pub: Publication) =>
-          pub.fields.body.toLowerCase().includes(query.toLowerCase()) ||
-          pub.fields.title.toLowerCase().includes(query.toLowerCase())
+          pub.content.toLowerCase().includes(query.toLowerCase()) ||
+          pub.title.toLowerCase().includes(query.toLowerCase())
       )
     );
   };
@@ -103,14 +103,15 @@ const Publications = () => {
 
         {displayPubs?.length > 0 && (
           <span ref={resultsContainer} className='publications__count'>
-            Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}.
+            Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}
           </span>
         )}
-        {activeFilter && (
-          <button className='publications__filter' onClick={showAll}>
-            clear filter
-          </button>
-        )}
+        {activeFilter ||
+          (search && (
+            <button className='publications__filter' onClick={showAll}>
+              clear filter
+            </button>
+          ))}
       </div>
       {!displayPubs?.length && (
         <span className='publications__no-results'>Sorry, we couldn't find any articles that match your search</span>

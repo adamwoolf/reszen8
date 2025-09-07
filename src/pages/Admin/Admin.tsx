@@ -4,7 +4,6 @@ import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { v4 as uuidv4 } from "uuid";
 import {
   generateMeditation,
-  generateScript,
   generateStaticMedFromScript,
   generateArticleWithAudio,
 } from "../../services/aiMeditationService";
@@ -12,13 +11,13 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
-import Popup from "./Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 import { getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
 import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
+import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 interface MeditationState {
   title: string;
   content: string;
@@ -52,6 +51,7 @@ const Admin: React.FC = () => {
 
   // Static Med generation data
   const [script, setScript] = useState("");
+  const [formattedArticle, setFormattedArticle] = useState("");
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
   // Hooks
   const { addItem } = useSavedItems();
@@ -167,7 +167,7 @@ const Admin: React.FC = () => {
   const generateArticle = async () => {
     setIsGenerating(true);
     console.log("article", title, script, voiceCode, meditationType, practiceType);
-    await generateArticleWithAudio(title, script, voiceCode, meditationType, practiceType);
+    await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType);
     setIsGenerating(false);
   };
 
@@ -198,44 +198,54 @@ const Admin: React.FC = () => {
             <input value={voiceCode} placeholder='Enter voice code' onChange={(e) => setVoiceCode(e.target.value)} />
           </div>
           <div className='form-grid'>
-            <div className='form-group form-group-block'>
-              <label htmlFor='meditation-type'>Meditation Type</label>
+            {contentType === "meditation" && (
+              <div className='form-group form-group-block'>
+                <label htmlFor='meditation-type'>Meditation Type</label>
 
-              <select
-                id='meditation-type'
-                value={meditationType}
-                onChange={(e) => setMeditationType(e.target.value)}
-                disabled={isGenerating}
-              >
-                {MedTypesAndAffirmations.map((type, i) => (
-                  <option key={type.title + i} value={type.type}>
-                    {type.type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className='form-group'>
-              <div>
-                <label htmlFor='practiceType'>Practice Type</label>
+                <select
+                  id='meditation-type'
+                  value={meditationType}
+                  onChange={(e) => setMeditationType(e.target.value)}
+                  disabled={isGenerating}
+                >
+                  {MedTypesAndAffirmations.map((type, i) => (
+                    <option key={type.title + i} value={type.type}>
+                      {type.type}
+                    </option>
+                  ))}
+                </select>
               </div>
+            )}
 
-              <select
-                id='practiceType'
-                value={practiceType.name}
-                onChange={(e) => setPracticeType(e.target.value)}
-                disabled={isGenerating}
-              >
-                {PracticeTypes.map((lang, i) => (
-                  <option key={lang.name + i} value={lang.name}>
-                    <p> {lang.name}</p>
-                  </option>
-                ))}
-              </select>
-            </div>
+            {contentType === "meditation" && (
+              <div className='form-group'>
+                <div>
+                  <label htmlFor='practiceType'>Practice Type</label>
+                </div>
+
+                <select
+                  id='practiceType'
+                  value={practiceType.name}
+                  onChange={(e) => setPracticeType(e.target.value)}
+                  disabled={isGenerating}
+                >
+                  {PracticeTypes.map((lang, i) => (
+                    <option key={lang.name + i} value={lang.name}>
+                      <p> {lang.name}</p>
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
           <label>Script</label>
-          <textarea rows={30} value={script} onChange={(e) => setScript(e.target.value)} />
+          <RichTextEditor
+            onChange={(e) => {
+              setScript(e.plainText);
+              setFormattedArticle(e.html);
+            }}
+          />
+
           <button
             disabled={!title || !meditationType || !script || !practiceType}
             onClick={contentType === "meditation" ? generateStatic : generateArticle}
@@ -295,7 +305,6 @@ const Admin: React.FC = () => {
                   <Link to='/dashboard'>Dashboard</Link>
                 </span>
               </div>
-
 
               <audio
                 ref={audioRef}

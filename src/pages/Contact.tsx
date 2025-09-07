@@ -49,8 +49,8 @@ const Contact: React.FC = () => {
     <div className='contact-page'>
       <div className='contact-container'>
         <h1>Contact Us</h1>
-        <p className='contact-intro'>Have questions or feedback? We'd love to hear from you!</p>
 
+        <p className='contact-intro'>Have questions or feedback? We'd love to hear from you!</p>
         <form onSubmit={handleSubmit} className='contact-form'>
           <div className='form-group'>
             <label htmlFor='name'>

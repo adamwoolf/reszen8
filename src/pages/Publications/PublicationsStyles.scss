@@ -27,10 +27,6 @@
     &::placeholder {
       color: white;
     }
-
-    @media (max-width: 768px) {
-      display: none;
-    }
   }
 
   &__filter {
@@ -172,6 +168,12 @@
         padding-right: 15px;
       }
     }
+  }
+
+  &__card-audio-icon {
+    position: absolute;
+    right: 16px;
+    top: 80px;
   }
 
   &__card-title {

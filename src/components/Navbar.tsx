@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
     currentUser?.savedItems?.meditations?.length || 0 + currentUser?.savedItems?.publications?.length || 0;
   const meds = useSelector((state) => state?.content?.meditations);
   const userBespokeMeds =
-    meds && currentUser ? Object.values(meds).filter((med) => med.generatedBy === currentUser?.uid)?.length : 0;
+    meds && currentUser ? Object.values(meds).filter((med) => med.createdBy === currentUser?.uid)?.length : 0;
 
   const dashboardTotal = dashboardCount + userBespokeMeds;
   // Close mobile menu when route changes

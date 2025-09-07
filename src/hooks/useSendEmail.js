@@ -1,29 +1,26 @@
 import { useState } from "react";
 import axios from "axios";
+import { AWS_DB_ENDPOINT } from "../constants";
 
 const useSendEmail = () => {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const endPoint = "https://us-central1-reszen8-1d832.cloudfunctions.net/sendMail";
-  // const endPoint = "http://127.0.0.1:5001/reszen8-1d832/us-central1/sendMail";
+  const endPoint = `${AWS_DB_ENDPOINT}/sendMail`;
   const sendMail = async (html, subject, recipient) => {
     setSent(false);
     setSending(true);
 
-    fetch(endPoint, {
+    await fetch(endPoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        html,
-        subject,
         to: recipient,
-        cc: "adam@webspinner.eu",
+        cc: "",
+        subject,
+        html,
       }),
     })
       .then((res) => res.text())
-      .then(console.log)
       .then(() => {
         setSent(true);
         setSending(false);
