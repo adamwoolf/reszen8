@@ -269,13 +269,13 @@ const Dashboard = () => {
             My Articles
             {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
           </button>
-          <button
+          {/* <button
             className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
             onClick={() => setActiveTab("publications")}
           >
             My Playlist
             <span className='tab-count'>0</span>
-          </button>
+          </button> */}
         </div>
         {showRightChevron && (
           <button onClick={() => scrollTabs("right")} className='tabs__arrow tabs__arrow--right'>

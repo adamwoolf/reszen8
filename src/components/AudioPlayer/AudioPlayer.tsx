@@ -3,61 +3,31 @@ import "./AudioPlayerStyles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentAudio } from "../../store/contentSlice";
 import { getCurrentAudio } from "../../store/contentSelectors";
-import MakeAvailableOfflineButton from "../AvailableOfflineCta";
+import RadiatingWaves from "./Playing";
 
-function NowPlaying() {
-  return (
-    <div className='now-playing'>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  );
-}
+const FADE_INTERVAL = 100; // ms
+const FADE_STEP = 0.05; // volume step per tick
 
-function RadiatingWaves({
-  size = 48, // px
-  color = "#ffffff", // white
-  count = 3, // number of ripples
-  duration = 5, // seconds per ripple
-  isActive = true, // pause/play animation
-  border = 4, // ring stroke width (px)
-}) {
-  // Stagger each circle so they loop seamlessly
-  const circles = Array.from({ length: count });
-
-  return (
-    <div
-      className={`ripple ${!isActive ? "paused" : ""}`}
-      style={{
-        // expose as CSS vars so CSS can read them
-        "--size": `${size}px`,
-        "--color": color,
-        "--duration": `${duration}s`,
-        "--border": `${border}px`,
-      }}
-    >
-      {circles.map((_, i) => (
-        <span
-          key={i}
-          className='circle'
-          style={{
-            animationDelay: `${(duration / count) * i}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
-  console.log(audioUrl);
+const AudioPlayer = ({
+  audioUrl,
+  ambientUrl,
+  allowBackground,
+  isVisible,
+}: {
+  allowBackground?: boolean;
+  audioUrl: string;
+  ambientUrl?: string;
+  isVisible?: boolean;
+}) => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const ambientRef = useRef<HTMLAudioElement>(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const currentAudio = useSelector(getCurrentAudio);
   const dispatch = useDispatch();
+  const ambientEnv = useSelector((state) => state.content.ambientEnv);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -68,6 +38,7 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     const handleEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      fadeOutAmbient();
     };
 
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
@@ -83,37 +54,96 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
 
   const [wasManuallyPlayed, setWasManuallyPlayed] = useState(false);
 
+  const fadeInAmbient = () => {
+    const ambient = ambientRef.current;
+    if (!ambient) return;
+    ambient.volume = 0;
+    setIsPlaying(true);
+    ambient.play().catch((err) => console.error("Ambient play error:", err));
+    const fade = setInterval(() => {
+      if (ambient.volume < 1) {
+        ambient.volume = Math.min(ambient.volume + FADE_STEP, 0.5);
+      } else {
+        clearInterval(fade);
+      }
+    }, FADE_INTERVAL);
+  };
+
+  const fadeOutAmbient = () => {
+    const ambient = ambientRef.current;
+    if (!ambient) return;
+    const fade = setInterval(() => {
+      if (ambient.volume > 0) {
+        ambient.volume = Math.max(ambient.volume - FADE_STEP, 0);
+      } else {
+        ambient.pause();
+        clearInterval(fade);
+        setIsPlaying(false);
+      }
+    }, FADE_INTERVAL);
+  };
+
   const togglePlayPause = () => {
     if (isPlaying) {
       audioRef.current?.pause();
+      fadeOutAmbient();
       dispatch(setCurrentAudio("")); // stop globally
       setWasManuallyPlayed(false);
     } else {
-      dispatch(setCurrentAudio(audioUrl)); // request to play — let effect handle playback
+      dispatch(setCurrentAudio(audioUrl));
       setWasManuallyPlayed(true);
     }
   };
 
   useEffect(() => {
+    // if (!allowBackground) return;
+    const ambient = ambientRef.current;
+    const voice = audioRef.current;
+    if (!ambient || !voice) return;
+
+    const handleAmbientEnded = () => {
+      // if main voice is still playing, restart ambient
+      if (!voice.paused && !voice.ended) {
+        ambient.currentTime = 0;
+        ambient.play().catch((err) => console.error("Ambient replay error:", err));
+      }
+    };
+
+    ambient.addEventListener("ended", handleAmbientEnded);
+    return () => {
+      ambient.removeEventListener("ended", handleAmbientEnded);
+    };
+  }, [allowBackground]);
+
+  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+
+    if (!audio || !isVisible) return;
 
     if (currentAudio === audioUrl && wasManuallyPlayed) {
-      // Only auto-play if it was manually triggered
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch((err) => {
-          console.error("Playback error:", err);
-          setIsPlaying(false);
-        });
+      if (allowBackground) fadeInAmbient();
+      setTimeout(
+        () => {
+          audio.volume = 0.6;
+
+          audio
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch((err) => {
+              console.error("Playback error:", err);
+              setIsPlaying(false);
+            });
+        },
+        ambientEnv.url && allowBackground ? 6000 : 1000
+      );
     } else {
       audio.pause();
       setIsPlaying(false);
+      fadeOutAmbient();
     }
-  }, [currentAudio, audioUrl, wasManuallyPlayed]);
+  }, [currentAudio, audioUrl, wasManuallyPlayed, ambientEnv.url, allowBackground, isVisible]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
@@ -132,13 +162,6 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     return `${minutes}:${seconds}`;
   };
 
-  // src/utils/cacheAudio.js
-  const cacheAudio = async (url: string) => {
-    const cache = await caches.open("firebase-audio");
-    await cache.add(url);
-    console.log(`Cached audio: ${url}`);
-  };
-
   return (
     <div className='audio-player__inner'>
       <audio
@@ -148,27 +171,22 @@ const AudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
+      {allowBackground && <audio ref={ambientRef} src={allowBackground ? ambientEnv.url : ""} preload='auto' />}
 
       <button
         onClick={togglePlayPause}
         className={!isPlaying ? "dashboard-button audio-btn " : "dashboard-button audio-btn audio-btn--playing"}
       >
         {isPlaying ? (
-          <>
-            <RadiatingWaves />
-            {/* <span>Pause</span> */}
-          </>
+          <RadiatingWaves />
         ) : (
-          <>
-            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
-              <path
-                fillRule='evenodd'
-                d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
-                clipRule='evenodd'
-              />
-            </svg>
-            {/* <span>Play</span> */}
-          </>
+          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+            <path
+              fillRule='evenodd'
+              d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
+              clipRule='evenodd'
+            />
+          </svg>
         )}
       </button>
 

@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 interface MeditationState {
   title: string;
   content: string;
@@ -44,6 +45,7 @@ const Admin: React.FC = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [contentType, setContentType] = useState("meditation");
+  const [immersive, setImmersive] = useState(false);
 
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -84,6 +86,10 @@ const Admin: React.FC = () => {
       }
     };
   }, [generatedMeditation, previewAudio]);
+
+  useEffect(() => {
+    setVoiceCode(immersive ? "en-GB-OliviaNeural" : "en-GB-BellaNeural");
+  }, [immersive]);
 
   // Toggle play/pause for audio
   const togglePlayPause = async () => {
@@ -150,7 +156,7 @@ const Admin: React.FC = () => {
     setIsGenerating(true);
 
     try {
-      await generateStaticMedFromScript(title, meditationType, practiceType, script, voiceCode);
+      await generateStaticMedFromScript(title, meditationType, practiceType, script, voiceCode, immersive);
 
       console.log("Static generated");
 
@@ -167,7 +173,7 @@ const Admin: React.FC = () => {
   const generateArticle = async () => {
     setIsGenerating(true);
     console.log("article", title, script, voiceCode, meditationType, practiceType);
-    await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType);
+    await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType, immersive);
     setIsGenerating(false);
   };
 
@@ -192,6 +198,10 @@ const Admin: React.FC = () => {
                 <option value={content}>{content}</option>
               ))}
             </select>
+          </div>
+          <div className='form-group form-group-block'>
+            <label>With Immersive Sound? </label>
+            <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
           <div className='form-group form-group-block'>
             <label>Voice code</label>

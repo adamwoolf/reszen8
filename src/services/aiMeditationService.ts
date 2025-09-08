@@ -27,7 +27,8 @@ export const generateMeditation = async (
   practiceType: string,
   userId: string,
   voiceCode = "en-GB-BellaNeural",
-  title: string
+  title: string,
+  immersive: boolean
 ) => {
   try {
     const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
@@ -40,6 +41,7 @@ export const generateMeditation = async (
       userId,
       voiceCode,
       title,
+      immersive,
     });
 
     console.log("MEDITATION", meditation);
@@ -57,7 +59,8 @@ export const generateArticleWithAudio = async (
   formattedText: string,
   voiceCode = "en-GB-BellaNeural",
   meditationType: string,
-  practiceType: string
+  practiceType: string,
+  immersive: boolean
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -74,6 +77,7 @@ export const generateArticleWithAudio = async (
       formattedText,
       meditationType,
       practiceType,
+      immersive,
     });
 
     console.log(uploadResponse);
@@ -89,7 +93,8 @@ export const generateStaticMedFromScript = async (
   meditationType: string,
   practiceType: string,
   script: string,
-  voiceCode: string
+  voiceCode: string,
+  immersive: boolean
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -105,6 +110,7 @@ export const generateStaticMedFromScript = async (
       script,
       meditationType,
       practiceType,
+      immersive,
     });
 
     console.log(uploadResponse);

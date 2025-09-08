@@ -1,0 +1,147 @@
+:root {
+  --toggle-bg-off: #e6e6e6; /* light grey */
+  --toggle-bg-on: #ff8a00; /* orange */
+  --toggle-knob: #ffffff; /* white knob */
+  --toggle-disabled: #cfcfcf; /* disabled track */
+  --focus-ring: rgba(255, 138, 0, 0.35);
+  --transition: 300ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* Base button reset */
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.toggle-container {
+  display: flex;
+}
+
+.toggle-label {
+  margin: 0 24px;
+  color: orange;
+
+  &--selected {
+    font-weight: bold;
+  }
+}
+
+/* Disabled styles */
+.toggle-switch.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Track */
+.toggle-track {
+  display: inline-block;
+  position: relative;
+  border-radius: 999px;
+  transition: background var(--transition), box-shadow var(--transition);
+  box-shadow: none;
+}
+
+/* Knob */
+.toggle-knob {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 6%;
+  transform: translateY(-50%);
+  background: var(--toggle-knob);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.12);
+  transition: transform var(--transition), left var(--transition), box-shadow var(--transition);
+}
+
+/* Sizes */
+/* small */
+.toggle-switch--sm .toggle-track {
+  width: 36px;
+  height: 20px;
+}
+.toggle-switch--sm .toggle-knob {
+  width: 14px;
+  height: 14px;
+  left: 6%;
+}
+
+/* medium (default) */
+.toggle-switch--md .toggle-track {
+  width: 48px;
+  height: 28px;
+}
+.toggle-switch--md .toggle-knob {
+  width: 20px;
+  height: 20px;
+  left: 6%;
+}
+
+/* large */
+.toggle-switch--lg .toggle-track {
+  width: 64px;
+  height: 36px;
+}
+.toggle-switch--lg .toggle-knob {
+  width: 28px;
+  height: 28px;
+  left: 6%;
+}
+
+/* OFF state */
+.toggle-switch.is-off .toggle-track {
+  background: var(--toggle-bg-off);
+}
+
+/* ON state */
+.toggle-switch.is-on .toggle-track {
+  background: var(--toggle-bg-on);
+}
+
+/* Move knob to right when ON */
+/* calculations: left = 6% -> right position approximated with calc */
+.toggle-switch--sm.is-on .toggle-knob {
+  left: calc(100% - 6% - 14px);
+}
+.toggle-switch--md.is-on .toggle-knob {
+  left: calc(100% - 6% - 20px);
+}
+.toggle-switch--lg.is-on .toggle-knob {
+  left: calc(100% - 6% - 28px);
+}
+
+/* Focus ring for keyboard users */
+.toggle-switch:focus-visible .toggle-track {
+  box-shadow: 0 0 0 6px var(--focus-ring);
+  outline: none;
+}
+
+/* Pressed state - slight scale */
+.toggle-switch:active .toggle-knob {
+  transform: translateY(-50%) scale(0.98);
+}
+
+/* Disabled appearance */
+.toggle-switch.is-disabled .toggle-track {
+  background: var(--toggle-disabled);
+}
+.toggle-switch.is-disabled .toggle-knob {
+  box-shadow: none;
+}
+
+/* Provide smooth color transitions when toggling */
+.toggle-track,
+.toggle-knob {
+  will-change: transform, left, background;
+}

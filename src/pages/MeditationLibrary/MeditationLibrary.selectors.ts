@@ -23,6 +23,6 @@ export const getMeditationsWithLikes = createSelector(
       };
     });
 
-    return [...staticMeds, ...normalized].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    return [...staticMeds].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   }
 );

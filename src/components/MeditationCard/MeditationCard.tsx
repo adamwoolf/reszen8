@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { useAuth } from "../../contexts/AuthContext";
 import LikeCta from "../LikeCta/LikeCta";
 import Icon from "../Icon/Icon";
 import "./MeditationCardStyles.scss";
-import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { AWS_DB_ENDPOINT } from "../../constants";
+import immersiveLogo from "../../assets/icons/immersiveAudio.png";
+
+const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
 const MeditationCard = ({
   item,
@@ -19,8 +21,27 @@ const MeditationCard = ({
   item: any;
 }) => {
   const { currentUser } = useAuth();
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef<HTMLElement | null>(null);
 
-  const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.id === item.id);
+  // Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.25 }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+
+    return () => {
+      if (cardRef.current) observer.unobserve(cardRef.current);
+    };
+  }, []);
+
+  const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.uid === item.uid);
 
   const handleDelete = async (id: string) => {
     await fetch(`${AWS_DB_ENDPOINT}/deleteStaticMed`, {
@@ -34,38 +55,66 @@ const MeditationCard = ({
   const verifyM = async () => {
     await fetch(`${AWS_DB_ENDPOINT}/updateStaticMed`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uid: item.uid,
-        verified: true,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid: item.uid, verified: true }),
     });
     setTimeout(() => window.location.reload(), 1000);
   };
 
+  // Calculate and update duration
+  useEffect(() => {
+    if (isVisible && item.audioUrl && !item.duration) {
+      const audio = new Audio(item.audioUrl);
+      audio.addEventListener("loadedmetadata", async () => {
+        let calculatedDuration = audio.duration;
+
+        // If immersive (ambient intro), add intro buffer
+        if (item.immersive) {
+          calculatedDuration += INTRO_BUFFER;
+        }
+
+        console.log(`Calculated duration for ${item.title}: ${calculatedDuration}s`);
+
+        // Update backend with new duration
+        try {
+          await fetch(`${AWS_DB_ENDPOINT}/updateStaticMed`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: item.uid,
+              duration: Math.round(calculatedDuration),
+            }),
+          });
+        } catch (err) {
+          console.error("Failed to update duration:", err);
+        }
+      });
+    }
+  }, [isVisible, item.audioUrl, item.duration, item.immersive, item.title, item.uid]);
+
   return (
     <article
+      ref={cardRef}
       className={!item.staticMed ? "feature-card publication__card " : "feature-card publication__card static-med"}
     >
       <div className='publication__card-content'>
         <div className='publication__card-inner'>
           <h3 className='publication__card-title'>{item.title}</h3>
+          {item.immersive && <img className='immersive-icon' src={immersiveLogo} />}
+
           <div className='publication__card-divider' />
 
-          {item.duration && <p>Duration: {item.duration}</p>}
           {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
           {item.style && <p className='publication__card-meditation-type'>Meditation Style: {item.style}</p>}
-          {/* {item.language && <p>Language: {item.language}</p>} */}
         </div>
         <div className='publication__card-inner'>
-          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} />}
-          <button disabled={hasBeenSaved} onClick={() => handleAddItem(item)} className='publication__card-save-cta'>
+          {item.audioUrl && (
+            <AudioPlayer isVisible={isVisible} audioUrl={item.audioUrl} allowBackground={item.immersive} />
+          )}
+          <button disabled={hasBeenSaved} onClick={() => handleAddItem?.(item)} className='publication__card-save-cta'>
             {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
           </button>
         </div>
-
         <div className='publication__card-icon-container'>
           <Icon type={item.category[0].category} />
         </div>

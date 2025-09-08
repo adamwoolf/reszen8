@@ -1,5 +1,52 @@
 .meditation-library {
   &__search-results {
     color: var(--primary-color);
+    scroll-margin-top: 180px;
+  }
+
+  &__toggle-container {
+    display: flex;
+
+    span {
+      margin: 0 8px;
+    }
+  }
+
+  &__ia-select {
+    margin: 26px 0;
+    overflow: hidden;
+
+    &--hide {
+      animation: closeUp 300ms;
+      animation-fill-mode: both;
+    }
+
+    &--show {
+      animation: openOut 300ms ease-in-out;
+      animation-fill-mode: both;
+    }
+  }
+}
+
+@keyframes openOut {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+
+  to {
+    height: 100px;
+    opacity: 1;
+  }
+}
+
+@keyframes closeUp {
+  from {
+    height: 100px;
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
   }
 }

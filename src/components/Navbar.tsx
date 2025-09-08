@@ -10,6 +10,8 @@ import useSendMail from "../hooks/useSendEmail";
 import Search from "./Search/Search";
 import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
+import { getStaticMeditations, getPublications } from "../store/contentSelectors";
+import AmbientEnv from "./AmbientEnv/AmbientEnv";
 
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
@@ -25,7 +27,8 @@ const Navbar: React.FC = () => {
   const meds = useSelector((state) => state?.content?.meditations);
   const userBespokeMeds =
     meds && currentUser ? Object.values(meds).filter((med) => med.createdBy === currentUser?.uid)?.length : 0;
-
+  const staticMeds = useSelector(getStaticMeditations);
+  const articles = useSelector(getPublications);
   const dashboardTotal = dashboardCount + userBespokeMeds;
   // Close mobile menu when route changes
   useEffect(() => {
@@ -149,7 +152,7 @@ const Navbar: React.FC = () => {
                 <>
                   <li>
                     <NavLink to='/articles' className={getNavLinkClass}>
-                      Articles
+                      Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
                     </NavLink>
                   </li>
                   <li>
@@ -159,7 +162,7 @@ const Navbar: React.FC = () => {
                   </li>
                   <li>
                     <NavLink to='/meditation-library' className={getNavLinkClass}>
-                      Meditation Library
+                      Meditation Library <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
                     </NavLink>
                   </li>
                   <li>
@@ -227,7 +230,6 @@ const Navbar: React.FC = () => {
             <div className='navbar__search-desktop'>
               <Search />
             </div>
-
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
               <button className='user-address' onClick={signOutRedirect}>

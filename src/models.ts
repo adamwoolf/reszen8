@@ -48,3 +48,8 @@ export interface Like {
   likes: number;
   id: string;
 }
+
+export interface AmbientEnv {
+  name: string;
+  url: string;
+}

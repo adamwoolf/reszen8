@@ -5,6 +5,7 @@ import PublicationCard from "../../components/PublicationCard/PublicationCard";
 import { useSelector } from "react-redux";
 import { getPublicationsWithLikes } from "./Publications.selector";
 import Icon, { getIcon } from "../../components/Icon/Icon";
+import Filters from "../../components/Filters/Filters";
 interface Publication {
   fields: {
     title: string;
@@ -75,32 +76,11 @@ const Publications = () => {
     setDisplayPubs(favs);
   };
 
-  const keyWords = ["Mindfulness", "Growth", "Awareness", "Stress", "Anger"];
-
   return (
     <div className='publications'>
       <h1>Articles</h1>
+      <Filters search={search} searchText={searchText} activeFilter={activeFilter} filterPubs={filterPubs} />
       <div className='publications__filters'>
-        <input
-          className='publications__search'
-          value={search}
-          onChange={searchText}
-          placeholder='Type to search articles'
-        />
-        <div></div>
-
-        <div className='publications__tiles'>
-          {Object.keys(getIcon).map((icon) => (
-            <button
-              key={icon}
-              className={activeFilter !== icon ? "publications__filter non-active-filter" : "publications__filter"}
-              onClick={() => filterPubs(icon)}
-            >
-              <Icon large type={icon} />
-            </button>
-          ))}
-        </div>
-
         {displayPubs?.length > 0 && (
           <span ref={resultsContainer} className='publications__count'>
             Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}

@@ -4,7 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { reduxStore } from "./store/reduxStore";
 import { Provider } from "react-redux";
-import { registerSW } from "virtual:pwa-register";
+// import { registerSW } from "virtual:pwa-register";
 import { AuthProvider } from "react-oidc-context";
 
 const container = document.getElementById("root");
@@ -16,6 +16,7 @@ const cognitoAuthConfig = {
   redirect_uri: import.meta.env.VITE_BASE_URL,
   response_type: "code",
   scope: "phone openid email profile",
+  automaticSilentRenew: true, // <-- key
 };
 
 // if ("serviceWorker" in navigator) {

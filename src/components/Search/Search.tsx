@@ -49,7 +49,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
 
   const search = () => {
     if (dashboard) return searchDashboardItems();
-    const pubs = publications.filter((pub: Publication) => pub.fields.body.toLowerCase().includes(query.toLowerCase()));
+    const pubs = publications.filter((pub: Publication) => pub.content.toLowerCase().includes(query.toLowerCase()));
 
     const normalisedBespoke = data
       ? Object.values(meditations)

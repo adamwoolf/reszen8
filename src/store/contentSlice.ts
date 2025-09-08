@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Publication } from "../models";
+import { Publication, AmbientEnv } from "../models";
+import test from "../assets/audio/space.mp3";
 
 export interface ContentState {
   meditations: any[];
@@ -8,6 +9,7 @@ export interface ContentState {
   staticMeditations: any[];
   currentAudio: string;
   articles: any[];
+  ambientEnv: AmbientEnv;
 }
 
 const initialState: ContentState = {
@@ -20,6 +22,7 @@ const initialState: ContentState = {
   staticMeditations: [],
   currentAudio: "",
   articles: [],
+  ambientEnv: { name: "Warm", url: test },
 };
 
 export const contentSlice = createSlice({
@@ -74,6 +77,9 @@ export const contentSlice = createSlice({
         });
       }
     },
+    setAmbientEnv: (state, action) => {
+      state.ambientEnv = action.payload;
+    },
   },
 });
 
@@ -85,5 +91,6 @@ export const {
   setMeta,
   setStaticMeditations,
   setLikes,
+  setAmbientEnv,
 } = contentSlice.actions;
 export default contentSlice.reducer;
