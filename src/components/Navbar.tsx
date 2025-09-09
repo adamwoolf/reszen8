@@ -4,7 +4,6 @@ import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
 import { FaBars } from "react-icons/fa";
 import "./Navbar.scss";
-import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import AccountStatus from "../components/AccountStatus/AccountStatus";
 import useSendMail from "../hooks/useSendEmail";
 import Search from "./Search/Search";
@@ -20,7 +19,6 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { addOrUpdate } = useFirebasedatabase("USERS");
   const { sendMail } = useSendMail();
   const dashboardCount =
     currentUser?.savedItems?.meditations?.length || 0 + currentUser?.savedItems?.publications?.length || 0;
@@ -72,7 +70,6 @@ const Navbar: React.FC = () => {
           subscription: newTrial,
           purchasedItems: [{ name: "Free Trial", price: 0, purchasedDate: Date.now() }],
         };
-        addOrUpdate(currentUser.firebaseId, newUserData);
         setCurrentUser(newUserData);
         sendMail(`welcome, ${currentUser?.name}`, "Welcome to your RESZEN8 Free Trial!", currentUser?.email);
         sendMail(
@@ -99,7 +96,6 @@ const Navbar: React.FC = () => {
           ...currentUser,
           subscription: { ...newTrial, startDate: thirtyFiveDaysAgo, hasCompletedTrial: true },
         };
-        addOrUpdate(currentUser.firebaseId, newUserData);
         setCurrentUser(newUserData);
         sendMail("we are sorry to see you go", "RESZEN8 cancellation", currentUser?.email);
         sendMail(

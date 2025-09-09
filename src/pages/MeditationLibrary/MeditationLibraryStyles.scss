@@ -6,47 +6,39 @@
 
   &__toggle-container {
     display: flex;
+    align-items: center;
 
-    span {
-      margin: 0 8px;
+    &__info-cta {
+      background-color: transparent;
+      color: orange;
+      padding: 0;
+      height: 20px;
+      margin: 0;
+      margin-left: -10px;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  &__ai-popup {
+    background-color: transparent;
+    p {
+      color: orange;
     }
   }
 
   &__ia-select {
     margin: 26px 0;
     overflow: hidden;
+    transition: max-height 300ms ease;
 
     &--hide {
-      animation: closeUp 300ms;
-      animation-fill-mode: both;
+      max-height: 0;
     }
 
     &--show {
-      animation: openOut 300ms ease-in-out;
-      animation-fill-mode: both;
+      max-height: 150px;
     }
-  }
-}
-
-@keyframes openOut {
-  from {
-    height: 0;
-    opacity: 0;
-  }
-
-  to {
-    height: 100px;
-    opacity: 1;
-  }
-}
-
-@keyframes closeUp {
-  from {
-    height: 100px;
-    opacity: 1;
-  }
-  to {
-    height: 0;
-    opacity: 0;
   }
 }

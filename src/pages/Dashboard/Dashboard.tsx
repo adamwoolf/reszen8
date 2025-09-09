@@ -15,25 +15,19 @@ const Dashboard = () => {
   const { currentUser } = useAuth();
   const { removeItem, savedItems } = useSavedItems();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>(CONTENT_TYPES.meditations as TabType);
+  const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
-  // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [myMeds, setMyMeds] = useState([]);
   const data = useSelector((state) => state.content.meditations);
-  const [allItems, setAllItems] = useState({});
   const tabsRef = useRef();
 
-  // // Redirect to login if not authenticated
-  // if (!currentUser) {
-  //   navigate("/");
-  //   return null;
-  // }
-
-  useEffect(() => {
-    setAllItems({ ...savedItems, myMeds });
-  }, [savedItems, myMeds]);
+  // ✅ build dynamically instead of storing
+  const allItems = {
+    ...savedItems,
+    myMeds,
+  };
 
   // user generated meditations
   useEffect(() => {
@@ -51,8 +45,6 @@ const Dashboard = () => {
     }
   }, [data, currentUser]);
 
-  //
-
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -65,12 +57,6 @@ const Dashboard = () => {
       }
     };
   }, []);
-
-  // Redirect to login if not authenticated
-  // if (!currentUser) {
-  //   navigate("/login");
-  //   return null;
-  // }
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
     removeItem(itemId, type);
@@ -87,6 +73,9 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = allItems[activeTab];
+    console.log(data);
+    console.log(allItems);
+    console.log(activeTab);
 
     return (
       <div className='dashboard-content'>
@@ -106,6 +95,8 @@ const Dashboard = () => {
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data?.map((item, i) => {
+              const keyId = `${activeTab}-${item?.uid ?? item?.id ?? i}`;
+
               function isToday(timestamp) {
                 const today = new Date();
                 const dateToCheck = new Date(timestamp);
@@ -117,7 +108,7 @@ const Dashboard = () => {
                 );
               }
               return (
-                <div key={`dashboard-item-${item.id}`} className='feature-card publication__card'>
+                <div key={keyId} className='feature-card publication__card'>
                   <div className='publications__card-content dashboard__card-inner'>
                     <div>
                       <h3>{item.title}</h3>
@@ -240,7 +231,7 @@ const Dashboard = () => {
       <div className='dashboard__search-container'>
         <Search dashboard text='Search Dashboard Items' />
       </div>
-      <div className='tabs__container'>
+      <div key={activeTab} className='tabs__container'>
         {showLeftChevron && (
           <button onClick={() => scrollTabs("left")} className='tabs__arrow tabs__arrow--left'>
             <FaChevronLeft />

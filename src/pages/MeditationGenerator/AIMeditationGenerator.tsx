@@ -228,7 +228,7 @@ const AIMeditationGenerator: React.FC = () => {
               learn more
             </button>
             {showPopup === "size" && (
-              <Popup show={!!showPopup} onClose={() => setShowPopup("")}>
+              <Popup fitContent show={!!showPopup} onClose={() => setShowPopup("")}>
                 {Object.keys(mapDurationToWords).map((key) => {
                   const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
                   return (
@@ -284,7 +284,7 @@ const AIMeditationGenerator: React.FC = () => {
                 </button>
               </div>
               {showPopup === "practiceType" && (
-                <Popup show={showPopup} onClose={() => setShowPopup("")}>
+                <Popup fitContent show={showPopup} onClose={() => setShowPopup("")}>
                   {PracticeTypes.map((type, i) => (
                     <div className='popup__list-item' key={`${type.name}${i}`}>
                       <h4 className='popup__list-title'>{type.name}</h4>

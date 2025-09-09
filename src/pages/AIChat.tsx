@@ -320,29 +320,7 @@ const AIChat: React.FC = () => {
           <div className='empty-state'>
             <FaRobot className='empty-icon' />
             <p>Ask me anything about RESZEN8, our services, or how to get started!</p>
-            <div className='suggested-questions'>
-              {/* {firebaseData &&
-                Object.values(firebaseData)
-                  .sort((a: TopPrompt, b: TopPrompt) => b.calls - a.calls)
-                  .slice(0, 3)
-                  .map((prompt: TopPrompt) => (
-                    <button
-                      key={prompt.text}
-                      onClick={() => {
-                        const userMessage: Message = {
-                          role: "user",
-                          content: prompt.text,
-                          timestamp: new Date(),
-                        };
-                        // reuse processMessage flow to ensure consistent payload
-                        processMessage(prompt.text);
-                        setMessages((prev) => [...prev, userMessage]);
-                      }}
-                    >
-                      {prompt.text}
-                    </button>
-                  ))} */}
-            </div>
+            <div className='suggested-questions'></div>
           </div>
         ) : (
           <AnimatePresence>

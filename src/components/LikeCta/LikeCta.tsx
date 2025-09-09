@@ -1,19 +1,11 @@
 import React from "react";
-import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { setMeta, setStaticMeditations, setMeditations, setArticles, setLikes } from "../../store/contentSlice";
-import { CONTENT_TYPES, AWS_DB_ENDPOINT } from "../../constants";
-import {
-  getMeditationLikes,
-  getPublicationLikes,
-  getMeta,
-  getStaticMeditations,
-  getMeditations,
-} from "../../store/contentSelectors";
+import { setLikes } from "../../store/contentSlice";
+import { AWS_DB_ENDPOINT } from "../../constants";
+import { getMeta, getStaticMeditations, getMeditations } from "../../store/contentSelectors";
 import "./LikeCtaStyles.scss";
-import { getAWSArticles, getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
 
 interface Like {
   id: string;
@@ -32,10 +24,7 @@ const LikeCta = ({
 }) => {
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser, updateUser } = useAuth();
-  const { addOrUpdate: addOrUpdateMeta } = useFirebasedatabase("meta");
   const data = useSelector(getMeta);
-  const staticMeds = useSelector(getStaticMeditations);
-  const bespokeMeds = useSelector(getMeditations);
 
   const table =
     content === "publications"

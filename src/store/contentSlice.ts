@@ -9,7 +9,7 @@ export interface ContentState {
   staticMeditations: any[];
   currentAudio: string;
   articles: any[];
-  ambientEnv: AmbientEnv;
+  immersiveEnv: AmbientEnv;
 }
 
 const initialState: ContentState = {
@@ -22,7 +22,7 @@ const initialState: ContentState = {
   staticMeditations: [],
   currentAudio: "",
   articles: [],
-  ambientEnv: { name: "Warm", url: test },
+  immersiveEnv: { name: "Warm", url: test },
 };
 
 export const contentSlice = createSlice({
@@ -77,8 +77,8 @@ export const contentSlice = createSlice({
         });
       }
     },
-    setAmbientEnv: (state, action) => {
-      state.ambientEnv = action.payload;
+    setImmersiveEnv: (state, action) => {
+      state.immersiveEnv = action.payload;
     },
   },
 });
@@ -91,6 +91,6 @@ export const {
   setMeta,
   setStaticMeditations,
   setLikes,
-  setAmbientEnv,
+  setImmersiveEnv,
 } = contentSlice.actions;
 export default contentSlice.reducer;

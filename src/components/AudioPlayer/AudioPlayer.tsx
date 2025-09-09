@@ -10,58 +10,68 @@ const FADE_STEP = 0.05; // volume step per tick
 
 const AudioPlayer = ({
   audioUrl,
-  ambientUrl,
   allowBackground,
-  isVisible,
+  isVisible = true,
 }: {
   allowBackground?: boolean;
   audioUrl: string;
-  ambientUrl?: string;
   isVisible?: boolean;
 }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const ambientRef = useRef<HTMLAudioElement>(null);
+  const immersiveRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const currentAudio = useSelector(getCurrentAudio);
-  const dispatch = useDispatch();
-  const ambientEnv = useSelector((state) => state.content.ambientEnv);
+  const [sessionStart, setSessionStart] = useState<number | null>(null);
 
+  const currentAudio = useSelector(getCurrentAudio);
+  const immersiveEnv = useSelector((state: any) => state.content.immersiveEnv);
+  const dispatch = useDispatch();
+
+  const introDelay = immersiveEnv.url && allowBackground ? 6 : 1; // seconds
+
+  // Load voice duration and add intro delay
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleLoadedMetadata = () => setDuration(audio.duration);
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentTime(0);
-      fadeOutAmbient();
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration + introDelay);
     };
 
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    audio.addEventListener("ended", handleEnded);
-
     return () => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.removeEventListener("ended", handleEnded);
     };
-  }, [audioUrl]);
+  }, [audioUrl, introDelay]);
 
-  const [wasManuallyPlayed, setWasManuallyPlayed] = useState(false);
+  // Progress updater
+  useEffect(() => {
+    let frame: number;
+    const updateProgress = () => {
+      if (isPlaying && sessionStart) {
+        const elapsed = (Date.now() - sessionStart) / 1000; // in seconds
+        setCurrentTime(Math.min(elapsed, duration));
+      }
+      frame = requestAnimationFrame(updateProgress);
+    };
+    frame = requestAnimationFrame(updateProgress);
+    return () => cancelAnimationFrame(frame);
+  }, [isPlaying, sessionStart, duration]);
 
   const fadeInAmbient = () => {
-    const ambient = ambientRef.current;
+    const ambient = immersiveRef.current;
     if (!ambient) return;
+
     ambient.volume = 0;
     setIsPlaying(true);
+    setSessionStart(Date.now());
+
     ambient.play().catch((err) => console.error("Ambient play error:", err));
+
     const fade = setInterval(() => {
-      if (ambient.volume < 1) {
+      if (ambient.volume < 0.5) {
         ambient.volume = Math.min(ambient.volume + FADE_STEP, 0.5);
       } else {
         clearInterval(fade);
@@ -70,8 +80,9 @@ const AudioPlayer = ({
   };
 
   const fadeOutAmbient = () => {
-    const ambient = ambientRef.current;
+    const ambient = immersiveRef.current;
     if (!ambient) return;
+
     const fade = setInterval(() => {
       if (ambient.volume > 0) {
         ambient.volume = Math.max(ambient.volume - FADE_STEP, 0);
@@ -87,70 +98,92 @@ const AudioPlayer = ({
     if (isPlaying) {
       audioRef.current?.pause();
       fadeOutAmbient();
-      dispatch(setCurrentAudio("")); // stop globally
-      setWasManuallyPlayed(false);
+      dispatch(setCurrentAudio(""));
     } else {
       dispatch(setCurrentAudio(audioUrl));
-      setWasManuallyPlayed(true);
     }
   };
 
+  // Handle playback start / stop
   useEffect(() => {
-    // if (!allowBackground) return;
-    const ambient = ambientRef.current;
     const voice = audioRef.current;
-    if (!ambient || !voice) return;
 
-    const handleAmbientEnded = () => {
-      // if main voice is still playing, restart ambient
-      if (!voice.paused && !voice.ended) {
-        ambient.currentTime = 0;
-        ambient.play().catch((err) => console.error("Ambient replay error:", err));
-      }
-    };
+    if (!voice || !isVisible) return;
 
-    ambient.addEventListener("ended", handleAmbientEnded);
-    return () => {
-      ambient.removeEventListener("ended", handleAmbientEnded);
-    };
-  }, [allowBackground]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio || !isVisible) return;
-
-    if (currentAudio === audioUrl && wasManuallyPlayed) {
+    if (currentAudio === audioUrl) {
       if (allowBackground) fadeInAmbient();
-      setTimeout(
-        () => {
-          audio.volume = 0.6;
 
-          audio
-            .play()
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch((err) => {
-              console.error("Playback error:", err);
-              setIsPlaying(false);
-            });
-        },
-        ambientEnv.url && allowBackground ? 6000 : 1000
-      );
+      setTimeout(() => {
+        voice.currentTime = 0;
+        voice.volume = 0.6;
+        voice
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.error("Playback error:", err);
+            setIsPlaying(false);
+          });
+      }, introDelay * 1000);
     } else {
-      audio.pause();
+      voice.pause();
       setIsPlaying(false);
       fadeOutAmbient();
     }
-  }, [currentAudio, audioUrl, wasManuallyPlayed, ambientEnv.url, allowBackground, isVisible]);
+  }, [currentAudio, audioUrl, allowBackground, introDelay, isVisible]);
 
+  // Handle looping ambient if shorter than voice
+  useEffect(() => {
+    const audio = audioRef.current;
+    const ambient = immersiveRef.current;
+    if (!audio) return;
+
+    const introOffset = 6; // seconds
+
+    const handleUpdate = () => {
+      if (allowBackground && ambient) {
+        if (ambient.currentTime < introOffset && audio.paused) {
+          // Ambient intro phase
+          setCurrentTime(ambient.currentTime);
+        } else {
+          // Voice phase
+          setCurrentTime(introOffset + audio.currentTime);
+        }
+      } else {
+        // No ambient: just follow the voice track
+        setCurrentTime(audio.currentTime);
+      }
+    };
+
+    // Attach listeners
+    if (allowBackground && ambient) {
+      ambient.addEventListener("timeupdate", handleUpdate);
+    }
+    audio.addEventListener("timeupdate", handleUpdate);
+
+    return () => {
+      if (allowBackground && ambient) {
+        ambient.removeEventListener("timeupdate", handleUpdate);
+      }
+      audio.removeEventListener("timeupdate", handleUpdate);
+    };
+  }, [allowBackground]);
+
+  // Seek handler
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
-    const audio = audioRef.current;
-    if (audio) {
-      audio.currentTime = newTime;
-      setCurrentTime(newTime);
+    setCurrentTime(newTime);
+
+    const voice = audioRef.current;
+    if (!voice) return;
+
+    if (newTime < introDelay) {
+      voice.pause();
+      voice.currentTime = 0;
+    } else {
+      voice.currentTime = newTime - introDelay;
+      if (isPlaying && voice.paused) voice.play();
     }
   };
 
@@ -164,18 +197,12 @@ const AudioPlayer = ({
 
   return (
     <div className='audio-player__inner'>
-      <audio
-        ref={audioRef}
-        src={audioUrl}
-        preload='metadata'
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-      />
-      {allowBackground && <audio ref={ambientRef} src={allowBackground ? ambientEnv.url : ""} preload='auto' />}
+      <audio ref={audioRef} src={audioUrl} preload='metadata' />
+      {allowBackground && <audio ref={immersiveRef} src={immersiveEnv.url || ""} preload='auto' />}
 
       <button
         onClick={togglePlayPause}
-        className={!isPlaying ? "dashboard-button audio-btn " : "dashboard-button audio-btn audio-btn--playing"}
+        className={!isPlaying ? "dashboard-button audio-btn" : "dashboard-button audio-btn audio-btn--playing"}
       >
         {isPlaying ? (
           <RadiatingWaves />

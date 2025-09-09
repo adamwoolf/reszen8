@@ -8,7 +8,6 @@ import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { usePurchasedItemsStore } from '../store/purchasedItemsStore';
 import './Checkout.css';
 import { useAuth } from "../contexts/AuthContext";
-import useFirebasedatabase from "../hooks/useFirestoreCollection";
 
 
 // Initialize Stripe with test public key
@@ -33,7 +32,6 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   const { items, totalPrice, clearBasket } = useBasketStore();
   const { addPurchasedItems } = usePurchasedItemsStore();
   const { currentUser, setCurrentUser } = useAuth();
-  const { addOrUpdate } = useFirebasedatabase("USERS");
 
   // Redirect to basket if empty
   if (items.length === 0) {
@@ -158,7 +156,6 @@ if(currentUser?.subscription && currentUser.firebaseId) {
     startDate: Date.now(),
     subscription: 'monthly'
   }}
-  addOrUpdate(currentUser.firebaseId, newUserData)
   setCurrentUser(newUserData)
   setTimeout(() => navigate('/members'), 500)
 

@@ -41,13 +41,7 @@ import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
 import { getPublications } from "./contentful";
 import { useDispatch } from "react-redux";
-import {
-  startDatabaseListeners,
-  getMeditationItemsREST,
-  getMetaREST,
-  getStaticMeditationsREST,
-  getAWSArticles,
-} from "./store/storeListener";
+import { getMeditationItemsREST, getStaticMeditationsREST, getAWSArticles } from "./store/storeListener";
 import { setPublications, setStaticMeditations, setMeta, setMeditations, setArticles } from "./store/contentSlice";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
@@ -320,10 +314,6 @@ function App() {
       window.removeEventListener("online", handleOnline);
     };
   }, []);
-
-  useEffect(() => {
-    dispatch(startDatabaseListeners(offline));
-  }, [dispatch]);
 
   useEffect(() => {
     // getMetaREST().then((data) => {

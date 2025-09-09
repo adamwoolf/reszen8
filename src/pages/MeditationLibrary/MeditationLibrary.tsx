@@ -3,15 +3,15 @@ import { useAuth } from "../../contexts/AuthContext";
 import "../Dashboard/Dashboard.scss";
 import "./MeditationLibraryStyles.scss";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
-
+import { FaInfoCircle } from "react-icons/fa";
 import { Meditation } from "../../models";
 import MeditationCard from "../../components/MeditationCard/MeditationCard";
 import { useSelector } from "react-redux";
 import { getMeditationsWithLikes } from "./MeditationLibrary.selectors";
 import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
-import AmbientEnv from "../../components/AmbientEnv/AmbientEnv";
 import ToggleContainer from "./ToggleContainer";
+import Popup from "../MeditationGenerator/Popup";
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
@@ -19,7 +19,7 @@ const DigitalLibrary = () => {
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
-  const [voiceOnly, setVoiceOnly] = useState(true);
+  const [ImmersiveMeds, setImmersiveMeds] = useState(true);
 
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getMeditationsWithLikes);
@@ -32,35 +32,34 @@ const DigitalLibrary = () => {
   const filterMeds = (word: string) => {
     setActiveFilter(word);
     setDisplayMeds(
-      libraryMeditations.filter((pub) => {
-        const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
-        return cats.includes(word);
-      })
+      libraryMeditations
+        .filter((pub) => {
+          const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
+          return cats[0].toLowerCase() === word.toLowerCase();
+        })
+        .filter((med) => filterByImmersive(med, ImmersiveMeds))
     );
 
-    const isMobile = window.innerWidth < 768;
-    const headerHeight = isMobile ? 300 : 240; // increased for taller header
-
     if (resultsContainer?.current) {
-      console.log("here");
-      const elementTop = resultsContainer.current.getBoundingClientRect().top + window.scrollY; // absolute Y position in document
-
-      const scrollTarget = elementTop - headerHeight;
-
-      // window.scrollTo({ top: scrollTarget, behavior: "smooth" });
       resultsContainer.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  function filterByImmersive<T extends { immersive?: boolean }>(item: T, immersiveMode: boolean) {
+    return immersiveMode ? !!item.immersive : !item.immersive;
+  }
 
   const searchText = (e) => {
     const query = e.target.value;
     setSearch(query);
     setDisplayMeds(
-      libraryMeditations.filter(
-        (pub: Meditation) =>
-          pub.content.toLowerCase().includes(query.toLowerCase()) ||
-          pub.title.toLowerCase().includes(query.toLowerCase())
-      )
+      libraryMeditations
+        .filter(
+          (pub: Meditation) =>
+            pub.content.toLowerCase().includes(query.toLowerCase()) ||
+            pub.title.toLowerCase().includes(query.toLowerCase())
+        )
+        .filter((med) => filterByImmersive(med, ImmersiveMeds))
     );
   };
 
@@ -116,21 +115,35 @@ const DigitalLibrary = () => {
     setDisplayMeds(libraryMeditations.filter((m) => m.staticMed && !m.verified));
   };
 
-  const [hideToggle, setHideToggle] = useState(false);
-
   useEffect(() => {
-    if (hideToggle) {
+    if (ImmersiveMeds) {
       setDisplayMeds(libraryMeditations.filter((m) => m.immersive));
     } else {
-      setDisplayMeds(libraryMeditations);
+      setDisplayMeds(libraryMeditations.filter((m) => !m.immersive));
     }
-  }, [hideToggle]);
+  }, [ImmersiveMeds]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const renderSearch = () => {
     return (
       <div className='publications__filters'>
-        <ToggleSwitch checked={hideToggle} onChange={setHideToggle} size='md' />
-        <ToggleContainer setShow={() => setHideToggle(true)} show={hideToggle} />
+        <div className='meditation-library__toggle-container'>
+          <ToggleSwitch checked={ImmersiveMeds} onChange={setImmersiveMeds} size='md' />
+          <button className='meditation-library__toggle-container__info-cta' onClick={() => setShowPopup(true)}>
+            {" "}
+            <FaInfoCircle />
+          </button>
+        </div>
+        <Popup fitContent show={showPopup} onClose={() => setShowPopup(false)}>
+          <div className='meditation-library__ai-popup'>
+            <p>
+              If you are toggled to Immersive Audio, you will only see meditations which can be played with Reszen8
+              crafted Immersive Audio environments.
+            </p>
+            <p>Voice Only meditations do not have Immersive Audio compatability.</p>
+          </div>
+        </Popup>
+        <ToggleContainer setShow={() => setImmersiveMeds(true)} show={ImmersiveMeds} />
         <Filters filterPubs={filterMeds} activeFilter={activeFilter} search={search} searchText={searchText} />
 
         <span ref={resultsContainer} className='meditation-library__search-results'>
@@ -151,16 +164,6 @@ const DigitalLibrary = () => {
         )}
       </div>
     );
-    {
-      /* {currentUser && (
-        <button
-          className={!showingFavs ? "publications__filter non-active-filter" : "publications__filter"}
-          onClick={showFavourites}
-        >
-          Only Favourites
-        </button>
-      )} */
-    }
   };
 
   return (

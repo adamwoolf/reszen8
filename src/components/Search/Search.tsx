@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import "./SearchStyles.scss";
 import Popup from "../../pages/MeditationGenerator/Popup";
-import useFirebaseDatabase from "../../hooks/useFirestoreCollection";
 import { Meditation, Publication } from "../../models";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import MeditationCard from "../MeditationCard/MeditationCard";
@@ -12,6 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { getPublicationsWithLikes } from "../../pages/Publications/Publications.selector";
 import Icon, { getIcon } from "../Icon/Icon";
 import { getMeditationsWithLikes } from "../../pages/MeditationLibrary/MeditationLibrary.selectors";
+
 const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
@@ -21,7 +21,6 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   const meditations = useSelector(getMeditationsWithLikes);
   const publications = useSelector(getPublicationsWithLikes);
   const [bespokeMeds, setBespokeMeds] = useState([]);
-  const { data } = useFirebaseDatabase("meditations");
   const { savedItems } = useSavedItems();
   const { currentUser } = useAuth();
 

@@ -4,7 +4,7 @@ import rain from "../../assets/audio/rain.mp3";
 import space from "../../assets/audio/space.mp3";
 import ocean from "../../assets/audio/ocean.mp3";
 import { useDispatch } from "react-redux";
-import { setAmbientEnv } from "../../store/contentSlice";
+import { setImmersiveEnv } from "../../store/contentSlice";
 import "./AmbientEnvStyles.scss";
 import { useSelector } from "react-redux";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
@@ -18,12 +18,12 @@ const Envs = [
 
 const AmbientEnv = () => {
   const dispatch = useDispatch();
-  const selected = useSelector((state) => state.content.ambientEnv);
+  const selected = useSelector((state) => state.content.immersiveEnv);
 
   const handleChange = (e) => {
     const name = e.target.value;
     const env = Envs.find((e) => e.name === name);
-    dispatch(setAmbientEnv(env));
+    dispatch(setImmersiveEnv(env));
   };
   return (
     <div className='ambient'>

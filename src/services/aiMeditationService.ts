@@ -65,7 +65,6 @@ export const generateArticleWithAudio = async (
   try {
     // Generate audio via Azure TTS
 
-    // Upload to Firebase Cloud Function
     const endpoint = `${AWS_DB_ENDPOINT}/generateArticle`;
 
     const uploadResponse = await axios.post(endpoint, {
@@ -99,7 +98,6 @@ export const generateStaticMedFromScript = async (
   try {
     // Generate audio via Azure TTS
 
-    // Upload to Firebase Cloud Function
     const endpoint = `${AWS_DB_ENDPOINT}/generateStaticMeditation`;
 
     const uploadResponse = await axios.post(endpoint, {

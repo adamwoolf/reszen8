@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { Subscription, User } from "../models";
 import { useNavigate } from "react-router-dom";
-import useFirebaseDatabase from "../hooks/useFirestoreCollection";
 
 const UserManager = ({ children }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { addOrUpdate, data: users } = useFirebasedatabase("USERS");
   const [isActiveSub, setisActiveSub] = useState(false);
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {

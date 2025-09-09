@@ -1,19 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  User as FirebaseUser,
-  setPersistence,
-  browserLocalPersistence,
-} from "firebase/auth";
-import { auth, db } from "../firebase";
-import useFirebaseDatabase from "../hooks/useFirestoreCollection";
+
 import { User } from "../models";
 import useSendMail from "../hooks/useSendEmail";
-import { ref, query, orderByChild, equalTo, get } from "firebase/database";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
 
@@ -44,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { sendMail } = useSendMail();
   const clearError = useCallback(() => setError(null), []);
 
   // NEW
@@ -97,47 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
   };
-
-  // useEffect(() => {
-  //   setLoading(true);
-
-  //   if (!navigator.onLine) {
-  //     const cached = localStorage.getItem(USER_CACHE_KEY);
-  //     if (cached) {
-  //       console.log("Offline: loading cached user", JSON.parse(cached));
-  //       setCurrentUser(JSON.parse(cached));
-  //     } else {
-  //       console.log("Offline: no cached user, fallback to basic auth user");
-  //     }
-  //     return;
-  //   }
-  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  //     if (!user) {
-  //       // No user signed in
-  //       localStorage.removeItem(USER_CACHE_KEY);
-  //       setCurrentUser(null);
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     try {
-  //       // Try to get the user's DB data (online)
-  //       const userDoc = await getUserByUidField(user.uid);
-  //       const mergedUser = userDoc ? { ...user, ...userDoc } : user;
-
-  //       // Cache merged user for offline use
-  //       localStorage.setItem(USER_CACHE_KEY, JSON.stringify(mergedUser));
-
-  //       setCurrentUser(mergedUser);
-  //     } catch (err) {
-  //       // Offline fallback: load last cached user
-  //     }
-
-  //     setLoading(false);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
 
   const value: AuthContextType = {
     currentUser,

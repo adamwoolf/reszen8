@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { marked } from "marked";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import useFirebasedatabase from "../../hooks/useFirestoreCollection";
 import LikeCta from "../../components/LikeCta/LikeCta";
 import SocialShare from "../../components/SocialShare/SocialShare";
 import { useSelector } from "react-redux";
@@ -46,7 +45,6 @@ const FullPublication = () => {
     };
     if (currentUser) updateUser(currentUser?.uid, { savedItems: newPubs });
 
-    // addOrUpdate(currentUser?.firebaseId, newData);
     setCurrentUser(newData);
   };
 
