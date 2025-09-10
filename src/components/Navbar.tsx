@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
 import { FaBars } from "react-icons/fa";
@@ -10,12 +10,10 @@ import Search from "./Search/Search";
 import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
-import AmbientEnv from "./AmbientEnv/AmbientEnv";
 
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
-  const { currentUser, setCurrentUser, signOutRedirect } = useAuth();
-  const navigate = useNavigate();
+  const { currentUser, setCurrentUser, signOutRedirect, loading } = useAuth();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -113,6 +111,7 @@ const Navbar: React.FC = () => {
     return null;
   };
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName} ` : "";
+  if (loading) return null;
   return (
     <div>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>

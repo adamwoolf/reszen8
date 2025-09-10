@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { marked } from "marked";
 
 import Icon from "../Icon/Icon";
-import { FaAudible, FaFileAudio, FaSpeakap, FaSoundcloud, FaVolumeUp } from "react-icons/fa";
+import { FaVolumeUp } from "react-icons/fa";
 
 const PublicationCard = ({ item, showLike = true }) => {
   const { category } = item;

@@ -1,235 +1,237 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AudioPlayerStyles.scss";
+import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentAudio } from "../../store/contentSlice";
 import { getCurrentAudio } from "../../store/contentSelectors";
-import RadiatingWaves from "./Playing";
 
 const FADE_INTERVAL = 100; // ms
+const FADEOUT_INTERVAL = 300; // ms
 const FADE_STEP = 0.05; // volume step per tick
 
-const AudioPlayer = ({
-  audioUrl,
-  allowBackground,
-  isVisible = true,
-}: {
-  allowBackground?: boolean;
-  audioUrl: string;
-  isVisible?: boolean;
-}) => {
+const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const immersiveRef = useRef<HTMLAudioElement>(null);
+  const fadeInRef = useRef<NodeJS.Timeout | null>(null);
+  const fadeOutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const location = useLocation();
+  const dispatch = useDispatch();
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [sessionStart, setSessionStart] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [immersiveReady, setImmersiveReady] = useState(false);
 
   const currentAudio = useSelector(getCurrentAudio);
   const immersiveEnv = useSelector((state: any) => state.content.immersiveEnv);
-  const dispatch = useDispatch();
 
-  const introDelay = immersiveEnv.url && allowBackground ? 6 : 1; // seconds
-
-  // Load voice duration and add intro delay
+  // Reset audio when navigating to a new page
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    dispatch(setCurrentAudio({ url: "", isImmersive: false }));
+  }, [location, dispatch]);
 
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration + introDelay);
-    };
-
-    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-    return () => {
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-    };
-  }, [audioUrl, introDelay]);
-
-  // Progress updater
-  useEffect(() => {
-    let frame: number;
-    const updateProgress = () => {
-      if (isPlaying && sessionStart) {
-        const elapsed = (Date.now() - sessionStart) / 1000; // in seconds
-        setCurrentTime(Math.min(elapsed, duration));
-      }
-      frame = requestAnimationFrame(updateProgress);
-    };
-    frame = requestAnimationFrame(updateProgress);
-    return () => cancelAnimationFrame(frame);
-  }, [isPlaying, sessionStart, duration]);
-
+  // Fade ambient in
   const fadeInAmbient = () => {
     const ambient = immersiveRef.current;
     if (!ambient) return;
 
+    if (fadeInRef.current) clearInterval(fadeInRef.current);
     ambient.volume = 0;
-    setIsPlaying(true);
-    setSessionStart(Date.now());
 
-    ambient.play().catch((err) => console.error("Ambient play error:", err));
-
-    const fade = setInterval(() => {
+    fadeInRef.current = setInterval(() => {
       if (ambient.volume < 0.5) {
         ambient.volume = Math.min(ambient.volume + FADE_STEP, 0.5);
       } else {
-        clearInterval(fade);
+        clearInterval(fadeInRef.current!);
+        fadeInRef.current = null;
       }
     }, FADE_INTERVAL);
   };
 
-  const fadeOutAmbient = () => {
+  // Fade ambient out
+  const fadeOutAmbient = (onComplete?: () => void) => {
     const ambient = immersiveRef.current;
     if (!ambient) return;
 
-    const fade = setInterval(() => {
+    if (fadeOutRef.current) clearInterval(fadeOutRef.current);
+
+    fadeOutRef.current = setInterval(() => {
       if (ambient.volume > 0) {
         ambient.volume = Math.max(ambient.volume - FADE_STEP, 0);
       } else {
         ambient.pause();
-        clearInterval(fade);
-        setIsPlaying(false);
+        ambient.currentTime = 0;
+        clearInterval(fadeOutRef.current!);
+        fadeOutRef.current = null;
+        if (onComplete) onComplete(); // call callback after fade out
       }
-    }, FADE_INTERVAL);
+    }, FADEOUT_INTERVAL);
   };
 
-  const togglePlayPause = () => {
-    if (isPlaying) {
-      audioRef.current?.pause();
-      fadeOutAmbient();
-      dispatch(setCurrentAudio(""));
-    } else {
-      dispatch(setCurrentAudio(audioUrl));
-    }
-  };
-
-  // Handle playback start / stop
+  // Cleanup fade timers on unmount
   useEffect(() => {
-    const voice = audioRef.current;
-
-    if (!voice || !isVisible) return;
-
-    if (currentAudio === audioUrl) {
-      if (allowBackground) fadeInAmbient();
-
-      setTimeout(() => {
-        voice.currentTime = 0;
-        voice.volume = 0.6;
-        voice
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((err) => {
-            console.error("Playback error:", err);
-            setIsPlaying(false);
-          });
-      }, introDelay * 1000);
-    } else {
-      voice.pause();
-      setIsPlaying(false);
-      fadeOutAmbient();
-    }
-  }, [currentAudio, audioUrl, allowBackground, introDelay, isVisible]);
-
-  // Handle looping ambient if shorter than voice
-  useEffect(() => {
-    const audio = audioRef.current;
-    const ambient = immersiveRef.current;
-    if (!audio) return;
-
-    const introOffset = 6; // seconds
-
-    const handleUpdate = () => {
-      if (allowBackground && ambient) {
-        if (ambient.currentTime < introOffset && audio.paused) {
-          // Ambient intro phase
-          setCurrentTime(ambient.currentTime);
-        } else {
-          // Voice phase
-          setCurrentTime(introOffset + audio.currentTime);
-        }
-      } else {
-        // No ambient: just follow the voice track
-        setCurrentTime(audio.currentTime);
-      }
-    };
-
-    // Attach listeners
-    if (allowBackground && ambient) {
-      ambient.addEventListener("timeupdate", handleUpdate);
-    }
-    audio.addEventListener("timeupdate", handleUpdate);
-
     return () => {
-      if (allowBackground && ambient) {
-        ambient.removeEventListener("timeupdate", handleUpdate);
-      }
-      audio.removeEventListener("timeupdate", handleUpdate);
+      if (fadeInRef.current) clearInterval(fadeInRef.current);
+      if (fadeOutRef.current) clearInterval(fadeOutRef.current);
     };
-  }, [allowBackground]);
+  }, []);
 
-  // Seek handler
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
+  // Listen for immersive readiness
+  useEffect(() => {
+    const ambient = immersiveRef.current;
+    if (!ambient) return;
 
+    const handleCanPlay = () => setImmersiveReady(true);
+    ambient.addEventListener("canplaythrough", handleCanPlay);
+
+    return () => ambient.removeEventListener("canplaythrough", handleCanPlay);
+  }, [immersiveEnv.url]);
+
+  /**
+   * Play a fresh track (called when currentAudio.url changes)
+   */
+  const playNewTrack = () => {
     const voice = audioRef.current;
+    const ambient = immersiveRef.current;
     if (!voice) return;
 
-    if (newTime < introDelay) {
-      voice.pause();
+    // Stop/reset everything first
+    voice.pause();
+    voice.currentTime = 0;
+    if (ambient) {
+      ambient.pause();
+      ambient.currentTime = 0;
+    }
+
+    setIsPlaying(false);
+    setIsLoading(false);
+
+    if (!currentAudio.url) return; // user pressed stop
+
+    setIsLoading(true);
+
+    // Handle immersive background
+    if (ambient && currentAudio.isImmersive) {
+      ambient.currentTime = 0;
+      ambient.volume = 0;
+      ambient.loop = true;
+
+      const startAmbient = () =>
+        ambient
+          .play()
+          .then(fadeInAmbient)
+          .catch((err) => console.warn("Ambient play error:", err));
+
+      if (immersiveReady) {
+        startAmbient();
+      } else {
+        const onReady = () => {
+          startAmbient();
+          setImmersiveReady(true);
+          ambient.removeEventListener("canplaythrough", onReady);
+        };
+        ambient.addEventListener("canplaythrough", onReady);
+      }
+    }
+
+    // Start voice after introDelay
+    const introDelay = currentAudio.isImmersive ? 6 : 1;
+    setTimeout(() => {
       voice.currentTime = 0;
+      voice.volume = 0.3;
+      voice
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Voice playback error:", err);
+          setIsPlaying(false);
+          setIsLoading(false);
+        });
+
+      // Fade out immersive when voice ends, then clear Redux
+      const handleVoiceEnd = () => {
+        if (ambient) {
+          fadeOutAmbient(() => {
+            dispatch(setCurrentAudio({ url: "", isImmersive: false }));
+          });
+        } else {
+          dispatch(setCurrentAudio({ url: "", isImmersive: false }));
+        }
+        voice.removeEventListener("ended", handleVoiceEnd);
+        setIsPlaying(false);
+      };
+      voice.addEventListener("ended", handleVoiceEnd);
+    }, introDelay * 1000);
+  };
+
+  /**
+   * Toggle pause/resume for the current track
+   */
+  const togglePlayPause = () => {
+    const voice = audioRef.current;
+    const ambient = immersiveRef.current;
+    if (!voice) return;
+
+    if (isPlaying) {
+      voice.pause();
+      if (ambient) fadeOutAmbient();
+      setIsPlaying(false);
     } else {
-      voice.currentTime = newTime - introDelay;
-      if (isPlaying && voice.paused) voice.play();
+      voice
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          if (ambient && currentAudio.isImmersive) {
+            ambient.play().catch(console.warn);
+          }
+        })
+        .catch(console.error);
     }
   };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60)
-      .toString()
-      .padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
+  // React to Redux URL changes
+  useEffect(() => {
+    playNewTrack();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAudio.url]);
+
+  // Track progress
+  useEffect(() => {
+    const voice = audioRef.current;
+    const ambient = immersiveRef.current;
+    if (!voice) return;
+
+    const handleUpdate = () => {
+      const introDelay = currentAudio.isImmersive ? 6 : 1;
+      if (ambient) {
+        if (voice.paused && ambient.currentTime < introDelay) {
+          setCurrentTime(ambient.currentTime);
+        } else {
+          setCurrentTime(introDelay + voice.currentTime);
+        }
+      } else {
+        setCurrentTime(voice.currentTime);
+      }
+    };
+
+    voice.addEventListener("timeupdate", handleUpdate);
+    if (ambient) ambient.addEventListener("timeupdate", handleUpdate);
+
+    return () => {
+      voice.removeEventListener("timeupdate", handleUpdate);
+      if (ambient) ambient.removeEventListener("timeupdate", handleUpdate);
+    };
+  }, [currentAudio.isImmersive, immersiveEnv.url]);
 
   return (
     <div className='audio-player__inner'>
-      <audio ref={audioRef} src={audioUrl} preload='metadata' />
-      {allowBackground && <audio ref={immersiveRef} src={immersiveEnv.url || ""} preload='auto' />}
-
-      <button
-        onClick={togglePlayPause}
-        className={!isPlaying ? "dashboard-button audio-btn" : "dashboard-button audio-btn audio-btn--playing"}
-      >
-        {isPlaying ? (
-          <RadiatingWaves />
-        ) : (
-          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
-            <path
-              fillRule='evenodd'
-              d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
-              clipRule='evenodd'
-            />
-          </svg>
-        )}
-      </button>
-
-      <div className='audio-slider-container'>
-        <span>{formatTime(currentTime)}</span>
-        <input
-          className='custom-slider'
-          type='range'
-          min={0}
-          max={duration || 0}
-          step={0.1}
-          value={currentTime}
-          onChange={handleProgressChange}
-        />
-        <span>{formatTime(duration)}</span>
-      </div>
+      <audio ref={audioRef} src={currentAudio.url} preload='metadata' />
+      <audio ref={immersiveRef} src={immersiveEnv.url || ""} preload='auto' />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import AudioPlayer from "../AudioPlayer/AudioPlayer";
+import AudioPlayer from "../AudioPlayer/AudioController";
 import { useAuth } from "../../contexts/AuthContext";
 import LikeCta from "../LikeCta/LikeCta";
 import Icon from "../Icon/Icon";
@@ -72,22 +72,6 @@ const MeditationCard = ({
         if (item.immersive) {
           calculatedDuration += INTRO_BUFFER;
         }
-
-        console.log(`Calculated duration for ${item.title}: ${calculatedDuration}s`);
-
-        // Update backend with new duration
-        try {
-          await fetch(`${AWS_DB_ENDPOINT}/updateStaticMed`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              uid: item.uid,
-              duration: Math.round(calculatedDuration),
-            }),
-          });
-        } catch (err) {
-          console.error("Failed to update duration:", err);
-        }
       });
     }
   }, [isVisible, item.audioUrl, item.duration, item.immersive, item.title, item.uid]);
@@ -108,9 +92,7 @@ const MeditationCard = ({
           {item.style && <p className='publication__card-meditation-type'>Meditation Style: {item.style}</p>}
         </div>
         <div className='publication__card-inner'>
-          {item.audioUrl && (
-            <AudioPlayer isVisible={isVisible} audioUrl={item.audioUrl} allowBackground={item.immersive} />
-          )}
+          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
           <button disabled={hasBeenSaved} onClick={() => handleAddItem?.(item)} className='publication__card-save-cta'>
             {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
           </button>

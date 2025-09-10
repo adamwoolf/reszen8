@@ -7,9 +7,14 @@ export interface ContentState {
   publications: any[];
   meta: any;
   staticMeditations: any[];
-  currentAudio: string;
+  currentAudio: AudioObject;
   articles: any[];
   immersiveEnv: AmbientEnv;
+}
+
+export interface AudioObject {
+  url: string;
+  isImmersive: boolean;
 }
 
 const initialState: ContentState = {
@@ -20,7 +25,7 @@ const initialState: ContentState = {
     meditationLikes: [],
   },
   staticMeditations: [],
-  currentAudio: "",
+  currentAudio: { url: "", isImmersive: false },
   articles: [],
   immersiveEnv: { name: "Warm", url: test },
 };
@@ -41,7 +46,7 @@ export const contentSlice = createSlice({
     setStaticMeditations: (state, action: PayloadAction<any>) => {
       state.staticMeditations = action.payload;
     },
-    setCurrentAudio: (state, action: PayloadAction<string>) => {
+    setCurrentAudio: (state, action: PayloadAction<AudioObject>) => {
       state.currentAudio = action.payload;
     },
     setArticles: (state, action: PayloadAction<any[]>) => {
@@ -54,7 +59,6 @@ export const contentSlice = createSlice({
     },
     setLikes: (state, action) => {
       const { likes, uid, content } = action.payload;
-      console.log(content);
       if (content === "Bespoke_Meditations") {
         state.meditations = [...state.meditations].map((med) => {
           console.log(likes, uid);

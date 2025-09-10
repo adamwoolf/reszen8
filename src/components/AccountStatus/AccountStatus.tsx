@@ -7,7 +7,7 @@ const AccountStatus = ({ user }: { user: User }) => {
   const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
     const targetDate = new Date(start);
-    targetDate.setDate(targetDate.getDate() + 7);
+    targetDate.setDate(targetDate.getDate() + user.subscription?.duration);
 
     const updateCountdown = () => {
       const now = new Date();

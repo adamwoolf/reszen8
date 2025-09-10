@@ -12,11 +12,14 @@ import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
+import AudioController from "../../components/AudioPlayer/AudioController";
 interface MeditationState {
   title: string;
   content: string;
   audioUrl?: string;
   cleanupAudio?: () => void;
+  isImmersive: boolean;
 }
 
 const AIMeditationGenerator: React.FC = () => {
@@ -29,115 +32,25 @@ const AIMeditationGenerator: React.FC = () => {
   const [duration, setDuration] = useState(allowedValues[0]);
   const [durationIndex, setDurationIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
+
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser, updateUser } = useAuth();
   const [showPopup, setShowPopup] = useState("");
-  const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(null);
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
-
-  // Refs
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const [immersive, setImmersive] = useState(false);
 
   // Static Med generation data
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
-  // Hooks
-  const { addItem } = useSavedItems();
-  const navigate = useNavigate();
-
-  const languageOptions = [
-    { value: "en", label: "English" },
-    { value: "es", label: "Spanish" },
-    { value: "fr", label: "French" },
-    { value: "de", label: "German" },
-    { value: "it", label: "Italian" },
-    { value: "pt", label: "Portuguese" },
-  ];
 
   useEffect(() => {
     setDuration(allowedValues[durationIndex]);
   }, [durationIndex]);
 
-  // Clean up on unmount
   useEffect(() => {
-    return () => {
-      // Clean up audio when component unmounts or meditation changes
-      if (generatedMeditation?.cleanupAudio) {
-        generatedMeditation.cleanupAudio();
-      }
-      if (generatedMeditation?.audioUrl) {
-        URL.revokeObjectURL(generatedMeditation.audioUrl);
-      }
-      if (progressInterval.current) {
-        clearInterval(progressInterval.current);
-      }
-      if (previewAudio) {
-        previewAudio.pause();
-      }
-    };
-  }, [generatedMeditation, previewAudio]);
-
-  // Toggle play/pause for audio
-  const togglePlayPause = async () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      if (progressInterval.current) {
-        clearInterval(progressInterval.current);
-      }
-    } else {
-      try {
-        // If we have a cleanup function, we're using the Web Audio API
-        if (generatedMeditation?.cleanupAudio) {
-          // The audio is already playing through Web Audio API
-          // Just update the UI state
-          setIsPlaying(true);
-          startProgressTimer();
-        } else {
-          // Fallback to regular audio element
-          await audioRef.current.play();
-          startProgressTimer();
-        }
-      } catch (e) {
-        console.error("Error playing audio:", e);
-        // toast.error("Failed to play audio. Please try again.");
-      }
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  // Update progress bar
-  const startProgressTimer = () => {
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-    }
-
-    progressInterval.current = setInterval(() => {
-      if (audioRef.current) {
-        const currentTime = audioRef.current.currentTime;
-        const duration = audioRef.current.duration || parseInt(duration) * 1000; // Fallback to selected duration if duration is not available
-        const currentProgress = (currentTime / duration) * 100;
-
-        setProgress(isNaN(currentProgress) ? 0 : currentProgress);
-        setCurrentTime(currentTime);
-
-        if (audioRef.current.ended) {
-          setIsPlaying(false);
-          setProgress(0);
-          setCurrentTime(0);
-          if (progressInterval.current) {
-            clearInterval(progressInterval.current);
-          }
-        }
-      }
-    }, 100);
-  };
+    setVoiceCode(!immersive ? "en-GB-BellaNeural" : "en-GB-OliviaNeural");
+  }, [immersive]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,17 +59,7 @@ const AIMeditationGenerator: React.FC = () => {
 
     // Reset any existing meditation
     setGeneratedMeditation(null);
-    setIsPlaying(false);
-    setProgress(0);
-    setCurrentTime(0);
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-
     setIsGenerating(true);
-    // const toastId = toast.loading("Generating your meditation...");
 
     try {
       const result = await generateMeditation(
@@ -166,15 +69,16 @@ const AIMeditationGenerator: React.FC = () => {
         practiceType,
         currentUser?.uid || "anonymous",
         voiceCode,
-        title
+        title,
+        immersive
       );
-
+      const cost = immersive ? 2 : 1;
       console.log("Meditation generation result:", result);
       if (currentUser && currentUser.subscription?.meditationCredits)
         updateUser(currentUser?.uid, {
           subscription: {
             ...currentUser?.subscription,
-            meditationCredits: currentUser?.subscription?.meditationCredits - 1,
+            meditationCredits: currentUser?.subscription?.meditationCredits - cost,
           },
         });
       if (!result) {
@@ -186,6 +90,7 @@ const AIMeditationGenerator: React.FC = () => {
         title: result.data.script.title,
         content: result.data.script.content,
         audioUrl: result.data.audioUrl,
+        isImmersive: result.data.dbItem.immersive,
       });
       getMeditationItemsREST().then((data) => {
         if (data) dispatch(setMeditations(data));
@@ -204,7 +109,6 @@ const AIMeditationGenerator: React.FC = () => {
       setIsGenerating(false);
     }
   };
-
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
@@ -257,6 +161,10 @@ const AIMeditationGenerator: React.FC = () => {
                 </span>
               ))}
             </div>
+          </div>
+          <div className='form-group form-group-block'>
+            <label>With Immersive Sound? </label>
+            <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
           <div className='form-grid'>
             <div className='form-group form-group-block'>
@@ -343,66 +251,22 @@ const AIMeditationGenerator: React.FC = () => {
             <div className='audio-player bg-gray-800 rounded-lg p-6'>
               <h3 className='text-lg font-semibold mb-4 text-orange-400'>Preview Your Meditation</h3>
               <div className='player-controls'>
-                <div
-                  className='play-btn'
-                  role='button'
-                  onClick={togglePlayPause}
-                  aria-label={isPlaying ? "Pause" : "Play"}
-                >
-                  {isAudioGenerating ? (
-                    <div className='spinner-small'></div>
-                  ) : isPlaying ? (
-                    <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 20 20'>
-                      <path
-                        fillRule='evenodd'
-                        d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                  ) : (
-                    <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 20 20'>
-                      <path
-                        fillRule='evenodd'
-                        d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                  )}
-                </div>
-
-                <div className='progress-container flex-1 ml-4'>
-                  <div className='progress-bar bg-gray-700 rounded-full h-2 w-full overflow-hidden'>
-                    <div
-                      className='progress bg-orange-500 h-full transition-all duration-300'
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
-                </div>
+                {isAudioGenerating ? (
+                  <div className='spinner-small'></div>
+                ) : generatedMeditation.audioUrl ? (
+                  <AudioController
+                    audioUrl={generatedMeditation.audioUrl}
+                    isImmersive={generatedMeditation.isImmersive}
+                  />
+                ) : null}
               </div>
 
               <div className='flex justify-center mt-10 space-x-8'>
                 <span className='message'>
-                  Your meditation has been saved to the Bespoke Meditations tab in your{" "}
+                  Your meditation has been saved to the Bespoke Meditations tab in your
                   <Link to='/dashboard'>Dashboard</Link>
                 </span>
               </div>
-
-              <audio
-                ref={audioRef}
-                src={generatedMeditation?.audioUrl}
-                onEnded={() => {
-                  setIsPlaying(false);
-                  setProgress(0);
-                  setCurrentTime(0);
-                  if (progressInterval.current) {
-                    clearInterval(progressInterval.current);
-                  }
-                }}
-                onError={(e) => {
-                  console.error("Audio playback error:", e);
-                  // toast.error("Error playing audio. The text-to-speech service might be unavailable.");
-                }}
-              />
             </div>
           </div>
         </div>

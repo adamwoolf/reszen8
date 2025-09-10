@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import Icon from "../../components/Icon/Icon";
 import { categoriser } from "../../Util";
 import { Publication } from "../../models";
-import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import AudioPlayer from "../../components/AudioPlayer/AudioController";
 
 const FullPublication = () => {
   const { slug } = useParams();
@@ -74,7 +74,6 @@ const FullPublication = () => {
 
       {currentUser && (
         <div className='publication__audio'>
-          <h3>Listen</h3>
           <AudioPlayer audioUrl={content.audioUrl} />
         </div>
       )}

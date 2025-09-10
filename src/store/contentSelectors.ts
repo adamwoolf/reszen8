@@ -1,5 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { Publication, Like } from "../models";
+import { AudioObject } from "./contentSlice";
 
 export const getPublications = createSelector(
   (state) => state.content.publications,
@@ -23,7 +24,7 @@ export const getMeta = createSelector(
 
 export const getCurrentAudio = createSelector(
   (state) => state.content.currentAudio,
-  (audio): string => audio
+  (audio): AudioObject => audio
 );
 
 export const getPublicationLikes = createSelector(getMeta, (meta): Like[] => meta.LIKES);

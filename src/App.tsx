@@ -39,12 +39,13 @@ import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
-import { getPublications } from "./contentful";
 import { useDispatch } from "react-redux";
 import { getMeditationItemsREST, getStaticMeditationsREST, getAWSArticles } from "./store/storeListener";
-import { setPublications, setStaticMeditations, setMeta, setMeditations, setArticles } from "./store/contentSlice";
+import { setStaticMeditations, setMeditations, setArticles } from "./store/contentSlice";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
+import LoadingScene from "./components/LoadingScene/LoadingScene";
+import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -52,17 +53,19 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (loading) return null;
 
   // return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
-  return currentUser ? <>{children}</> : <Navigate to='/' replace />;
+  return currentUser ? <>{children}</> : <Navigate to='/' />;
 };
 
 const UserRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
 
-  if (loading) return <p>LOADING</p>;
-  return currentUser ? <>{children}</> : <Navigate to='/' replace />;
+  return currentUser ? <>{children}</> : <Navigate to='/' />;
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { loading } = useAuth();
+
+  if (loading) return <LoadingScene />;
   return (
     // <ErrorBoundary>
     <div className='app-container flex flex-col min-h-screen'>
@@ -71,6 +74,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name='description' content='Your destination for meditative experiences.' />
         <meta name='robots' content='index, follow' />
       </Helmet>
+
       <LandingPage />
 
       <Navbar />
@@ -83,6 +87,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </main>
       <Footer />
       <FloatingCTA />
+      <AudioPlayer />
       <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
     </div>
     // </ErrorBoundary>
@@ -316,9 +321,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // getMetaREST().then((data) => {
-    //   if (data) dispatch(setMeta(data));
-    // });
     getAWSArticles().then((data) => {
       dispatch(setArticles(data));
     });

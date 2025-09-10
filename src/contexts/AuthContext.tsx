@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 import { User } from "../models";
-import useSendMail from "../hooks/useSendEmail";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
 
@@ -27,7 +26,6 @@ export function useAuth() {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const awsAuth = useAwsAuth();
-
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

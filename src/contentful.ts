@@ -25,6 +25,8 @@ const getFAQs = () => client.getEntries({ content_type: "faq" }).then((response)
 const getMembershipTiers = () =>
   client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
 
+const getImmersiveTracks = () => client.getEntries({ content_type: "immersiveTrack" }).then((response) => response);
+
 export {
   getPublications,
   getMeditationItems,
@@ -36,4 +38,5 @@ export {
   getFAQs,
   getMembershipPage,
   getMembershipTiers,
+  getImmersiveTracks,
 };

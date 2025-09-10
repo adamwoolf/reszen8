@@ -27,6 +27,10 @@
   display: flex;
 }
 
+.toggle-super-count {
+  margin-left: 4px;
+}
+
 .toggle-label {
   margin: 0 24px;
   color: orange;
@@ -101,7 +105,7 @@
 
 /* OFF state */
 .toggle-switch.is-off .toggle-track {
-  background: var(--toggle-bg-off);
+  background: var(--toggle-bg-on);
 }
 
 /* ON state */

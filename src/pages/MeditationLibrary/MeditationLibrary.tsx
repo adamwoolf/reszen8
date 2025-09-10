@@ -23,16 +23,27 @@ const DigitalLibrary = () => {
 
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getMeditationsWithLikes);
+  const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
+
   useEffect(() => {
-    setDisplayMeds(libraryMeditations);
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  useEffect(() => {
+    if (meditations.length === 0)
+      setMeditations(libraryMeditations.filter((med) => filterByImmersive(med, ImmersiveMeds)));
   }, [libraryMeditations]);
+
+  useEffect(() => {
+    setDisplayMeds(meditations);
+  }, [meditations]);
 
   const filterMeds = (word: string) => {
     setActiveFilter(word);
     setDisplayMeds(
-      libraryMeditations
+      meditations
         .filter((pub) => {
           const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
           return cats[0].toLowerCase() === word.toLowerCase();
@@ -105,14 +116,9 @@ const DigitalLibrary = () => {
     );
   };
 
-  const showStatic = () => {
-    setSearch("static only");
-    setDisplayMeds(libraryMeditations.filter((m) => m.staticMed));
-  };
-
   const showNonVerified = () => {
     setSearch("non - verified");
-    setDisplayMeds(libraryMeditations.filter((m) => m.staticMed && !m.verified));
+    setDisplayMeds(meditations.filter((m) => m.staticMed && !m.verified));
   };
 
   useEffect(() => {
@@ -128,9 +134,14 @@ const DigitalLibrary = () => {
     return (
       <div className='publications__filters'>
         <div className='meditation-library__toggle-container'>
-          <ToggleSwitch checked={ImmersiveMeds} onChange={setImmersiveMeds} size='md' />
+          <ToggleSwitch
+            immersiveMedsCount={libraryMeditations.filter((m) => m.immersive).length}
+            voiceMedsCount={libraryMeditations.filter((m) => !m.immersive).length}
+            checked={ImmersiveMeds}
+            onChange={setImmersiveMeds}
+            size='md'
+          />
           <button className='meditation-library__toggle-container__info-cta' onClick={() => setShowPopup(true)}>
-            {" "}
             <FaInfoCircle />
           </button>
         </div>
@@ -143,22 +154,22 @@ const DigitalLibrary = () => {
             <p>Voice Only meditations do not have Immersive Audio compatability.</p>
           </div>
         </Popup>
-        <ToggleContainer setShow={() => setImmersiveMeds(true)} show={ImmersiveMeds} />
+        <div className='sticky-container'>
+          <ToggleContainer show={ImmersiveMeds} />
+        </div>
         <Filters filterPubs={filterMeds} activeFilter={activeFilter} search={search} searchText={searchText} />
 
         <span ref={resultsContainer} className='meditation-library__search-results'>
           Showing {displayMeds.length} of {libraryMeditations?.length}
         </span>
-        {search.length > 0 && (
-          <button className='publications__filter' onClick={showAll}>
-            Show all
-          </button>
-        )}
+        {search.length > 0 ||
+          (activeFilter && (
+            <button className='publications__filter' onClick={showAll}>
+              Show all
+            </button>
+          ))}
         {currentUser && currentUser.isGod && (
           <div style={{ display: "flex" }}>
-            <button style={{ marginRight: 12 }} onClick={showStatic}>
-              Only Static
-            </button>
             <button onClick={showNonVerified}>Only Non-verified</button>
           </div>
         )}

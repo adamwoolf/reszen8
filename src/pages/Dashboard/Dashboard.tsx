@@ -4,10 +4,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
 import { FaArrowRight, FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
-import { CONTENT_TYPES } from "../../constants";
 import Search from "../../components/Search/Search";
+import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
@@ -73,9 +73,6 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = allItems[activeTab];
-    console.log(data);
-    console.log(allItems);
-    console.log(activeTab);
 
     return (
       <div className='dashboard-content'>
@@ -88,8 +85,9 @@ const Dashboard = () => {
         {data?.length === 0 ? (
           <div className='text-center py-10'>
             <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
-            <Link to='/digital-library' className='text-orange-400 hover:text-orange-300 font-medium'>
-              Browse {activeTab.charAt(0).toUpperCase() + activeTab.slice(1, -1)} →
+            <Link to='/articles' className='text-orange-400 hover:text-orange-300 font-medium'>
+              Browse{" "}
+              {activeTab === "publications" ? "Articles" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1, -1)} →
             </Link>
           </div>
         ) : (
@@ -124,14 +122,20 @@ const Dashboard = () => {
                         )}
                       </div>
                     </div>
+                    {item.immersive && (
+                      <div className='dashboard__immersive-icon'>
+                        <img className='immersive-icon' src={immersiveLogo} />
+                      </div>
+                    )}
+
                     <div className='dashboard-buttons'>
-                      {item.audioUrl && (
-                        <div className='mb-2'>
-                          <AudioPlayer audioUrl={item.audioUrl} />
+                      {item.audioUrl && activeTab !== "publications" && (
+                        <div className='dashboard__audio'>
+                          <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
                         </div>
                       )}
                       {activeTab === "publications" && (
-                        <Link className='read-link' to={`/publications/${item.slug}`}>
+                        <Link className='read-link' to={`/articles/${item.title}`}>
                           <span className='read-link-text'> Read</span>
                           <FaArrowRight />{" "}
                         </Link>

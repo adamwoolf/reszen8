@@ -135,7 +135,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
               clear
             </button>
           </div>
-          {!results.length && (
+          {!results.length && !meds.length && !bespokeMeds.length && (
             <div className='search__tile-container'>
               {Object.keys(getIcon).map((icon, i) => (
                 <button

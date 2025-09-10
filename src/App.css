@@ -24,6 +24,14 @@
   box-sizing: border-box;
 }
 
+.app-bar {
+  animation: fadeIn 500ms;
+  animation-delay: 200ms;
+  animation-fill-mode: both;
+  position: relative;
+  z-index: 30000;
+}
+
 body {
   font-family: var(--font-stack);
   line-height: 1.6;
