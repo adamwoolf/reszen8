@@ -108,9 +108,14 @@ const DigitalLibrary = () => {
         )}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {displayMeds?.map((item, i) => (
-            <MeditationCard key={`meditation-card-${i}`} handleAddItem={handleAddItem} item={item} i={i} />
-          ))}
+          {displayMeds
+            .filter((med) => {
+              if (currentUser?.isGod) return true;
+              return med.verified;
+            })
+            ?.map((item, i) => (
+              <MeditationCard key={`meditation-card-${i}`} handleAddItem={handleAddItem} item={item} i={i} />
+            ))}
         </div>
       </div>
     );
@@ -118,7 +123,7 @@ const DigitalLibrary = () => {
 
   const showNonVerified = () => {
     setSearch("non - verified");
-    setDisplayMeds(meditations.filter((m) => m.staticMed && !m.verified));
+    setDisplayMeds(libraryMeditations.filter((m) => m.staticMed && !m.verified));
   };
 
   useEffect(() => {

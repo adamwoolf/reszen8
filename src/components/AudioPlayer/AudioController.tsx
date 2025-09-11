@@ -38,12 +38,16 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     const introDelay = isImmersive && immersiveUrl ? 6 : 1;
 
     const calculateDuration = () => {
-      const voiceDuration = voiceAudio?.duration || 0;
-      const immersiveDuration = immersiveAudio?.duration || 0;
-      const total = introDelay + voiceDuration;
-      const overallDuration = Math.max(total, immersiveDuration);
-      setDuration(overallDuration);
-      setCountdown(overallDuration);
+      if (!voiceAudio?.duration || isNaN(voiceAudio.duration) || voiceAudio.duration === Infinity) return;
+
+      const voiceDuration = voiceAudio.duration;
+      const introDelay = isImmersive && immersiveUrl ? 6 : 1;
+      const fadeOutTime = 4; // e.g., 1s fade out at end, adjust as needed
+
+      const totalDuration = introDelay + voiceDuration + fadeOutTime;
+
+      setDuration(totalDuration);
+      setCountdown(totalDuration);
     };
 
     voiceAudio = new Audio(audioUrl);

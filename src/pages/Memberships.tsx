@@ -43,7 +43,7 @@ const Memberships: React.FC = () => {
       return;
     }
     if (tier.freeTrial) {
-      navigate("/signup");
+      navigate("/login");
       return;
     }
     // Create a proper product object with all required fields
@@ -53,6 +53,8 @@ const Memberships: React.FC = () => {
       price: tier.price || 0,
       description: tier.description || "",
       size: tier.billing, // Store billing cycle as size
+      priceId: tier.priceId, // for Stripe subscriptions
+      medCredits: tier.medCredits,
     };
     console.log("Adding to basket:", product); // Debug log
     addItem(product);
@@ -118,11 +120,7 @@ const Memberships: React.FC = () => {
                     className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
                     onClick={() => handleSubscribe(tier)}
                   >
-                    {tier.id === "bespoke-journey"
-                      ? "Make Enquiry"
-                      : tier.freeTrial
-                      ? "Start Free Trial"
-                      : "Get Started"}
+                    {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Buy"}
                   </button>
                 )}
                 {tier.title.includes("Enterprise") && (

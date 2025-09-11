@@ -135,6 +135,8 @@ select:focus {
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .payment-tab.active {

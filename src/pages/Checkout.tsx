@@ -1,260 +1,55 @@
 import { useEffect, useState } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useBasketStore } from '../store/basketStore';
-import { toast } from 'react-hot-toast';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { usePurchasedItemsStore } from '../store/purchasedItemsStore';
 import './Checkout.css';
 import { useAuth } from "../contexts/AuthContext";
+import { AWS_DB_ENDPOINT } from "../constants";
+import { FaArrowRight } from 'react-icons/fa'
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
-// Initialize Stripe with test public key
-const stripePromise = loadStripe('pk_test_51O...'); // Replace with your test public key
-
-// Mock payment intent data for testing
-const MOCK_PAYMENT_INTENT = {
-  id: 'pi_mock_' + Math.random().toString(36).substr(2, 9),
-  client_secret: 'pi_mock_secret_' + Math.random().toString(36).substr(2),
-  amount: 1000, // Will be updated with actual basket total
-  currency: 'gbp',
-  status: 'requires_payment_method',
-};
-
-const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isPaymentElementReady, setIsPaymentElementReady] = useState(false);
+const CheckoutForm = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearBasket } = useBasketStore();
   const { addPurchasedItems } = usePurchasedItemsStore();
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
 
   // Redirect to basket if empty
   if (items.length === 0) {
     return <Navigate to="/basket" />;
   }
 
-  // Handle payment element ready state
-  const handleReady = () => {
-    setIsPaymentElementReady(true);
-  };
 
-  // Form state
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    address: {
-      line1: '',
-      line2: '',
-      city: '',
-      postal_code: '',
-      country: 'GB',
-    },
-    phone: '',
-  });
-
-  const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name.includes('address.')) {
-      const field = name.split('.')[1];
-      setFormData(prev => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [field]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitStripe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsProcessing(true);
-    setError(null);
-
-    try {
-      const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/order-success`,
-          receipt_email: formData.email,
-          payment_method_data: {
-            billing_details: {
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone,
-              address: {
-                line1: formData.address.line1,
-                line2: formData.address.line2,
-                city: formData.address.city,
-                postal_code: formData.address.postal_code,
-                country: 'GB',
-              }
-            }
-          }
-        },
-        redirect: 'if_required'
-      });
-
-      if (stripeError) {
-        setError(stripeError.message || 'Payment failed');
-        return;
-      }
-
-      if (paymentIntent?.status === 'succeeded') {
-        // Add items to purchased items store
-        addPurchasedItems(items.map(item => ({
-          ...item.product,
-          quantity: item.quantity
-        })));
-        
-        // Clear basket on successful payment
-        clearBasket();
-        
-        // Redirect to success page
-        navigate('/order-success', { 
-          state: { 
-            paymentIntent,
-            customer: {
-              name: formData.name,
-              email: formData.email
-            }
-          } 
-        });
-      }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during payment');
-      console.error('Payment error:', err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const godSignUp = () => {
-if(currentUser?.subscription && currentUser.firebaseId) {
-  const newUserData = {...currentUser, basket: [], 
-    purchasedItems: [{ name: "Monthly Sub", price: 13, purchasedDate: Date.now() }],
-
+const { email, firstName, surName } = currentUser || {}
+console.log( items[0]?.product)
+const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: 'subscription', email, firstName, lastName: surName, planId: items[0].product.priceId, 
+      uid: currentUser?.uid,
     subscription: {
-    duration: 30,
-    hasCompletedTrial: true,
-    isActiveSub: true,
-    startDate: Date.now(),
-    subscription: 'monthly'
-  }}
-  setCurrentUser(newUserData)
-  setTimeout(() => navigate('/members'), 500)
+duration: 30,
+hasCompletedTrial: true,
+meditationCredits: items[0]?.product.medCredits,
+subscription: items[0]?.product.size
+    }
+    }),
+    });
 
-}
-  }
+    const data = await res.json();
+
+    const stripe = await stripePromise;
+    await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+  };
 
   const formattedTotal = (totalPrice()).toFixed(2);
 
   return (
-    <form onSubmit={handleSubmit} className="checkout-form">
-      {/* Contact Information */}
-      {/* <section className="checkout-section">
-        <h2 className="section-title">Contact Information</h2>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="phone">Phone</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-        </div>
-      </section> */}
-
-      {/* Shipping Address */}
-      {/* <section className="checkout-section">
-        <h2 className="section-title">Shipping Address</h2>
-        <div className="form-grid">
-          <div className="form-group full-width">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-          <div className="form-group full-width">
-            <label htmlFor="address.line1">Address Line 1</label>
-            <input
-              type="text"
-              id="address.line1"
-              name="address.line1"
-              value={formData.address.line1}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="address.line2">Address Line 2 (Optional)</label>
-            <input
-              type="text"
-              id="address.line2"
-              name="address.line2"
-              value={formData.address.line2}
-              onChange={handleChangeForm}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="address.city">City</label>
-            <input
-              type="text"
-              id="address.city"
-              name="address.city"
-              value={formData.address.city}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="address.postal_code">Postal Code</label>
-            <input
-              type="text"
-              id="address.postal_code"
-              name="address.postal_code"
-              value={formData.address.postal_code}
-              onChange={handleChangeForm}
-              required
-            />
-          </div>
-        </div>
-      </section> */}
+    <form onSubmit={handleSubmitStripe} className="checkout-form">
 
       {/* Order Summary */}
       <section className="checkout-section order-summary">
@@ -297,82 +92,13 @@ if(currentUser?.subscription && currentUser.firebaseId) {
           <div className="payment-method-header">
             <h3>Payment Method</h3>
             <div className="payment-method-tabs">
-              <button type="button" className="payment-tab active">
-                <span>Pay with card</span>
+              <button  className="payment-tab active">
+                Pay using Stripe (secure payment page)  <FaArrowRight/>
               </button>
-              {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>}
+              {/* {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>} */}
             </div>
           </div>
-          
-          {/* <div className="card-details">
-            <div className="form-group">
-              <label htmlFor="cardNumber">Card number</label>
-              <div className="card-input">
-                <input
-                  type="text"
-                  id="cardNumber"
-                  name="cardNumber"
-                  placeholder="1234 1234 1234 1234"
-                  className="card-number"
-                  maxLength={19}
-                />
-                <div className="card-icons">
-                  <span className="card-icon visa"></span>
-                  <span className="card-icon mastercard"></span>
-                  <span className="card-icon amex"></span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="card-details-row">
-              <div className="form-group">
-                <label htmlFor="expiryDate">Expiry date</label>
-                <input
-                  type="text"
-                  id="expiryDate"
-                  name="expiryDate"
-                  placeholder="MM/YY"
-                  className="expiry-date"
-                  maxLength={5}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="cvc">CVC</label>
-                <input
-                  type="text"
-                  id="cvc"
-                  name="cvc"
-                  placeholder="CVC"
-                  className="cvc"
-                  maxLength={4}
-                />
-              </div>
-            </div> */}
-            
-            {/* <div className="form-group">
-              <label htmlFor="cardName">Name on card</label>
-              <input
-                type="text"
-                id="cardName"
-                name="cardName"
-                placeholder="John Smith"
-                className="card-name"
-              />
-            </div>
-          </div> */}
         </div>
-        
-        {/* {error && <div className="payment-error">{error}</div>}
-        <div className="form-actions">
-          <button 
-            type="submit" 
-            className="pay-button"
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : `Pay £${formattedTotal}`}
-          </button>
-        </div> */}
       </section>
     </form>
   );
@@ -425,9 +151,7 @@ const Checkout = () => {
         <div className="checkout-layout">
           <div className="checkout-main">
             {stripePromise && clientSecret && (
-              <Elements stripe={stripePromise} options={options}>
-                <CheckoutForm clientSecret={clientSecret} />
-              </Elements>
+                <CheckoutForm  />
             )}
           </div>
         </div>

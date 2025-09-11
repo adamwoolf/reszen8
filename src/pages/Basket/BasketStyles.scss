@@ -41,6 +41,24 @@
 .basket {
   &__clear-button {
     margin-right: 16px;
+    background-color: transparent;
+    color: orange;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &__proceed {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    padding: 8px;
+    border-radius: 5px;
+
+    &:hover {
+      text-decoration: none;
+      color: inherit;
+    }
   }
 
   &-item {

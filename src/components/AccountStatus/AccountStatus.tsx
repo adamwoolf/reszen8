@@ -39,13 +39,18 @@ const AccountStatus = ({ user }: { user: User }) => {
 
   return user?.subscription?.subscription === "free-trial" ? (
     hasTime ? (
-      <span className={`account-status-message`}>
-        <span> Free trial: </span>
-        <span className='time'>
-          {" "}
-          {days}d {hours}h {minutes}m, {seconds}s
+      <>
+        <span className={`account-status-message`}>
+          <span> Free trial: </span>
+          <span className='time'>
+            {" "}
+            {days}d {hours}h {minutes}m, {seconds}s
+          </span>
         </span>
-      </span>
+        <span>
+          bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+        </span>
+      </>
     ) : (
       <span>Your free trial has expired. Please update your subscription </span>
     )

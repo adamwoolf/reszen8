@@ -31,27 +31,6 @@ const Basket = () => {
     updateQuantity(productId, size, newQuantity);
   };
 
-  const handleSaveForLater = (item: any) => {
-    saveItem({
-      id: item.product.id,
-      name: item.product.name || "Unnamed Item",
-      price: item.product.price,
-      description: item.product.description,
-      size: item.product.size,
-      quantity: item.quantity,
-    });
-
-    toast.success("Item saved to your Members Area", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-
   if (!items || items.length === 0) {
     return (
       <div className='max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8'>
@@ -173,7 +152,9 @@ const Basket = () => {
               <button type='button' onClick={clearBasket} className='basket__clear-button'>
                 Clear Basket
               </button>
-              <Link to='/checkout'>Proceed to Checkout</Link>
+              <Link className='basket__proceed' to='/checkout'>
+                Proceed to Checkout
+              </Link>
             </div>
           </div>
         </div>

@@ -45,7 +45,8 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
 
   useEffect(() => {
     if (currentUser?.basket) {
-      setItems(currentUser?.basket);
+      console.log(currentUser);
+      setItems(Object.values(currentUser?.basket));
     }
     if (!currentUser) {
       setItems([]);

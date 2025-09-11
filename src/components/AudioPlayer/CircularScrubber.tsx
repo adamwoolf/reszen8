@@ -138,7 +138,7 @@ const CircularScrubber = ({
       />
 
       {/* Visible knob */}
-      {isPlaying && (
+      {/* {isPlaying && (
         <circle
           cx={handleX}
           cy={handleY}
@@ -149,7 +149,7 @@ const CircularScrubber = ({
           pointerEvents='none'
           style={{ cursor: "grab" }}
         />
-      )}
+      )} */}
     </svg>
   );
 };

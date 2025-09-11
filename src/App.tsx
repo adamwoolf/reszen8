@@ -98,7 +98,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const { currentUser } = useAuth();
-  console.log(currentUser);
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>

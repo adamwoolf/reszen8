@@ -21,7 +21,6 @@ const FullPublication = () => {
   useEffect(() => {
     setContent(publications?.find((pub: Publication) => pub.title.includes(slug)));
   }, [slug, publications]);
-  console.log(content);
 
   useEffect(() => {
     if (currentUser?.savedItems?.publications && content?.sys) {
