@@ -157,7 +157,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
             )}
             {results.length > 0 && (
               <ScrollLink to='publications'>
-                <span className='search__results-tab'>Publications {results.length}</span>
+                <span className='search__results-tab'>Articles {results.length}</span>
               </ScrollLink>
             )}
             {meds.length > 0 && (
@@ -196,7 +196,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
               )}
               {results.length > 0 && (
                 <h3 className='search__results-heading' id='publications'>
-                  PUBLICATIONS
+                  ARTICLES
                 </h3>
               )}
 

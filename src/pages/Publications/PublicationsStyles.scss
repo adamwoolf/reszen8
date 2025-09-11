@@ -25,7 +25,7 @@
     padding: 15px;
 
     &::placeholder {
-      color: white;
+      color: var(--primary-color);
     }
   }
 
@@ -47,6 +47,7 @@
     color: orange;
     margin-top: 40px;
     scroll-margin-top: 180px;
+    text-align: center;
   }
 
   &__no-results {

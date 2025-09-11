@@ -10,7 +10,7 @@ import Search from "./Search/Search";
 import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
-
+import { IoMdLogOut } from "react-icons/io";
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
   const { currentUser, setCurrentUser, signOutRedirect, loading } = useAuth();
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
     }
     return null;
   };
-  const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ${currentUser?.surName} ` : "";
+  const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ` : "";
   if (loading) return null;
   return (
     <div>
@@ -228,7 +228,7 @@ const Navbar: React.FC = () => {
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
               <button className='user-address' onClick={signOutRedirect}>
-                Logout
+                <IoMdLogOut size={20} />
               </button>
             </span>
           </div>

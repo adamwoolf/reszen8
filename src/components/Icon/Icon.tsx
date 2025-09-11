@@ -14,17 +14,17 @@ import Trauma from "../../assets/icons/Trauma.png";
 import "./IconStyles.scss";
 
 export const getIcon = {
-  Anger,
-  AnxietyRelief,
-  BetterSleep,
-  Compassion,
-  FocusandConcentration,
-  Gratitude,
-  LovingKindness,
   Mindfulness,
+  Gratitude,
+  BetterSleep,
+  FocusandConcentration,
+  Compassion,
+  LovingKindness,
   Relationships,
   Resilience,
   StressRelief,
+  Anger,
+  AnxietyRelief,
   Trauma,
   Uncategorized: Mindfulness,
 };

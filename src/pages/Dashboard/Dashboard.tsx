@@ -73,7 +73,7 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     const data = allItems[activeTab];
-
+    const destination = activeTab === "publications" ? "articles" : "meditation-library";
     return (
       <div className='dashboard-content'>
         {notification.show && (
@@ -85,7 +85,7 @@ const Dashboard = () => {
         {data?.length === 0 ? (
           <div className='text-center py-10'>
             <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
-            <Link to='/articles' className='text-orange-400 hover:text-orange-300 font-medium'>
+            <Link to={`/${destination}`} className='text-orange-400 hover:text-orange-300 font-medium'>
               Browse{" "}
               {activeTab === "publications" ? "Articles" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1, -1)} →
             </Link>

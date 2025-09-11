@@ -43,7 +43,7 @@ const DigitalLibrary = () => {
   const filterMeds = (word: string) => {
     setActiveFilter(word);
     setDisplayMeds(
-      meditations
+      libraryMeditations
         .filter((pub) => {
           const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
           return cats[0].toLowerCase() === word.toLowerCase();
@@ -157,7 +157,13 @@ const DigitalLibrary = () => {
         <div className='sticky-container'>
           <ToggleContainer show={ImmersiveMeds} />
         </div>
-        <Filters filterPubs={filterMeds} activeFilter={activeFilter} search={search} searchText={searchText} />
+        <Filters
+          placeholder='Type to search meditations'
+          filterPubs={filterMeds}
+          activeFilter={activeFilter}
+          search={search}
+          searchText={searchText}
+        />
 
         <span ref={resultsContainer} className='meditation-library__search-results'>
           Showing {displayMeds.length} of {libraryMeditations?.length}

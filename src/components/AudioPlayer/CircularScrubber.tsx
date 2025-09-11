@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import "./AudioPlayerStyles.scss";
 
-// ⭕ Circular Scrubber
 const CircularScrubber = ({
   radius,
   stroke,
@@ -9,66 +9,84 @@ const CircularScrubber = ({
   isPlaying,
   onScrub,
   onScrubEnd,
+  knobRadius,
+  onClick,
 }: {
   radius: number;
   stroke: number;
-  progress: number;
+  progress: number; // 0 → 1
   duration: number;
   isPlaying: boolean;
   onScrub: (time: number) => void;
   onScrubEnd: (time: number) => void;
+  knobRadius: number;
+  onClick: () => void;
 }) => {
   const [dragging, setDragging] = useState(false);
+  const [dragProgress, setDragProgress] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const activeProgress = dragging && dragProgress !== null ? dragProgress : progress;
+
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - progress * circumference;
+  const offset = circumference - activeProgress * circumference;
+
+  const cx = radius + stroke / 2;
+  const cy = radius + stroke / 2;
 
   const getAngle = (clientX: number, clientY: number) => {
     if (!svgRef.current) return 0;
     const rect = svgRef.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = clientX - cx;
-    const dy = clientY - cy;
+    const dx = clientX - (rect.left + rect.width / 2);
+    const dy = clientY - (rect.top + rect.height / 2);
     return Math.atan2(dy, dx);
   };
 
-  const getProgressFromAngle = (angle: number) => {
-    return ((angle + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
+  const getProgressFromAngle = (angle: number) => ((angle + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
+
+  const startDrag = (clientX: number, clientY: number) => {
+    const angle = getAngle(clientX, clientY);
+    const newProgress = getProgressFromAngle(angle);
+    setDragProgress(newProgress);
+    onScrub(newProgress * duration);
   };
 
   const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isPlaying) return; // disable scrubbing when paused
+    if (!isPlaying) return;
     setDragging(true);
     const point = "touches" in e ? e.touches[0] : e;
-    const angle = getAngle(point.clientX, point.clientY);
-    const newProgress = getProgressFromAngle(angle);
-    const newTime = newProgress * duration;
-    onScrub(newTime);
+    startDrag(point.clientX, point.clientY);
+
+    if ("touches" in e) e.preventDefault(); // stop screen scroll
   };
 
   useEffect(() => {
     if (!dragging || !isPlaying) return;
 
+    // Replace the end of your handleMove/handleUp logic:
     const handleMove = (e: MouseEvent | TouchEvent) => {
       const point = e instanceof TouchEvent ? e.touches[0] : e;
       const angle = getAngle(point.clientX, point.clientY);
       const newProgress = getProgressFromAngle(angle);
+      setDragProgress(newProgress);
       onScrub(newProgress * duration);
+
+      if (e instanceof TouchEvent) e.preventDefault();
     };
 
     const handleUp = (e: MouseEvent | TouchEvent) => {
       const point = e instanceof TouchEvent ? e.changedTouches[0] : e;
       const angle = getAngle(point.clientX, point.clientY);
       const newProgress = getProgressFromAngle(angle);
-      onScrubEnd(newProgress * duration);
+
+      // ⚠️ Do NOT reset dragProgress here. Let parent control
       setDragging(false);
+      onScrubEnd(newProgress * duration);
     };
 
     window.addEventListener("mousemove", handleMove);
     window.addEventListener("mouseup", handleUp);
-    window.addEventListener("touchmove", handleMove);
+    window.addEventListener("touchmove", handleMove, { passive: false });
     window.addEventListener("touchend", handleUp);
 
     return () => {
@@ -79,36 +97,61 @@ const CircularScrubber = ({
     };
   }, [dragging, isPlaying, duration, onScrub, onScrubEnd]);
 
+  const angle = activeProgress * 2 * Math.PI - Math.PI / 2;
+  const handleX = cx + radius * Math.cos(angle);
+  const handleY = cy + radius * Math.sin(angle);
+
   return (
     <svg
+      className='circular-scrubber'
       ref={svgRef}
+      onClick={onClick}
       width={radius * 2 + stroke}
       height={radius * 2 + stroke}
-      onMouseDown={handlePointerDown}
-      onTouchStart={handlePointerDown}
-      style={{ cursor: isPlaying ? "pointer" : "default" }}
+      style={{ cursor: isPlaying ? "pointer" : "default", overflow: "visible", position: "absolute", top: 3 }}
     >
+      {/* Base ring */}
+      <circle stroke='orange' fill='none' cx={cx} cy={cy} r={radius} strokeWidth={stroke} />
+
+      {/* Progress arc */}
       <circle
-        stroke='#eee'
+        stroke='#aa6b0d'
         fill='none'
-        cx={radius + stroke / 2}
-        cy={radius + stroke / 2}
-        r={radius}
-        strokeWidth={stroke}
-      />
-      <circle
-        stroke='white'
-        fill='none'
-        cx={radius + stroke / 2}
-        cy={radius + stroke / 2}
+        cx={cx}
+        cy={cy}
         r={radius}
         strokeWidth={stroke}
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap='round'
-        transform={`rotate(-90 ${radius + stroke / 2} ${radius + stroke / 2})`}
+        transform={`rotate(-90 ${cx} ${cy})`}
       />
+
+      {/* Hitbox */}
+      <circle
+        cx={handleX}
+        cy={handleY}
+        r={Math.max(knobRadius, 14)}
+        fill='transparent'
+        onMouseDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
+      />
+
+      {/* Visible knob */}
+      {isPlaying && (
+        <circle
+          cx={handleX}
+          cy={handleY}
+          r={knobRadius}
+          fill='goldenrod'
+          stroke='#aa6b0d'
+          strokeWidth={2}
+          pointerEvents='none'
+          style={{ cursor: "grab" }}
+        />
+      )}
     </svg>
   );
 };
+
 export default CircularScrubber;

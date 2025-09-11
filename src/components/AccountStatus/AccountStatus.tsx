@@ -40,7 +40,7 @@ const AccountStatus = ({ user }: { user: User }) => {
   return user?.subscription?.subscription === "free-trial" ? (
     hasTime ? (
       <span className={`account-status-message`}>
-        <span> Free trial remaining: </span>
+        <span> Free trial: </span>
         <span className='time'>
           {" "}
           {days}d {hours}h {minutes}m, {seconds}s

@@ -27,10 +27,14 @@ const AudioPlayer = () => {
   const currentAudio = useSelector(getCurrentAudio);
   const immersiveEnv = useSelector((state: any) => state.content.immersiveEnv);
 
+  const lastEmitRef = useRef<number>(0);
+  const THROTTLE_MS = 150; // throttle for audio-timeupdate event
+
   // Reset audio when navigating to a new page
   useEffect(() => {
     dispatch(setCurrentAudio({ url: "", isImmersive: false }));
-  }, [location, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   // Fade ambient in
   const fadeInAmbient = () => {
@@ -69,6 +73,16 @@ const AudioPlayer = () => {
       }
     }, FADEOUT_INTERVAL);
   };
+
+  // Update duration when voice loads
+  useEffect(() => {
+    const voice = audioRef.current;
+    if (!voice) return;
+
+    const handleLoadedMetadata = () => setDuration(voice.duration || 0);
+    voice.addEventListener("loadedmetadata", handleLoadedMetadata);
+    return () => voice.removeEventListener("loadedmetadata", handleLoadedMetadata);
+  }, [currentAudio.url]);
 
   // Cleanup fade timers on unmount
   useEffect(() => {
@@ -169,53 +183,43 @@ const AudioPlayer = () => {
     }, introDelay * 1000);
   };
 
-  /**
-   * Toggle pause/resume for the current track
-   */
-  const togglePlayPause = () => {
-    const voice = audioRef.current;
-    const ambient = immersiveRef.current;
-    if (!voice) return;
-
-    if (isPlaying) {
-      voice.pause();
-      if (ambient) fadeOutAmbient();
-      setIsPlaying(false);
-    } else {
-      voice
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-          if (ambient && currentAudio.isImmersive) {
-            ambient.play().catch(console.warn);
-          }
-        })
-        .catch(console.error);
-    }
-  };
-
-  // React to Redux URL changes
   useEffect(() => {
     playNewTrack();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAudio.url]);
 
-  // Track progress
+  // Track progress and emit events (throttled) for UI controllers
   useEffect(() => {
     const voice = audioRef.current;
     const ambient = immersiveRef.current;
     if (!voice) return;
 
+    const emitTime = (t: number) => {
+      try {
+        window.dispatchEvent(new CustomEvent("audio-timeupdate", { detail: { time: t } }));
+      } catch {
+        // ignore older envs
+      }
+    };
+
     const handleUpdate = () => {
       const introDelay = currentAudio.isImmersive ? 6 : 1;
+      let t = 0;
       if (ambient) {
         if (voice.paused && ambient.currentTime < introDelay) {
-          setCurrentTime(ambient.currentTime);
+          t = ambient.currentTime;
         } else {
-          setCurrentTime(introDelay + voice.currentTime);
+          t = introDelay + voice.currentTime;
         }
       } else {
-        setCurrentTime(voice.currentTime);
+        t = voice.currentTime;
+      }
+      setCurrentTime(t);
+
+      const now = Date.now();
+      if (now - lastEmitRef.current > THROTTLE_MS) {
+        lastEmitRef.current = now;
+        emitTime(t);
       }
     };
 
@@ -226,7 +230,43 @@ const AudioPlayer = () => {
       voice.removeEventListener("timeupdate", handleUpdate);
       if (ambient) ambient.removeEventListener("timeupdate", handleUpdate);
     };
-  }, [currentAudio.isImmersive, immersiveEnv.url]);
+  }, [currentAudio.isImmersive, immersiveEnv.url, dispatch]);
+
+  // Handle seekTime requests from UI
+  useEffect(() => {
+    if (currentAudio.seekTime == null) return;
+
+    const voice = audioRef.current;
+    const ambient = immersiveRef.current;
+    if (!voice) return;
+
+    const introDelay = currentAudio.isImmersive ? 6 : 1;
+
+    // Clamp seekTime between 0 and duration
+    const targetTime = Math.max(0, Math.min(currentAudio.seekTime, duration));
+
+    if (targetTime < introDelay) {
+      // Seeking into intro section → adjust ambient only
+      if (ambient) ambient.currentTime = targetTime;
+      voice.currentTime = 0; // voice hasn't started yet
+    } else {
+      // Seeking after intro → adjust voice relative to introDelay
+      voice.currentTime = targetTime - introDelay;
+      if (ambient) ambient.currentTime = targetTime;
+    }
+
+    // Emit an immediate time update + seek-applied confirmation
+    try {
+      console.log("dispatching event", { detail: { time: targetTime } });
+      window.dispatchEvent(new CustomEvent("audio-timeupdate", { detail: { time: targetTime } }));
+      window.dispatchEvent(new CustomEvent("audio-seek-applied", { detail: { time: targetTime } }));
+    } catch (err) {
+      // swallow
+    }
+
+    // clear the seek request in Redux so this effect doesn't re-run repeatedly
+    dispatch(setCurrentAudio({ ...currentAudio, seekTime: null }));
+  }, [currentAudio.seekTime, currentAudio.isImmersive, duration, dispatch, currentAudio]);
 
   return (
     <div className='audio-player__inner'>

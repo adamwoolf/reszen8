@@ -28,6 +28,7 @@
     background-color: transparent;
     display: flex;
     justify-content: center;
+    position: relative;
   }
 
   &__duration {
@@ -36,6 +37,9 @@
     font-size: 17px;
     font-weight: normal;
     z-index: 200;
+    color: var(--primary-color);
+    user-select: none;
+    pointer-events: none;
   }
 
   &__countdown {
@@ -46,6 +50,8 @@
     animation: openIn 500ms ease-in-out;
     animation-fill-mode: both;
     color: orange;
+    user-select: none;
+    pointer-events: none;
   }
 }
 
@@ -162,7 +168,9 @@
     transform: scale(1);
   }
 }
-
+.circular-scrubber {
+  touch-action: none; /* disables default scroll/pinch gestures on that element */
+}
 .audio-btn-wrapper {
   position: relative;
   width: 100px; // match svg size

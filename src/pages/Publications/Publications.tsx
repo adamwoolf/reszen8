@@ -83,15 +83,14 @@ const Publications = () => {
       <div className='publications__filters'>
         {displayPubs?.length > 0 && (
           <span ref={resultsContainer} className='publications__count'>
-            Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`}
+            {/* Showing: {displayPubs?.length} publications {activeFilter && `related to ${activeFilter}`} */}
           </span>
         )}
-        {activeFilter ||
-          (search && (
-            <button className='publications__filter' onClick={showAll}>
-              clear filter
-            </button>
-          ))}
+        {(activeFilter || search) && (
+          <button className='publications__filter' onClick={showAll}>
+            clear filter
+          </button>
+        )}
       </div>
       {!displayPubs?.length && (
         <span className='publications__no-results'>Sorry, we couldn't find any articles that match your search</span>

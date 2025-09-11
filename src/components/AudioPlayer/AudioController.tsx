@@ -4,7 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCurrentAudio } from "../../store/contentSlice";
 import { getCurrentAudio } from "../../store/contentSelectors";
 import RadiatingWaves from "./Playing";
-import { FaPlay } from "react-icons/fa";
+import { HiPlay } from "react-icons/hi2";
+import CircularScrubber from "./CircularScrubber";
+
 const ThreeDotsLoader = () => (
   <div className='three-dots-loader'>
     <span />
@@ -18,11 +20,15 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
   const [isLoading, setIsLoading] = useState(false);
   const [duration, setDuration] = useState(0);
   const [countdown, setCountdown] = useState(0);
+  const [reportedTime, setReportedTime] = useState(0);
+
   const currentAudio = useSelector(getCurrentAudio);
   const immersiveUrl = useSelector((state: any) => state.content.immersiveEnv.url);
   const dispatch = useDispatch();
+  const timerRef = useRef<NodeJS.Timer | null>(null);
 
-  const timerRef = useRef<NodeJS.Timer | null>(null); // store interval ID in a ref
+  // ✅ Holds pending scrub to freeze knob immediately
+  const pendingSeekRef = useRef<number | null>(null);
 
   // Calculate duration
   useEffect(() => {
@@ -64,6 +70,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       clearInterval(timerRef.current);
       timerRef.current = null;
       setCountdown(duration);
+      pendingSeekRef.current = null;
     }
   }, [currentAudio, audioUrl, duration]);
 
@@ -76,13 +83,15 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       setCountdown(time);
 
       timerRef.current = setInterval(() => {
-        time -= 0.1; // smooth countdown
+        time -= 0.1;
         if (time <= 0) {
           clearInterval(timerRef.current!);
           timerRef.current = null;
           setCountdown(0);
+          setReportedTime(0);
         } else {
           setCountdown(time);
+          setReportedTime(duration - time);
         }
       }, 100);
     } else {
@@ -92,6 +101,8 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
         timerRef.current = null;
       }
       setCountdown(duration);
+      setReportedTime(0);
+      pendingSeekRef.current = null;
     }
   };
 
@@ -103,52 +114,49 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     return `${minutes}:${seconds}`;
   };
 
-  // SVG circle parameters
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 + countdown / duration);
+  const onDragEnd = (time: number) => {
+    pendingSeekRef.current = time; // freeze immediately
+    setCountdown(duration - time);
+    dispatch(
+      setCurrentAudio({
+        ...currentAudio,
+        seekTime: time,
+      })
+    );
+  };
+
+  // Compute progress
+  const usedTime = pendingSeekRef.current != null ? pendingSeekRef.current : reportedTime;
+  const progress = duration > 0 ? usedTime / duration : 0;
 
   return (
     <div className='audio-player__inner'>
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>
-        {/* Countdown Ring */}
-        <svg className='audio-btn-circle' width={100} height={100}>
-          <circle
-            cx={50}
-            cy={50}
-            r={radius}
-            stroke='orange'
-            strokeWidth={3}
-            fill='transparent'
-            style={{
-              strokeDasharray: circumference,
-              strokeDashoffset,
-              transition: "stroke-dashoffset 0.1s linear",
-            }}
-          />
-        </svg>
-
-        {/* Button content */}
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
             {!isPlaying && <span className='audio-player__duration'>{formatTime(duration)}</span>}
-            {isPlaying ? (
+            {isPlaying && (
               <>
-                {isPlaying && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
+                <span className='audio-player__countdown'>{formatTime(duration - usedTime)}</span>
                 <RadiatingWaves />
               </>
-            ) : null}
-            {isLoading && <ThreeDotsLoader />}
-            {!isPlaying && !isLoading && (
-              <span style={{ marginTop: -4 }}>
-                <FaPlay size={24} />
-              </span>
             )}
+            {isLoading && <ThreeDotsLoader />}
+            {!isPlaying && !isLoading && <HiPlay size={28} style={{ marginTop: -4 }} />}
           </div>
         </div>
-
-        {/* Countdown text */}
       </button>
+      <CircularScrubber
+        radius={45}
+        stroke={3}
+        progress={progress}
+        duration={duration}
+        knobRadius={5}
+        isPlaying={isPlaying}
+        onScrub={() => {}}
+        onScrubEnd={onDragEnd}
+        onClick={togglePlayPause}
+      />
     </div>
   );
 };
