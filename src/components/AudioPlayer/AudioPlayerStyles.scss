@@ -29,6 +29,7 @@
     display: flex;
     justify-content: center;
     position: relative;
+    margin: 25px;
   }
 
   &__duration {
@@ -127,7 +128,7 @@
     display: block;
     width: 6px;
     height: 6px;
-    // background-color: currentColor; // inherits button color
+    background-color: currentColor; // inherits button color
     border-radius: 50%;
     animation: bounce 1.2s infinite ease-in-out;
   }
@@ -173,8 +174,9 @@
 }
 .audio-btn-wrapper {
   position: relative;
-  width: 100px; // match svg size
-  height: 100px;
+  z-index: 1;
+  width: 50px; // match svg size
+  height: 50px;
   border: none;
   padding: 0;
   cursor: pointer;

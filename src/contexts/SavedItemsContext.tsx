@@ -44,8 +44,9 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [items]);
 
   useEffect(() => {
+    console.log(currentUser);
+
     if (currentUser?.basket) {
-      console.log(currentUser);
       setItems(Object.values(currentUser?.basket));
     }
     if (!currentUser) {
@@ -65,7 +66,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [meditations, currentUser?.savedItems]);
 
   const addItem = (item: ItemType) => {
-    console.log(item);
     const itemType = item.contentType === "meditation" ? "meditations" : "publications";
     const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
 

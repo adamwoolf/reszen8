@@ -9,6 +9,7 @@ import "./AmbientEnvStyles.scss";
 import { useSelector } from "react-redux";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { getImmersiveTracks } from "../../contentful";
+import { usePlayer } from "../../contexts/AudioContext";
 
 const Envs = [
   { name: "None", url: "" },
@@ -21,6 +22,7 @@ const AmbientEnv = () => {
   const dispatch = useDispatch();
   const [envs, setEnvs] = useState<{ name: ""; url: "" }[]>();
   const selected = useSelector((state) => state.content.immersiveEnv);
+  const { currentAudio, playing, play, pause, seek, setBackingUrl, duration: contextDuration } = usePlayer();
 
   useEffect(() => {
     getImmersiveTracks().then((data) => {
@@ -29,14 +31,16 @@ const AmbientEnv = () => {
         url: item?.fields.track.fields.file.url,
       }));
       setEnvs(newData);
-      dispatch(setImmersiveEnv(newData[2]));
+      // dispatch(setImmersiveEnv(newData[0]));
+      setBackingUrl(newData[0].url);
     });
   }, []);
 
   const handleChange = (e) => {
     const name = e.target.value;
     const en = envs.find((e) => e.name === name);
-    dispatch(setImmersiveEnv(en));
+    // dispatch(setImmersiveEnv(en));
+    if (en) setBackingUrl(en.url);
   };
   return (
     <div className='ambient'>

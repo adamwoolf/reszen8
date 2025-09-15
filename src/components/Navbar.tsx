@@ -136,20 +136,20 @@ const Navbar: React.FC = () => {
                   Memberships
                 </NavLink>
               </li>
-
               <li>
-                <NavLink to='/ai-chat' className={getNavLinkClass}>
-                  RESZEN8 Chat
+                <NavLink to='/articles' className={getNavLinkClass}>
+                  Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
                 </NavLink>
               </li>
 
+              {/* <li>
+                <NavLink to='/ai-chat' className={getNavLinkClass}>
+                  RESZEN8 Chat
+                </NavLink>
+              </li> */}
+
               {currentUser?.subscription?.isActiveSub && (
                 <>
-                  <li>
-                    <NavLink to='/articles' className={getNavLinkClass}>
-                      Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
-                    </NavLink>
-                  </li>
                   <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke Meditation Generator

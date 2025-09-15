@@ -26,19 +26,21 @@ const CheckoutForm = () => {
     e.preventDefault();
 const { email, firstName, surName } = currentUser || {}
 console.log( items[0]?.product)
+
 const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mode: 'subscription', email, firstName, lastName: surName, planId: items[0].product.priceId, 
       uid: currentUser?.uid,
-    subscription: {
-duration: 30,
-hasCompletedTrial: true,
-meditationCredits: items[0]?.product.medCredits,
-subscription: items[0]?.product.size
-    }
+      metadata: { uid: currentUser?.uid },
+      subscription: {
+      duration: 30,
+      hasCompletedTrial: true,
+      meditationCredits: items[0]?.product.medCredits,
+      subscription: items[0]?.product.size
+          }
     }),
-    });
+  });
 
     const data = await res.json();
 

@@ -50,18 +50,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
     if (dashboard) return searchDashboardItems();
     const pubs = publications.filter((pub: Publication) => pub.content.toLowerCase().includes(query.toLowerCase()));
 
-    const normalisedBespoke = data
-      ? Object.values(meditations)
-          .reverse()
-          ?.map((med: Meditation) => {
-            return {
-              ...med,
-              type: "meditation",
-              id: med.audioUrl,
-            };
-          })
-      : [];
-    const ms = normalisedBespoke.filter(
+    const ms = meditations.filter(
       (m: any) =>
         m.content.toLowerCase().includes(query.toLowerCase()) || m.title.toLowerCase().includes(query.toLowerCase())
     );

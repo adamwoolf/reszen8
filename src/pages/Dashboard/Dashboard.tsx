@@ -115,7 +115,7 @@ const Dashboard = () => {
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
                       )} */}
                         {item.style && <p>{item.style}</p>}
-                        {item.createdAt && (
+                        {item.createdAt && !item.staticMed && activeTab !== "publications" && (
                           <span className='dashboard__date'>
                             Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
                           </span>

@@ -23,8 +23,8 @@ const FullPublication = () => {
   }, [slug, publications]);
 
   useEffect(() => {
-    if (currentUser?.savedItems?.publications && content?.sys) {
-      const exists = !!currentUser?.savedItems?.publications?.find((pub: any) => pub.id === content?.sys?.id);
+    if (currentUser?.savedItems?.publications) {
+      const exists = !!currentUser?.savedItems?.publications?.find((pub: any) => pub.id === content?.uid);
       setSaved(exists);
     }
   }, [content, currentUser?.savedItems?.publications, slug]);

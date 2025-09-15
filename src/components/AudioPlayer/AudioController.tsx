@@ -1,11 +1,11 @@
+// components/AudioController.tsx
 import React, { useEffect, useRef, useState } from "react";
 import "./AudioPlayerStyles.scss";
-import { useSelector, useDispatch } from "react-redux";
-import { setCurrentAudio } from "../../store/contentSlice";
-import { getCurrentAudio } from "../../store/contentSelectors";
-import RadiatingWaves from "./Playing";
 import { HiPlay } from "react-icons/hi2";
 import CircularScrubber from "./CircularScrubber";
+import RadiatingWaves from "./Playing";
+import { usePlayer } from "../../contexts/AudioContext";
+import { useSelector } from "react-redux";
 
 const ThreeDotsLoader = () => (
   <div className='three-dots-loader'>
@@ -16,99 +16,77 @@ const ThreeDotsLoader = () => (
 );
 
 const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmersive?: boolean }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [countdown, setCountdown] = useState(0);
-  const [reportedTime, setReportedTime] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
-  const currentAudio = useSelector(getCurrentAudio);
-  const immersiveUrl = useSelector((state: any) => state.content.immersiveEnv.url);
-  const dispatch = useDispatch();
-  const timerRef = useRef<NodeJS.Timer | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ Holds pending scrub to freeze knob immediately
-  const pendingSeekRef = useRef<number | null>(null);
+  const { currentAudio, playing, play, pause, seek, currentTime, getProgress, setBackingUrl } = usePlayer();
 
-  // Calculate duration
+  const immersiveUrl = useSelector((state: any) => state.content?.immersiveEnv?.url);
+
+  // visibility observer
   useEffect(() => {
-    let voiceAudio: HTMLAudioElement | null = null;
-    let immersiveAudio: HTMLAudioElement | null = null;
-
-    const introDelay = isImmersive && immersiveUrl ? 6 : 1;
-
-    const calculateDuration = () => {
-      if (!voiceAudio?.duration || isNaN(voiceAudio.duration) || voiceAudio.duration === Infinity) return;
-
-      const voiceDuration = voiceAudio.duration;
-      const introDelay = isImmersive && immersiveUrl ? 6 : 1;
-      const fadeOutTime = 4; // e.g., 1s fade out at end, adjust as needed
-
-      const totalDuration = introDelay + voiceDuration + fadeOutTime;
-
-      setDuration(totalDuration);
-      setCountdown(totalDuration);
-    };
-
-    voiceAudio = new Audio(audioUrl);
-    voiceAudio.preload = "metadata";
-    voiceAudio.addEventListener("loadedmetadata", calculateDuration);
-
-    if (immersiveUrl) {
-      immersiveAudio = new Audio(immersiveUrl);
-      immersiveAudio.preload = "metadata";
-      immersiveAudio.addEventListener("loadedmetadata", calculateDuration);
-    }
-
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.25 });
+    if (cardRef.current) observer.observe(cardRef.current);
     return () => {
-      voiceAudio?.removeEventListener("loadedmetadata", calculateDuration);
-      immersiveAudio?.removeEventListener("loadedmetadata", calculateDuration);
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (cardRef.current) observer.unobserve(cardRef.current);
     };
-  }, [audioUrl, immersiveUrl, isImmersive]);
+  }, []);
 
-  // Update isPlaying based on Redux
+  // preload metadata only when visible
   useEffect(() => {
-    setIsPlaying(currentAudio.url === audioUrl);
-    if (currentAudio.url !== audioUrl && timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-      setCountdown(duration);
-      pendingSeekRef.current = null;
+    if (!isVisible) return;
+
+    const t = new Audio(audioUrl);
+    t.preload = "metadata";
+
+    const onLoad = () => {
+      // t.duration may be NaN in some cases; guard
+      setDuration(Number.isFinite(t.duration) ? t.duration : 0);
+      setIsLoading(false);
+      // free the temp audio src after reading
+      try {
+        t.src = "";
+      } catch {}
+    };
+
+    setIsLoading(true);
+    t.addEventListener("loadedmetadata", onLoad);
+    // start loading metadata
+    // t.load(); browsers usually do it with preload attribute
+    return () => {
+      t.removeEventListener("loadedmetadata", onLoad);
+      try {
+        t.src = "";
+      } catch {}
+    };
+  }, [audioUrl, isVisible]);
+
+  // set backing url in provider when visible (so provider can start it when play() is called)
+  useEffect(() => {
+    if (isVisible && isImmersive && immersiveUrl) {
+      setBackingUrl(immersiveUrl);
+    } else if (!isVisible && isImmersive) {
+      // optional: clear backing if you want to free it when controller leaves viewport
+      // setBackingUrl(null);
     }
-  }, [currentAudio, audioUrl, duration]);
+  }, [isVisible, isImmersive, immersiveUrl, setBackingUrl]);
 
   const togglePlayPause = () => {
-    if (!isPlaying) {
-      dispatch(setCurrentAudio({ url: audioUrl, isImmersive: !!isImmersive }));
-
-      if (timerRef.current) clearInterval(timerRef.current);
-      let time = duration;
-      setCountdown(time);
-
-      timerRef.current = setInterval(() => {
-        time -= 0.1;
-        if (time <= 0) {
-          clearInterval(timerRef.current!);
-          timerRef.current = null;
-          setCountdown(0);
-          setReportedTime(0);
-        } else {
-          setCountdown(time);
-          setReportedTime(duration - time);
-        }
-      }, 100);
-    } else {
-      dispatch(setCurrentAudio({ url: "", isImmersive: false }));
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setCountdown(duration);
-      setReportedTime(0);
-      pendingSeekRef.current = null;
-    }
+    if (currentAudio === audioUrl && playing) pause();
+    else play(audioUrl, isImmersive);
   };
+
+  const onScrubEnd = (time: number) => {
+    seek(audioUrl, time);
+  };
+
+  const isCurrent = currentAudio === audioUrl;
+  const usedTime = isCurrent ? currentTime : getProgress(audioUrl);
+  const countdown = duration > 0 ? Math.max(0, duration - usedTime) : 0;
+  const progress = duration > 0 ? usedTime / duration : 0;
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -118,48 +96,34 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     return `${minutes}:${seconds}`;
   };
 
-  const onDragEnd = (time: number) => {
-    pendingSeekRef.current = time; // freeze immediately
-    setCountdown(duration - time);
-    dispatch(
-      setCurrentAudio({
-        ...currentAudio,
-        seekTime: time,
-      })
-    );
-  };
-
-  // Compute progress
-  const usedTime = pendingSeekRef.current != null ? pendingSeekRef.current : reportedTime;
-  const progress = duration > 0 ? usedTime / duration : 0;
-
   return (
-    <div className='audio-player__inner'>
+    <div className='audio-player__inner' ref={cardRef}>
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
-            {!isPlaying && <span className='audio-player__duration'>{formatTime(duration)}</span>}
-            {isPlaying && (
+            {!isCurrent && !isLoading && <span className='audio-player__duration'>{formatTime(duration)}</span>}
+            {isCurrent && playing && (
               <>
-                <span className='audio-player__countdown'>{formatTime(duration - usedTime)}</span>
                 <RadiatingWaves />
               </>
             )}
+            {isCurrent && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
+
             {isLoading && <ThreeDotsLoader />}
-            {!isPlaying && !isLoading && <HiPlay size={28} style={{ marginTop: -4 }} />}
+            {!isCurrent && !isLoading && <HiPlay size={28} style={{ marginTop: -4 }} />}
           </div>
         </div>
       </button>
+
       <CircularScrubber
         radius={45}
         stroke={3}
         progress={progress}
         duration={duration}
-        knobRadius={5}
-        isPlaying={isPlaying}
+        knobRadius={7}
+        isPlaying={isCurrent && playing}
         onScrub={() => {}}
-        onScrubEnd={onDragEnd}
-        onClick={togglePlayPause}
+        onScrubEnd={onScrubEnd}
       />
     </div>
   );

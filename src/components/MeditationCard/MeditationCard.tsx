@@ -6,6 +6,7 @@ import Icon from "../Icon/Icon";
 import "./MeditationCardStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
+import AudioController2 from "../AudioPlayer/AudioController2";
 
 const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
@@ -93,6 +94,7 @@ const MeditationCard = ({
         </div>
         <div className='publication__card-inner'>
           {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
+          {/* {item.audioUrl && <AudioController2 audioUrl={item.audioUrl} />} */}
           <button disabled={hasBeenSaved} onClick={() => handleAddItem?.(item)} className='publication__card-save-cta'>
             {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
           </button>

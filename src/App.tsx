@@ -2,6 +2,8 @@ import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { PlayerProvider } from "./contexts/AudioContext";
+
 import { SavedItemsProvider } from "./contexts/SavedItemsContext";
 import { BasketProvider } from "./contexts/BasketContext";
 import Navbar from "./components/Navbar";
@@ -98,6 +100,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const { currentUser } = useAuth();
+  console.log(currentUser);
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -170,14 +173,14 @@ const AnimatedRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path='/ai-chat'
           element={
             <Layout>
               <AIChat />
             </Layout>
           }
-        />
+        /> */}
 
         {/* Public Routes */}
         <Route
@@ -339,15 +342,17 @@ function App() {
   return (
     // <ErrorBoundary>
     <AuthProvider>
-      <BasketProvider>
-        <SavedItemsProvider>
-          <Router>
-            <UserManager>
-              <AnimatedRoutes />
-            </UserManager>
-          </Router>
-        </SavedItemsProvider>
-      </BasketProvider>
+      <PlayerProvider>
+        <BasketProvider>
+          <SavedItemsProvider>
+            <Router>
+              <UserManager>
+                <AnimatedRoutes />
+              </UserManager>
+            </Router>
+          </SavedItemsProvider>
+        </BasketProvider>
+      </PlayerProvider>
     </AuthProvider>
     // </ErrorBoundary>
   );

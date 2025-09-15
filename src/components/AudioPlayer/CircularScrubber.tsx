@@ -10,7 +10,6 @@ const CircularScrubber = ({
   onScrub,
   onScrubEnd,
   knobRadius,
-  onClick,
 }: {
   radius: number;
   stroke: number;
@@ -20,7 +19,6 @@ const CircularScrubber = ({
   onScrub: (time: number) => void;
   onScrubEnd: (time: number) => void;
   knobRadius: number;
-  onClick: () => void;
 }) => {
   const [dragging, setDragging] = useState(false);
   const [dragProgress, setDragProgress] = useState<number | null>(null);
@@ -105,14 +103,13 @@ const CircularScrubber = ({
     <svg
       className='circular-scrubber'
       ref={svgRef}
-      onClick={onClick}
+      // onClick={onClick}
       width={radius * 2 + stroke}
       height={radius * 2 + stroke}
-      style={{ cursor: isPlaying ? "pointer" : "default", overflow: "visible", position: "absolute", top: 3 }}
+      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -22 }}
     >
       {/* Base ring */}
       <circle stroke='orange' fill='none' cx={cx} cy={cy} r={radius} strokeWidth={stroke} />
-
       {/* Progress arc */}
       <circle
         stroke='#aa6b0d'
@@ -126,7 +123,6 @@ const CircularScrubber = ({
         strokeLinecap='round'
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-
       {/* Hitbox */}
       <circle
         cx={handleX}
@@ -137,19 +133,16 @@ const CircularScrubber = ({
         onTouchStart={handlePointerDown}
       />
 
-      {/* Visible knob */}
-      {/* {isPlaying && (
-        <circle
-          cx={handleX}
-          cy={handleY}
-          r={knobRadius}
+      {/* Visible knob with bidirectional arrows */}
+      <g transform={`translate(${handleX}, ${handleY}) rotate(${(angle * 180) / Math.PI + 90})`} pointerEvents='none'>
+        <polygon
+          points='0,-10 11,0 0,10 -11,0'
           fill='goldenrod'
           stroke='#aa6b0d'
           strokeWidth={2}
-          pointerEvents='none'
-          style={{ cursor: "grab" }}
+          strokeLinejoin='round'
         />
-      )} */}
+      </g>
     </svg>
   );
 };
