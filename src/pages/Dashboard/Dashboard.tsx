@@ -8,7 +8,7 @@ import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 import Search from "../../components/Search/Search";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
-import { deleteBespokeMed } from "../../store/apiUtils";
+import { deleteBespokeMed, updateMeditationDeleteStatus } from "../../store/apiUtils";
 import Popup from "../MeditationGenerator/Popup";
 
 type TabType = "meditations" | "publications" | "myMeds";
@@ -16,7 +16,6 @@ type TabType = "meditations" | "publications" | "myMeds";
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const { removeItem, savedItems } = useSavedItems();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("meditations");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -73,12 +72,20 @@ const Dashboard = () => {
     }, 3000);
   };
 
-  const handleDeleteBespokeMed = async (itemId: string) => {
-    deleteBespokeMed;
+  const handleDeleteBespokeMed = async (itemId: string, shouldDelete: boolean) => {
+    const array = [...myMeds].map((med) => {
+      if (med.uid === itemId) {
+        return { ...med, willDelete: shouldDelete ? Date.now() + 14 * 24 * 60 * 60 : false };
+      }
+      return med;
+    });
+    console.log(array);
+    setMyMeds(array);
+    if (currentUser?.uid) updateMeditationDeleteStatus(currentUser?.uid, itemId, shouldDelete);
   };
 
   const renderTabContent = () => {
-    const data = allItems[activeTab];
+    const data = activeTab !== "deleted" ? allItems[activeTab] : myMeds?.filter((item) => item.willDelete);
     const destination = activeTab === "publications" ? "articles" : "meditation-library";
     return (
       <div className='dashboard-content'>
@@ -88,7 +95,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {data?.length === 0 ? (
+        {data?.length === 0 && activeTab !== "deleted" ? (
           <div className='text-center py-10'>
             <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
             <Link to={`/${destination}`} className='text-orange-400 hover:text-orange-300 font-medium'>
@@ -98,92 +105,163 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data?.map((item, i) => {
-              const keyId = `${activeTab}-${item?.uid ?? item?.id ?? i}`;
+            {data
+              ?.filter((item) => {
+                if (activeTab === "deleted") return true;
+                return !item.willDelete;
+              })
+              .map((item, i) => {
+                const keyId = `${activeTab}-${item?.uid ?? item?.id ?? i}`;
+                function isToday(timestamp) {
+                  const today = new Date();
+                  const dateToCheck = new Date(timestamp);
 
-              function isToday(timestamp) {
-                const today = new Date();
-                const dateToCheck = new Date(timestamp);
+                  return (
+                    today.getFullYear() === dateToCheck.getFullYear() &&
+                    today.getMonth() === dateToCheck.getMonth() &&
+                    today.getDate() === dateToCheck.getDate()
+                  );
+                }
+
+                function getDeletionCountdown(timestampSeconds: number) {
+                  const now = new Date();
+                  const deleteDate = new Date(timestampSeconds * 1000); // convert seconds → ms
+
+                  if (deleteDate <= now) return "Deleted";
+
+                  const diffMs = deleteDate.getTime() - now.getTime();
+
+                  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+                  const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
+                  const seconds = Math.floor((diffMs / 1000) % 60);
+
+                  if (days > 0) return `${days} day${days > 1 ? "s" : ""} left`;
+                  if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} left`;
+                  if (minutes > 0) return `${minutes} min${minutes > 1 ? "s" : ""} left`;
+                  return `${seconds} sec${seconds !== 1 ? "s" : ""} left`;
+                }
 
                 return (
-                  today.getFullYear() === dateToCheck.getFullYear() &&
-                  today.getMonth() === dateToCheck.getMonth() &&
-                  today.getDate() === dateToCheck.getDate()
-                );
-              }
-              return (
-                <div key={keyId} className='feature-card publication__card'>
-                  <div className='publications__card-content dashboard__card-inner'>
-                    <div>
-                      <h3>{item.title}</h3>
+                  <div key={keyId} className='feature-card publication__card'>
+                    <div className='publications__card-content dashboard__card-inner'>
                       <div>
-                        {/* {item.createdAt && (
+                        <h3>{item.title}</h3>
+                        <div>
+                          {/* {item.createdAt && (
                         <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
                       )} */}
-                        {item.style && <p>{item.style}</p>}
-                        {item.createdAt && !item.staticMed && activeTab !== "publications" && (
-                          <span className='dashboard__date'>
-                            Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
-                          </span>
-                        )}
+                          {item.style && <p>{item.style}</p>}
+                          {item.willDelete && <p>This item will be deleted: {getDeletionCountdown(item.willDelete)}</p>}
+                          {item.createdAt && !item.staticMed && activeTab !== "publications" && (
+                            <span className='dashboard__date'>
+                              Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    {item.immersive && (
-                      <div className='dashboard__immersive-icon'>
-                        <img className='immersive-icon' src={immersiveLogo} />
-                      </div>
-                    )}
-
-                    <div className='dashboard-buttons'>
-                      {item.audioUrl && activeTab !== "publications" && (
-                        <div className='dashboard__audio'>
-                          <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
+                      {item.immersive && (
+                        <div className='dashboard__immersive-icon'>
+                          <img className='immersive-icon' src={immersiveLogo} />
                         </div>
                       )}
-                      {activeTab === "publications" && (
-                        <Link className='read-link' to={`/articles/${item.title}`}>
-                          <span className='read-link-text'> Read</span>
-                          <FaArrowRight />{" "}
-                        </Link>
-                      )}
 
-                      <div>
-                        {activeTab !== "myMeds" && (
-                          <button
-                            onClick={() => {
-                              setItemToRemove(item);
-                              setShowPopup(true);
-                            }}
-                            className='dashboard-button dashboard__remove-cta'
-                          >
-                            Remove
-                          </button>
+                      <div className='dashboard-buttons'>
+                        {item.audioUrl && activeTab !== "publications" && (
+                          <div className='dashboard__audio'>
+                            <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
+                          </div>
                         )}
-                        <Popup showClose={false} fitContent show={showPopup} onClose={() => setShowPopup(false)}>
-                          <h3>Remove from Dashboard</h3>
-                          <p>
-                            "{itemToRemove?.title}" will be removed from your dashboard, but still be available in the{" "}
-                            {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
-                          </p>
-                          <button onClick={() => setShowPopup(false)} className='dashboard-button'>
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleRemoveItem(item, activeTab as keyof typeof savedItems, i);
-                              setShowPopup(false);
-                            }}
-                            className='dashboard-button'
-                          >
-                            Okay
-                          </button>
-                        </Popup>
+                        {activeTab === "publications" && (
+                          <Link className='read-link' to={`/articles/${item.title}`}>
+                            <span className='read-link-text'> Read</span>
+                            <FaArrowRight />{" "}
+                          </Link>
+                        )}
+
+                        <div>
+                          {activeTab === "deleted" && (
+                            <button
+                              onClick={() => {
+                                handleDeleteBespokeMed(item.uid, false);
+                              }}
+                              className='dashboard-button dashboard__remove-cta'
+                            >
+                              Recover
+                            </button>
+                          )}
+                          {activeTab !== "myMeds" && activeTab !== "deleted" && (
+                            <button
+                              onClick={() => {
+                                setItemToRemove(item);
+                                setShowPopup(true);
+                              }}
+                              className='dashboard-button dashboard__remove-cta'
+                            >
+                              Remove
+                            </button>
+                          )}
+                          {activeTab === "myMeds" && (
+                            <button
+                              onClick={() => {
+                                setItemToRemove(item);
+                                setShowPopup(true);
+                              }}
+                              className='dashboard-button dashboard__remove-cta'
+                            >
+                              Delete
+                            </button>
+                          )}
+                          <Popup showClose={false} fitContent show={showPopup} onClose={() => setShowPopup(false)}>
+                            {activeTab !== "myMeds" ? (
+                              <>
+                                <h3>Remove from Dashboard</h3>
+                                <p>
+                                  "{itemToRemove?.title}" will be removed from your dashboard, but still be available in
+                                  the {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
+                                </p>
+                                <button onClick={() => setShowPopup(false)} className='dashboard-button'>
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    handleRemoveItem(itemToRemove, activeTab as keyof typeof savedItems, i);
+                                    setShowPopup(false);
+                                  }}
+                                  className='dashboard-button'
+                                >
+                                  Okay
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <h3>Delete Bespoke Meditation</h3>
+                                <p>
+                                  "{itemToRemove?.title}" will be removed from your dashboard, and will be available to
+                                  recover, in the Recently Deleted tab for 14 days
+                                </p>
+                                <button onClick={() => setShowPopup(false)} className='dashboard-button'>
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    handleDeleteBespokeMed(itemToRemove.uid, true);
+                                    // handleRemoveItem(item, activeTab as keyof typeof savedItems, i);
+                                    setShowPopup(false);
+                                  }}
+                                  className='dashboard-button'
+                                >
+                                  Okay
+                                </button>
+                              </>
+                            )}
+                          </Popup>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
       </div>
@@ -263,7 +341,9 @@ const Dashboard = () => {
             onClick={() => setActiveTab("myMeds")}
           >
             Bespoke Meditations
-            {myMeds?.length > 0 && <span className='tab-count'>{myMeds?.length}</span>}
+            {myMeds?.filter((item) => !item.willDelete).length > 0 && (
+              <span className='tab-count'>{myMeds?.filter((item) => !item.willDelete).length}</span>
+            )}
           </button>
           <button
             className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
@@ -280,13 +360,16 @@ const Dashboard = () => {
             My Articles
             {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
           </button>
-          {/* <button
-            className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
-            onClick={() => setActiveTab("publications")}
+          <button
+            style={{ color: "red" }}
+            className={`tab-btn ${activeTab === "deleted" ? "active" : ""}`}
+            onClick={() => setActiveTab("deleted")}
           >
-            My Playlist
-            <span className='tab-count'>0</span>
-          </button> */}
+            Recently Deleted
+            {savedItems.publications.length > 0 && (
+              <span className='tab-count'>{myMeds?.filter((item) => item.willDelete).length}</span>
+            )}
+          </button>
         </div>
         {showRightChevron && (
           <button onClick={() => scrollTabs("right")} className='tabs__arrow tabs__arrow--right'>

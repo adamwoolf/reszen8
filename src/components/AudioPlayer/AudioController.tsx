@@ -85,7 +85,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
             {isCurrent && playing && <RadiatingWaves />}
-            <span className='audio-player__countdown'>{formatTime(countdown)}</span>
+            {countdown > 0 && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
             {isLoading && <ThreeDotsLoader />}
             {!isLoading && (
               <div className='audio-player__icons'>

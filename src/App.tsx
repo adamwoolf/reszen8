@@ -303,17 +303,17 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <PlayerProvider>
-        <BasketProvider>
-          <SavedItemsProvider>
-            <Router>
+      <Router>
+        <PlayerProvider>
+          <BasketProvider>
+            <SavedItemsProvider>
               <UserManager>
                 <AnimatedRoutes />
               </UserManager>
-            </Router>
-          </SavedItemsProvider>
-        </BasketProvider>
-      </PlayerProvider>
+            </SavedItemsProvider>
+          </BasketProvider>
+        </PlayerProvider>
+      </Router>
     </AuthProvider>
   );
 }

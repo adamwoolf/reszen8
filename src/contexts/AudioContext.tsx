@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode, useState, useRef, useCallback, useMemo } from "react";
+import React, { createContext, useContext, ReactNode, useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Howl } from "howler";
+import { useLocation } from "react-router-dom";
 
 type PlayerContextType = {
   currentAudio: string | null;
@@ -22,11 +23,17 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // Update time while audio is playing
+  // store last positions to resume
+  const lastPositionRef = useRef<{ main: number; backing: number }>({ main: 0, backing: 0 });
+
+  const location = useLocation();
+
   const startTimeUpdate = useCallback(() => {
     const interval = setInterval(() => {
       if (mainRef.current?.playing()) {
         setCurrentTime(mainRef.current.seek() as number);
+        lastPositionRef.current.main = mainRef.current.seek() as number;
+        lastPositionRef.current.backing = (backingRef.current?.seek() as number) || 0;
       } else {
         clearInterval(interval);
         setPlaying(false);
@@ -86,14 +93,24 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         });
         backingRef.current = backingHowl;
 
-        backingHowl.play(); // start backing immediately
-        backingHowl.fade(0, 1, 1000); // fade in
+        // play backing immediately, fade in
+        backingHowl.play();
+        backingHowl.fade(0, 1, 1000);
+
+        // resume from last position if same track
+        const startMainTime = currentAudio === mainUrl ? lastPositionRef.current.main : 0;
+        const startBackingTime = currentAudio === mainUrl ? lastPositionRef.current.backing : 0;
+
+        backingHowl.seek(startBackingTime);
 
         setTimeout(() => {
+          mainHowl.seek(startMainTime);
           mainHowl.play();
           startTimeUpdate();
-        }, 2000); // delay main for immersive effect
+        }, 4000);
       } else {
+        const startMainTime = currentAudio === mainUrl ? lastPositionRef.current.main : 0;
+        mainHowl.seek(startMainTime);
         mainHowl.play();
         startTimeUpdate();
       }
@@ -101,10 +118,13 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       setCurrentAudio(mainUrl);
       setPlaying(true);
     },
-    [fadeOutBacking, startTimeUpdate]
+    [fadeOutBacking, startTimeUpdate, currentAudio]
   );
 
   const pause = useCallback(() => {
+    if (mainRef.current?.playing()) lastPositionRef.current.main = mainRef.current.seek() as number;
+    if (backingRef.current?.playing()) lastPositionRef.current.backing = backingRef.current.seek() as number;
+
     mainRef.current?.pause();
     backingRef.current?.pause();
     setPlaying(false);
@@ -115,13 +135,20 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     backingRef.current?.stop();
     setCurrentTime(0);
     setPlaying(false);
+    lastPositionRef.current = { main: 0, backing: 0 };
   }, []);
 
   const seek = useCallback((time: number) => {
     mainRef.current?.seek(time);
     backingRef.current?.seek(time);
+    lastPositionRef.current = { main: time, backing: time };
     setCurrentTime(time);
   }, []);
+
+  // stop all audio on route change
+  useEffect(() => {
+    reset();
+  }, [location.pathname, reset]);
 
   const value = useMemo(
     () => ({

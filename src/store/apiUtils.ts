@@ -1,5 +1,3 @@
-import { AppDispatch } from "./reduxStore";
-import { setMeta, setMeditations, setStaticMeditations } from "./contentSlice";
 import { AWS_DB_ENDPOINT } from "../constants";
 
 export async function getMeditationItems(userId: string) {
@@ -26,4 +24,35 @@ export const deleteBespokeMed = async (userId: string, uid: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: userId, uid }),
   });
+};
+
+// utils/meditations.ts
+export const updateMeditationDeleteStatus = async (userId: string, uid: string, markForDeletion: boolean) => {
+  try {
+    const response = await fetch(`${AWS_DB_ENDPOINT}/updateMeditationDeleteStatus`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Include auth token if your API requires it
+        // "Authorization": `Bearer ${userToken}`
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        uid,
+        action: markForDeletion ? "mark" : "recover",
+      }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update meditation delete status");
+    }
+    await getMeditationItems(userId);
+    console.info("retrieved bespoke meditations");
+    return data; // usually contains confirmation info
+  } catch (err) {
+    console.error("updateMeditationDeleteStatus error:", err);
+    throw err;
+  }
 };
