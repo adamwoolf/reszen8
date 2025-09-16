@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Subscription, User } from "../models";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getAWSArticles, getMeditationItems, getStaticMeditations } from "../store/apiUtils";
+import { setArticles, setMeditations, setStaticMeditations } from "../store/contentSlice";
 
 const UserManager = ({ children }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
@@ -24,13 +28,22 @@ const UserManager = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    // if (currentUser && currentUser?.firebaseId) {
-    //   addOrUpdate(currentUser.firebaseId, {
-    //     ...currentUser,
-    //     subscription: { ...currentUser?.subscription, isActiveSub },
-    //   });
-    // }
-  }, [isActiveSub]);
+    getAWSArticles().then((data) => {
+      dispatch(setArticles(data));
+    });
+    if (currentUser && currentUser.uid) {
+      getMeditationItems(currentUser.uid).then((data) => {
+        if (data) {
+          dispatch(setMeditations(data));
+        }
+      });
+    }
+    getStaticMeditations().then((data) => {
+      if (data) {
+        dispatch(setStaticMeditations(data));
+      }
+    });
+  }, [currentUser]);
 
   return <div>{children}</div>;
 };

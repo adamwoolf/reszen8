@@ -27,7 +27,6 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TestPaymentPage from "./pages/TestPaymentPage";
 import Sitemap from "./pages/Sitemap";
-import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import FloatingCTA from "./components/FloatingCTA";
 import Footer from "./components/Footer/Footer";
@@ -41,13 +40,10 @@ import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
-import { useDispatch } from "react-redux";
-import { getMeditationItemsREST, getStaticMeditationsREST, getAWSArticles } from "./store/storeListener";
-import { setStaticMeditations, setMeditations, setArticles } from "./store/contentSlice";
+
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
 import LoadingScene from "./components/LoadingScene/LoadingScene";
-import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -89,7 +85,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </main>
       <Footer />
       <FloatingCTA />
-      <AudioPlayer />
       <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
     </div>
     // </ErrorBoundary>
@@ -306,41 +301,7 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  const dispatch = useDispatch();
-  const [offline, setOffline] = useState(!navigator.onLine);
-
-  useEffect(() => {
-    const handleOffline = () => setOffline(true);
-    const handleOnline = () => setOffline(false);
-
-    window.addEventListener("offline", handleOffline);
-    window.addEventListener("online", handleOnline);
-
-    return () => {
-      window.removeEventListener("offline", handleOffline);
-      window.removeEventListener("online", handleOnline);
-    };
-  }, []);
-
-  useEffect(() => {
-    getAWSArticles().then((data) => {
-      dispatch(setArticles(data));
-    });
-
-    getMeditationItemsREST().then((data) => {
-      if (data) {
-        dispatch(setMeditations(data));
-      }
-    });
-    getStaticMeditationsREST().then((data) => {
-      if (data) {
-        dispatch(setStaticMeditations(data));
-      }
-    });
-  }, []);
-
   return (
-    // <ErrorBoundary>
     <AuthProvider>
       <PlayerProvider>
         <BasketProvider>
@@ -354,7 +315,6 @@ function App() {
         </BasketProvider>
       </PlayerProvider>
     </AuthProvider>
-    // </ErrorBoundary>
   );
 }
 

@@ -7,7 +7,7 @@ import "./AIMeditationGenerator.scss";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "./Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
-import { getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
+import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
 import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -35,7 +35,7 @@ const AIMeditationGenerator: React.FC = () => {
 
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
   const [isAudioGenerating, setIsAudioGenerating] = useState(false);
-  const { currentUser, updateUser } = useAuth();
+  const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [showPopup, setShowPopup] = useState("");
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
@@ -81,6 +81,13 @@ const AIMeditationGenerator: React.FC = () => {
             meditationCredits: currentUser?.subscription?.meditationCredits - cost,
           },
         });
+      setCurrentUser({
+        ...currentUser,
+        subscription: {
+          ...currentUser?.subscription,
+          meditationCredits: currentUser?.subscription?.meditationCredits - cost,
+        },
+      });
       if (!result) {
         throw new Error("Failed to generate meditation");
       }
@@ -92,7 +99,7 @@ const AIMeditationGenerator: React.FC = () => {
         audioUrl: result.data.audioUrl,
         isImmersive: result.data.dbItem.immersive,
       });
-      getMeditationItemsREST().then((data) => {
+      getMeditationItems(currentUser.uid).then((data) => {
         if (data) dispatch(setMeditations(data));
       });
 

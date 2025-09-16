@@ -7,11 +7,13 @@ const Popup = ({
   onClose,
   children,
   fitContent,
+  showClose = true,
 }: {
   fitContent?: boolean;
   show: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  showClose?: boolean;
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
@@ -94,12 +96,12 @@ const Popup = ({
         className={!leaving ? "popup" : "popup popup--leaving"}
         ref={modalRef}
       >
-        {/* <LiquidWrapper> */}
         <div className='popup__content-container'>{children}</div>
-        <button className='popup__close' onClick={fadeOut}>
-          close
-        </button>
-        {/* </LiquidWrapper> */}
+        {showClose && (
+          <button className='popup__close' onClick={fadeOut}>
+            close
+          </button>
+        )}
       </div>
 
       <div className='popup__backdrop' />

@@ -48,12 +48,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, [awsAuth]);
 
-  const signOutRedirect = () => {
+  const signOutRedirect = (e) => {
+    e.preventDefault();
     const clientId = "the72up8nv2sbq9tea7v5f0ai";
-    const logoutUri = import.meta.env.VITE_BASE_URL; // or your deployed frontend URL
+    const logoutUri = import.meta.env.VITE_BASE_URL; // must match Cognito allowed sign-out URLs
     const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
 
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+    const logoutUrl = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+
+    console.log("🔐 Logout requested");
+    console.log("Logout URL:", logoutUrl);
+
+    // Navigate to Cognito
+    window.location.assign(logoutUrl);
   };
 
   const updateUser = async (uid: string, updates: any) => {

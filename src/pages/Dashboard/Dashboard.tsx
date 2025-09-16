@@ -8,6 +8,8 @@ import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 import Search from "../../components/Search/Search";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
+import { deleteBespokeMed } from "../../store/apiUtils";
+import Popup from "../MeditationGenerator/Popup";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
@@ -22,6 +24,8 @@ const Dashboard = () => {
   const [myMeds, setMyMeds] = useState([]);
   const data = useSelector((state) => state.content.meditations);
   const tabsRef = useRef();
+  const [showPopup, setShowPopup] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
 
   // ✅ build dynamically instead of storing
   const allItems = {
@@ -33,14 +37,12 @@ const Dashboard = () => {
   useEffect(() => {
     if (data) {
       const meds = Object.values(data);
-      const parsedMeds = meds
-        .filter((item) => item.createdBy === currentUser.uid)
-        .map((m, i) => ({
-          ...(m as {}),
-          type: "meditation",
-          id: `${m.type}-${i}`,
-          meditationType: m.type,
-        }));
+      const parsedMeds = meds.map((m, i) => ({
+        ...(m as {}),
+        type: "meditation",
+        id: `${m.type}-${i}`,
+        meditationType: m.type,
+      }));
       setMyMeds(Object.values(parsedMeds).reverse());
     }
   }, [data, currentUser]);
@@ -69,6 +71,10 @@ const Dashboard = () => {
     setTimeout(() => {
       setNotification((prev) => ({ ...prev, show: false }));
     }, 3000);
+  };
+
+  const handleDeleteBespokeMed = async (itemId: string) => {
+    deleteBespokeMed;
   };
 
   const renderTabContent = () => {
@@ -141,27 +147,37 @@ const Dashboard = () => {
                         </Link>
                       )}
 
-                      <div className='flex gap-3'>
+                      <div>
                         {activeTab !== "myMeds" && (
                           <button
-                            onClick={() => handleRemoveItem(item, activeTab as keyof typeof savedItems, i)}
-                            className='dashboard-button'
+                            onClick={() => {
+                              setItemToRemove(item);
+                              setShowPopup(true);
+                            }}
+                            className='dashboard-button dashboard__remove-cta'
                           >
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-4 w-4'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                            <span>Remove</span>
+                            Remove
                           </button>
                         )}
+                        <Popup showClose={false} fitContent show={showPopup} onClose={() => setShowPopup(false)}>
+                          <h3>Remove from Dashboard</h3>
+                          <p>
+                            "{itemToRemove?.title}" will be removed from your dashboard, but still be available in the{" "}
+                            {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
+                          </p>
+                          <button onClick={() => setShowPopup(false)} className='dashboard-button'>
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleRemoveItem(item, activeTab as keyof typeof savedItems, i);
+                              setShowPopup(false);
+                            }}
+                            className='dashboard-button'
+                          >
+                            Okay
+                          </button>
+                        </Popup>
                       </div>
                     </div>
                   </div>

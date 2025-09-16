@@ -1,11 +1,10 @@
-// components/AudioController.tsx
 import React, { useEffect, useRef, useState } from "react";
 import "./AudioPlayerStyles.scss";
-import { HiPlay } from "react-icons/hi2";
-import CircularScrubber from "./CircularScrubber";
-import RadiatingWaves from "./Playing";
 import { usePlayer } from "../../contexts/AudioContext";
 import { useSelector } from "react-redux";
+import CircularScrubber from "./CircularScrubber";
+import RadiatingWaves from "./Playing";
+import PlayPauseButton from "./PlayPauseIcon";
 
 const ThreeDotsLoader = () => (
   <div className='three-dots-loader'>
@@ -17,16 +16,16 @@ const ThreeDotsLoader = () => (
 
 const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmersive?: boolean }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [duration, setDuration] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [duration, setDuration] = useState(0);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  const { currentAudio, playing, play, pause, seek, currentTime, getProgress, setBackingUrl } = usePlayer();
+  const { currentAudio, playing, play, pause, reset, seek, currentTime } = usePlayer();
 
   const immersiveUrl = useSelector((state: any) => state.content?.immersiveEnv?.url);
 
-  // visibility observer
+  // intersection observer
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.25 });
     if (cardRef.current) observer.observe(cardRef.current);
@@ -35,58 +34,42 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     };
   }, []);
 
-  // preload metadata only when visible
+  // preload metadata
   useEffect(() => {
     if (!isVisible) return;
-
-    const t = new Audio(audioUrl);
-    t.preload = "metadata";
+    const audio = new Audio(audioUrl);
+    audio.preload = "metadata";
 
     const onLoad = () => {
-      // t.duration may be NaN in some cases; guard
-      setDuration(Number.isFinite(t.duration) ? t.duration : 0);
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setIsLoading(false);
-      // free the temp audio src after reading
-      try {
-        t.src = "";
-      } catch {}
     };
 
     setIsLoading(true);
-    t.addEventListener("loadedmetadata", onLoad);
-    // start loading metadata
-    // t.load(); browsers usually do it with preload attribute
+    audio.addEventListener("loadedmetadata", onLoad);
+
     return () => {
-      t.removeEventListener("loadedmetadata", onLoad);
+      audio.removeEventListener("loadedmetadata", onLoad);
       try {
-        t.src = "";
+        audio.src = "";
       } catch {}
     };
   }, [audioUrl, isVisible]);
 
-  // set backing url in provider when visible (so provider can start it when play() is called)
-  useEffect(() => {
-    if (isVisible && isImmersive && immersiveUrl) {
-      setBackingUrl(immersiveUrl);
-    } else if (!isVisible && isImmersive) {
-      // optional: clear backing if you want to free it when controller leaves viewport
-      // setBackingUrl(null);
-    }
-  }, [isVisible, isImmersive, immersiveUrl, setBackingUrl]);
-
   const togglePlayPause = () => {
     if (currentAudio === audioUrl && playing) pause();
-    else play(audioUrl, isImmersive);
+    else play(audioUrl, immersiveUrl, isImmersive);
   };
 
   const onScrubEnd = (time: number) => {
-    seek(audioUrl, time);
+    seek(time);
   };
 
   const isCurrent = currentAudio === audioUrl;
-  const usedTime = isCurrent ? currentTime : getProgress(audioUrl);
-  const countdown = duration > 0 ? Math.max(0, duration - usedTime) : 0;
-  const progress = duration > 0 ? usedTime / duration : 0;
+  const usedTime = isCurrent ? currentTime : 0;
+  const safeDuration = duration || 1;
+  const progress = Math.min(Math.max(usedTime / safeDuration, 0), 1);
+  const countdown = Math.max(duration - usedTime, 0);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -101,23 +84,27 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
-            {!isCurrent && !isLoading && <span className='audio-player__duration'>{formatTime(duration)}</span>}
-            {isCurrent && playing && (
-              <>
-                <RadiatingWaves />
-              </>
-            )}
-            {isCurrent && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
-
+            {isCurrent && playing && <RadiatingWaves />}
+            <span className='audio-player__countdown'>{formatTime(countdown)}</span>
             {isLoading && <ThreeDotsLoader />}
-            {!isCurrent && !isLoading && <HiPlay size={28} style={{ marginTop: -4 }} />}
+            {!isLoading && (
+              <div className='audio-player__icons'>
+                <PlayPauseButton isPlaying={playing && isCurrent} />
+              </div>
+            )}
           </div>
         </div>
       </button>
 
+      {isCurrent && currentTime > 0 && !playing && (
+        <button className='audio-player__reset' onClick={reset}>
+          Reset
+        </button>
+      )}
+
       <CircularScrubber
-        radius={45}
-        stroke={3}
+        radius={55}
+        stroke={2}
         progress={progress}
         duration={duration}
         knobRadius={7}

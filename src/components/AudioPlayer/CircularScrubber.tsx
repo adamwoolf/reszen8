@@ -29,8 +29,20 @@ const CircularScrubber = ({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - activeProgress * circumference;
 
-  const cx = radius + stroke / 2;
-  const cy = radius + stroke / 2;
+  // For each track
+  const trackGap = stroke * 4; // space between the two tracks
+
+  const outerRadius = radius + trackGap / 2;
+  const innerRadius = radius - trackGap / 2;
+
+  const outerCircumference = 2 * Math.PI * outerRadius;
+  const innerCircumference = 2 * Math.PI * innerRadius;
+
+  const outerOffset = outerCircumference - activeProgress * outerCircumference;
+  const innerOffset = innerCircumference - activeProgress * innerCircumference;
+
+  const cx = radius + stroke * 2; // extra padding for dual track
+  const cy = radius + stroke * 2;
 
   const getAngle = (clientX: number, clientY: number) => {
     if (!svgRef.current) return 0;
@@ -54,21 +66,18 @@ const CircularScrubber = ({
     setDragging(true);
     const point = "touches" in e ? e.touches[0] : e;
     startDrag(point.clientX, point.clientY);
-
-    if ("touches" in e) e.preventDefault(); // stop screen scroll
+    if ("touches" in e) e.preventDefault();
   };
 
   useEffect(() => {
     if (!dragging || !isPlaying) return;
 
-    // Replace the end of your handleMove/handleUp logic:
     const handleMove = (e: MouseEvent | TouchEvent) => {
       const point = e instanceof TouchEvent ? e.touches[0] : e;
       const angle = getAngle(point.clientX, point.clientY);
       const newProgress = getProgressFromAngle(angle);
       setDragProgress(newProgress);
       onScrub(newProgress * duration);
-
       if (e instanceof TouchEvent) e.preventDefault();
     };
 
@@ -76,8 +85,6 @@ const CircularScrubber = ({
       const point = e instanceof TouchEvent ? e.changedTouches[0] : e;
       const angle = getAngle(point.clientX, point.clientY);
       const newProgress = getProgressFromAngle(angle);
-
-      // ⚠️ Do NOT reset dragProgress here. Let parent control
       setDragging(false);
       onScrubEnd(newProgress * duration);
     };
@@ -103,26 +110,44 @@ const CircularScrubber = ({
     <svg
       className='circular-scrubber'
       ref={svgRef}
-      // onClick={onClick}
-      width={radius * 2 + stroke}
-      height={radius * 2 + stroke}
-      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -22 }}
+      width={radius * 2 + stroke * 4}
+      height={radius * 2 + stroke * 4}
+      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -35 }}
     >
-      {/* Base ring */}
-      <circle stroke='orange' fill='none' cx={cx} cy={cy} r={radius} strokeWidth={stroke} />
-      {/* Progress arc */}
+      {/* Base outer track */}
+      <circle stroke='#ff9800' fill='none' cx={cx} cy={cy} r={outerRadius} strokeWidth={stroke} />
+
+      {/* Base inner track */}
+      <circle stroke='#ff9800' fill='none' cx={cx} cy={cy} r={innerRadius} strokeWidth={stroke} />
+
+      {/* Progress arc on outer track */}
       <circle
-        stroke='#aa6b0d'
+        stroke='#bbb'
         fill='none'
         cx={cx}
         cy={cy}
-        r={radius}
+        r={outerRadius}
         strokeWidth={stroke}
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
+        strokeDasharray={outerCircumference}
+        strokeDashoffset={outerOffset}
         strokeLinecap='round'
         transform={`rotate(-90 ${cx} ${cy})`}
       />
+
+      {/* Progress arc on inner track */}
+      <circle
+        stroke='#bbb'
+        fill='none'
+        cx={cx}
+        cy={cy}
+        r={innerRadius}
+        strokeWidth={stroke}
+        strokeDasharray={innerCircumference}
+        strokeDashoffset={innerOffset}
+        strokeLinecap='round'
+        transform={`rotate(-90 ${cx} ${cy})`}
+      />
+
       {/* Hitbox */}
       <circle
         cx={handleX}
@@ -133,14 +158,17 @@ const CircularScrubber = ({
         onTouchStart={handlePointerDown}
       />
 
-      {/* Visible knob with bidirectional arrows */}
-      <g transform={`translate(${handleX}, ${handleY}) rotate(${(angle * 180) / Math.PI + 90})`} pointerEvents='none'>
-        <polygon
-          points='0,-10 11,0 0,10 -11,0'
-          fill='goldenrod'
+      {/* Visible knob spanning both tracks */}
+      <g transform={`translate(${handleX}, ${handleY}) rotate(${(angle * 180) / Math.PI})`} pointerEvents='none'>
+        <rect
+          x={-knobRadius}
+          y={-(trackGap + stroke) / 2}
+          width={knobRadius * 2}
+          height={trackGap + stroke}
+          rx={knobRadius / 2}
+          fill='#ff9800'
           stroke='#aa6b0d'
           strokeWidth={2}
-          strokeLinejoin='round'
         />
       </g>
     </svg>

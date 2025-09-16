@@ -28,6 +28,18 @@
   &__audio {
     margin-left: -10px;
   }
+
+  &__remove-cta {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    background-color: transparent;
+    color: var(--primary-color);
+    padding: 0;
+    &:hover {
+      background-color: transparent;
+    }
+  }
 }
 
 /* Dashboard Container */
@@ -141,13 +153,11 @@
   justify-content: space-between;
 }
 .dashboard-button {
-  width: 60px;
-  height: 60px;
-
-  font-size: 0.7rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  display: inline-block;
+  margin: 0 8px;
 }
 
 .read-link {

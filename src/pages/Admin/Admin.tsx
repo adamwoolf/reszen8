@@ -12,7 +12,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
-import { getMeditationItemsREST, getStaticMeditationsREST } from "../../store/storeListener";
+import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
 import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -160,7 +160,7 @@ const Admin: React.FC = () => {
 
       console.log("Static generated");
 
-      getStaticMeditationsREST().then((data) => {
+      getStaticMeditations().then((data) => {
         if (data) dispatch(setStaticMeditations(data));
       });
     } catch (error) {

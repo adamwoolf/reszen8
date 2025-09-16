@@ -187,18 +187,7 @@ const Navbar: React.FC = () => {
 
                   {!currentUser && (
                     <>
-                      {/* <li>
-                        <NavLink className='nav-link login-btn' to='/login'>
-                          Login
-                        </NavLink>
-                      </li> */}
                       <button onClick={() => auth.signinRedirect()}>Sign in</button>
-
-                      {/* <li>
-                        <NavLink to='/signup' className='nav-link signup-btn'>
-                          Sign Up
-                        </NavLink>
-                      </li> */}
                     </>
                   )}
                 </ul>
@@ -227,7 +216,7 @@ const Navbar: React.FC = () => {
             </div>
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
-              <button className='user-address' onClick={signOutRedirect}>
+              <button type='button' className='user-address' onClick={signOutRedirect}>
                 <IoMdLogOut size={20} />
               </button>
             </span>

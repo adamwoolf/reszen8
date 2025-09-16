@@ -6,7 +6,6 @@ import Icon from "../Icon/Icon";
 import "./MeditationCardStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
-import AudioController2 from "../AudioPlayer/AudioController2";
 
 const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
