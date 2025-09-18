@@ -1,10 +1,10 @@
 import React, { createContext, useContext, ReactNode, useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { Howl } from "howler";
 import { useLocation } from "react-router-dom";
 
 type PlayerContextType = {
   currentAudio: string | null;
   playing: boolean;
+  loading: boolean;
   play: (mainUrl: string, backingUrl?: string, isImmersive?: boolean) => void;
   pause: () => void;
   reset: () => void;
@@ -16,24 +16,25 @@ type PlayerContextType = {
 const PlayerContext = createContext<PlayerContextType | null>(null);
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
-  const mainRef = useRef<Howl | null>(null);
-  const backingRef = useRef<Howl | null>(null);
+  const mainRef = useRef<HTMLAudioElement | null>(null);
+  const backingRef = useRef<HTMLAudioElement | null>(null);
+
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // store last positions to resume
   const lastPositionRef = useRef<{ main: number; backing: number }>({ main: 0, backing: 0 });
-
   const location = useLocation();
 
+  // Update current time while playing
   const startTimeUpdate = useCallback(() => {
     const interval = setInterval(() => {
-      if (mainRef.current?.playing()) {
-        setCurrentTime(mainRef.current.seek() as number);
-        lastPositionRef.current.main = mainRef.current.seek() as number;
-        lastPositionRef.current.backing = (backingRef.current?.seek() as number) || 0;
+      if (mainRef.current && !mainRef.current.paused) {
+        setCurrentTime(mainRef.current.currentTime);
+        lastPositionRef.current.main = mainRef.current.currentTime;
+        lastPositionRef.current.backing = backingRef.current?.currentTime || 0;
       } else {
         clearInterval(interval);
         setPlaying(false);
@@ -43,87 +44,83 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const fadeOutBacking = useCallback(() => {
     if (!backingRef.current) return;
-
     const backing = backingRef.current;
-    if (!backing.playing()) return;
+    if (backing.paused) return;
 
-    const fadeDuration = 2000; // ms
+    const fadeDuration = 2000;
     const steps = 20;
     const stepTime = fadeDuration / steps;
-    const initialVol = backing.volume();
+    const initialVol = backing.volume;
     let currentStep = 0;
 
     const fadeInterval = setInterval(() => {
       currentStep++;
-      const newVol = initialVol * (1 - currentStep / steps);
-      backing.volume(Math.max(newVol, 0));
+      backing.volume = Math.max(initialVol * (1 - currentStep / steps), 0);
       if (currentStep >= steps) {
         clearInterval(fadeInterval);
-        backing.stop();
-        backing.volume(initialVol); // reset for next play
+        backing.pause();
+        backing.currentTime = 0;
+        backing.volume = initialVol;
       }
     }, stepTime);
   }, []);
 
   const play = useCallback(
     (mainUrl: string, backingUrl?: string, isImmersive = false) => {
-      // unload previous
-      mainRef.current?.unload();
-      backingRef.current?.unload();
+      if (loading) return; // ignore rapid clicks
 
-      // Main Howl
-      const mainHowl = new Howl({
-        src: [mainUrl],
-        html5: true,
-        volume: 1,
-        onend: () => {
-          setPlaying(false);
-          fadeOutBacking();
-        },
-        onload: () => setDuration(mainHowl.duration()),
-      });
-      mainRef.current = mainHowl;
+      // setLoading(true);
+      // setTimeout(() => setLoading(false), 2000); // fake loading
+
+      // Unload previous audio
+      mainRef.current?.pause();
+      backingRef.current?.pause();
+
+      const mainAudio = new Audio(mainUrl);
+      mainRef.current = mainAudio;
+      mainAudio.volume = 1;
+      mainAudio.currentTime = currentAudio === mainUrl ? lastPositionRef.current.main : 0;
+
+      mainAudio.onended = () => {
+        setPlaying(false);
+        fadeOutBacking();
+      };
+      mainAudio.onloadedmetadata = () => setDuration(mainAudio.duration);
 
       if (isImmersive && backingUrl) {
-        const backingHowl = new Howl({
-          src: [backingUrl],
-          html5: true,
-          loop: true,
-          volume: 0,
-        });
-        backingRef.current = backingHowl;
+        const backingAudio = new Audio(backingUrl);
+        backingRef.current = backingAudio;
+        backingAudio.loop = true;
+        backingAudio.volume = 0;
+        backingAudio.currentTime = currentAudio === mainUrl ? lastPositionRef.current.backing : 0;
 
-        // play backing immediately, fade in
-        backingHowl.play();
-        backingHowl.fade(0, 1, 1000);
+        backingAudio.play();
+        // simple fade in
+        let step = 0;
+        const fadeSteps = 20;
+        const fadeInterval = setInterval(() => {
+          step++;
+          backingAudio.volume = Math.min(step / fadeSteps, 1);
+          if (step >= fadeSteps) clearInterval(fadeInterval);
+        }, 50);
 
-        // resume from last position if same track
-        const startMainTime = currentAudio === mainUrl ? lastPositionRef.current.main : 0;
-        const startBackingTime = currentAudio === mainUrl ? lastPositionRef.current.backing : 0;
-
-        backingHowl.seek(startBackingTime);
-
-        setTimeout(() => {
-          mainHowl.seek(startMainTime);
-          mainHowl.play();
-          startTimeUpdate();
-        }, 4000);
+        mainAudio.play();
+        startTimeUpdate();
       } else {
-        const startMainTime = currentAudio === mainUrl ? lastPositionRef.current.main : 0;
-        mainHowl.seek(startMainTime);
-        mainHowl.play();
+        mainAudio.play();
         startTimeUpdate();
       }
 
       setCurrentAudio(mainUrl);
       setPlaying(true);
     },
-    [fadeOutBacking, startTimeUpdate, currentAudio]
+    [currentAudio, fadeOutBacking, startTimeUpdate, loading]
   );
 
   const pause = useCallback(() => {
-    if (mainRef.current?.playing()) lastPositionRef.current.main = mainRef.current.seek() as number;
-    if (backingRef.current?.playing()) lastPositionRef.current.backing = backingRef.current.seek() as number;
+    if (mainRef.current && !mainRef.current.paused) lastPositionRef.current.main = mainRef.current.currentTime;
+    if (backingRef.current && !backingRef.current.paused)
+      lastPositionRef.current.backing = backingRef.current.currentTime;
 
     mainRef.current?.pause();
     backingRef.current?.pause();
@@ -131,21 +128,22 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const reset = useCallback(() => {
-    mainRef.current?.stop();
-    backingRef.current?.stop();
+    mainRef.current?.pause();
+    backingRef.current?.pause();
+    mainRef.current && (mainRef.current.currentTime = 0);
+    backingRef.current && (backingRef.current.currentTime = 0);
     setCurrentTime(0);
     setPlaying(false);
     lastPositionRef.current = { main: 0, backing: 0 };
   }, []);
 
   const seek = useCallback((time: number) => {
-    mainRef.current?.seek(time);
-    backingRef.current?.seek(time);
+    if (mainRef.current) mainRef.current.currentTime = time;
+    if (backingRef.current) backingRef.current.currentTime = time;
     lastPositionRef.current = { main: time, backing: time };
     setCurrentTime(time);
   }, []);
 
-  // stop all audio on route change
   useEffect(() => {
     reset();
   }, [location.pathname, reset]);
@@ -154,6 +152,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       currentAudio,
       playing,
+      loading,
       play,
       pause,
       reset,
@@ -161,7 +160,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       currentTime,
       duration,
     }),
-    [currentAudio, playing, currentTime, duration, play, pause, reset, seek]
+    [currentAudio, playing, loading, currentTime, duration, play, pause, reset, seek]
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

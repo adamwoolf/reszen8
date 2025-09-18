@@ -104,10 +104,17 @@ const MeditationCard = ({
         {currentUser && showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
       </div>
       {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
-        <div>
-          <button onClick={verifyM} style={{ marginRight: 12 }}>
-            verify
-          </button>
+        <div
+          style={{
+            position: "absolute",
+            left: 10,
+            right: 10,
+            bottom: 100,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <button onClick={verifyM}>verify</button>
           <button onClick={() => handleDelete(item.firebaseId)} style={{ background: "red" }}>
             delete
           </button>

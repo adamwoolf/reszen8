@@ -39,6 +39,9 @@
 }
 
 .basket {
+  &__page {
+    margin-top: 100px;
+  }
   &__clear-button {
     margin-right: 16px;
     background-color: transparent;

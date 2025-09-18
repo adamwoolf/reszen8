@@ -15,6 +15,7 @@ export interface ContentState {
 export interface AudioObject {
   url: string;
   isImmersive: boolean;
+  landingPageActive: boolean;
 }
 
 const initialState: ContentState = {
@@ -28,6 +29,7 @@ const initialState: ContentState = {
   currentAudio: { url: "", isImmersive: false },
   articles: [],
   immersiveEnv: { name: "Warm", url: test },
+  landingPageActive: true,
 };
 
 export const contentSlice = createSlice({
@@ -84,6 +86,9 @@ export const contentSlice = createSlice({
     setImmersiveEnv: (state, action) => {
       state.immersiveEnv = action.payload;
     },
+    setLandingPageActive: (state, action) => {
+      state.landingPageActive = action.payload;
+    },
   },
 });
 
@@ -96,5 +101,6 @@ export const {
   setStaticMeditations,
   setLikes,
   setImmersiveEnv,
+  setLandingPageActive,
 } = contentSlice.actions;
 export default contentSlice.reducer;

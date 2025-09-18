@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-
 import { User } from "../models";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
@@ -18,9 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 }
 
@@ -32,57 +29,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
-  // NEW
+  // 1️⃣ Restore Cognito session on mount (once)
   useEffect(() => {
-    setLoading(true);
-    // console.log(awsAuth);
-    const fetchUser = async () => {
-      if (awsAuth.isAuthenticated && awsAuth.user?.profile?.sub) {
-        const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
-        const data = await res.json();
-        // console.log(data);
-        setCurrentUser(data);
+    const restoreSession = async () => {
+      setLoading(true);
+      try {
+        await awsAuth.signinSilent().catch(() => {
+          // no session exists
+        });
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-    fetchUser();
-  }, [awsAuth]);
+    restoreSession();
+  }, []); // ✅ empty array ensures it runs only once
 
-  const signOutRedirect = (e) => {
-    e.preventDefault();
+  // 2️⃣ Fetch app user whenever Cognito session changes
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!awsAuth.isAuthenticated || !awsAuth.user?.profile?.sub) {
+        setCurrentUser(null);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
+        if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
+        const data = await res.json();
+        setCurrentUser(data);
+      } catch (err: any) {
+        console.error("Failed to fetch user:", err);
+        setCurrentUser(null);
+        setError(err.message || "Failed to fetch user");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [awsAuth.isAuthenticated, awsAuth.user?.profile?.sub]);
+
+  useEffect(() => {
+    setLoading(awsAuth.isLoading);
+  }, [awsAuth.isLoading]);
+  // ✅ only triggers when auth state changes, no loops
+  console.log(loading);
+  const signOutRedirect = async () => {
     const clientId = "the72up8nv2sbq9tea7v5f0ai";
     const logoutUri = import.meta.env.VITE_BASE_URL; // must match Cognito allowed sign-out URLs
     const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
 
     const logoutUrl = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-
-    console.log("🔐 Logout requested");
-    console.log("Logout URL:", logoutUrl);
-
-    // Navigate to Cognito
-    window.location.assign(logoutUrl);
+    setLoading(true);
+    await awsAuth.removeUser(); // clear local state
+    window.location.replace(logoutUrl); // redirect to Cognito logout
   };
 
   const updateUser = async (uid: string, updates: any) => {
     try {
       const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          uid,
-          ...updates, // e.g., { subscription: "premium", favourites: {...} }
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid, ...updates }),
       });
-      console.log("RESPONSE", response);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      console.log("Updated user:", data.updatedUser);
       return data.updatedUser;
     } catch (err) {
       console.error("Failed to update user:", err);

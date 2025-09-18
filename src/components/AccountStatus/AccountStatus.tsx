@@ -3,11 +3,12 @@ import "./AccountStatusStyles.scss";
 import { User } from "../../models";
 
 const AccountStatus = ({ user }: { user: User }) => {
-  const start = user?.subscription?.startDate;
+  const start = user?.subscription?.startDate || 0;
   const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
+    if (user.subscription?.subscription !== "free-trial") return;
     const targetDate = new Date(start);
-    targetDate.setDate(targetDate.getDate() + user.subscription?.duration);
+    targetDate.setDate(targetDate.getDate() + user.subscription?.duration || 0);
 
     const updateCountdown = () => {
       const now = new Date();
@@ -30,31 +31,40 @@ const AccountStatus = ({ user }: { user: User }) => {
     const interval = setInterval(updateCountdown, 1000); // update every second
 
     return () => clearInterval(interval);
-  }, [start]); // Changed dependency to `start` since it's the relevant prop
+  }, [start, user]); // Changed dependency to `start` since it's the relevant prop
 
   const { days, hours, minutes, seconds } = remaining;
   const hasTime = days + hours + minutes + seconds;
-
-  if (user?.subscription?.subscription === "monthly") return <span>Active Monthly Subscription</span>;
-
-  return user?.subscription?.subscription === "free-trial" ? (
-    hasTime ? (
+  console.log(user.subscription);
+  if (!user?.subscription) return null;
+  if (user?.subscription?.subscription === "free-trial")
+    return (
       <>
-        <span className={`account-status-message`}>
-          <span> Free trial: </span>
-          <span className='time'>
-            {" "}
-            {days}d {hours}h {minutes}m, {seconds}s
-          </span>
-        </span>
-        <span>
-          bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
-        </span>
+        {hasTime && (
+          <>
+            <span className={`account-status-message`}>
+              <span> Free trial: </span>
+              <span className='time'>
+                {" "}
+                {days}d {hours}h {minutes}m, {seconds}s
+              </span>
+            </span>
+            <span>
+              bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+            </span>
+          </>
+        )}
       </>
-    ) : (
-      <span>Your free trial has expired. Please update your subscription </span>
-    )
-  ) : null;
+    );
+
+  return (
+    <>
+      <span className={`account-status-message`}>Active {user.subscription.planSize}</span>
+      <span>
+        bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+      </span>
+    </>
+  );
 };
 
 export default AccountStatus;

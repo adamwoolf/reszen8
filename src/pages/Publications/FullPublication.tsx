@@ -63,13 +63,14 @@ const FullPublication = () => {
   if (!title) return null;
   return (
     <div className='publication__full'>
-      <LikeCta large id={content?.sys?.id} />
       {/* <div className='publication__full__icon-container'>
         <Icon large type={category?.[0]?.category} />
       </div> */}
       <h1 className='publication__title'>{title}</h1>
+
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
+      <LikeCta large id={content.uid} item={content} />
 
       {currentUser && (
         <div className='publication__audio'>

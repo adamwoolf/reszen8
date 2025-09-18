@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
-import { useBasketStore } from '../store/basketStore';
+import { useBasketStore } from '../../store/basketStore';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { usePurchasedItemsStore } from '../store/purchasedItemsStore';
-import './Checkout.css';
-import { useAuth } from "../contexts/AuthContext";
-import { AWS_DB_ENDPOINT } from "../constants";
+import { usePurchasedItemsStore } from '../../store/purchasedItemsStore';
+import './Checkout.scss';
+import { useAuth } from "../../contexts/AuthContext";
+import { AWS_DB_ENDPOINT } from "../../constants";
 import { FaArrowRight } from 'react-icons/fa'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
@@ -21,23 +21,22 @@ const CheckoutForm = () => {
     return <Navigate to="/basket" />;
   }
 
-
+console.log(items[0])
   const handleSubmitStripe = async (e: React.FormEvent) => {
     e.preventDefault();
 const { email, firstName, surName } = currentUser || {}
-console.log( items[0]?.product)
 
 const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: 'subscription', email, firstName, lastName: surName, planId: items[0].product.priceId, 
+      body: JSON.stringify({ mode: 'subscription', email, firstName, lastName: surName, planId: items?.[0].product.priceId, 
       uid: currentUser?.uid,
       metadata: { uid: currentUser?.uid },
       subscription: {
-      duration: 30,
       hasCompletedTrial: true,
       meditationCredits: items[0]?.product.medCredits,
-      subscription: items[0]?.product.size
+      size: items[0]?.product.size,
+      subId: items[0]?.product.id
           }
     }),
   });
@@ -54,7 +53,7 @@ const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
     <form onSubmit={handleSubmitStripe} className="checkout-form">
 
       {/* Order Summary */}
-      <section className="checkout-section order-summary">
+      <section className="order-summary">
         <h2 className="section-title">Order Summary</h2>
         <div className="order-items">
           {items.map((item, index) => (

@@ -9,7 +9,7 @@
   overflow: hidden;
   flex-direction: column;
   margin-left: -60px;
-
+  z-index: 6000000;
   @media (max-width: 768px) {
     margin-left: -20px;
   }

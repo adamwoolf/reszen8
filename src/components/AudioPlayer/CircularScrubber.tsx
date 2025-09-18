@@ -112,7 +112,7 @@ const CircularScrubber = ({
       ref={svgRef}
       width={radius * 2 + stroke * 4}
       height={radius * 2 + stroke * 4}
-      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -35 }}
+      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -45 }}
     >
       {/* Base outer track */}
       <circle stroke='#ff9800' fill='none' cx={cx} cy={cy} r={outerRadius} strokeWidth={stroke} />

@@ -31,7 +31,6 @@ const Dashboard = () => {
     ...savedItems,
     myMeds,
   };
-
   // user generated meditations
   useEffect(() => {
     if (data) {
@@ -79,7 +78,6 @@ const Dashboard = () => {
       }
       return med;
     });
-    console.log(array);
     setMyMeds(array);
     if (currentUser?.uid) updateMeditationDeleteStatus(currentUser?.uid, itemId, shouldDelete);
   };
@@ -178,7 +176,6 @@ const Dashboard = () => {
                             <FaArrowRight />{" "}
                           </Link>
                         )}
-
                         <div>
                           {activeTab === "deleted" && (
                             <button

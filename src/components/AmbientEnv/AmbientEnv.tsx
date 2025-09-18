@@ -31,7 +31,7 @@ const AmbientEnv = () => {
       }));
       setEnvs(newData);
       dispatch(setImmersiveEnv(Envs[0]));
-      setBackingUrl(newData[0].url);
+      // setBackingUrl(newData[0].url);
     });
   }, []);
 
@@ -39,7 +39,7 @@ const AmbientEnv = () => {
     const name = e.target.value;
     const en = Envs.find((e) => e.name === name);
     dispatch(setImmersiveEnv(en));
-    if (en) setBackingUrl(en.url);
+    // if (en) setBackingUrl(en.url);
   };
   return (
     <div className='ambient'>

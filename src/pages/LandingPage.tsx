@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLandingPageActive } from "../store/contentSlice";
 import "./LandingPage.scss";
 
 const LandingPage: React.FC = () => {
   const [show, setShow] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const dispatch = useDispatch();
 
   const handleLogoClick = () => {
     sessionStorage.setItem("hideLandingpage", "true");
     setLeaving(true);
+    dispatch(setLandingPageActive(false));
   };
 
   useEffect(() => {
     const shouldHide = !!sessionStorage.getItem("hideLandingpage");
     setShow(!shouldHide);
+    dispatch(setLandingPageActive(!shouldHide));
   }, []);
 
   const handleAnimationEnd = () => {

@@ -34,10 +34,14 @@
   z-index: 30000;
 }
 
+.app-container {
+  margin-top: 100px;
+  position: relative;
+  z-index: 1;
+}
+
 body {
   font-family: var(--font-stack);
-  /* font-family: "Montserrat", sans-serif; */
-  /* font-family: "Funnel Sans", sans-serif; */
 
   line-height: 1.6;
   color: var(--text-color);
@@ -90,7 +94,6 @@ header {
 }
 
 .navbar {
-  background-color: var(--bg-secondary);
   width: 100%;
   margin-bottom: 0;
   position: relative;
@@ -182,6 +185,10 @@ a:hover {
   background-color: var(--primary-color);
 }
 
+.main-content-wrapper {
+  background-color: var(--bg-color);
+}
+
 /* Main Content */
 .main-content {
   flex: 1;
@@ -190,7 +197,7 @@ a:hover {
   margin: 0;
   position: relative;
   z-index: 1;
-  margin-top: 100px; /* Adjust based on header height */
+  /* margin-top: 100px; Adjust based on header height */
   box-sizing: border-box;
   overflow-x: hidden;
   background-color: var(--bg-color);

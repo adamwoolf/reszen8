@@ -1,3 +1,14 @@
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -140,6 +151,14 @@
   margin: 0 auto;
   padding: 0 2rem;
   height: 90px;
+  animation: slideDown 900ms ease-in-out;
+  animation-fill-mode: both;
+  animation-delay: 0.5s;
+}
+
+.appbar-wrapper {
+  position: relative;
+  z-index: 100000;
 }
 
 .nav-sections {
@@ -276,6 +295,9 @@
   border-top: 1px solid #ffa50030;
   padding: 4px 0;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 900ms ease-in-out;
+  animation-fill-mode: both;
+  animation-delay: 0.5s;
 }
 
 .user-items-right {

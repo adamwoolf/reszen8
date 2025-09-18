@@ -29,7 +29,6 @@ interface MeditationState {
 const Admin: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("Mindfulness");
-  // const [selectedVoice, setSelectedVoice] = useState(VOICE_OPTIONS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0].name);
   const allowedValues = Object.keys(mapDurationToWords);
@@ -55,18 +54,6 @@ const Admin: React.FC = () => {
   const [script, setScript] = useState("");
   const [formattedArticle, setFormattedArticle] = useState("");
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
-  // Hooks
-  const { addItem } = useSavedItems();
-  const navigate = useNavigate();
-
-  // const languageOptions = [
-  //   { value: "en", label: "English" },
-  //   { value: "es", label: "Spanish" },
-  //   { value: "fr", label: "French" },
-  //   { value: "de", label: "German" },
-  //   { value: "it", label: "Italian" },
-  //   { value: "pt", label: "Portuguese" },
-  // ];
 
   // Clean up on unmount
   useEffect(() => {
@@ -151,12 +138,17 @@ const Admin: React.FC = () => {
   // Handle form submission
 
   const generateStatic = async () => {
+    const textToSend = immersive
+      ? `<break time="6s"/>
+    ${script} <break time="4s"/>`
+      : script;
+
     if (isGenerating) return;
 
     setIsGenerating(true);
-
+    console.log(textToSend);
     try {
-      await generateStaticMedFromScript(title, meditationType, practiceType, script, voiceCode, immersive);
+      await generateStaticMedFromScript(title, meditationType, practiceType, textToSend, voiceCode, immersive);
 
       console.log("Static generated");
 
@@ -195,7 +187,9 @@ const Admin: React.FC = () => {
             <label>Content type: Meditation or Article</label>
             <select value={contentType} onChange={(e) => setContentType(e.target.value)}>
               {["meditation", "article"].map((content) => (
-                <option value={content}>{content}</option>
+                <option key={content} value={content}>
+                  {content}
+                </option>
               ))}
             </select>
           </div>

@@ -21,7 +21,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  const { currentAudio, playing, play, pause, reset, seek, currentTime } = usePlayer();
+  const { currentAudio, playing, play, pause, reset, loading, seek, currentTime } = usePlayer();
 
   const immersiveUrl = useSelector((state: any) => state.content?.immersiveEnv?.url);
 
@@ -58,7 +58,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
 
   const togglePlayPause = () => {
     if (currentAudio === audioUrl && playing) pause();
-    else play(audioUrl, immersiveUrl, isImmersive);
+    else setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
   };
 
   const onScrubEnd = (time: number) => {
@@ -80,13 +80,13 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
   };
 
   return (
-    <div className='audio-player__inner' ref={cardRef}>
+    <div style={isLoading ? { pointerEvents: "none" } : {}} className='audio-player__inner' ref={cardRef}>
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
             {isCurrent && playing && <RadiatingWaves />}
             {countdown > 0 && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
-            {isLoading && <ThreeDotsLoader />}
+            {(isLoading || (currentAudio === audioUrl && loading)) && <ThreeDotsLoader />}
             {!isLoading && (
               <div className='audio-player__icons'>
                 <PlayPauseButton isPlaying={playing && isCurrent} />
@@ -103,11 +103,11 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       )}
 
       <CircularScrubber
-        radius={55}
+        radius={65}
         stroke={2}
         progress={progress}
         duration={duration}
-        knobRadius={7}
+        knobRadius={9}
         isPlaying={isCurrent && playing}
         onScrub={() => {}}
         onScrubEnd={onScrubEnd}

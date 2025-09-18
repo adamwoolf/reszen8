@@ -9,6 +9,7 @@ const Footer: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    console.log("logging");
     try {
       await signOutRedirect();
     } catch (error) {

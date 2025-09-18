@@ -25,13 +25,17 @@ const Navbar: React.FC = () => {
     meds && currentUser ? Object.values(meds).filter((med) => med.createdBy === currentUser?.uid)?.length : 0;
   const staticMeds = useSelector(getStaticMeditations);
   const articles = useSelector(getPublications);
+  const landingPageActive = useSelector((state) => state.content.landingPageActive);
   const dashboardTotal = dashboardCount + userBespokeMeds;
+
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
+
   // Handle scroll effect for navbar
   useEffect(() => {
+    console.log("nav");
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true);
@@ -111,9 +115,9 @@ const Navbar: React.FC = () => {
     return null;
   };
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ` : "";
-  if (loading) return null;
+  if (loading || landingPageActive) return null;
   return (
-    <div>
+    <div className='appbar-wrapper'>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
         <div className='navbar-container'>
           <div className='nav-brand'>
@@ -148,7 +152,7 @@ const Navbar: React.FC = () => {
                 </NavLink>
               </li> */}
 
-              {currentUser?.subscription?.isActiveSub && (
+              {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
                 <>
                   <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>

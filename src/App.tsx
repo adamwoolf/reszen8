@@ -20,7 +20,7 @@ import DigitalLibrary from "./pages/MeditationLibrary/MeditationLibrary";
 import AIChat from "./pages/AIChat";
 import Apparel from "./pages/Apparel/Apparel";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
-import Checkout from "./pages/Checkout";
+import Checkout from "./pages/Checkout/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Memberships from "./pages/Memberships";
 import TermsAndConditions from "./pages/TermsAndConditions";
@@ -44,6 +44,7 @@ import { Helmet } from "react-helmet";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
 import LoadingScene from "./components/LoadingScene/LoadingScene";
+import { useSelector } from "react-redux";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -62,20 +63,19 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
+  const landingPageActive = useSelector((state) => state.content.landingPageActive);
 
   if (loading) return <LoadingScene />;
+  if (landingPageActive) return null;
   return (
     // <ErrorBoundary>
-    <div className='app-container flex flex-col min-h-screen'>
+    <div className='app-container'>
       <Helmet>
         <title>Welcome to Reszen8</title>
         <meta name='description' content='Your destination for meditative experiences.' />
         <meta name='robots' content='index, follow' />
       </Helmet>
 
-      <LandingPage />
-
-      <Navbar />
       <CookieBanner />
 
       <main className='main-content flex-grow'>
@@ -95,7 +95,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const { currentUser } = useAuth();
-  console.log(currentUser);
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -308,7 +307,11 @@ function App() {
           <BasketProvider>
             <SavedItemsProvider>
               <UserManager>
-                <AnimatedRoutes />
+                <div className='main-content-wrapper'>
+                  <Navbar />
+                  <LandingPage />
+                  <AnimatedRoutes />
+                </div>
               </UserManager>
             </SavedItemsProvider>
           </BasketProvider>
