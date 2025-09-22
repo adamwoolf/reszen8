@@ -88,6 +88,8 @@ const AIMeditationGenerator: React.FC = () => {
           meditationCredits: currentUser?.subscription?.meditationCredits - cost,
         },
       });
+
+      // handle result - open dashboard? display audio player with link to preview?
       if (!result) {
         throw new Error("Failed to generate meditation");
       }
@@ -199,7 +201,7 @@ const AIMeditationGenerator: React.FC = () => {
                 </button>
               </div>
               {showPopup === "practiceType" && (
-                <Popup fitContent show={showPopup} onClose={() => setShowPopup("")}>
+                <Popup show={showPopup} onClose={() => setShowPopup("")}>
                   {PracticeTypes.map((type, i) => (
                     <div className='popup__list-item' key={`${type.name}${i}`}>
                       <h4 className='popup__list-title'>{type.name}</h4>
@@ -270,8 +272,8 @@ const AIMeditationGenerator: React.FC = () => {
 
               <div className='flex justify-center mt-10 space-x-8'>
                 <span className='message'>
-                  Your meditation has been saved to the Bespoke Meditations tab in your
-                  <Link to='/dashboard'>Dashboard</Link>
+                  Your meditation has been saved to the Bespoke Meditations tab in your{" "}
+                  <Link to='/journey'>Journey</Link>
                 </span>
               </div>
             </div>

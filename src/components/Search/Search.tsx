@@ -195,7 +195,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
                     results.map((r, i) => {
                       return (
                         <div className='search__result' key={i}>
-                          <PublicationCard item={r} />
+                          <PublicationCard onClose={closeOverlay} item={r} />
                         </div>
                       );
                     })}

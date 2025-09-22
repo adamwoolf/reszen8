@@ -61,7 +61,7 @@ const LandingImages = () => {
       <div className='landing-image-wrapper'>
         <img
           src={images.dashboard}
-          alt='Personalised Dashboard'
+          alt='Personalised Journey'
           className='landing-image'
           onError={(e) => {
             // @ts-ignore

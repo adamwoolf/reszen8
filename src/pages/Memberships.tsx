@@ -6,6 +6,7 @@ import useContentful from "../hooks/useContentful";
 import { getMembershipTiers, getMembershipPage, getFAQs } from "../contentful";
 import { useAuth } from "../contexts/AuthContext";
 import { Link } from "react-router-dom";
+import { useAuth as useAWSAuth } from "react-oidc-context";
 
 type MembershipTier = {
   id: string;
@@ -20,17 +21,18 @@ type MembershipTier = {
 
 const Memberships: React.FC = () => {
   const navigate = useNavigate();
-  const { addItem } = useBasketStore();
+  const { addItem, items } = useBasketStore();
   const { currentUser } = useAuth();
   const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
   const content = useContentful(getMembershipPage)?.content?.fields;
   const faqs = useContentful(getFAQs)?.content?.items;
+  const auth = useAWSAuth();
 
   // Define the standard features for Digital Hub memberships
   const digitalHubFeatures = [
     "Full Meditation Library access",
     "AI Meditation Generator",
-    "Personalized 'My Dashboard'",
+    "Personalized 'My Journey'",
     "New content when available",
     "Access to E-Books",
     "Access to publications",
@@ -43,7 +45,7 @@ const Memberships: React.FC = () => {
       return;
     }
     if (tier.freeTrial) {
-      navigate("/login");
+      auth.signinRedirect();
       return;
     }
     // Create a proper product object with all required fields
@@ -55,12 +57,12 @@ const Memberships: React.FC = () => {
       size: tier.billing, // Store billing cycle as size
       priceId: tier.priceId, // for Stripe subscriptions
       medCredits: tier.medCredits,
+      type: "subscription",
     };
     console.log("Adding to basket:", product); // Debug log
     addItem(product);
     navigate("/basket");
   };
-
   return (
     <div className='memberships-page'>
       <header className='memberships-header'>
@@ -75,6 +77,8 @@ const Memberships: React.FC = () => {
             // Use the standard features for Digital Hub memberships and free trial
             const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
             const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
+            const isAdded = items.some((item) => item.product.id === tier.id);
+
             return (
               <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
                 <div className='membership-header'>
@@ -111,16 +115,29 @@ const Memberships: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+
+                {currentUser?.subscription?.subId === tier.id && <div className='popular-badge'>Active</div>}
                 {currentUser?.subscription?.subscription === tier.id ||
+                currentUser?.subscription?.subId === tier.id ||
                 (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ||
+                isAdded ||
                 tier.title.includes("Enterprise") ? (
                   <></>
+                ) : !currentUser && tier.id !== "free-trial" ? (
+                  <button className='subscribe-button' disabled>
+                    Upgrade from Free Trial
+                  </button>
                 ) : (
                   <button
                     className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
                     onClick={() => handleSubscribe(tier)}
                   >
                     {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Buy"}
+                  </button>
+                )}
+                {isAdded && (
+                  <button disabled className='subscribe-button'>
+                    Added to Basket
                   </button>
                 )}
                 {tier.title.includes("Enterprise") && (

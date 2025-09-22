@@ -165,8 +165,8 @@ const Navbar: React.FC = () => {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink to='/dashboard' className={getNavLinkClass}>
-                      My Dashboard <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
+                    <NavLink to='/journey' className={getNavLinkClass}>
+                      My Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
                     </NavLink>
                   </li>
                 </>
@@ -189,7 +189,7 @@ const Navbar: React.FC = () => {
                     </li>
                   )}
 
-                  {!currentUser && (
+                  {!currentUser && !loading && (
                     <>
                       <button onClick={() => auth.signinRedirect()}>Sign in</button>
                     </>

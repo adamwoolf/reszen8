@@ -44,8 +44,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [items]);
 
   useEffect(() => {
-    console.log(currentUser);
-
     if (currentUser?.basket) {
       setItems(Object.values(currentUser?.basket));
     }
@@ -100,8 +98,6 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
       type !== "publications"
         ? [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)
         : [...currentUser?.savedItems[type]].filter((i) => i.id !== item.id);
-
-    console.log([...currentUser?.savedItems[type]].filter((i) => i.id !== item.id));
 
     let newSavedItems = { ...currentUser?.savedItems, [type]: newItemsArray };
     if (!newItemsArray.length) delete newSavedItems[type];

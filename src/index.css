@@ -4,10 +4,11 @@
 :root {
   --primary-color: #ffa500;
   --secondary-color: #ff8c00;
-  --accent-color: #ff8c00;
+  --accent-color: #755001;
   --text-color: #ffffff;
   --text-secondary: #cccccc;
   --bg-color: #05011f;
+  --testbg-color: #151228;
   --bg-secondary: #121212;
   --bg-tertiary: #1a1a1a;
   --border-color: #333333;

@@ -29,7 +29,7 @@ const Basket = () => {
     if (newQuantity < 1) return;
     updateQuantity(productId, size, newQuantity);
   };
-
+  console.log(items);
   if (!items || items.length === 0) {
     return (
       <div className=''>
@@ -86,29 +86,31 @@ const Basket = () => {
                     <div className='basket-item-controls'>
                       <div>
                         <span className=''>Quantity</span>
-                        <div className='quantity-container'>
-                          <button
-                            type='button'
-                            className='button quantity-button'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
-                            }}
-                          >
-                            -
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button
-                            type='button'
-                            className='button quantity-button'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
+                        {item.product.type !== "subscription" && (
+                          <div className='quantity-container'>
+                            <button
+                              type='button'
+                              className='button quantity-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.product.id, item.product.size, item.quantity - 1);
+                              }}
+                            >
+                              -
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button
+                              type='button'
+                              className='button quantity-button'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.product.id, item.product.size, item.quantity + 1);
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
                         <div className='item-save-or-remove-container'>
                           <button
                             type='button'

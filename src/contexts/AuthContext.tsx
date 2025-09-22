@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(awsAuth.isLoading);
   }, [awsAuth.isLoading]);
   // ✅ only triggers when auth state changes, no loops
-  console.log(loading);
+
   const signOutRedirect = async () => {
     const clientId = "the72up8nv2sbq9tea7v5f0ai";
     const logoutUri = import.meta.env.VITE_BASE_URL; // must match Cognito allowed sign-out URLs

@@ -26,22 +26,31 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [duration, setDuration] = useState(0);
 
   const lastPositionRef = useRef<{ main: number; backing: number }>({ main: 0, backing: 0 });
+  const rafRef = useRef<number | null>(null);
+
   const location = useLocation();
 
-  // Update current time while playing
+  /** requestAnimationFrame loop to update currentTime smoothly */
   const startTimeUpdate = useCallback(() => {
-    const interval = setInterval(() => {
+    const update = () => {
       if (mainRef.current && !mainRef.current.paused) {
         setCurrentTime(mainRef.current.currentTime);
         lastPositionRef.current.main = mainRef.current.currentTime;
         lastPositionRef.current.backing = backingRef.current?.currentTime || 0;
+        rafRef.current = requestAnimationFrame(update);
       } else {
-        clearInterval(interval);
         setPlaying(false);
       }
-    }, 200);
+    };
+    rafRef.current = requestAnimationFrame(update);
+
+    // Return a function to stop the loop
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
+  /** Fade out backing audio */
   const fadeOutBacking = useCallback(() => {
     if (!backingRef.current) return;
     const backing = backingRef.current;
@@ -67,14 +76,12 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const play = useCallback(
     (mainUrl: string, backingUrl?: string, isImmersive = false) => {
-      if (loading) return; // ignore rapid clicks
+      if (loading) return;
 
-      // setLoading(true);
-      // setTimeout(() => setLoading(false), 2000); // fake loading
-
-      // Unload previous audio
+      // Stop previous audio
       mainRef.current?.pause();
       backingRef.current?.pause();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
       const mainAudio = new Audio(mainUrl);
       mainRef.current = mainAudio;
@@ -114,7 +121,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       setCurrentAudio(mainUrl);
       setPlaying(true);
     },
-    [currentAudio, fadeOutBacking, startTimeUpdate, loading]
+    [currentAudio, fadeOutBacking, loading, startTimeUpdate]
   );
 
   const pause = useCallback(() => {
@@ -124,6 +131,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
     mainRef.current?.pause();
     backingRef.current?.pause();
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setPlaying(false);
   }, []);
 
@@ -132,6 +140,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     backingRef.current?.pause();
     mainRef.current && (mainRef.current.currentTime = 0);
     backingRef.current && (backingRef.current.currentTime = 0);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setCurrentTime(0);
     setPlaying(false);
     lastPositionRef.current = { main: 0, backing: 0 };

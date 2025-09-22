@@ -84,12 +84,12 @@ const DigitalLibrary = () => {
     if (wasAdded) {
       setNotification({
         show: true,
-        message: `${item.title} has been added to your Dashboard`,
+        message: `${item.title} has been added to your Journey`,
       });
     } else {
       setNotification({
         show: true,
-        message: `${item.title} is already in your Dashboard`,
+        message: `${item.title} is already in your Journey`,
       });
     }
 

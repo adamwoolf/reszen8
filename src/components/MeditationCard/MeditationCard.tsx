@@ -95,7 +95,7 @@ const MeditationCard = ({
           {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
           {/* {item.audioUrl && <AudioController2 audioUrl={item.audioUrl} />} */}
           <button disabled={hasBeenSaved} onClick={() => handleAddItem?.(item)} className='publication__card-save-cta'>
-            {hasBeenSaved ? "Saved to dashboard" : "Save to my dashboard"}
+            {hasBeenSaved ? "Saved to My Journey" : "Save to My Journey"}
           </button>
         </div>
         <div className='publication__card-icon-container'>

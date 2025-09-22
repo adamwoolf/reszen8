@@ -226,30 +226,6 @@ export default function RichTextEditor({ initialHtml = "", onChange }) {
         />
       </div>
 
-      {/* <div className='mt-3 flex gap-2'>
-        <button
-          onClick={() => {
-            // Provide the HTML or Markdown to caller (could be wired via props callbacks)
-            const exported = handleExport();
-            // For demo, copy to clipboard
-            copyToClipboard(exported);
-          }}
-          className='px-3 py-1 bg-green-600 text-white rounded'
-        >
-          Export & Copy
-        </button>
-
-        <button
-          onClick={() => {
-            // Clear editor
-            if (editorRef.current) editorRef.current.innerHTML = "";
-            syncOutput();
-          }}
-          className=''
-        >
-          Clear
-        </button>
-      </div> */}
     </div>
   );
 }

@@ -186,8 +186,8 @@ const Admin: React.FC = () => {
           <div className='form-group form-group-block'>
             <label>Content type: Meditation or Article</label>
             <select value={contentType} onChange={(e) => setContentType(e.target.value)}>
-              {["meditation", "article"].map((content) => (
-                <option key={content} value={content}>
+              {["meditation", "article"].map((content, i) => (
+                <option key={content + i} value={content}>
                   {content}
                 </option>
               ))}
@@ -305,8 +305,8 @@ const Admin: React.FC = () => {
 
               <div className='flex justify-center mt-10 space-x-8'>
                 <span className='message'>
-                  Your meditation has been saved to the Bespoke Meditations tab in your{" "}
-                  <Link to='/dashboard'>Dashboard</Link>
+                  Your meditation has been saved to the Bespoke Meditations tab in My
+                  <Link to='/journey'>Journey</Link>
                 </span>
               </div>
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./FooterStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
+import FooterHero from "../FooterHero/FooterHero";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -18,6 +19,7 @@ const Footer: React.FC = () => {
   };
   return (
     <footer className='bg-gray-900 text-white py-6 border-t border-gray-800 w-full'>
+      <FooterHero />
       <div className='container mx-auto px-4'>
         <div className='flex flex-col items-center justify-center text-center'>
           <p className='text-sm text-gray-400 mb-3'>{currentYear} RESZEN8. All rights reserved.</p>

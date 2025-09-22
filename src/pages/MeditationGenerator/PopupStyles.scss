@@ -6,7 +6,7 @@
   padding: 30px;
   box-shadow: 5px 5px 5px rgba(var(--bg-color), 0.5);
   border-radius: 10px;
-  z-index: 1000;
+  z-index: 1000000;
   animation: fadeIn 500ms;
   border: 1px solid orange;
   width: 80%;
@@ -43,6 +43,7 @@
   &__content-container {
     height: 90%;
     background-color: transparent;
+    overflow: auto;
   }
 
   &__close {

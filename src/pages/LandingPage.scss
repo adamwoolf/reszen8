@@ -28,6 +28,15 @@ body,
   cursor: pointer;
   position: relative;
   overflow: hidden;
+
+  &__sup {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    position: absolute;
+    top: 4px;
+    right: -12px;
+    text-shadow: 0 0 15px rgba(192, 160, 101, 0.5);
+  }
 }
 
 .landing-page:hover {
@@ -58,7 +67,7 @@ body,
   letter-spacing: 0.5rem;
   text-transform: uppercase;
   font-family: "Inter", sans-serif;
-  text-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+  text-shadow: 0 0 15px rgba(192, 160, 101, 0.5);
   transition: transform 0.3s ease, text-shadow 0.3s ease;
   position: relative;
 }

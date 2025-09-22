@@ -99,8 +99,8 @@ const Publications = () => {
       {!currentUser && (
         <div className='publications__user-prompt'>
           <p>
-            Sign up to enable site-wide filtering and searching and building a list of favourite articles in your User
-            Dashboard
+            Sign up to enable site-wide filtering and searching and building a list of favourite articles in your
+            Journey
           </p>
         </div>
       )}

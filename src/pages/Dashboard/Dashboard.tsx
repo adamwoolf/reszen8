@@ -74,7 +74,7 @@ const Dashboard = () => {
   const handleDeleteBespokeMed = async (itemId: string, shouldDelete: boolean) => {
     const array = [...myMeds].map((med) => {
       if (med.uid === itemId) {
-        return { ...med, willDelete: shouldDelete ? Date.now() + 14 * 24 * 60 * 60 : false };
+        return { ...med, willDelete: shouldDelete ? Math.floor(Date.now()) / 1000 + 14 * 24 * 60 * 60 : false };
       }
       return med;
     });
@@ -122,6 +122,7 @@ const Dashboard = () => {
                 }
 
                 function getDeletionCountdown(timestampSeconds: number) {
+                  console.log(timestampSeconds);
                   const now = new Date();
                   const deleteDate = new Date(timestampSeconds * 1000); // convert seconds → ms
 
@@ -212,9 +213,9 @@ const Dashboard = () => {
                           <Popup showClose={false} fitContent show={showPopup} onClose={() => setShowPopup(false)}>
                             {activeTab !== "myMeds" ? (
                               <>
-                                <h3>Remove from Dashboard</h3>
+                                <h3>Remove from your Journey</h3>
                                 <p>
-                                  "{itemToRemove?.title}" will be removed from your dashboard, but still be available in
+                                  "{itemToRemove?.title}" will be removed from your Journey, but still be available in
                                   the {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
                                 </p>
                                 <button onClick={() => setShowPopup(false)} className='dashboard-button'>
@@ -322,9 +323,9 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard-container'>
-      <h1 className='page-header'>My Dashboard</h1>
+      <h1 className='page-header'>My Journey</h1>
       <div className='dashboard__search-container'>
-        <Search dashboard text='Search Dashboard Items' />
+        <Search dashboard text='Search Journey Items' />
       </div>
       <div key={activeTab} className='tabs__container'>
         {showLeftChevron && (

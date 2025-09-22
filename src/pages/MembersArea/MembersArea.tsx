@@ -21,10 +21,10 @@ export default function MembersArea() {
 
   const handleCancelMembership = () => {
     // Add membership cancellation logic here
-    if (window.confirm("Are you sure you want to cancel your membership?")) {
-      alert("Your membership has been cancelled. We're sorry to see you go!");
-      setIsSubscribed(false);
-    }
+    // if (window.confirm("Are you sure you want to cancel your membership?")) {
+    //   alert("Your membership has been cancelled. We're sorry to see you go!");
+    //   setIsSubscribed(false);
+    // }
   };
 
   const handleMoveToBasket = (item: any) => {
@@ -55,11 +55,6 @@ export default function MembersArea() {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
-  // if (!currentUser) {
-  //   console.log("HERE");
-  //   return <Navigate to='/login' />;
-  // }
 
   return (
     <div className='home-page members-area'>
@@ -141,7 +136,7 @@ export default function MembersArea() {
             )}
           </div>
 
-          <div className='feature-card'>
+          {/* <div className='feature-card'>
             <h3 className='feature-title'>Account Security</h3>
             <p className='feature-description'>
               Keep your account secure by updating your password regularly.
@@ -161,7 +156,7 @@ export default function MembersArea() {
             >
               Reset Password
             </Link>
-          </div>
+          </div> */}
 
           <div className='feature-card'>
             <h3 className='feature-title'>Cancel Membership</h3>

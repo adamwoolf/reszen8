@@ -45,7 +45,9 @@ const LandingPage: React.FC = () => {
       className={!leaving ? "landing-page" : "landing-page landing-page--leaving"}
     >
       <button className='logo-container' onClick={handleLogoClick}>
-        <h1 className='logo'>RESZEN8</h1>
+        <h1 className='logo'>
+          RESZEN8<sup className='landing-page__sup'>TM</sup>
+        </h1>
         <p className='click-prompt'>Click to enter</p>
       </button>
     </div>

@@ -23,13 +23,13 @@ const features = [
   {
     title: "Bespoke Meditation Generator",
     description:
-      "Create personalised meditation sessions with Reszen8's unique,  bespoke Meditation Generator & save them to your dashboard for later",
+      "Create personalised meditation sessions with Reszen8's unique,  bespoke Meditation Generator & save them to your Journey for later",
     path: "/bespoke-meditation-generator",
   },
   {
-    title: "Personalised Dashboard",
+    title: "My Journey",
     description: "Listen to your saved meditations, read meditation guides and customise your journey",
-    path: "/dashboard",
+    path: "/journey",
   },
   {
     title: "7 Day Free Trial",

@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { FaHeart } from "react-icons/fa";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setLikes } from "../../store/contentSlice";
 import { AWS_DB_ENDPOINT } from "../../constants";
-import { getMeta, getStaticMeditations, getMeditations } from "../../store/contentSelectors";
 import "./LikeCtaStyles.scss";
 
 interface Like {
@@ -24,8 +23,7 @@ const LikeCta = ({
 }) => {
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser, updateUser } = useAuth();
-  const data = useSelector(getMeta);
-
+  const [likes, setLikes] = useState(item.likes || 0);
   const table =
     content === "publications"
       ? "Articles"
@@ -41,6 +39,8 @@ const LikeCta = ({
 
   // handles user data liked items
   const toggleFavourite = async (id: string) => {
+    console.log(likes);
+
     const userFavs = currentUser?.favourites?.[content];
     if (!userFavs?.includes(item.uid)) {
       const numLikes = item.likes ? item.likes + 1 : 1;
@@ -49,7 +49,7 @@ const LikeCta = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid: item.uid, likes: numLikes, table: table }),
       });
-      dispatch(setLikes({ uid: item.uid, likes: numLikes, content: table }));
+      // dispatch(setLikes({ uid: item.uid, likes: numLikes, content: table }));
     }
     // remove like
     if (userFavs?.includes(item.uid)) {
@@ -59,14 +59,14 @@ const LikeCta = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ uid: item.uid, likes: item.likes - 1, table: table }),
         });
-        dispatch(setLikes({ uid: item.uid, likes: item.likes - 1, content: table }));
+        // dispatch(setLikes({ uid: item.uid, likes: item.likes - 1, content: table }));
       }
 
       const updatedPubs = userFavs.filter((item) => item !== id);
       const newData = { ...currentUser, favourites: { ...currentUser?.favourites, [content]: updatedPubs } };
       updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: updatedPubs } });
       setCurrentUser(newData);
-
+      setLikes(likes - 1);
       return;
     }
 
@@ -83,6 +83,7 @@ const LikeCta = ({
     updateUser(currentUser.uid, { favourites: { ...currentUser.favourites, [content]: newLikes } });
 
     setCurrentUser(newData);
+    setLikes(likes + 1);
   };
   return (
     <div style={{ top: large ? 32 : 12 }} className='likes'>
@@ -92,7 +93,7 @@ const LikeCta = ({
           className={isFavourite ? "publication__heart publication__heart--favourite" : "publication--heart"}
         />
       </button>
-      <span className='likes__count'>{item.likes ? item.likes : 0} likes</span>
+      <span className='likes__count'>{likes.likes || likes} likes</span>
     </div>
   );
 };

@@ -138,7 +138,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path='/dashboard'
+          path='/journey'
           element={
             <ProtectedRoute>
               <Layout>

@@ -7,7 +7,7 @@ import { marked } from "marked";
 import Icon from "../Icon/Icon";
 import { FaVolumeUp } from "react-icons/fa";
 
-const PublicationCard = ({ item, showLike = true }) => {
+const PublicationCard = ({ item, showLike = true, onClose }) => {
   const { category } = item;
   const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [saved, setSaved] = useState(false);
@@ -44,18 +44,18 @@ const PublicationCard = ({ item, showLike = true }) => {
   const showSaveUI = () =>
     saved ? (
       <span className='publication__card__added'>
-        saved to <Link to='/dashboard'> My Dashboard</Link>
+        saved to <Link to='/journey'> My Journey</Link>
       </span>
     ) : (
       <button className='publication__card__add' onClick={savePublication}>
-        save to My dashboard
+        save to My Journey
       </button>
     );
   return (
     <article key={item.uid} className='feature-card clickable publication__card'>
       {showLike && currentUser && <LikeCta item={item} id={item.uid} />}
 
-      <Link className='publication__card-content' to={`/articles/${item.title}`}>
+      <Link onClick={() => onClose?.()} className='publication__card-content' to={`/articles/${item.title}`}>
         <div className='publication__card-inner'>
           <div className='publication__card-icon-container'>
             <Icon type={category[0].category} />

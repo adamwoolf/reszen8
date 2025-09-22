@@ -5,14 +5,7 @@ import { useSelector } from "react-redux";
 import CircularScrubber from "./CircularScrubber";
 import RadiatingWaves from "./Playing";
 import PlayPauseButton from "./PlayPauseIcon";
-
-const ThreeDotsLoader = () => (
-  <div className='three-dots-loader'>
-    <span />
-    <span />
-    <span />
-  </div>
-);
+import ThreeDotsLoader from "../ThreeDotsLoads";
 
 const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmersive?: boolean }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -61,10 +54,6 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     else setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
   };
 
-  const onScrubEnd = (time: number) => {
-    seek(time);
-  };
-
   const isCurrent = currentAudio === audioUrl;
   const usedTime = isCurrent ? currentTime : 0;
   const safeDuration = duration || 1;
@@ -109,8 +98,12 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
         duration={duration}
         knobRadius={9}
         isPlaying={isCurrent && playing}
-        onScrub={() => {}}
-        onScrubEnd={onScrubEnd}
+        onScrub={(time) => {
+          // optional: show temporary progress while dragging
+        }}
+        onScrubEnd={(time) => {
+          seek(time); // <-- updates AudioContext audio element
+        }}
       />
     </div>
   );
