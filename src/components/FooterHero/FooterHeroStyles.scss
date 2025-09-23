@@ -1,0 +1,35 @@
+.footer-hero {
+  padding: 20px 0;
+  display: flex;
+
+  @media (max-width: 786px) {
+    flex-direction: column;
+  }
+  div {
+    background-color: transparent;
+  }
+  min-height: 300px;
+  background-color: var(--bg-color-light);
+  span {
+    color: var(--primary-color-darker) !important;
+  }
+
+  &__column {
+    margin: 30px;
+  }
+
+  &__column-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__column-list-link {
+    margin: 5px 0;
+    font-size: 0.8rem;
+  }
+
+  &__app-store {
+    width: 150px;
+    margin: 20px 0;
+  }
+}

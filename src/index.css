@@ -3,11 +3,13 @@
 /* Base Styles */
 :root {
   --primary-color: #ffa500;
+  --primary-color-darker: #937011;
   --secondary-color: #ff8c00;
   --accent-color: #755001;
   --text-color: #ffffff;
   --text-secondary: #cccccc;
   --bg-color: #05011f;
+  --bg-color-light: #151228;
   --testbg-color: #151228;
   --bg-secondary: #121212;
   --bg-tertiary: #1a1a1a;

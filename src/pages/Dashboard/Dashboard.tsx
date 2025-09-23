@@ -3,14 +3,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
+import Icon from "@mdi/react";
+
 import { FaArrowRight, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 import Search from "../../components/Search/Search";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { deleteBespokeMed, updateMeditationDeleteStatus } from "../../store/apiUtils";
-import Popup from "../MeditationGenerator/Popup";
-
+import Popup from "../../components/Popup/Popup";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 type TabType = "meditations" | "publications" | "myMeds";
 
 const Dashboard = () => {
@@ -375,9 +377,7 @@ const Dashboard = () => {
           </button>
         )}
       </div>
-
       {renderTabContent()}
-
       <audio ref={audioRef} />
     </div>
   );

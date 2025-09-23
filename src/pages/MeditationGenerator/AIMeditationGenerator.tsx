@@ -5,7 +5,7 @@ import { generateMeditation } from "../../services/aiMeditationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
-import Popup from "./Popup";
+import Popup from "../../components/Popup/Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
 import { setMeditations, setStaticMeditations } from "../../store/contentSlice";

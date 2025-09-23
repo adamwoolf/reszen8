@@ -22,10 +22,21 @@ const UserManager = ({ children }) => {
   };
 
   useEffect(() => {
-    const isActive = isSubscriptionActive(currentUser?.subscription);
-    setisActiveSub(isActive);
-    // if (currentUser && !isActive) navigate("/members");
+    if (currentUser && currentUser?.subscription?.subscription === "free-trial") {
+      const isActive = isSubscriptionActive(currentUser?.subscription);
+      console.log(isActive);
+      setisActiveSub(isActive);
+    }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (isActiveSub !== currentUser?.subscription?.isActiveSub) {
+      // update currentUser and updateUser
+
+      console.log(isActiveSub);
+      console.log(currentUser?.subscription?.isActiveSub);
+    }
+  }, [isActiveSub, currentUser]);
 
   useEffect(() => {
     getAWSArticles().then((data) => {

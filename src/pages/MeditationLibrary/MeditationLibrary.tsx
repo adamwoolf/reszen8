@@ -11,7 +11,7 @@ import { getMeditationsWithLikes } from "./MeditationLibrary.selectors";
 import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import ToggleContainer from "./ToggleContainer";
-import Popup from "../MeditationGenerator/Popup";
+import Popup from "../../components/Popup/Popup";
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {

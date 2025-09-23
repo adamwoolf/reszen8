@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import "./SearchStyles.scss";
-import Popup from "../../pages/MeditationGenerator/Popup";
+import Popup from "../Popup/Popup";
 import { Meditation, Publication } from "../../models";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import MeditationCard from "../MeditationCard/MeditationCard";
