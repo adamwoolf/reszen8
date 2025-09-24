@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AccountStatusStyles.scss";
 import { User } from "../../models";
+import CreditTopup from "../CreditTopup/CreditTopup";
 
 const AccountStatus = ({ user }: { user: User }) => {
   const start = user?.subscription?.startDate || 0;
@@ -60,9 +61,19 @@ const AccountStatus = ({ user }: { user: User }) => {
   return (
     <>
       <span className={`account-status-message`}>Active {user.subscription.planSize}</span>
-      <span>
-        bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
-      </span>
+      <div className='credit-info'>
+        <div className='credit-info__text'>
+          <span>
+            plan credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+          </span>
+          {user.subscription?.extraBespokeMeditationCredits && (
+            <span>
+              extra credits: <span style={{ color: "orange" }}> {user.subscription.extraBespokeMeditationCredits}</span>
+            </span>
+          )}
+        </div>
+        <CreditTopup />
+      </div>
     </>
   );
 };

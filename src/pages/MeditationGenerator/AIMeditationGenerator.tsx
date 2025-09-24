@@ -73,21 +73,40 @@ const AIMeditationGenerator: React.FC = () => {
         immersive
       );
       const cost = immersive ? 2 : 1;
-      console.log("Meditation generation result:", result);
-      if (currentUser && currentUser.subscription?.meditationCredits)
-        updateUser(currentUser?.uid, {
-          subscription: {
-            ...currentUser?.subscription,
-            meditationCredits: currentUser?.subscription?.meditationCredits - cost,
-          },
-        });
-      setCurrentUser({
-        ...currentUser,
-        subscription: {
-          ...currentUser?.subscription,
-          meditationCredits: currentUser?.subscription?.meditationCredits - cost,
-        },
-      });
+
+      if (
+        currentUser &&
+        (currentUser.subscription?.meditationCredits || currentUser?.subscription?.extraBespokeMeditationCredits)
+      )
+        if (currentUser.subscription?.meditationCredits) {
+          updateUser(currentUser?.uid, {
+            subscription: {
+              ...currentUser?.subscription,
+              meditationCredits: currentUser?.subscription?.meditationCredits - cost,
+            },
+          });
+          setCurrentUser({
+            ...currentUser,
+            subscription: {
+              ...currentUser?.subscription,
+              meditationCredits: currentUser?.subscription?.meditationCredits - cost,
+            },
+          });
+        } else if (currentUser?.subscription?.extraBespokeMeditationCredits) {
+          updateUser(currentUser?.uid, {
+            subscription: {
+              ...currentUser?.subscription,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
+            },
+          });
+          setCurrentUser({
+            ...currentUser,
+            subscription: {
+              ...currentUser?.subscription,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
+            },
+          });
+        }
 
       // handle result - open dashboard? display audio player with link to preview?
       if (!result) {
@@ -226,15 +245,20 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
 
           <div className='flex justify-center mt-8 space-x-8'>
-            {!currentUser?.subscription?.meditationCredits && (
-              <span>You have run out of meditation credits for this subscription period.</span>
-            )}
+            {!currentUser?.subscription?.meditationCredits &&
+              !currentUser?.subscription?.extraBespokeMeditationCredits && (
+                <span>You have run out of meditation credits for this subscription period.</span>
+              )}
             {currentUser && currentUser?.isGod ? (
               <button
                 type='submit'
                 className='generate-btn'
                 disabled={
-                  isGenerating || !title || profanityFilter(title) || !currentUser?.subscription?.meditationCredits
+                  isGenerating ||
+                  !title ||
+                  profanityFilter(title) ||
+                  (!currentUser?.subscription?.meditationCredits &&
+                    !currentUser?.subscription?.extraBespokeMeditationCredits)
                 }
               >
                 {isGenerating ? (

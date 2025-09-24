@@ -52,9 +52,9 @@ const Basket = () => {
       <h1 className=''>Your Basket</h1>
 
       <div className=''>
-        <div className=''>
+        {/* <div className=''>
           <h2 className=''>Order Summary</h2>
-        </div>
+        </div> */}
 
         <div className='basket-grid'>
           <AnimatePresence>
@@ -85,8 +85,8 @@ const Basket = () => {
 
                     <div className='basket-item-controls'>
                       <div>
-                        <span className=''>Quantity</span>
-                        {item.product.type !== "subscription" && (
+                        {/* <span className=''>Quantity</span> */}
+                        {/* {item.product.type !== "subscription" && (
                           <div className='quantity-container'>
                             <button
                               type='button'
@@ -110,7 +110,7 @@ const Basket = () => {
                               +
                             </button>
                           </div>
-                        )}
+                        )} */}
                         <div className='item-save-or-remove-container'>
                           <button
                             type='button'
@@ -133,10 +133,10 @@ const Basket = () => {
         </div>
 
         <div className=''>
-          <div className=''>
+          {/* <div className=''>
             <p>Total</p>
             <p>£{total.toFixed(2)}</p>
-          </div>
+          </div> */}
 
           <div className=''>
             <button type='button' onClick={clearBasket} className='basket__clear-button'>

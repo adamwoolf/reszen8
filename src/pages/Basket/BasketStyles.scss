@@ -31,7 +31,7 @@
 
 .basket-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -66,7 +66,7 @@
 
   &-item {
     margin: 40px 0;
-    background-color: var(--bg-secondary);
+    background-color: transparent;
     padding: 20px;
     border-radius: 10px;
     border: 2px solid;

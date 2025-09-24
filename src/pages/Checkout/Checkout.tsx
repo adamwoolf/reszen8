@@ -27,24 +27,32 @@ const CheckoutForm = () => {
   const handleSubmitStripe = async (e: React.FormEvent) => {
     e.preventDefault();
     const { email, firstName, surName } = currentUser || {};
+    const item = items?.[0]?.product;
     setWaiting(true);
+    const mode = item?.type;
+    console.log(mode);
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mode: "subscription",
+        mode,
         email,
         firstName,
         lastName: surName,
-        planId: items?.[0].product.priceId,
+        planId: item.priceId,
         uid: currentUser?.uid,
         metadata: { uid: currentUser?.uid },
-        subscription: {
-          hasCompletedTrial: true,
-          meditationCredits: items[0]?.product.medCredits,
-          size: items[0]?.product.size,
-          subId: items[0]?.product.id,
-        },
+        subscription:
+          mode === "subscription"
+            ? {
+                hasCompletedTrial: true,
+                meditationCredits: items[0]?.product.medCredits,
+                size: item.size,
+                subId: item.id,
+              }
+            : {
+                extraBespokeMeditationCredits: item.value,
+              },
       }),
     });
 
@@ -60,7 +68,7 @@ const CheckoutForm = () => {
   return (
     <form onSubmit={handleSubmitStripe} className='checkout-form'>
       {/* Order Summary */}
-      <section className='order-summary'>
+      <section>
         <h2 className='section-title'>Order Summary</h2>
         <div className='order-items'>
           {items.map((item, index) => (
@@ -96,17 +104,11 @@ const CheckoutForm = () => {
 
       {/* Payment Information */}
       <section className='checkout-section'>
-        <h2 className='section-title'>Payment Information</h2>
-        <div className='payment-method'>
+        <div>
           <div className='payment-method-header'>
-            <h3>Payment Method</h3>
-            <div className='payment-method-tabs'>
-              <button className='payment-tab active'>
-                Pay using Stripe (secure payment page)
-                {waiting && <ThreeDotsLoader />}
-              </button>
-              {/* {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>} */}
-            </div>
+            <button className='payment-tab active'>{waiting && <ThreeDotsLoader />}Pay Now</button>
+            <p className='checkout__disclaimer'> All payment are handled by Stripe (secure payment page)</p>
+            {/* {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>} */}
           </div>
         </div>
       </section>

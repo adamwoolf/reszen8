@@ -5,6 +5,7 @@ export type Subscription = {
   subscription: "free-trial" | "monthly";
   hasCompletedTrial: boolean;
   meditationCredits?: number;
+  extraBespokeMeditationCredits?: number;
 };
 
 export interface User {

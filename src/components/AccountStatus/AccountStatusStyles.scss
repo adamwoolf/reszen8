@@ -8,3 +8,14 @@
 .time {
   margin-top: 0;
 }
+
+.credit-info {
+  display: flex;
+  align-items: center;
+  margin-top: 0px;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+  }
+}

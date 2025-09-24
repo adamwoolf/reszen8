@@ -1,0 +1,48 @@
+.topup {
+  position: relative;
+  height: 1px;
+  width: 100px;
+  height: 30px;
+  &__cta {
+    background-color: transparent;
+    color: orange;
+    font-size: 0.8rem;
+    position: absolute;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: 4px;
+      transition: 100ms;
+    }
+
+    top: -3px;
+
+    &:hover {
+      background-color: transparent;
+      text-decoration: none;
+
+      svg {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  &__options {
+    max-width: fit-content;
+    margin: auto;
+    background-color: transparent;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__buy-now {
+    margin-bottom: 0 !important;
+  }
+}
