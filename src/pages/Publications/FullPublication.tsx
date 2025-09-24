@@ -74,7 +74,7 @@ const FullPublication = () => {
       </div>
 
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}
-      <SocialShare title={title} quote={title} />
+      <SocialShare header='Share this article on your social media' title={title} quote={title} />
       {currentUser && (
         <Link className='btn publication__full__back-cta ' to={"/articles"}>
           View all articles

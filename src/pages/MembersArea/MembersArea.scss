@@ -1,6 +1,16 @@
 /* Members Area Styles */
 .members-area {
   padding-top: 50px;
+
+  &__code {
+    color: orange !important;
+    font-weight: 600;
+  }
+
+  &__info {
+    font-size: 0.9rem !important;
+    color: orange;
+  }
 }
 
 .user-email {

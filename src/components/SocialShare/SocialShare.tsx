@@ -9,11 +9,21 @@ import {
   XIcon,
 } from "react-share";
 import "./SocialShareStyles.scss";
-const SocialShare = ({ title, quote, url }: { title: string; quote: string; url?: string }) => {
+const SocialShare = ({
+  header,
+  title,
+  quote,
+  url,
+}: {
+  header?: string;
+  title: string;
+  quote: string;
+  url?: string;
+}) => {
   return (
     <div className='share'>
       <div className='share-divider' />
-      <small>Share this page on your social media</small>
+      <small>{header || "Share this page on your social media"}</small>
       <br></br>
       <TwitterShareButton
         className='share-button'

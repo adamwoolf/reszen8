@@ -64,6 +64,14 @@ export default function MembersArea() {
           <p className='mission-text'>
             Thank you for being a part of the RESZEN8 community. You can manage your membership below.
           </p>
+          <p>
+            Your unique referral code is: <span className='members-area__code'>{currentUser.referralCode}</span>
+          </p>
+          <p className='members-area__info'>
+            {" "}
+            Share this with a friend and when they enter it when signing up for one of our paid subscriptions, you both
+            get 5 bespoke meditation credits for free!
+          </p>
         </div>
       </header>
       {/* subscription details  panel */}

@@ -20,7 +20,6 @@ const ConsentsPopup = () => {
 
   const handleUpdate = async () => {
     setWaiting(true);
-    console.log(consentData);
     if (!currentUser) return;
     setCurrentUser({ ...currentUser, consents: consentData });
     await updateUser(currentUser?.uid, { consents: consentData });
@@ -29,7 +28,6 @@ const ConsentsPopup = () => {
   };
 
   useEffect(() => {
-    console.log(currentUser);
     if (!currentUser || loading) return;
     setShow(currentUser && (!currentUser?.consents?.termsAndConditions || !currentUser?.consents?.essentials));
   }, [currentUser]);
@@ -54,7 +52,6 @@ const ConsentsPopup = () => {
   ];
 
   const isTandCVisible = useIntersectionObserver(termsAndConditionsRef);
-  console.log(isTandCVisible);
   const scrollToTandC = () => {
     termsAndConditionsRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
