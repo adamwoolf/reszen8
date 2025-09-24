@@ -41,7 +41,6 @@ import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
 import { Helmet } from "react-helmet";
 
-import CookieBanner from "./components/CookieBanner/CookieBanner";
 import Admin from "./pages/Admin/Admin";
 import LoadingScene from "./components/LoadingScene/LoadingScene";
 import { useSelector } from "react-redux";
@@ -75,9 +74,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name='description' content='Your destination for meditative experiences.' />
         <meta name='robots' content='index, follow' />
       </Helmet>
-
-      <CookieBanner />
-
       <main className='main-content flex-grow'>
         <PageTransition>
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>

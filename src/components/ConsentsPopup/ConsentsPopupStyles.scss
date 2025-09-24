@@ -1,0 +1,59 @@
+.consents {
+  background-color: transparent;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    height: 600px;
+  }
+  section,
+  div {
+    background-color: transparent;
+  }
+
+  &__scroller {
+    background-color: transparent;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &__section {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 16px 0;
+  }
+
+  &__section-header {
+    h3,
+    p {
+      margin: 0;
+    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    &--t-and-c {
+      justify-content: start;
+      gap: 15px;
+    }
+  }
+
+  &__privacy-link {
+    font-size: 0.8rem;
+    display: block;
+    margin: 20px 0;
+  }
+
+  &__cancel {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    margin-right: 16px;
+  }
+
+  &__accept {
+    border: 1px solid orange;
+  }
+}

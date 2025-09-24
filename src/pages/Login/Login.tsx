@@ -42,7 +42,7 @@ const Login = () => {
 
   return (
     <div className='login-cta-container'>
-      <button onClick={() => auth.signinRedirect()}>Sign in</button>
+      <button onClick={() => auth.signinPopup()}>Sign in</button>
       <button onClick={() => signOutRedirect()}>Sign out</button>
     </div>
   );

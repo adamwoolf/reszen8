@@ -1,9 +1,9 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { Like, Publication } from "../../models";
-import { getPublications, getPublicationLikes } from "../../store/contentSelectors";
+import { getPublications } from "../../store/contentSelectors";
 import { categoriser } from "../../Util";
 
-export const getPublicationsWithLikes = createSelector(
+export const getPublicationsWithCategories = createSelector(
   getPublications,
   (state) => state?.meta?.LIKES,
   (publications: Publication[], likes: Like[]) => {

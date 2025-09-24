@@ -8,8 +8,10 @@ interface ToggleSwitchProps {
   disabled?: boolean;
   size?: "sm" | "md" | "lg"; // maps to CSS sizes
   id?: string;
-  immersiveMedsCount: number;
-  voiceMedsCount: number;
+  immersiveMedsCount?: number;
+  voiceMedsCount?: number;
+  noLabel?: boolean;
+  onOffState?: boolean;
 }
 
 export default function ToggleSwitch({
@@ -21,6 +23,8 @@ export default function ToggleSwitch({
   id,
   immersiveMedsCount,
   voiceMedsCount,
+  noLabel,
+  onOffState = false,
 }: ToggleSwitchProps) {
   const handleToggle = () => {
     if (disabled) return;
@@ -43,11 +47,15 @@ export default function ToggleSwitch({
     }
   };
 
+  const offClassName = onOffState ? "is-off--grey" : "is-off";
+
   return (
     <div className='toggle-container'>
-      <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
-        Voice<sup className='toggle-super-count'>{voiceMedsCount}</sup>
-      </span>
+      {!noLabel && (
+        <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
+          Voice<sup className='toggle-super-count'>{voiceMedsCount}</sup>
+        </span>
+      )}
       <button
         id={id}
         type='button'
@@ -56,7 +64,7 @@ export default function ToggleSwitch({
         aria-label={ariaLabel}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
-        className={`toggle-switch toggle-switch--${size} ${checked ? "is-on" : "is-off"} ${
+        className={`toggle-switch toggle-switch--${size} ${checked ? "is-on" : offClassName} ${
           disabled ? "is-disabled" : ""
         }`}
         disabled={disabled}
@@ -65,9 +73,11 @@ export default function ToggleSwitch({
           <span className='toggle-knob' />
         </span>
       </button>
-      <span className={!checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
-        Immersive<sup className='toggle-super-count'>{immersiveMedsCount}</sup>
-      </span>
+      {!noLabel && (
+        <span className={!checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
+          Immersive<sup className='toggle-super-count'>{immersiveMedsCount}</sup>
+        </span>
+      )}
     </div>
   );
 }

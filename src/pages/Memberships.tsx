@@ -45,7 +45,7 @@ const Memberships: React.FC = () => {
       return;
     }
     if (tier.freeTrial) {
-      auth.signinRedirect();
+      auth.signinPopup();
       return;
     }
     // Create a proper product object with all required fields

@@ -108,6 +108,9 @@
   background: var(--toggle-bg-on);
 }
 
+.toggle-switch.is-off--grey .toggle-track {
+  background: rgb(121, 120, 120);
+}
 /* ON state */
 .toggle-switch.is-on .toggle-track {
   background: var(--toggle-bg-on);

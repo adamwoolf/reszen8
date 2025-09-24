@@ -6,6 +6,7 @@ import "./Home.scss";
 import useContentful from "../hooks/useContentful";
 import { getHomePage } from "../contentful";
 import { marked } from "marked";
+import FreeForever from "../components/FreeForever/FreeForever";
 
 const features = [
   // {
@@ -31,13 +32,13 @@ const features = [
     description: "Listen to your saved meditations, read meditation guides and customise your journey",
     path: "/journey",
   },
-  {
-    title: "7 Day Free Trial",
-    description:
-      "Start your journey to mindfulness with our risk-free trial. Get full access to all digital platform features for 7 days.",
-    path: "/memberships",
-    isTrial: true,
-  },
+  // {
+  //   title: "7 Day Free Trial",
+  //   description:
+  //     "Start your journey to mindfulness with our risk-free trial. Get full access to all digital platform features for 7 days.",
+  //   path: "/memberships",
+  //   isTrial: true,
+  // },
 ];
 
 const Home: React.FC = () => {
@@ -62,6 +63,7 @@ const Home: React.FC = () => {
 
   return (
     <div className='home-page'>
+      <FreeForever />
       <section className='mission-statement'>
         <div className='mission-content'>
           <h2>{content?.title}</h2>

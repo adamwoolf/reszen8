@@ -7,7 +7,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Meditation } from "../../models";
 import MeditationCard from "../../components/MeditationCard/MeditationCard";
 import { useSelector } from "react-redux";
-import { getMeditationsWithLikes } from "./MeditationLibrary.selectors";
+import { getStaticMeds } from "./MeditationLibrary.selectors";
 import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import ToggleContainer from "./ToggleContainer";
@@ -22,7 +22,7 @@ const DigitalLibrary = () => {
   const [ImmersiveMeds, setImmersiveMeds] = useState(true);
 
   const { addItem } = useSavedItems();
-  const libraryMeditations = useSelector(getMeditationsWithLikes);
+  const libraryMeditations = useSelector(getStaticMeds);
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
@@ -61,14 +61,15 @@ const DigitalLibrary = () => {
   }
 
   const searchText = (e) => {
+    console.log("searching");
     const query = e.target.value;
     setSearch(query);
     setDisplayMeds(
       libraryMeditations
         .filter(
           (pub: Meditation) =>
-            pub.content.toLowerCase().includes(query.toLowerCase()) ||
-            pub.title.toLowerCase().includes(query.toLowerCase())
+            pub.content?.toLowerCase().includes(query.toLowerCase()) ||
+            pub.title?.toLowerCase().includes(query.toLowerCase())
         )
         .filter((med) => filterByImmersive(med, ImmersiveMeds))
     );

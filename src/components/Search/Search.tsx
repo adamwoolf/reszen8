@@ -8,9 +8,9 @@ import MeditationCard from "../MeditationCard/MeditationCard";
 import { useSelector } from "react-redux";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { getPublicationsWithLikes } from "../../pages/Publications/Publications.selector";
+import { getPublicationsWithCategories } from "../../pages/Publications/Publications.selector";
 import Icon, { getIcon } from "../Icon/Icon";
-import { getMeditationsWithLikes } from "../../pages/MeditationLibrary/MeditationLibrary.selectors";
+import { getStaticMeds } from "../../pages/MeditationLibrary/MeditationLibrary.selectors";
 
 const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => {
   const [show, setShow] = useState(false);
@@ -18,8 +18,8 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   const [filter, setFilter] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
-  const meditations = useSelector(getMeditationsWithLikes);
-  const publications = useSelector(getPublicationsWithLikes);
+  const meditations = useSelector(getStaticMeds);
+  const publications = useSelector(getPublicationsWithCategories);
   const [bespokeMeds, setBespokeMeds] = useState([]);
   const { savedItems } = useSavedItems();
   const { currentUser } = useAuth();

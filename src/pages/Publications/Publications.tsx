@@ -3,7 +3,7 @@ import "./PublicationsStyles.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import PublicationCard from "../../components/PublicationCard/PublicationCard";
 import { useSelector } from "react-redux";
-import { getPublicationsWithLikes } from "./Publications.selector";
+import { getPublicationsWithCategories } from "./Publications.selector";
 import Icon, { getIcon } from "../../components/Icon/Icon";
 import Filters from "../../components/Filters/Filters";
 interface Publication {
@@ -14,7 +14,7 @@ interface Publication {
 }
 
 const Publications = () => {
-  const publications = useSelector(getPublicationsWithLikes);
+  const publications = useSelector(getPublicationsWithCategories);
   const { currentUser } = useAuth();
   const [displayPubs, setDisplayPubs] = useState<[]>([]);
   const [activeFilter, setActiveFilter] = useState("");

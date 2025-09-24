@@ -1,10 +1,6 @@
 .footer-hero {
   padding: 20px 0;
-  display: flex;
 
-  @media (max-width: 786px) {
-    flex-direction: column;
-  }
   div {
     background-color: transparent;
   }
@@ -14,13 +10,44 @@
     color: var(--primary-color-darker) !important;
   }
 
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin: auto;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      width: 80%;
+    }
+  }
+
   &__column {
     margin: 30px;
+
+    button {
+      margin: 40px 0;
+    }
   }
 
   &__column-list {
     display: flex;
     flex-direction: column;
+
+    &-redirect {
+      background-color: transparent;
+      color: orange;
+      text-align: left;
+      font-size: 0.8rem;
+      margin: 5px 0 !important;
+      padding: 0;
+
+      &:hover {
+        background-color: transparent;
+        text-decoration: underline;
+        color: steelblue;
+      }
+    }
   }
 
   &__column-list-link {

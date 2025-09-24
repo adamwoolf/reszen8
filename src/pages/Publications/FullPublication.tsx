@@ -63,25 +63,23 @@ const FullPublication = () => {
   if (!title) return null;
   return (
     <div className='publication__full'>
-      {/* <div className='publication__full__icon-container'>
-        <Icon large type={category?.[0]?.category} />
-      </div> */}
       <h1 className='publication__title'>{title}</h1>
 
       {currentUser && showSaveUI()}
       <div className='publication__card-divider' />
       <LikeCta large id={content.uid} item={content} />
 
-      {currentUser && (
-        <div className='publication__audio'>
-          <AudioPlayer audioUrl={content.audioUrl} />
-        </div>
-      )}
+      <div className='publication__audio'>
+        <AudioPlayer audioUrl={content.audioUrl} />
+      </div>
+
       {body && <section dangerouslySetInnerHTML={{ __html: marked(body) }} />}
       <SocialShare title={title} quote={title} />
-      <Link className='btn publication__full__back-cta ' to={"/articles"}>
-        View all articles
-      </Link>
+      {currentUser && (
+        <Link className='btn publication__full__back-cta ' to={"/articles"}>
+          View all articles
+        </Link>
+      )}
     </div>
   );
 };

@@ -140,11 +140,6 @@ const Navbar: React.FC = () => {
                   Memberships
                 </NavLink>
               </li>
-              <li>
-                <NavLink to='/articles' className={getNavLinkClass}>
-                  Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
-                </NavLink>
-              </li>
 
               {/* <li>
                 <NavLink to='/ai-chat' className={getNavLinkClass}>
@@ -154,6 +149,11 @@ const Navbar: React.FC = () => {
 
               {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
                 <>
+                  <li>
+                    <NavLink to='/articles' className={getNavLinkClass}>
+                      Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke Meditation Generator
@@ -191,7 +191,7 @@ const Navbar: React.FC = () => {
 
                   {!currentUser && !loading && (
                     <>
-                      <button onClick={() => auth.signinRedirect()}>Sign in</button>
+                      <button onClick={() => auth.signinPopup()}>Sign in</button>
                     </>
                   )}
                 </ul>

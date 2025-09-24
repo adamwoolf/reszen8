@@ -1,0 +1,53 @@
+.freemium {
+  animation: fadeIn 500ms;
+  animation-fill-mode: both;
+  &__top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__second-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__title {
+    text-align: center;
+  }
+
+  &__section {
+    div {
+      background-color: transparent;
+    }
+    border: 1px solid rgb(175, 128, 10);
+    border-radius: 12px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  &__article {
+    margin-bottom: 16px;
+    display: block;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
