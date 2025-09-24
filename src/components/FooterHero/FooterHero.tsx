@@ -5,6 +5,7 @@ import ConsentsPopup from "../ConsentsPopup/ConsentsPopup";
 import { Link } from "react-router-dom";
 import appStore from "../../assets/app-store.webp";
 import { useAuth as useAwsAuth } from "react-oidc-context";
+import SocialShare from "../SocialShare/SocialShare";
 
 const ourContent = [
   { label: "Home", path: "/" },
@@ -62,6 +63,8 @@ const FooterHero = () => {
 
   return (
     <div className='footer-hero'>
+      <SocialShare url={"https://reszen8.com"} title={"RESZEN8"} quote={"Crafted Calm"} />
+
       <div className='footer-hero__content'>
         <div className='footer-hero__column'>
           <h3>Our Content</h3>
