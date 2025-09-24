@@ -8,20 +8,29 @@ import { Link } from "react-router-dom";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 const ConsentsPopup = () => {
   const [show, setShow] = useState(false);
-  const { currentUser, updateUser, setCurrentUser } = useAuth();
+  const { currentUser, loading, updateUser, setCurrentUser } = useAuth();
   const [consentData, setConsentData] = useState({
     essentials: false,
     analytics: false,
     marketing: false,
     termsAndConditions: false,
   });
+  const [waiting, setWaiting] = useState(false);
   const termsAndConditionsRef = useRef<HTMLHeadingElement>(null);
 
   const handleUpdate = async () => {
+    setWaiting(true);
     console.log(consentData);
+    if (!currentUser) return;
+    setCurrentUser({ ...currentUser, consents: consentData });
+    await updateUser(currentUser?.uid, { consents: consentData });
+    setWaiting(false);
+    setShow(false);
   };
 
   useEffect(() => {
+    console.log(currentUser);
+    if (!currentUser || loading) return;
     setShow(currentUser && (!currentUser?.consents?.termsAndConditions || !currentUser?.consents?.essentials));
   }, [currentUser]);
 
@@ -45,7 +54,7 @@ const ConsentsPopup = () => {
   ];
 
   const isTandCVisible = useIntersectionObserver(termsAndConditionsRef);
-
+  console.log(isTandCVisible);
   const scrollToTandC = () => {
     termsAndConditionsRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -100,7 +109,7 @@ const ConsentsPopup = () => {
             disabled={!consentData.termsAndConditions || !consentData.essentials}
             className='consents__accept'
           >
-            Update Consent and Preferences
+            {!waiting ? "Update Consent and Preferences" : "Updating your preferences"}
           </button>
         </div>
       </div>

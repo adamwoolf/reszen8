@@ -23,6 +23,12 @@ export interface User {
     publications?: [];
     meditations?: [];
   };
+  consents?: {
+    termsAndConditions: boolean;
+    analytics: boolean;
+    marketing: boolean;
+    essentials: boolean;
+  };
 }
 
 export interface Meditation {

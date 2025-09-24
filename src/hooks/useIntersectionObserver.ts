@@ -9,8 +9,9 @@ export function useIntersectionObserver(
   const [isIntersecting, setIsIntersecting] = useState(false);
 
   useEffect(() => {
+    if (!ref.current) return; // wait until ref exists
+
     const element = ref.current;
-    if (!element) return;
 
     const observer = new IntersectionObserver(([entry]) => {
       setIsIntersecting(entry.isIntersecting);
@@ -18,10 +19,16 @@ export function useIntersectionObserver(
 
     observer.observe(element);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [ref, options.root, options.rootMargin, options.threshold]);
+    // Check initial visibility manually in case the element is already in view
+    // (important for first mount)
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const inView = rect.top < (options.root?.clientHeight || window.innerHeight) && rect.bottom > 0;
+      setIsIntersecting(inView);
+    }
+
+    return () => observer.disconnect();
+  }, [ref.current, options.root, options.rootMargin, options.threshold]);
 
   return isIntersecting;
 }
