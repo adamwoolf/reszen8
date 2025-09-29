@@ -60,19 +60,21 @@ const AccountStatus = ({ user }: { user: User }) => {
 
   return (
     <>
-      <span className={`account-status-message`}>Active {user.subscription.planSize}</span>
-      <div className='credit-info'>
+      {/* <span className={`account-status-message`}>Active {user.subscription.planSize}</span> */}
+      <div className=''>
         <div className='credit-info__text'>
-          <span>
-            plan credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
-          </span>
-          {user.subscription?.extraBespokeMeditationCredits && (
+          <div>
             <span>
-              extra credits: <span style={{ color: "orange" }}> {user.subscription.extraBespokeMeditationCredits}</span>
+              Credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
             </span>
-          )}
+            {user.subscription?.extraBespokeMeditationCredits && (
+              <span style={{ color: "orange", marginLeft: 5 }}>
+                + {user.subscription.extraBespokeMeditationCredits}
+              </span>
+            )}
+          </div>
+          <CreditTopup />
         </div>
-        <CreditTopup />
       </div>
     </>
   );

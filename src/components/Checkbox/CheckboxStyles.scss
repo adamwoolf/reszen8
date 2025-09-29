@@ -1,0 +1,50 @@
+.circle-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.circle-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.circle-checkbox .checkmark {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* faint tick by default */
+.circle-checkbox .checkmark::after {
+  content: "";
+  width: 8px;
+  height: 14px;
+  border: solid var(--primary-color);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0.8);
+  opacity: 0.3;
+  transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s;
+}
+
+/* checked: circle filled, tick bright & bigger */
+.circle-checkbox input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: green;
+}
+
+.circle-checkbox input:checked ~ .checkmark::after {
+  border-color: white;
+  transform: rotate(45deg) scale(1);
+  opacity: 1;
+}

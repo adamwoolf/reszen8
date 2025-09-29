@@ -54,7 +54,7 @@ const FullPublication = () => {
       </span>
     ) : (
       <button className='publication__full__add' onClick={savePublication}>
-        Save to MJourneyy Journey
+        Save to My Journey
       </button>
     );
 

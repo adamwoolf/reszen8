@@ -63,7 +63,6 @@ const Home: React.FC = () => {
 
   return (
     <div className='home-page'>
-      <FreeForever />
       <section className='mission-statement'>
         <div className='mission-content'>
           <h2>{content?.title}</h2>
@@ -72,6 +71,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      <FreeForever />
 
       <section className='features-section'>
         <h2 className='features-title'>Our Digital Meditation Product</h2>

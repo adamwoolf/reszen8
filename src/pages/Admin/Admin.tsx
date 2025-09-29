@@ -45,7 +45,7 @@ const Admin: React.FC = () => {
   const [title, setTitle] = useState("");
   const [contentType, setContentType] = useState("meditation");
   const [immersive, setImmersive] = useState(false);
-
+  const [introMed, setIntroMed] = useState(false);
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
@@ -148,7 +148,15 @@ const Admin: React.FC = () => {
     setIsGenerating(true);
     console.log(textToSend);
     try {
-      await generateStaticMedFromScript(title, meditationType, practiceType, textToSend, voiceCode, immersive);
+      await generateStaticMedFromScript(
+        title,
+        meditationType,
+        practiceType,
+        textToSend,
+        voiceCode,
+        immersive,
+        introMed
+      );
 
       console.log("Static generated");
 
@@ -183,6 +191,11 @@ const Admin: React.FC = () => {
           </span>
           <label>Title</label>
           <input value={title} placeholder='Enter title for static med' onChange={(e) => setTitle(e.target.value)} />
+          <div className='form-group form-group-block'>
+            <label>Intro Meditation: </label>
+
+            <ToggleSwitch onOffState noLabel checked={introMed} onChange={setIntroMed} />
+          </div>
           <div className='form-group form-group-block'>
             <label>Content type: Meditation or Article</label>
             <select value={contentType} onChange={(e) => setContentType(e.target.value)}>

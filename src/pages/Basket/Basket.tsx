@@ -133,10 +133,10 @@ const Basket = () => {
         </div>
 
         <div className=''>
-          {/* <div className=''>
+          <div className=''>
             <p>Total</p>
             <p>£{total.toFixed(2)}</p>
-          </div> */}
+          </div>
 
           <div className=''>
             <button type='button' onClick={clearBasket} className='basket__clear-button'>

@@ -23,14 +23,18 @@ const CheckoutForm = () => {
     return <Navigate to='/basket' />;
   }
 
-  console.log(items[0]);
+  console.log("ITEMS", items);
   const handleSubmitStripe = async (e: React.FormEvent) => {
     e.preventDefault();
     const { email, firstName, surName } = currentUser || {};
     const item = items?.[0]?.product;
     setWaiting(true);
-    const mode = item?.type;
-    console.log(mode);
+
+    const selectedSub = items.find((item) => item.product.type === "subscription");
+    const selectedPack = items.find((item) => item.product.type === "payment");
+
+    const mode = selectedSub ? "subscription" : "payment";
+    console.log("MODE", mode, items);
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -39,16 +43,21 @@ const CheckoutForm = () => {
         email,
         firstName,
         lastName: surName,
-        planId: item.priceId,
         uid: currentUser?.uid,
         metadata: { uid: currentUser?.uid },
+        lineItems: items.map((item) => ({
+          price: item.product.priceId,
+          quantity: item.quantity || 1,
+        })), // 👈 send array of line items
         subscription:
           mode === "subscription"
             ? {
                 hasCompletedTrial: true,
-                meditationCredits: items[0]?.product.medCredits,
-                size: item.size,
-                subId: item.id,
+                meditationCredits: selectedSub.product.medCredits,
+                size: selectedSub.product?.size,
+                subId: selectedSub.product?.id,
+                planName: selectedSub.product?.title,
+                extraBespokeMeditationCredits: selectedPack?.product?.value || 0,
               }
             : {
                 extraBespokeMeditationCredits: item.value,
@@ -60,6 +69,7 @@ const CheckoutForm = () => {
 
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+
     setWaiting(false);
   };
 
@@ -106,7 +116,7 @@ const CheckoutForm = () => {
       <section className='checkout-section'>
         <div>
           <div className='payment-method-header'>
-            <button className='payment-tab active'>{waiting && <ThreeDotsLoader />}Pay Now</button>
+            <button className='payment-tab active'>Pay Now{waiting && <ThreeDotsLoader />}</button>
             <p className='checkout__disclaimer'> All payment are handled by Stripe (secure payment page)</p>
             {/* {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>} */}
           </div>

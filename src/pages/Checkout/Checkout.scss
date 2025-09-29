@@ -144,6 +144,8 @@ select:focus {
   transition: all 0.2s ease;
   margin: 20px 0;
   padding: 15px;
+  display: flex;
+  justify-content: center;
 
   @media (min-width: 768px) {
     width: 200px;

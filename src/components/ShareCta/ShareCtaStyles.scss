@@ -1,0 +1,58 @@
+.share-panel {
+  position: relative;
+
+  div {
+    background-color: transparent;
+  }
+
+  &__panel {
+    position: absolute;
+    width: 200px;
+    top: 39px;
+    right: 0;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--primary-color-darker);
+    border-radius: 6px;
+    background-color: rgb(21, 18, 40) !important;
+    backdrop-filter: blur(20px);
+    padding: 10px;
+
+    // triangle pointer
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    // border triangle (slightly larger)
+    &::before {
+      top: -9px; // offset so it sits just above the panel border
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 9px solid var(--primary-color-darker);
+      z-index: 1;
+    }
+
+    // inner fill triangle
+    &::after {
+      top: -8px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid rgba(21, 18, 40, 0.4);
+      z-index: 2;
+    }
+  }
+
+  &__cta {
+    background-color: transparent;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}

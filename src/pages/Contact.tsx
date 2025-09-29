@@ -1,4 +1,4 @@
-import React, { useState, useEffect, isValidElement } from "react";
+import React, { useState } from "react";
 import "./Contact.css";
 import useSendMail from "../hooks/useSendEmail";
 

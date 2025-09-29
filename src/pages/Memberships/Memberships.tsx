@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useBasketStore } from "../store/basketStore";
+import { useBasketStore } from "../../store/basketStore";
 import "./Memberships.scss";
-import useContentful from "../hooks/useContentful";
-import { getMembershipTiers, getMembershipPage, getFAQs } from "../contentful";
-import { useAuth } from "../contexts/AuthContext";
+import useContentful from "../../hooks/useContentful";
+import { getMembershipTiers, getMembershipPage, getFAQs } from "../../contentful";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { useAuth as useAWSAuth } from "react-oidc-context";
+import MembershipCta from "./MembershipCta";
+import YearlyUpgrade from "./YearlyUpgrade";
 
 type MembershipTier = {
   id: string;
@@ -27,7 +29,7 @@ const Memberships: React.FC = () => {
   const content = useContentful(getMembershipPage)?.content?.fields;
   const faqs = useContentful(getFAQs)?.content?.items;
   const auth = useAWSAuth();
-
+  const [yearlyUpgrade, setYearlyUpgrade] = useState("");
   // Define the standard features for Digital Hub memberships
   const digitalHubFeatures = [
     "Full Meditation Library access",
@@ -39,6 +41,8 @@ const Memberships: React.FC = () => {
     "RESZEN8 AI chat",
   ];
 
+  console.log(yearlyUpgrade);
+
   const handleSubscribe = (tier: MembershipTier) => {
     if (tier.id === "bespoke-journey") {
       navigate("/contact");
@@ -48,17 +52,35 @@ const Memberships: React.FC = () => {
       auth.signinPopup();
       return;
     }
-    // Create a proper product object with all required fields
-    const product = {
-      id: tier.id,
-      name: tier.name || "Membership", // Ensure name is always defined
-      price: tier.price || 0,
-      description: tier.description || "",
-      size: tier.billing, // Store billing cycle as size
-      priceId: tier.priceId, // for Stripe subscriptions
-      medCredits: tier.medCredits,
-      type: "subscription",
-    };
+    let product;
+    if (yearlyUpgrade === tier.id) {
+      console.log(yearlyUpgrade);
+      // Create a proper product object with all required fields for yearly
+      product = {
+        id: tier.id,
+        name: `${tier.title}` || "Membership", // Ensure name is always defined
+        price: tier.yearlyPrice || 0,
+        description: tier.yearlyPriceDescription || "",
+        size: tier.yearlyBilling, // Store billing cycle as size
+        priceId: tier.yearlyPriceId, // for Stripe subscriptions
+        medCredits: tier.yearlyMeditationCredits,
+        type: "subscription",
+        title: `${tier.title} - ${tier.yearlyBilling}`,
+      };
+    } else {
+      // Create a proper product object with all required fields
+      product = {
+        id: tier.id,
+        name: tier.name || "Membership", // Ensure name is always defined
+        price: tier.price || 0,
+        description: tier.description || "",
+        size: tier.billing, // Store billing cycle as size
+        priceId: tier.priceId, // for Stripe subscriptions
+        medCredits: tier.medCredits,
+        type: "subscription",
+        title: tier.title,
+      };
+    }
     console.log("Adding to basket:", product); // Debug log
     addItem(product);
     navigate("/basket");
@@ -80,26 +102,39 @@ const Memberships: React.FC = () => {
             const isAdded = items.some((item) => item.product.id === tier.id);
 
             return (
-              <div key={tier.id} className={`membership-card ${tier.freeTrial ? "free-trial" : ""}`}>
+              <div
+                key={tier.id}
+                className={`membership-card ${tier.freeTrial || tier.id === "reszen8-premium" ? "free-trial" : ""}`}
+              >
                 <div className='membership-header'>
-                  <h3>{tier.title}</h3>
-                  {tier?.badge && (
-                    <div className='popular-badge'>
-                      {currentUser?.subscription?.hasCompletedTrial ? "Completed" : tier?.badge}
-                    </div>
-                  )}
-                  {!tier.title.includes("Enterprise") ? (
-                    <div className='price'>
-                      {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
-                      {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
-                    </div>
-                  ) : (
-                    <h4 className='please-enquire'>{tier.billing}</h4>
-                  )}
-                  <p className='description'>
-                    {tier.description}
-                    {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
-                  </p>
+                  <div>
+                    <h3>{tier.title}</h3>
+
+                    {tier?.badge ||
+                      (tier.id === "reszen8-premium" && currentUser?.subscription?.subId !== tier.id && (
+                        <div className='popular-badge'>
+                          {tier.id === "reszen8-premium"
+                            ? "Best Value"
+                            : currentUser?.subscription?.hasCompletedTrial
+                            ? "Completed"
+                            : tier?.badge}
+                        </div>
+                      ))}
+                    {!tier.title.includes("Enterprise") ? (
+                      <div className='price'>
+                        {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
+                        {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
+                      </div>
+                    ) : (
+                      <h4 className='please-enquire'>{tier.billing}</h4>
+                    )}
+                    <p className='description'>
+                      {tier.description}
+                      {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
+                    </p>
+                  </div>
+                  <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} />
+                  <MembershipCta tier={tier} isAdded={isAdded} handleSubscribe={handleSubscribe} />
                 </div>
                 <ul className='features'>
                   {featuresToShow.map((feature: string, index: number) => (
@@ -117,34 +152,6 @@ const Memberships: React.FC = () => {
                 </ul>
 
                 {currentUser?.subscription?.subId === tier.id && <div className='popular-badge'>Active</div>}
-                {currentUser?.subscription?.subscription === tier.id ||
-                currentUser?.subscription?.subId === tier.id ||
-                (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ||
-                isAdded ||
-                tier.title.includes("Enterprise") ? (
-                  <></>
-                ) : !currentUser && tier.id !== "free-trial" ? (
-                  <button className='subscribe-button' disabled>
-                    Upgrade from Free Trial
-                  </button>
-                ) : (
-                  <button
-                    className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
-                    onClick={() => handleSubscribe(tier)}
-                  >
-                    {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Buy"}
-                  </button>
-                )}
-                {isAdded && (
-                  <button disabled className='subscribe-button'>
-                    Added to Basket
-                  </button>
-                )}
-                {tier.title.includes("Enterprise") && (
-                  <Link style={{ textAlign: "center" }} className='subscribe-button' to='/contact'>
-                    Make an enquiry
-                  </Link>
-                )}
               </div>
             );
           })}

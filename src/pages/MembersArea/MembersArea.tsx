@@ -1,6 +1,6 @@
 import { useAuth } from "../../contexts/AuthContext";
-import { Navigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 import "../CategoryPage.scss";
 import "../Home.scss";
 import "./MembersArea.scss";
@@ -10,9 +10,13 @@ import { useBasketStore } from "../../store/basketStore";
 import { FaTrash, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import CountDown from "../../components/AccountStatus/AccountStatus";
+import InviteAFriend from "../../components/InviteAFriend/InviteAFriend";
+import { IoMdLogOut } from "react-icons/io";
+import React from "react";
+import CancelSubCTA from "../../components/CancelSubCTA/CancelSubCTA";
 
 export default function MembersArea() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, signOutRedirect } = useAuth();
   const [isTrialActive, setIsTrialActive] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { purchasedItems } = usePurchasedItemsStore();
@@ -64,14 +68,18 @@ export default function MembersArea() {
           <p className='mission-text'>
             Thank you for being a part of the RESZEN8 community. You can manage your membership below.
           </p>
+          <p className='members-area__info'>
+            Current plan: <b>{currentUser?.subscription.planName}</b>
+          </p>
           <p>
             Your unique referral code is: <span className='members-area__code'>{currentUser.referralCode}</span>
           </p>
           <p className='members-area__info'>
-            {" "}
-            Share this with a friend and when they enter it when signing up for one of our paid subscriptions, you both
-            get 5 bespoke meditation credits for free!
+            Give your code to a friend (or pop their email in below). When they sign up to a membership, you both get 5
+            free meditation credits!
           </p>
+
+          <InviteAFriend />
         </div>
       </header>
       {/* subscription details  panel */}
@@ -144,48 +152,23 @@ export default function MembersArea() {
             )}
           </div>
 
-          {/* <div className='feature-card'>
-            <h3 className='feature-title'>Account Security</h3>
-            <p className='feature-description'>
-              Keep your account secure by updating your password regularly.
-              <br />
-              <br />
-              Reset your password to ensure your account remains protected.
-            </p>
-            <Link
-              className='membership-cta'
-              style={{
-                marginTop: "1rem",
-                background: "transparent",
-                border: "2px solid #FFA500",
-                color: "#FFA500",
-              }}
-              to='/forgot-password'
-            >
-              Reset Password
-            </Link>
-          </div> */}
-
           <div className='feature-card'>
             <h3 className='feature-title'>Cancel Membership</h3>
             <p className='feature-description'>
               We're sorry to see you go. If you cancel, you'll lose access to all premium features at the end of your
-              billing period.
+              billing period. As long as you have credits you will still be able to access the Bespoke Generator and
+              listen to your Bespoke Meditation in the My Journey area.
               <br />
               <br />
               <strong>Note:</strong> You can reactivate your membership at any time.
             </p>
-            <button
-              className='membership-cta'
-              style={{
-                marginTop: "1rem",
-                background: "transparent",
-                border: "2px solid #ff4d4d",
-                color: "#ff4d4d",
-              }}
-              onClick={handleCancelMembership}
-            >
-              Cancel Membership
+            <CancelSubCTA />
+          </div>
+          <div className='feature-card'>
+            <h3 className='feature-title'>Logout</h3>
+
+            <button type='button' className='user-address' onClick={signOutRedirect}>
+              <IoMdLogOut size={80} />
             </button>
           </div>
         </div>

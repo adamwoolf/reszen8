@@ -93,7 +93,8 @@ export const generateStaticMedFromScript = async (
   practiceType: string,
   script: string,
   voiceCode: string,
-  immersive: boolean
+  immersive: boolean,
+  introMed?: boolean
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -109,6 +110,7 @@ export const generateStaticMedFromScript = async (
       meditationType,
       practiceType,
       immersive,
+      introMed,
     });
 
     console.log(uploadResponse);

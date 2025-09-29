@@ -1,5 +1,9 @@
 .share {
   margin: 50px 0;
+
+  &--no-margin {
+    margin: 0;
+  }
   text-align: center;
   &-divider {
     height: 1px;

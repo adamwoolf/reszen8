@@ -1,0 +1,17 @@
+.invite {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  &__text {
+    font-size: 0.7rem;
+    p {
+      color: orange !important;
+    }
+  }
+  input {
+    flex: 2;
+  }
+  button {
+    flex: 1;
+  }
+}

@@ -40,6 +40,7 @@ const AIMeditationGenerator: React.FC = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [immersive, setImmersive] = useState(false);
+  const cost = immersive ? 2 : 1;
 
   // Static Med generation data
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
@@ -72,13 +73,13 @@ const AIMeditationGenerator: React.FC = () => {
         title,
         immersive
       );
-      const cost = immersive ? 2 : 1;
-
+      if (currentUser.subscription?.meditationCredits + currentUser.subscription?.extraBespokeMeditationCredits < cost)
+        return;
       if (
         currentUser &&
         (currentUser.subscription?.meditationCredits || currentUser?.subscription?.extraBespokeMeditationCredits)
       )
-        if (currentUser.subscription?.meditationCredits) {
+        if (currentUser.subscription?.meditationCredits >= cost) {
           updateUser(currentUser?.uid, {
             subscription: {
               ...currentUser?.subscription,
@@ -92,11 +93,35 @@ const AIMeditationGenerator: React.FC = () => {
               meditationCredits: currentUser?.subscription?.meditationCredits - cost,
             },
           });
-        } else if (currentUser?.subscription?.extraBespokeMeditationCredits) {
+        } else if (
+          cost === 2 &&
+          currentUser.subscription?.meditationCredits === 1 &&
+          currentUser?.subscription?.extraBespokeMeditationCredits
+        ) {
           updateUser(currentUser?.uid, {
             subscription: {
               ...currentUser?.subscription,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
+              meditationCredits: 0,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
+            },
+          });
+          setCurrentUser({
+            ...currentUser,
+            subscription: {
+              ...currentUser?.subscription,
+              meditationCredits: 0,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
+            },
+          });
+        } else if (
+          !currentUser.subscription?.meditationCredits &&
+          currentUser?.subscription?.extraBespokeMeditationCredits >= cost
+        ) {
+          updateUser(currentUser?.uid, {
+            subscription: {
+              ...currentUser?.subscription,
+              meditationCredits: 0,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
             },
           });
           setCurrentUser({
@@ -192,6 +217,7 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
           <div className='form-group form-group-block'>
             <label>With Immersive Sound? </label>
+            <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span>
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
           <div className='form-grid'>
@@ -245,10 +271,8 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
 
           <div className='flex justify-center mt-8 space-x-8'>
-            {!currentUser?.subscription?.meditationCredits &&
-              !currentUser?.subscription?.extraBespokeMeditationCredits && (
-                <span>You have run out of meditation credits for this subscription period.</span>
-              )}
+            {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
+              cost && <span>You have run out of meditation credits for this subscription period.</span>}
             {currentUser && currentUser?.isGod ? (
               <button
                 type='submit'
@@ -257,8 +281,9 @@ const AIMeditationGenerator: React.FC = () => {
                   isGenerating ||
                   !title ||
                   profanityFilter(title) ||
-                  (!currentUser?.subscription?.meditationCredits &&
-                    !currentUser?.subscription?.extraBespokeMeditationCredits)
+                  currentUser?.subscription?.meditationCredits +
+                    currentUser?.subscription?.extraBespokeMeditationCredits <
+                    cost
                 }
               >
                 {isGenerating ? (

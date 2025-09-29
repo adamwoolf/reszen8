@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import CartIcon from "./CartIcon/CartIcon";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaUser, FaUserAlt, FaShare, FaShareAlt } from "react-icons/fa";
 import "./Navbar.scss";
 import AccountStatus from "../components/AccountStatus/AccountStatus";
 import useSendMail from "../hooks/useSendEmail";
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
 import { IoMdLogOut } from "react-icons/io";
+import ShareCta from "./ShareCta/ShareCta";
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
   const { currentUser, setCurrentUser, signOutRedirect, loading } = useAuth();
@@ -35,7 +36,6 @@ const Navbar: React.FC = () => {
 
   // Handle scroll effect for navbar
   useEffect(() => {
-    console.log("nav");
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true);
@@ -149,34 +149,31 @@ const Navbar: React.FC = () => {
 
               {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
                 <>
-                  <li>
-                    <NavLink to='/articles' className={getNavLinkClass}>
-                      Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
-                    </NavLink>
-                  </li>
+                  {currentUser?.subscription.subId !== "reszen8-generate" && (
+                    <li>
+                      <NavLink to='/articles' className={getNavLinkClass}>
+                        Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
+                      </NavLink>
+                    </li>
+                  )}
                   <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke Meditation Generator
                     </NavLink>
                   </li>
-                  <li>
-                    <NavLink to='/meditation-library' className={getNavLinkClass}>
-                      Meditation Library <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
-                    </NavLink>
-                  </li>
+                  {currentUser?.subscription.subId !== "reszen8-generate" && (
+                    <li>
+                      <NavLink to='/meditation-library' className={getNavLinkClass}>
+                        Meditation Library <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
+                      </NavLink>
+                    </li>
+                  )}
                   <li>
                     <NavLink to='/journey' className={getNavLinkClass}>
                       My Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
                     </NavLink>
                   </li>
                 </>
-              )}
-              {currentUser && (
-                <li>
-                  <NavLink to='/members' className={getNavLinkClass}>
-                    Members Area
-                  </NavLink>
-                </li>
               )}
             </ul>
 
@@ -220,9 +217,12 @@ const Navbar: React.FC = () => {
             </div>
             <span className='user-items-right'>
               <span className='user-address'>{name}</span>
-              <button type='button' className='user-address' onClick={signOutRedirect}>
-                <IoMdLogOut size={20} />
-              </button>
+              {currentUser && (
+                <NavLink style={{ marginLeft: 10, marginRight: 10 }} to='/members'>
+                  <FaUser size={18} color='orange' />
+                </NavLink>
+              )}
+              <ShareCta />
             </span>
           </div>
         )}

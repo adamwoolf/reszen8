@@ -22,7 +22,7 @@ import Apparel from "./pages/Apparel/Apparel";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
 import Checkout from "./pages/Checkout/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
-import Memberships from "./pages/Memberships";
+import Memberships from "./pages/Memberships/Memberships";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TestPaymentPage from "./pages/TestPaymentPage";

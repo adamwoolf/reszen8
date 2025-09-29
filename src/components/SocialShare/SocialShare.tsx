@@ -14,14 +14,16 @@ const SocialShare = ({
   title,
   quote,
   url,
+  noMargin,
 }: {
   header?: string;
   title: string;
   quote: string;
   url?: string;
+  noMargin?: boolean;
 }) => {
   return (
-    <div className='share'>
+    <div className={!noMargin ? "share" : "share share--no-margin"}>
       <div className='share-divider' />
       <small>{header || "Share this page on your social media"}</small>
       <br></br>
