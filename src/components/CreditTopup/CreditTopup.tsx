@@ -80,7 +80,7 @@ const CreditTopup = () => {
           <p>Extra credits will be added to your account and remain available until used. There is no expiry time.</p>
           <div className='topup__options'>
             {options.map((option) => (
-              <div className='feature-card topup__option'>
+              <div key={option.name} className='feature-card topup__option'>
                 <h3>
                   {option.name} {option.saving && <span className='topup__saving'> {`(${option.saving}% saved)`}</span>}
                   {option.saving && <sup className='topup__saving'>*</sup>}

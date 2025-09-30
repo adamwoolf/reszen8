@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { useAuth as useAWSAuth } from "react-oidc-context";
 import MembershipCta from "./MembershipCta";
 import YearlyUpgrade from "./YearlyUpgrade";
+import { useDispatch } from "react-redux";
+import { setMembershipTiers } from "../../store/contentSlice";
 
 type MembershipTier = {
   id: string;
@@ -22,6 +24,7 @@ type MembershipTier = {
 };
 
 const Memberships: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { addItem, items } = useBasketStore();
   const { currentUser } = useAuth();
@@ -30,6 +33,7 @@ const Memberships: React.FC = () => {
   const faqs = useContentful(getFAQs)?.content?.items;
   const auth = useAWSAuth();
   const [yearlyUpgrade, setYearlyUpgrade] = useState("");
+
   // Define the standard features for Digital Hub memberships
   const digitalHubFeatures = [
     "Full Meditation Library access",
@@ -41,15 +45,15 @@ const Memberships: React.FC = () => {
     "RESZEN8 AI chat",
   ];
 
-  console.log(yearlyUpgrade);
-
   const handleSubscribe = (tier: MembershipTier) => {
     if (tier.id === "bespoke-journey") {
       navigate("/contact");
       return;
     }
     if (tier.freeTrial) {
-      auth.signinPopup();
+      auth.signinPopup({
+        extraQueryParams: { screen_hint: "signup" },
+      });
       return;
     }
     let product;
@@ -122,8 +126,15 @@ const Memberships: React.FC = () => {
                       ))}
                     {!tier.title.includes("Enterprise") ? (
                       <div className='price'>
-                        {tier.price > 0 ? `£${tier.price.toFixed(2)}` : "£0.00"}
-                        {tier.billing !== "enquire" && <span className='billing'>/ {tier.billing}</span>}
+                        {tier.price > 0 && yearlyUpgrade !== tier.id
+                          ? `£${tier.price.toFixed(2)}`
+                          : yearlyUpgrade === tier.id
+                          ? `£${tier.yearlyPrice.toFixed(2)}`
+                          : "£0.00"}
+                        {tier.billing !== "enquire" && yearlyUpgrade !== tier.id && (
+                          <span className='billing'>/ {tier.billing}</span>
+                        )}
+                        {yearlyUpgrade === tier.id && <span className='billing'>/ {tier.yearlyBilling}</span>}
                       </div>
                     ) : (
                       <h4 className='please-enquire'>{tier.billing}</h4>
@@ -134,7 +145,12 @@ const Memberships: React.FC = () => {
                     </p>
                   </div>
                   <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} />
-                  <MembershipCta tier={tier} isAdded={isAdded} handleSubscribe={handleSubscribe} />
+                  <MembershipCta
+                    yearlySelected={yearlyUpgrade}
+                    tier={tier}
+                    isAdded={isAdded}
+                    handleSubscribe={handleSubscribe}
+                  />
                 </div>
                 <ul className='features'>
                   {featuresToShow.map((feature: string, index: number) => (

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "r
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { PlayerProvider } from "./contexts/AudioContext";
+import { useAuth as useAwsAuth } from "react-oidc-context";
 
 import { SavedItemsProvider } from "./contexts/SavedItemsContext";
 import { BasketProvider } from "./contexts/BasketContext";
@@ -296,6 +297,54 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+  // const subscriptionTiers = useSelector((state) => state.content);
+  // const awsAuth = useAwsAuth();
+
+  // useEffect(() => {
+  //   if (awsAuth.isAuthenticated) {
+  //     const user = awsAuth.user?.profile;
+  //     const planId = awsAuth.user?.state?.planId;
+  //     console.log(subscriptionTiers);
+  //     const selectedPlan = subscriptionTiers?.find((tier) => tier.id === "reszen8-premium-annual");
+  //     console.log(selectedPlan);
+  //     // const selectedSubData = {
+  //     //   hasCompletedTrial: true,
+  //     //   meditationCredits: selectedPlan.medCredits,
+  //     //   size: selectedPlan.size,
+  //     //   subId: planId,
+  //     //   planName: selectedPlan.title,
+  //     //   extraBespokeMeditationCredits: 0,
+  //     // };
+
+  //     // console.log(selectedSubData);
+  //     if (planId && user) {
+  //       // const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
+  //       //   method: "POST",
+  //       //   headers: { "Content-Type": "application/json" },
+  //       //   body: JSON.stringify({
+  //       //     mode: "subscription",
+  //       //     email: user.email,
+  //       //     firstName: user['given_name'],
+  //       //     lastName: user['family_name'],
+  //       //     uid: user.sub,
+  //       //     metadata: { uid: currentUser?.uid },
+  //       //     lineItems: [{ price: "123", quantity: 1 }], // 👈 send array of line items
+  //       //     subscription: {
+  //       //       hasCompletedTrial: true,
+  //       //       meditationCredits: selectedSub.product.medCredits,
+  //       //       size: selectedSub.product?.size,
+  //       //       subId: planId,
+  //       //       planName: selectedSub.product?.title,
+  //       //       extraBespokeMeditationCredits: selectedPack?.product?.value || 0,
+  //       //     },
+  //       //   }),
+  //       // });
+  //       // const data = await res.json();
+  //       // const stripe = await stripePromise;
+  //       // await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+  //     }
+  //   }
+  // }, [awsAuth.isAuthenticated, subscriptionTiers]);
   return (
     <AuthProvider>
       <Router>

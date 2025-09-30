@@ -69,10 +69,10 @@ export default function MembersArea() {
             Thank you for being a part of the RESZEN8 community. You can manage your membership below.
           </p>
           <p className='members-area__info'>
-            Current plan: <b>{currentUser?.subscription.planName}</b>
+            Current plan: <b>{currentUser?.subscription?.planName}</b>
           </p>
           <p>
-            Your unique referral code is: <span className='members-area__code'>{currentUser.referralCode}</span>
+            Your unique referral code is: <span className='members-area__code'>{currentUser?.referralCode}</span>
           </p>
           <p className='members-area__info'>
             Give your code to a friend (or pop their email in below). When they sign up to a membership, you both get 5

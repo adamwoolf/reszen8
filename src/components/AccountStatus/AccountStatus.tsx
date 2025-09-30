@@ -67,7 +67,7 @@ const AccountStatus = ({ user }: { user: User }) => {
             <span>
               Credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
             </span>
-            {user.subscription?.extraBespokeMeditationCredits && (
+            {user.subscription?.extraBespokeMeditationCredits > 0 && (
               <span style={{ color: "orange", marginLeft: 5 }}>
                 + {user.subscription.extraBespokeMeditationCredits}
               </span>

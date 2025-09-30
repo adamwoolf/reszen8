@@ -3,16 +3,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
-import Icon from "@mdi/react";
 
-import { FaArrowRight, FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 import Search from "../../components/Search/Search";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { deleteBespokeMed, updateMeditationDeleteStatus } from "../../store/apiUtils";
 import Popup from "../../components/Popup/Popup";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { getStaticMeditations } from "../../store/contentSelectors";
+import Panel from "./Panel";
+
 type TabType = "meditations" | "publications" | "myMeds";
 
 const Dashboard = () => {
@@ -27,12 +27,17 @@ const Dashboard = () => {
   const tabsRef = useRef();
   const [showPopup, setShowPopup] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
+  const introMeditations = useSelector(getStaticMeditations)?.filter((med) => med.introMed);
 
   // ✅ build dynamically instead of storing
   const allItems = {
-    ...savedItems,
+    introMeditations,
     myMeds,
+
+    ...savedItems,
+    deleted: myMeds?.filter((item) => item.willDelete),
   };
+
   // user generated meditations
   useEffect(() => {
     if (data) {
@@ -83,244 +88,46 @@ const Dashboard = () => {
     setMyMeds(array);
     if (currentUser?.uid) updateMeditationDeleteStatus(currentUser?.uid, itemId, shouldDelete);
   };
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const renderTabContent = () => {
-    const data = activeTab !== "deleted" ? allItems[activeTab] : myMeds?.filter((item) => item.willDelete);
+  const handleScroll = (key: string) => {
+    const container = carouselRef.current;
+    const panel = document.getElementById(`panel-${key}`);
+    const containerCenter = container.offsetWidth / 2;
+    const elCenter = panel.offsetLeft + panel.offsetWidth / 2;
+
+    const scrollLeft = elCenter - containerCenter;
+
+    container.scrollTo({
+      left: scrollLeft,
+      behavior: "smooth",
+    });
+  };
+
+  const renderTabContent = (key: string) => {
+    const data = allItems[key];
+    console.log(data);
     const destination = activeTab === "publications" ? "articles" : "meditation-library";
     return (
-      <div className='dashboard-content'>
-        {notification.show && (
-          <div className='fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'>
-            {notification.message}
-          </div>
-        )}
-
-        {data?.length === 0 && activeTab !== "deleted" ? (
-          <div className='text-center py-10'>
-            <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
-            <Link to={`/${destination}`} className='text-orange-400 hover:text-orange-300 font-medium'>
-              Browse{" "}
-              {activeTab === "publications" ? "Articles" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1, -1)} →
-            </Link>
-          </div>
-        ) : (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data
-              ?.filter((item) => {
-                if (activeTab === "deleted") return true;
-                return !item.willDelete;
-              })
-              .map((item, i) => {
-                const keyId = `${activeTab}-${item?.uid ?? item?.id ?? i}`;
-                function isToday(timestamp) {
-                  const today = new Date();
-                  const dateToCheck = new Date(timestamp);
-
-                  return (
-                    today.getFullYear() === dateToCheck.getFullYear() &&
-                    today.getMonth() === dateToCheck.getMonth() &&
-                    today.getDate() === dateToCheck.getDate()
-                  );
-                }
-
-                function getDeletionCountdown(timestampSeconds: number) {
-                  console.log(timestampSeconds);
-                  const now = new Date();
-                  const deleteDate = new Date(timestampSeconds * 1000); // convert seconds → ms
-
-                  if (deleteDate <= now) return "Deleted";
-
-                  const diffMs = deleteDate.getTime() - now.getTime();
-
-                  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
-                  const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
-                  const seconds = Math.floor((diffMs / 1000) % 60);
-
-                  if (days > 0) return `${days} day${days > 1 ? "s" : ""} left`;
-                  if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} left`;
-                  if (minutes > 0) return `${minutes} min${minutes > 1 ? "s" : ""} left`;
-                  return `${seconds} sec${seconds !== 1 ? "s" : ""} left`;
-                }
-
-                return (
-                  <div key={keyId} className='feature-card publication__card'>
-                    <div className='publications__card-content dashboard__card-inner'>
-                      <div>
-                        <h3>{item.title}</h3>
-                        <div>
-                          {/* {item.createdAt && (
-                        <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
-                      )} */}
-                          {item.style && <p>{item.style}</p>}
-                          {item.willDelete && <p>This item will be deleted: {getDeletionCountdown(item.willDelete)}</p>}
-                          {item.createdAt && !item.staticMed && activeTab !== "publications" && (
-                            <span className='dashboard__date'>
-                              Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      {item.immersive && (
-                        <div className='dashboard__immersive-icon'>
-                          <img className='immersive-icon' src={immersiveLogo} />
-                        </div>
-                      )}
-
-                      <div className='dashboard-buttons'>
-                        {item.audioUrl && activeTab !== "publications" && (
-                          <div className='dashboard__audio'>
-                            <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
-                          </div>
-                        )}
-                        {activeTab === "publications" && (
-                          <Link className='read-link' to={`/articles/${item.title}`}>
-                            <span className='read-link-text'> Read</span>
-                            <FaArrowRight />{" "}
-                          </Link>
-                        )}
-                        <div>
-                          {activeTab === "deleted" && (
-                            <button
-                              onClick={() => {
-                                handleDeleteBespokeMed(item.uid, false);
-                              }}
-                              className='dashboard-button dashboard__remove-cta'
-                            >
-                              Recover
-                            </button>
-                          )}
-                          {activeTab !== "myMeds" && activeTab !== "deleted" && (
-                            <button
-                              onClick={() => {
-                                setItemToRemove(item);
-                                setShowPopup(true);
-                              }}
-                              className='dashboard-button dashboard__remove-cta'
-                            >
-                              Remove
-                            </button>
-                          )}
-                          {activeTab === "myMeds" && (
-                            <button
-                              onClick={() => {
-                                setItemToRemove(item);
-                                setShowPopup(true);
-                              }}
-                              className='dashboard-button dashboard__remove-cta'
-                            >
-                              Delete
-                            </button>
-                          )}
-                          <Popup showClose={false} fitContent show={showPopup} onClose={() => setShowPopup(false)}>
-                            {activeTab !== "myMeds" ? (
-                              <>
-                                <h3>Remove from your Journey</h3>
-                                <p>
-                                  "{itemToRemove?.title}" will be removed from your Journey, but still be available in
-                                  the {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
-                                </p>
-                                <button onClick={() => setShowPopup(false)} className='dashboard-button'>
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    handleRemoveItem(itemToRemove, activeTab as keyof typeof savedItems, i);
-                                    setShowPopup(false);
-                                  }}
-                                  className='dashboard-button'
-                                >
-                                  Okay
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <h3>Delete Bespoke Meditation</h3>
-                                <p>
-                                  "{itemToRemove?.title}" will be removed from your dashboard, and will be available to
-                                  recover, in the Recently Deleted tab for 14 days
-                                </p>
-                                <button onClick={() => setShowPopup(false)} className='dashboard-button'>
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    handleDeleteBespokeMed(itemToRemove.uid, true);
-                                    // handleRemoveItem(item, activeTab as keyof typeof savedItems, i);
-                                    setShowPopup(false);
-                                  }}
-                                  className='dashboard-button'
-                                >
-                                  Okay
-                                </button>
-                              </>
-                            )}
-                          </Popup>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        )}
-      </div>
+      <Panel
+        showPopup={showPopup}
+        setShowPopup={setShowPopup}
+        dataKey={key}
+        data={data}
+        notification={notification}
+        destination={destination}
+        itemToRemove={itemToRemove}
+        setItemToRemove={setItemToRemove}
+        setActiveTab={setActiveTab}
+        handleDeleteBespokeMed={handleDeleteBespokeMed}
+        handleRemoveItem={handleRemoveItem}
+      />
     );
   };
-  const [showLeftChevron, setShowLeftChevron] = useState(false);
-  const [showRightChevron, setShowRightChevron] = useState(false);
 
-  const updateChevronVisibility = () => {
-    if (!tabsRef.current) return;
-
-    const container = tabsRef.current;
-    const firstTab = container.firstElementChild as HTMLElement;
-    const lastTab = container.lastElementChild as HTMLElement;
-
-    const isFirstVisible = container.scrollLeft <= firstTab.offsetLeft;
-    const isLastVisible = container.scrollLeft + container.offsetWidth >= lastTab.offsetLeft + lastTab.offsetWidth - 10;
-
-    setShowLeftChevron(!isFirstVisible);
-    setShowRightChevron(!isLastVisible);
-  };
-
-  useEffect(() => {
-    const container = tabsRef.current;
-    if (!container) return;
-
-    updateChevronVisibility(); // Initial check
-
-    container.addEventListener("scroll", updateChevronVisibility);
-    window.addEventListener("resize", updateChevronVisibility);
-
-    return () => {
-      container.removeEventListener("scroll", updateChevronVisibility);
-      window.removeEventListener("resize", updateChevronVisibility);
-    };
-  }, []);
-
-  const scrollTabs = (direction: "left" | "right") => {
-    if (!tabsRef.current) return;
-
-    const container = tabsRef.current;
-
-    if (direction === "right") {
-      const lastTab = container.lastElementChild as HTMLElement;
-      if (lastTab) {
-        const scrollLeft = lastTab.offsetLeft + lastTab.offsetWidth - container.offsetWidth;
-
-        container.scrollTo({
-          left: scrollLeft,
-          behavior: "smooth",
-        });
-      }
-    } else {
-      // Scroll all the way to the left
-      container.scrollTo({
-        left: 0,
-        behavior: "smooth",
-      });
-    }
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    handleScroll(tab);
   };
 
   return (
@@ -330,15 +137,17 @@ const Dashboard = () => {
         <Search dashboard text='Search Journey Items' />
       </div>
       <div key={activeTab} className='tabs__container'>
-        {showLeftChevron && (
-          <button onClick={() => scrollTabs("left")} className='tabs__arrow tabs__arrow--left'>
-            <FaChevronLeft />
-          </button>
-        )}
         <div ref={tabsRef} className='tabs'>
           <button
+            className={`tab-btn ${activeTab === "introMeditations" ? "active" : ""}`}
+            onClick={() => handleTabClick("introMeditations")}
+          >
+            Introduction Meditations
+            {introMeditations?.length > 0 && <span className='tab-count'>{introMeditations?.length}</span>}
+          </button>
+          <button
             className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
-            onClick={() => setActiveTab("myMeds")}
+            onClick={() => handleTabClick("myMeds")}
           >
             Bespoke Meditations
             {myMeds?.filter((item) => !item.willDelete).length > 0 && (
@@ -347,7 +156,7 @@ const Dashboard = () => {
           </button>
           <button
             className={`tab-btn ${activeTab === "meditations" ? "active" : ""}`}
-            onClick={() => setActiveTab("meditations")}
+            onClick={() => handleTabClick("meditations")}
           >
             Library Meditations
             {savedItems?.meditations?.length > 0 && <span className='tab-count'>{savedItems?.meditations.length}</span>}
@@ -355,7 +164,7 @@ const Dashboard = () => {
 
           <button
             className={`tab-btn ${activeTab === "publications" ? "active" : ""}`}
-            onClick={() => setActiveTab("publications")}
+            onClick={() => handleTabClick("publications")}
           >
             My Articles
             {savedItems.publications.length > 0 && <span className='tab-count'>{savedItems.publications.length}</span>}
@@ -363,7 +172,7 @@ const Dashboard = () => {
           <button
             style={{ color: "red" }}
             className={`tab-btn ${activeTab === "deleted" ? "active" : ""}`}
-            onClick={() => setActiveTab("deleted")}
+            onClick={() => handleTabClick("deleted")}
           >
             Recently Deleted
             {savedItems.publications.length > 0 && (
@@ -371,13 +180,10 @@ const Dashboard = () => {
             )}
           </button>
         </div>
-        {showRightChevron && (
-          <button onClick={() => scrollTabs("right")} className='tabs__arrow tabs__arrow--right'>
-            <FaChevronRight />
-          </button>
-        )}
       </div>
-      {renderTabContent()}
+      <div ref={carouselRef} className='dashboard__content-carousel'>
+        {["introMeditations", "myMeds", "meditations", "publications", "deleted"].map((key) => renderTabContent(key))}
+      </div>
       <audio ref={audioRef} />
     </div>
   );

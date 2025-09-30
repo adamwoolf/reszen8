@@ -17,6 +17,7 @@ const ConsentsPopup = () => {
   });
   const [waiting, setWaiting] = useState(false);
   const termsAndConditionsRef = useRef<HTMLHeadingElement>(null);
+  const planId = sessionStorage.getItem("pendingPlan");
 
   const handleUpdate = async () => {
     setWaiting(true);
@@ -28,9 +29,9 @@ const ConsentsPopup = () => {
   };
 
   useEffect(() => {
-    if (!currentUser || loading) return;
+    if (!currentUser || loading || planId) return;
     setShow(currentUser && (!currentUser?.consents?.termsAndConditions || !currentUser?.consents?.essentials));
-  }, [currentUser]);
+  }, [currentUser, planId]);
 
   const consents = [
     {
@@ -66,7 +67,7 @@ const ConsentsPopup = () => {
         )}
         <h2>Manage Consent Preferences</h2>
         {consents.map((consent) => (
-          <section className='consents__section'>
+          <section key={consent.dataLink} className='consents__section'>
             <div className='consents__section-header'>
               <h3>{consent.title}</h3>
               <ToggleSwitch

@@ -10,6 +10,8 @@ export interface ContentState {
   currentAudio: AudioObject;
   articles: any[];
   immersiveEnv: AmbientEnv;
+  membershipTiers: [];
+  landingPageActive: boolean;
 }
 
 export interface AudioObject {
@@ -26,10 +28,11 @@ const initialState: ContentState = {
     meditationLikes: [],
   },
   staticMeditations: [],
-  currentAudio: { url: "", isImmersive: false },
+  // currentAudio: { url: "", isImmersive: false },
   articles: [],
   immersiveEnv: { name: "Warm", url: test },
   landingPageActive: true,
+  membershipTiers: [],
 };
 
 export const contentSlice = createSlice({
@@ -48,9 +51,9 @@ export const contentSlice = createSlice({
     setStaticMeditations: (state, action: PayloadAction<any>) => {
       state.staticMeditations = action.payload;
     },
-    setCurrentAudio: (state, action: PayloadAction<AudioObject>) => {
-      state.currentAudio = action.payload;
-    },
+    // setCurrentAudio: (state, action: PayloadAction<AudioObject>) => {
+    //   state.currentAudio = action.payload;
+    // },
     setArticles: (state, action: PayloadAction<any[]>) => {
       const awsArticles = action.payload.map((a) => ({
         fields: { ...a, body: a.content, slug: a.title, audioFile: { fields: { file: { url: a.audioUrl } } } },
@@ -89,18 +92,21 @@ export const contentSlice = createSlice({
     setLandingPageActive: (state, action) => {
       state.landingPageActive = action.payload;
     },
+    setMembershipTiers: (state, action) => {
+      state.membershipTiers = action.payload;
+    },
   },
 });
 
 export const {
   setMeditations,
   setArticles,
-  setCurrentAudio,
   setPublications,
   setMeta,
   setStaticMeditations,
   setLikes,
   setImmersiveEnv,
   setLandingPageActive,
+  setMembershipTiers,
 } = contentSlice.actions;
 export default contentSlice.reducer;

@@ -40,6 +40,23 @@
       background-color: transparent;
     }
   }
+
+  &__content-carousel {
+    display: flex;
+    width: 100%;
+    min-width: 100%;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  &__content-panel {
+    width: 90%;
+    min-width: 90%;
+    padding: 20px;
+    margin: 0 20px;
+    border: 1px solid rgba(255, 166, 0, 0.342);
+    scroll-snap-align: center; /* align item start with container snap */
+  }
 }
 
 /* Dashboard Container */
@@ -62,12 +79,11 @@
 /* Tabs */
 .tabs {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
   margin-bottom: 2rem;
   padding-bottom: 0.5rem;
-  &__container {
-    position: relative;
-  }
 
   &__arrow {
     position: absolute;
@@ -81,9 +97,6 @@
       background-color: transparent;
     }
 
-    // @media (min-width: 768px) {
-    //   display: none;
-    // }
     &--left {
       left: -20px;
       right: auto;
@@ -98,13 +111,13 @@
 
 .tab-btn {
   padding: 0.5rem 1rem;
-  background: transparent;
-  border: none;
-  border-radius: 0.375rem;
-  color: #9ca3af;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  border-radius: 20px;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 1px solid orange;
 }
 
 .tab-btn:hover {
@@ -113,9 +126,8 @@
 }
 
 .tab-btn.active {
-  color: var(--primary-color);
-  background: rgba(249, 115, 22, 0.1);
   font-weight: 600;
+  background-color: orange;
 }
 
 .tab-count {
@@ -273,11 +285,11 @@
     padding: 0 1rem;
   }
 
-  .tabs {
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    -webkit-overflow-scrolling: touch;
-  }
+  // .tabs {
+  //   overflow-x: auto;
+  //   padding-bottom: 0.5rem;
+  //   -webkit-overflow-scrolling: touch;
+  // }
 
   .tabs::-webkit-scrollbar {
     height: 4px;

@@ -27,7 +27,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   const searchDashboardItems = () => {
     const { meditations: dashboardMeditations, publications: dashBoardPubs } = savedItems || {};
 
-    const pubs = dashBoardPubs.filter((pub: Publication) => pub?.body.toLowerCase().includes(query.toLowerCase()));
+    const pubs = dashBoardPubs.filter((pub: Publication) => pub?.content.toLowerCase().includes(query.toLowerCase()));
     const normalisedPubs = pubs.map((pub) => ({ fields: { ...pub }, sys: { ...pub } }));
     setResults(normalisedPubs);
     const ms = dashboardMeditations.filter(
@@ -52,7 +52,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
 
     const ms = meditations.filter(
       (m: any) =>
-        m.content.toLowerCase().includes(query.toLowerCase()) || m.title.toLowerCase().includes(query.toLowerCase())
+        m.content?.toLowerCase().includes(query.toLowerCase()) || m.title?.toLowerCase().includes(query.toLowerCase())
     );
 
     setResults(pubs);

@@ -13,7 +13,6 @@ const Login = () => {
   // </div>
   const auth = useAuth();
   const { currentUser, setCurrentUser, signOutRedirect } = useAuthContext();
-  console.log(import.meta.env.VITE_BASE_URL);
 
   if (auth.isLoading) {
     return <LoadingScene />;

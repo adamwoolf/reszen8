@@ -35,7 +35,7 @@ const FooterHero = () => {
       return (
         <div className='footer-hero__column-list'>
           {array.map((item) => (
-            <button className='footer-hero__column-list-redirect' onClick={() => auth.signinPopup()}>
+            <button key={item.label} className='footer-hero__column-list-redirect' onClick={() => auth.signinPopup()}>
               {item.label}
             </button>
           ))}
@@ -44,7 +44,7 @@ const FooterHero = () => {
     return (
       <div className='footer-hero__column-list'>
         {array.map((item) => (
-          <Link className='footer-hero__column-list-link' to={item.path}>
+          <Link key={item.path} className='footer-hero__column-list-link' to={item.path}>
             {item.label}
           </Link>
         ))}

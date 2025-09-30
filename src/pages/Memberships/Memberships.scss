@@ -10,6 +10,7 @@
 @media (max-width: 768px) {
   .memberships-page {
     margin-top: 230px;
+    padding: 0;
   }
 }
 
@@ -338,6 +339,29 @@
   color: #4caf50;
   margin-right: 0.75rem;
   flex-shrink: 0;
+}
+
+.subscribe-popup {
+  background-color: transparent !important;
+
+  &__number {
+    color: orange;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  button {
+    margin: 0 4px;
+    border: 1px solid orange;
+  }
+
+  &__cancel {
+    background-color: transparent;
+    color: orange;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
 }
 
 .subscribe-button {

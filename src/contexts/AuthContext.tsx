@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 import { User } from "../models";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
+import { useSelector } from "react-redux";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -26,8 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const subscriptionTiers = useSelector((state) => state.content.membershipTiers);
   const clearError = useCallback(() => setError(null), []);
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
   // 1️⃣ Restore Cognito session on mount (once)
   useEffect(() => {
@@ -73,6 +76,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setLoading(awsAuth.isLoading);
   }, [awsAuth.isLoading]);
+
+  // // Signup new user directly to paid sub
+  useEffect(() => {
+    if (awsAuth.isAuthenticated) {
+      const user = awsAuth.user?.profile;
+
+      const planId = sessionStorage.getItem("pendingPlan");
+      const selectedPlan = subscriptionTiers?.find((tier) => tier.id === planId);
+
+      const selectedSubData = {
+        hasCompletedTrial: true,
+        meditationCredits: selectedPlan?.medCredits,
+        size: selectedPlan?.billing,
+        subId: selectedPlan?.id,
+        planName: selectedPlan?.title,
+        extraBespokeMeditationCredits: 0,
+      };
+
+      console.log("PLANID", planId);
+      if (planId && user && selectedPlan) {
+        checkoutNewUserPlan(user, selectedPlan, selectedSubData);
+        sessionStorage.removeItem("pendingPlan");
+      }
+    }
+  }, [awsAuth.isAuthenticated, subscriptionTiers]);
+
+  const checkoutNewUserPlan = async (user: any, selectedPlan: any, selectedSubData: any) => {
+    const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "subscription",
+        email: user.email,
+        firstName: user["given_name"],
+        lastName: user["family_name"],
+        uid: user.sub,
+        metadata: { uid: currentUser?.uid },
+        lineItems: [{ price: selectedPlan.priceId, quantity: 1 }], // 👈 send array of line items
+        subscription: selectedSubData,
+      }),
+    });
+    const data = await res.json();
+    const stripe = await stripePromise;
+    await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+  };
+
   // ✅ only triggers when auth state changes, no loops
 
   const signOutRedirect = async () => {

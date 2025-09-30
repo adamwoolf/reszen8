@@ -2,8 +2,19 @@ import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import "./Memberships.scss";
+import NewUserPlanPurchaseCta from "./NewUserPlanPurchaseCta";
 
-const MembershipCta = ({ tier, isAdded, handleSubscribe }) => {
+const MembershipCta = ({
+  tier,
+  isAdded,
+  handleSubscribe,
+  yearlySelected,
+}: {
+  yearlySelected: string;
+  handleSubscribe: () => void;
+  isAdded: boolean;
+  tier: any;
+}) => {
   const { currentUser } = useAuth();
 
   return (
@@ -14,16 +25,14 @@ const MembershipCta = ({ tier, isAdded, handleSubscribe }) => {
       isAdded ||
       tier.title.includes("Enterprise") ? (
         <></>
-      ) : !currentUser && tier.id !== "free-trial" ? (
-        <button className='subscribe-button' disabled>
-          Upgrade from Free Trial
-        </button>
+      ) : !currentUser ? (
+        <NewUserPlanPurchaseCta tier={tier} yearlySelected={yearlySelected} />
       ) : (
         <button
           className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
           onClick={() => handleSubscribe(tier)}
         >
-          {tier.id === "bespoke-journey" ? "Make Enquiry" : tier.freeTrial ? "Start Free Trial" : "Buy"}
+          {tier.id === "bespoke-journey" ? "Make Enquiry" : "Buy"}
         </button>
       )}
       {isAdded && (

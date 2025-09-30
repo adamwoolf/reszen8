@@ -1,156 +1,164 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import {
+  CognitoIdentityProviderClient,
+  SignUpCommand,
+  ConfirmSignUpCommand,
+  InitiateAuthCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import "./SignupStyles.scss";
-export default function Signup() {
+import { useAuth } from "react-oidc-context";
+import ThreeDotsLoader from "../../components/ThreeDotsLoads";
+import { AWS_DB_ENDPOINT } from "../../constants";
+import { loadStripe } from "@stripe/stripe-js";
+
+const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
+
+export default function Signup({ planId, tier, onSuccess }) {
+  console.log(planId);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [surName, setSurName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { signup, currentUser } = useAuth();
-  const navigate = useNavigate();
+  const [code, setCode] = useState("");
+  const [step, setStep] = useState<"signup" | "confirm">("signup");
+  const [message, setMessage] = useState("");
+  const [givenName, setGivenName] = useState("");
+  const [familyName, setFamilyName] = useState("");
+  const [userName, setUserName] = useState("");
+  const auth = useAuth();
+  const [waiting, setWaiting] = useState(false);
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSignup = async (e: React.FormEvent) => {
+    setWaiting(true);
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match");
-    }
-
     try {
-      setError("");
-      setLoading(true);
-      await signup(email, password, firstName, surName);
-    } catch (error) {
-      setError("Failed to create an account. Please try again.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
+      const command = new SignUpCommand({
+        ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
+        Username: userName,
+        Password: password,
+        UserAttributes: [
+          { Name: "email", Value: email },
+          { Name: "username", Value: userName },
+          { Name: "given_name", Value: givenName },
+          { Name: "family_name", Value: familyName },
+        ],
+      });
+      const response = await client.send(command);
+      console.log("Signup response:", response);
 
-  useEffect(() => {
-    if (currentUser && !window.location.href.includes("/members")) navigate("/members");
-  }, [currentUser]);
+      if (response.UserConfirmed) {
+        setMessage("Signup successful! You can log in now.");
+        // optional: redirect to login or start subscription
+      } else {
+        setStep("confirm"); // show confirmation code input
+        setMessage("Check your email for the confirmation code.");
+        setWaiting(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      setMessage(error.message || "Signup failed.");
+      setWaiting(false);
+    }
+  };
+
+  const handleConfirm = async (e: React.FormEvent) => {
+    setWaiting(true);
+
+    e.preventDefault();
+    try {
+      const command = new ConfirmSignUpCommand({
+        ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
+        Username: userName,
+        ConfirmationCode: code,
+      });
+      await client.send(command);
+      setMessage("Logging you in");
+      onSuccess?.();
+      maybeSavePlanIdAndLogin();
+      setWaiting(false);
+    } catch (error: any) {
+      console.error(error);
+      setMessage(error.message || "Confirmation failed.");
+      setWaiting(false);
+    }
+  };
+
+  const maybeSavePlanIdAndLogin = async () => {
+    if (planId !== "free-trial") {
+      sessionStorage.setItem("pendingPlan", planId);
+    }
+    // free trial - nothing to buy so just log in
+    auth.signinPopup({
+      extraQueryParams: {
+        login_hint: userName, // pre-fill the username/email
+      },
+    });
+  };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
-      <div className='max-w-md w-full space-y-8'>
-        <div>
-          <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Create a new account</h2>
-        </div>
-        {error && (
-          <div className='bg-red-50 border-l-4 border-red-400 p-4'>
-            <div className='flex'>
-              <div className='ml-3'>
-                <p className='text-sm text-red-700'>{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-        <form className='form' onSubmit={handleSubmit}>
-          <div>
-            <div className='form__input-container'>
-              <label htmlFor='email-address' className='sr-only'>
-                First Name
-              </label>
-              <input
-                name='firstName'
-                type='text'
-                required
-                className='form__input'
-                placeholder='First Name'
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-            </div>
-            <div className='form__input-container'>
-              <label htmlFor='email-address' className='sr-only'>
-                Surname
-              </label>
-              <input
-                name='surName'
-                type='text'
-                required
-                className='form__input'
-                placeholder='Surname'
-                value={surName}
-                onChange={(e) => setSurName(e.target.value)}
-              />
-            </div>
-            <div className='form__input-container'>
-              <label htmlFor='email-address' className='sr-only'>
-                Email address
-              </label>
-              <input
-                id='email-address'
-                name='email'
-                type='email'
-                autoComplete='email'
-                required
-                className='form__input'
-                placeholder='Email address'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className='form__input-container'>
-              <label htmlFor='password' className='sr-only'>
-                Password
-              </label>
-              <input
-                id='password'
-                name='password'
-                type='password'
-                autoComplete='new-password'
-                required
-                className='form__input'
-                placeholder='Password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className='form__input-container'>
-              <label htmlFor='confirm-password' className='sr-only'>
-                Confirm Password
-              </label>
-              <input
-                id='confirm-password'
-                name='confirm-password'
-                type='password'
-                autoComplete='new-password'
-                required
-                className='form__input'
-                placeholder='Confirm Password'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-          </div>
+    <div className='signup'>
+      <h2 className=''>{step === "signup" ? "Create Account" : "Confirm Account"}</h2>
 
-          <div>
-            <button type='submit' disabled={loading} className='form__submit'>
-              {loading ? "Creating account..." : "Start Free Trial"}
-            </button>
-          </div>
-        </form>
-        <div className='text-center mt-4 space-y-2'>
-          <p className='text-sm text-gray-600'>
-            Already have an account?{" "}
-            <Link to='/login' className='font-medium text-blue-600 hover:text-blue-500'>
-              Sign in
-            </Link>
-          </p>
-          <div className='pt-2'>
-            <Link to='/' className='text-sm font-medium text-gray-600 hover:text-gray-900'>
-              Back to Homepage
-            </Link>
-          </div>
-        </div>
-      </div>
+      <form className='signup-form' onSubmit={step === "signup" ? handleSignup : handleConfirm}>
+        {step === "signup" && (
+          <>
+            <input
+              className='signup-form__input'
+              placeholder='Enter username'
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              required
+            />
+            <input
+              className='signup-form__input'
+              type='email'
+              placeholder='Email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className='signup-form__input'
+              placeholder='Given Name'
+              value={givenName}
+              onChange={(e) => setGivenName(e.target.value)}
+              required
+            />
+            <input
+              className='signup-form__input'
+              placeholder='Family Name'
+              value={familyName}
+              onChange={(e) => setFamilyName(e.target.value)}
+              required
+            />
+            <input
+              className='signup-form__input'
+              type='password'
+              placeholder='Password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </>
+        )}
+
+        {step === "confirm" && (
+          <input
+            type='text'
+            placeholder='Confirmation Code'
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+            className='signup-form__input'
+          />
+        )}
+
+        <button className='signup-form__cta' type='submit'>
+          {step === "signup" ? "Sign Up" : "Confirm"}
+          {waiting && <ThreeDotsLoader />}
+        </button>
+      </form>
+
+      {message && <p className=''>{message}</p>}
     </div>
   );
 }

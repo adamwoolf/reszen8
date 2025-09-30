@@ -22,7 +22,7 @@ const DigitalLibrary = () => {
   const [ImmersiveMeds, setImmersiveMeds] = useState(true);
 
   const { addItem } = useSavedItems();
-  const libraryMeditations = useSelector(getStaticMeds);
+  const libraryMeditations = useSelector(getStaticMeds)?.filter((med) => !med.introMed);
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();

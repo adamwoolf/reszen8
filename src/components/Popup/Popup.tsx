@@ -41,7 +41,7 @@ const Popup = ({
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-
+      firstElement.focus();
       // Optional autofocus element
       const autoFocusEl = modal.querySelector<HTMLElement>("[data-autofocus]");
 

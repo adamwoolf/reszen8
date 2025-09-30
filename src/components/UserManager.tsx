@@ -4,13 +4,16 @@ import { Subscription, User } from "../models";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAWSArticles, getMeditationItems, getStaticMeditations } from "../store/apiUtils";
-import { setArticles, setMeditations, setStaticMeditations } from "../store/contentSlice";
+import { setArticles, setMeditations, setStaticMeditations, setMembershipTiers } from "../store/contentSlice";
+import useContentful from "../hooks/useContentful";
+import { getMembershipTiers } from "../contentful";
 
 const UserManager = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
+  const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {
     const created = new Date(subscription?.startDate);
@@ -54,6 +57,28 @@ const UserManager = ({ children }) => {
       }
     });
   }, [currentUser]);
+
+  useEffect(() => {
+    if (membershipTiers) {
+      const membershipObjects = membershipTiers.reduce((acc, tier) => {
+        if (tier.fields.yearlyPriceId)
+          acc = [
+            ...acc,
+            {
+              ...tier,
+              priceId: tier.fields.yearlyPriceId,
+              medCredits: tier.fields.yearlyMeditationCredits,
+              id: tier.fields.yearlyId,
+              price: tier.fields.yearlyPrice,
+              title: tier.fields.title,
+              billing: tier.fields.yearlyBilling,
+            },
+          ];
+        return [...acc, tier.fields];
+      }, []);
+      dispatch(setMembershipTiers(membershipObjects));
+    }
+  }, [membershipTiers]);
 
   return <div>{children}</div>;
 };

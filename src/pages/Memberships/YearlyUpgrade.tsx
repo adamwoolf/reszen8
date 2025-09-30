@@ -3,17 +3,23 @@ import MembershipCta from "./MembershipCta";
 import { useAuth } from "../../contexts/AuthContext";
 import Checkbox from "../../components/Checkbox/Checkbox";
 import "./Memberships.scss";
-const YearlyUpgrade = ({ tier, onCheck, checked }) => {
+const YearlyUpgrade = ({
+  tier,
+  onCheck,
+  checked,
+}: {
+  tier: any;
+  onCheck: (value: string) => void;
+  checked: boolean;
+}) => {
   // console.log(tier);
   const { currentUser } = useAuth();
 
-  if (!tier.yearlyPriceDescription || currentUser?.subscription.planName === `${tier.title} - ${tier.yearlyBilling}`)
+  if (!tier.yearlyPriceDescription || currentUser?.subscription?.planName === `${tier.title} - ${tier.yearlyBilling}`)
     return null;
 
   const handleCheck = () => {
-    console.log(checked);
-    if (checked === tier.subId) return onCheck("");
-    console.log("setting", tier.subId);
+    if (checked === tier.id) return onCheck("");
     return onCheck(tier.id);
   };
 
