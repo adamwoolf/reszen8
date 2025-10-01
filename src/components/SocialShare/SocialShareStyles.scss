@@ -20,4 +20,20 @@
   &-button {
     margin: 8px;
   }
+
+  &-links {
+    display: flex;
+    justify-content: center;
+
+    a {
+      margin: 8px;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  &-intro {
+    display: block;
+  }
 }

@@ -16,12 +16,12 @@ const CookieBanner = () => {
   const COOKIES_KEY = "cookies-accepted";
 
   useEffect(() => {
-    const accepted = !!localStorage.getItem("cookies-accepted");
+    const accepted = !!sessionStorage.getItem("cookies-accepted");
     setShow(!accepted);
   }, []);
 
   const acceptClick = () => {
-    localStorage.setItem(COOKIES_KEY, "true");
+    sessionStorage.setItem(COOKIES_KEY, "true");
     setLeaving(true);
   };
 
@@ -39,16 +39,11 @@ const CookieBanner = () => {
         className={!leaving ? "cookie-banner" : "cookie-banner cookie-banner--leaving"}
         ref={modalRef}
       >
-        <h3>Cookie Policy</h3>
+        <h3>Age Consent</h3>
 
-        <p className='cookie-banner__text'>
-          We use cookies and similar technologies to make Reszen8 work, improve your experience, and analyze how our
-          site is used. We may also use any information you provide to contact you with updates and information related
-          to Reszen8. By clicking “Accept all,” you agree to our use of cookies as described in our Privacy Policy. You
-          can manage your preferences at any time.
-        </p>
+        <p className='cookie-banner__text'>To continue using RESZEN8 you must be at least 16 years old.</p>
         {/* <LiquidWrapper> */}
-        <button onClick={acceptClick}>Accept all</button>
+        <button onClick={acceptClick}>Confirm</button>
         <button className='cookie-banner__dismiss' onClick={cancelClick}>
           Dismiss
         </button>

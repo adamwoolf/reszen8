@@ -28,7 +28,12 @@ const getMembershipTiers = () =>
 const getImmersiveTracks = () =>
   client.getEntries({ content_type: "immersiveTrack", order: "fields.order" }).then((response) => response);
 
+const getPrivacyPolicy = () => client.getEntries({ content_type: "privacyPolicy" }).then((response) => response);
+const getTsAndCs = () => client.getEntries({ content_type: "termsAndConditions" }).then((response) => response);
+
 export {
+  getTsAndCs,
+  getPrivacyPolicy,
   getPublications,
   getMeditationItems,
   getStoreItems,
