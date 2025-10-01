@@ -216,9 +216,10 @@ const Navbar: React.FC = () => {
               <Search />
             </div>
             <span className='user-items-right'>
-              <span className='user-address'>{name}</span>
               {currentUser && (
                 <NavLink style={{ marginLeft: 10, marginRight: 10 }} to='/members'>
+                  <span className='user-address'>{name}</span>
+
                   <FaUser size={18} color='orange' />
                 </NavLink>
               )}

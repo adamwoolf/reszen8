@@ -14,7 +14,6 @@ import { loadStripe } from "@stripe/stripe-js";
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
 
 export default function Signup({ planId, tier, onSuccess }) {
-  console.log(planId);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -101,6 +100,7 @@ export default function Signup({ planId, tier, onSuccess }) {
       <form className='signup-form' onSubmit={step === "signup" ? handleSignup : handleConfirm}>
         {step === "signup" && (
           <>
+            <label className='signup-form-label'>Username </label>
             <input
               className='signup-form__input'
               placeholder='Enter username'
@@ -108,32 +108,40 @@ export default function Signup({ planId, tier, onSuccess }) {
               onChange={(e) => setUserName(e.target.value)}
               required
             />
+            <label className='signup-form-label'>Email </label>
+
             <input
               className='signup-form__input'
               type='email'
-              placeholder='Email'
+              placeholder='Enter Email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <label className='signup-form-label'>First Name </label>
+
             <input
               className='signup-form__input'
-              placeholder='Given Name'
+              placeholder='Enter First Name'
               value={givenName}
               onChange={(e) => setGivenName(e.target.value)}
               required
             />
+            <label className='signup-form-label'>Family Name </label>
+
             <input
               className='signup-form__input'
-              placeholder='Family Name'
+              placeholder='Enter Family Name'
               value={familyName}
               onChange={(e) => setFamilyName(e.target.value)}
               required
             />
+            <label className='signup-form-label'>Password </label>
+
             <input
               className='signup-form__input'
               type='password'
-              placeholder='Password'
+              placeholder='Enter Password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -142,14 +150,18 @@ export default function Signup({ planId, tier, onSuccess }) {
         )}
 
         {step === "confirm" && (
-          <input
-            type='text'
-            placeholder='Confirmation Code'
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-            className='signup-form__input'
-          />
+          <>
+            <label className='signup-form-label'>Confirmation Code </label>
+
+            <input
+              type='text'
+              placeholder='Enter Confirmation Code'
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              required
+              className='signup-form__input'
+            />
+          </>
         )}
 
         <button className='signup-form__cta' type='submit'>
@@ -157,7 +169,12 @@ export default function Signup({ planId, tier, onSuccess }) {
           {waiting && <ThreeDotsLoader />}
         </button>
       </form>
-
+      <p className='signup-legal'>
+        RESZEN8 is for ages 16 and up. By signing up, you confirm you meet this requirement. Please refer to our{" "}
+        <a href='https://reszen8.com/terms-and-conditions' target='_blank'>
+          Terms and Conditions
+        </a>
+      </p>
       {message && <p className=''>{message}</p>}
     </div>
   );

@@ -11,17 +11,15 @@ import { getMembershipTiers } from "../contentful";
 const UserManager = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
   const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {
-    const created = new Date(subscription?.startDate);
-    const expires = new Date(created);
-    expires.setDate(created.getDate() + subscription?.duration);
+    const created = new Date(subscription.startDate); // already ms
+    const expires = new Date(created.getTime() + subscription.duration * 24 * 60 * 60 * 1000);
 
-    const now = new Date();
-    return now < expires;
+    return Date.now() < expires.getTime();
   };
 
   useEffect(() => {
@@ -32,11 +30,8 @@ const UserManager = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (isActiveSub !== currentUser?.subscription?.isActiveSub) {
-      // update currentUser and updateUser
-
-      console.log(isActiveSub);
-      console.log(currentUser?.subscription?.isActiveSub);
+    if (currentUser && isActiveSub !== currentUser?.subscription?.isActiveSub) {
+      setCurrentUser({ ...currentUser, subscription: { ...currentUser.subscription, isActiveSub } });
     }
   }, [isActiveSub, currentUser]);
 

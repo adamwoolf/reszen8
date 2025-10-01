@@ -3,6 +3,8 @@
 .signup {
   background-color: transparent;
   text-align: center;
+  overflow-y: auto;
+  height: 73dvh !important;
   &-form {
     display: flex;
     flex-direction: column;
@@ -20,5 +22,17 @@
       display: flex;
       justify-content: center;
     }
+
+    &-label {
+      text-align: left;
+      color: orange;
+      margin-left: 10px;
+    }
+  }
+
+  &-legal {
+    font-size: 0.7rem;
+    color: orange;
+    margin-top: -15px;
   }
 }

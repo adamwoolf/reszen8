@@ -41,13 +41,16 @@ const CookieBanner = () => {
       >
         <h3>Age Consent</h3>
 
-        <p className='cookie-banner__text'>To continue using RESZEN8 you must be at least 16 years old.</p>
-        {/* <LiquidWrapper> */}
-        <button onClick={acceptClick}>Confirm</button>
+        <p className='cookie-banner__text'>
+          RESZEN8 is for ages 16 and up. By clicking Confirm, you confirm you meet this requirement. Please refer to our{" "}
+          <a href='https://reszen8.com/terms-and-conditions' target='_blank'>
+            Terms and Conditions
+          </a>
+        </p>
         <button className='cookie-banner__dismiss' onClick={cancelClick}>
           Dismiss
         </button>
-        {/* </LiquidWrapper> */}
+        <button onClick={acceptClick}>Confirm</button>
       </div>
     </>,
     rootElement

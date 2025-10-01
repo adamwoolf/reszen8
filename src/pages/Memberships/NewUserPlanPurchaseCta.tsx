@@ -29,17 +29,6 @@ const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: stri
             planId={planId}
             tier={tier}
           />
-          {/* <p>On filling in this form and clicking Continue, you will:</p>
-
-          <p>
-            {" "}
-            <span className='subscribe-popup__number'>1. </span> Visit our secure payment area to pay for your plan.{" "}
-          </p>
-          <p>
-            {" "}
-            <span className='subscribe-popup__number'>2. </span>Return to our website so you can start enjoying your
-            RESZEN8 subscription.{" "}
-          </p> */}
         </div>
       </Popup>
     </>

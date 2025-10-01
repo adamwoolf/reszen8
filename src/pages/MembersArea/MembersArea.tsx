@@ -69,7 +69,7 @@ export default function MembersArea() {
             Thank you for being a part of the RESZEN8 community. You can manage your membership below.
           </p>
           <p className='members-area__info'>
-            Current plan: <b>{currentUser?.subscription?.planName}</b>
+            Current plan: <b>{currentUser?.subscription?.planName || "Free Trial"}</b>
           </p>
           <p>
             Your unique referral code is: <span className='members-area__code'>{currentUser?.referralCode}</span>
@@ -152,18 +152,20 @@ export default function MembersArea() {
             )}
           </div>
 
-          <div className='feature-card'>
-            <h3 className='feature-title'>Cancel Membership</h3>
-            <p className='feature-description'>
-              We're sorry to see you go. If you cancel, you'll lose access to all premium features at the end of your
-              billing period. As long as you have credits you will still be able to access the Bespoke Generator and
-              listen to your Bespoke Meditation in the My Journey area.
-              <br />
-              <br />
-              <strong>Note:</strong> You can reactivate your membership at any time.
-            </p>
-            <CancelSubCTA />
-          </div>
+          {currentUser && currentUser?.subscription?.subId !== "free-trial" && (
+            <div className='feature-card'>
+              <h3 className='feature-title'>Cancel Membership</h3>
+              <p className='feature-description'>
+                We're sorry to see you go. If you cancel, you'll lose access to all premium features at the end of your
+                billing period. As long as you have credits you will still be able to access the Bespoke Generator and
+                listen to your Bespoke Meditation in the My Journey area.
+                <br />
+                <br />
+                <strong>Note:</strong> You can reactivate your membership at any time.
+              </p>
+              <CancelSubCTA />
+            </div>
+          )}
           <div className='feature-card'>
             <h3 className='feature-title'>Logout</h3>
 
