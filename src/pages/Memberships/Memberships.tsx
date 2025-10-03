@@ -10,7 +10,6 @@ import { useAuth as useAWSAuth } from "react-oidc-context";
 import MembershipCta from "./MembershipCta";
 import YearlyUpgrade from "./YearlyUpgrade";
 import { useDispatch } from "react-redux";
-import { setMembershipTiers } from "../../store/contentSlice";
 
 type MembershipTier = {
   id: string;
@@ -115,7 +114,7 @@ const Memberships: React.FC = () => {
                     <h3>{tier.title}</h3>
 
                     {tier?.badge ||
-                      (tier.id === "reszen8-premium" && currentUser?.subscription?.subId !== tier.id && (
+                      (tier.id === "reszen8-premium" && currentUser?.subscription?.planName !== tier.title && (
                         <div className='popular-badge'>
                           {tier.id === "reszen8-premium"
                             ? "Best Value"
@@ -144,7 +143,7 @@ const Memberships: React.FC = () => {
                       {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
                     </p>
                   </div>
-                  <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} />
+                  {/* <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} /> */}
                   <MembershipCta
                     yearlySelected={yearlyUpgrade}
                     tier={tier}
@@ -167,7 +166,7 @@ const Memberships: React.FC = () => {
                   ))}
                 </ul>
 
-                {currentUser?.subscription?.subId === tier.id && <div className='popular-badge'>Active</div>}
+                {currentUser?.subscription?.planName === tier.title && <div className='popular-badge'>Active</div>}
               </div>
             );
           })}

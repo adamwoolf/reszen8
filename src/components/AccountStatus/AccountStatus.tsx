@@ -42,8 +42,8 @@ const AccountStatus = ({ user }: { user: User }) => {
     return (
       <>
         {hasTime && (
-          <>
-            <span className={`account-status-message`}>
+          <div className='credit-info__text'>
+            <span style={{ marginRight: 20 }} className={`account-status-message`}>
               <span> Free trial: </span>
               <span className='time'>
                 {" "}
@@ -53,7 +53,8 @@ const AccountStatus = ({ user }: { user: User }) => {
             <span>
               bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
             </span>
-          </>
+            <CreditTopup />
+          </div>
         )}
       </>
     );

@@ -7,29 +7,27 @@ import "./MembersArea.scss";
 import { usePurchasedItemsStore } from "../../store/purchasedItemsStore";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
 import { useBasketStore } from "../../store/basketStore";
-import { FaTrash, FaArrowRight } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import CountDown from "../../components/AccountStatus/AccountStatus";
 import InviteAFriend from "../../components/InviteAFriend/InviteAFriend";
 import { IoMdLogOut } from "react-icons/io";
 import React from "react";
-import CancelSubCTA from "../../components/CancelSubCTA/CancelSubCTA";
+import CancellationCta from "../../components/CancellationCta/CancellationCta";
 
 export default function MembersArea() {
-  const { currentUser, logout, signOutRedirect } = useAuth();
-  const [isTrialActive, setIsTrialActive] = useState(true);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const { currentUser, signOutRedirect } = useAuth();
   const { purchasedItems } = usePurchasedItemsStore();
   const { savedItems, removeSavedItem, moveToBasket } = useSavedItemsStore();
   const { addItem } = useBasketStore();
 
-  const handleCancelMembership = () => {
-    // Add membership cancellation logic here
-    // if (window.confirm("Are you sure you want to cancel your membership?")) {
-    //   alert("Your membership has been cancelled. We're sorry to see you go!");
-    //   setIsSubscribed(false);
-    // }
-  };
+  const cancellationTime = new Date(currentUser?.subscription?.willCancelOn * 1000).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const handleMoveToBasket = (item: any) => {
     const product = moveToBasket(item.id, item.size);
@@ -68,9 +66,7 @@ export default function MembersArea() {
           <p className='mission-text'>
             Thank you for being a part of the RESZEN8 community. You can manage your membership below.
           </p>
-          <p className='members-area__info'>
-            Current plan: <b>{currentUser?.subscription?.planName || "Free Trial"}</b>
-          </p>
+
           <p>
             Your unique referral code is: <span className='members-area__code'>{currentUser?.referralCode}</span>
           </p>
@@ -93,11 +89,16 @@ export default function MembersArea() {
                 <CountDown user={currentUser} />
               </div>
             ) : (
-              <span>Monthly</span>
+              <>
+                <p className='members-area__info'>
+                  Current plan: <b>{currentUser?.subscription?.planName || "Free Trial"}</b>
+                </p>
+                <p className='members-area__info'>{currentUser?.email}</p>
+              </>
             )}
             {(!currentUser?.subscription?.isActiveSub || currentUser?.subscription?.subscription === "free-trial") && (
               <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
-                Upgrade Now
+                Change Plan{" "}
               </Link>
             )}
           </div>
@@ -163,10 +164,16 @@ export default function MembersArea() {
                 <br />
                 <strong>Note:</strong> You can reactivate your membership at any time.
               </p>
-              <CancelSubCTA />
+              {cancellationTime && currentUser?.subscription?.willCancelOn && (
+                <p>
+                  Your subscription will end on:
+                  <br /> <span style={{ color: "orange" }}>{cancellationTime}</span>
+                </p>
+              )}
+              <CancellationCta />
             </div>
           )}
-          <div className='feature-card'>
+          <div className='feature-card logout-card'>
             <h3 className='feature-title'>Logout</h3>
 
             <button type='button' className='user-address' onClick={signOutRedirect}>

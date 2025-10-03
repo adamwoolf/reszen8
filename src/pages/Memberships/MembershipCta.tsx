@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import "./Memberships.scss";
 import NewUserPlanPurchaseCta from "./NewUserPlanPurchaseCta";
+import UpgradeCta from "./UpgradeCta";
 
 const MembershipCta = ({
   tier,
@@ -28,12 +29,7 @@ const MembershipCta = ({
       ) : !currentUser ? (
         <NewUserPlanPurchaseCta tier={tier} yearlySelected={yearlySelected} />
       ) : (
-        <button
-          className={`subscribe-button ${tier.mostPopular ? "featured-button" : ""}`}
-          onClick={() => handleSubscribe(tier)}
-        >
-          {tier.id === "bespoke-journey" ? "Make Enquiry" : "Buy"}
-        </button>
+        <UpgradeCta tier={tier} yearlySelected={yearlySelected} />
       )}
       {isAdded && (
         <button disabled className='subscribe-button'>

@@ -106,7 +106,6 @@ const Dashboard = () => {
 
   const renderTabContent = (key: string) => {
     const data = allItems[key];
-    console.log(data);
     const destination = activeTab === "publications" ? "articles" : "meditation-library";
     return (
       <Panel

@@ -23,6 +23,7 @@ const UserManager = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log(currentUser);
     if (currentUser && currentUser?.subscription?.subscription === "free-trial") {
       const isActive = isSubscriptionActive(currentUser?.subscription);
       setisActiveSub(isActive);
@@ -60,17 +61,27 @@ const UserManager = ({ children }) => {
           acc = [
             ...acc,
             {
-              ...tier,
               priceId: tier.fields.yearlyPriceId,
-              medCredits: tier.fields.yearlyMeditationCredits,
+              meditationCredits: tier.fields.yearlyMeditationCredits,
               id: tier.fields.yearlyId,
               price: tier.fields.yearlyPrice,
               title: tier.fields.title,
+              planName: tier.fields.title,
               billing: tier.fields.yearlyBilling,
+              description: tier.fields.description,
             },
           ];
-        return [...acc, tier.fields];
+        return [
+          ...acc,
+          {
+            ...tier.fields,
+            meditationCredits: tier.fields.medCredits,
+            subId: tier.fields.id,
+            planName: tier.fields.title,
+          },
+        ];
       }, []);
+      console.log(membershipObjects);
       dispatch(setMembershipTiers(membershipObjects));
     }
   }, [membershipTiers]);

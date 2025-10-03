@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { useBasketStore } from "../../store/basketStore";
 import { useNavigate, Navigate } from "react-router-dom";
@@ -8,8 +8,28 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AWS_DB_ENDPOINT } from "../../constants";
 
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
+import { createCheckoutSession } from "../../store/apiUtils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
+
+function SubscribeButton({ uid, priceId }) {
+  const handleSubscribe = async () => {
+    const stripe = await stripePromise;
+    const session = await createCheckoutSession(uid, priceId, "subscription", {
+      planName: "Pro",
+      meditationCredits: "20",
+      size: "large",
+    });
+
+    await stripe.redirectToCheckout({ sessionId: session.sessionId });
+  };
+
+  return (
+    <button type='button' onClick={handleSubscribe}>
+      Start Subscription
+    </button>
+  );
+}
 
 const CheckoutForm = () => {
   const navigate = useNavigate();
@@ -30,50 +50,35 @@ const CheckoutForm = () => {
     const item = items?.[0]?.product;
     setWaiting(true);
 
-    const selectedSub = items.find((item) => item.product.type === "subscription");
-    const selectedPack = items.find((item) => item.product.type === "payment");
-
-    const mode = selectedSub ? "subscription" : "payment";
-    console.log("MODE", mode, items);
+    console.log("MODE", items);
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mode,
+        mode: "payment",
         email,
         firstName,
         lastName: surName,
         uid: currentUser?.uid,
+        planId: item.priceId,
         metadata: { uid: currentUser?.uid },
-        lineItems: items.map((item) => ({
-          price: item.product.priceId,
-          quantity: item.quantity || 1,
-        })), // 👈 send array of line items
-        subscription:
-          mode === "subscription"
-            ? {
-                hasCompletedTrial: true,
-                meditationCredits: selectedSub.product.medCredits,
-                size: selectedSub.product?.size,
-                subId: selectedSub.product?.id,
-                planName: selectedSub.product?.title,
-                extraBespokeMeditationCredits: selectedPack?.product?.value || 0,
-              }
-            : {
-                extraBespokeMeditationCredits: item.value,
-              },
+        lineItems: [{ priceId: item.priceId, quantity: 1 }], // 👈 send array of line items
+        subscription: {
+          extraBespokeMeditationCredits: item.value,
+        },
       }),
     });
 
     const data = await res.json();
-
+    console.log("DATA", data);
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
 
     setWaiting(false);
   };
-
-  const formattedTotal = totalPrice().toFixed(2);
+  const daySubPrice = "price_1SCjP9RpZB60VN5hWQdAoIwv";
+  const premiumPrice = "price_1SBZIPRpZB60VN5hMyQDAZ7n";
+  // const formattedTotal = totalPrice().toFixed(2);
 
   return (
     <form onSubmit={handleSubmitStripe} className='checkout-form'>
@@ -110,6 +115,7 @@ const CheckoutForm = () => {
           </svg>
           Back to Basket
         </button>
+        {/* <SubscribeButton uid={currentUser.uid} priceId={daySubPrice} /> */}
       </section>
 
       {/* Payment Information */}

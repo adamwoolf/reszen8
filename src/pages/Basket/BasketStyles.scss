@@ -52,10 +52,20 @@
     }
   }
 
+  &__total {
+    display: flex;
+
+    &__amount {
+      font-weight: bold;
+      margin-left: 12px;
+      color: orange;
+    }
+  }
+
   &__proceed {
     background-color: var(--primary-color);
     color: var(--bg-color);
-    padding: 8px;
+    padding: 8px 16px;
     border-radius: 5px;
 
     &:hover {

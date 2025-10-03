@@ -1,0 +1,14 @@
+.overview {
+  background-color: transparent;
+
+  &__disclaimer {
+    display: block;
+    margin-top: 10px;
+    color: orange;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+  }
+}

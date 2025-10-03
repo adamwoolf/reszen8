@@ -48,7 +48,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background-color: var(--bg-color);
-  color: black;
+  /* color: black; */
   font-family: var(--font-stack);
   font-size: 1rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;

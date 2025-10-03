@@ -184,23 +184,15 @@ const AnimatedRoutes = () => {
             </Layout>
           }
         />
-        <Route
-          path='/forgot-password'
-          element={
-            <Layout>
-              <PasswordResetPage />
-            </Layout>
-          }
-        />
 
         <Route
           path='/bespoke-meditation-generator'
           element={
-            <ProtectedRoute>
-              <Layout>
-                <AIMeditationGenerator />
-              </Layout>
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <Layout>
+              <AIMeditationGenerator />
+            </Layout>
+            // </ProtectedRoute>
           }
         />
         <Route

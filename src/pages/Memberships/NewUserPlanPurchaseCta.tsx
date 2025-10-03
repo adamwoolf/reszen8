@@ -24,7 +24,6 @@ const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: stri
           <SignUp
             onSuccess={() => {
               setShowPopup(false);
-              // sessionStorage.setItem("pendingPlan", planId);
             }}
             planId={planId}
             tier={tier}

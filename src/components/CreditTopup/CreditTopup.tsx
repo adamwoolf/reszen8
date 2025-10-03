@@ -4,11 +4,14 @@ import { FaArrowRight } from "react-icons/fa";
 import Popup from "../Popup/Popup";
 import { useBasketStore } from "../../store/basketStore";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const CreditTopup = () => {
   const [show, setShow] = useState(false);
-  const { addItem, items } = useBasketStore();
+  const { addItem } = useBasketStore();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const options = [
     {
@@ -86,9 +89,20 @@ const CreditTopup = () => {
                   {option.saving && <sup className='topup__saving'>*</sup>}
                 </h3>
                 <p>£{option.price}</p>
-                <button onClick={() => handleAdd(option)} className='subscribe-button topup__buy-now'>
-                  Add to Basket
-                </button>
+                {currentUser?.subscription.subId !== "free-trial" ? (
+                  <button onClick={() => handleAdd(option)} className='subscribe-button topup__buy-now'>
+                    Add to Basket
+                  </button>
+                ) : (
+                  <Link
+                    onClick={() => setShow(false)}
+                    to='/memberships'
+                    disabled
+                    className='subscribe-button topup__buy-now'
+                  >
+                    Upgrade to Topup
+                  </Link>
+                )}
               </div>
             ))}
             <span></span>

@@ -56,3 +56,35 @@ export const updateMeditationDeleteStatus = async (userId: string, uid: string, 
     throw err;
   }
 };
+
+export async function createCheckoutSession(uid, priceId, mode = "subscription", metadata = {}) {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/create-checkout-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, priceId, mode, metadata }),
+  });
+  const data = await res.json();
+  return data; // contains Stripe sessionId
+}
+
+export async function switchSubscription(uid, newPriceId, updates) {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/switch-subscription`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, newPriceId, updates }),
+  });
+  if (!res.ok) {
+    const errData = await res.json();
+    throw new Error(errData.error || "Failed to switch subscription");
+  }
+  return res.json();
+}
+
+export async function cancelSubscription(uid, cancelAtPeriodEnd = true) {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/cancel-subscription`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, cancelAtPeriodEnd }),
+  });
+  return res.json();
+}

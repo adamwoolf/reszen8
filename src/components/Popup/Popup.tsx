@@ -11,7 +11,7 @@ const Popup = ({
 }: {
   fitContent?: boolean;
   show: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children: React.ReactNode;
   showClose?: boolean;
 }) => {
@@ -20,7 +20,7 @@ const Popup = ({
 
   const handleAnimationEnd = () => {
     if (leaving) {
-      onClose();
+      onClose?.();
       setLeaving(false);
     }
   };
@@ -91,7 +91,7 @@ const Popup = ({
   return ReactDOM.createPortal(
     <>
       <div
-        style={fitContent ? { height: "auto", paddingBottom: 70 } : {}}
+        style={fitContent ? { height: "auto", paddingBottom: showClose ? 70 : 30 } : {}}
         onAnimationEnd={handleAnimationEnd}
         className={!leaving ? "popup" : "popup popup--leaving"}
         ref={modalRef}

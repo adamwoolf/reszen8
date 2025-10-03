@@ -18,24 +18,22 @@ const FreeForever = () => {
           .filter((med) => med.immersive)
           .slice(1, 3)
           .map((med) => (
-            <MeditationCard item={med} />
+            <MeditationCard key={med.title} item={med} />
           ))}
         {meditations
           .filter((med) => !med.immersive)
           .slice(0, 1)
           .map((med) => (
-            <MeditationCard item={med} />
+            <MeditationCard key={med.title} item={med} />
           ))}
       </div>
       <div className='freemium__second-row'>
         <div className='freemium__section'>
           <h3>Articles</h3>
           {articles.slice(0, 2).map((article) => (
-            <div>
-              <Link className='freemium__article' to={`/articles/${article.title}`}>
-                {article.title}
-              </Link>
-            </div>
+            <Link key={article.title} className='freemium__article' to={`/articles/${article.title}`}>
+              {article.title}
+            </Link>
           ))}
         </div>
         <div className='freemium__section'>

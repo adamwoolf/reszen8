@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSavedItems } from "../../contexts/SavedItemsContext";
+
 import { generateMeditation } from "../../services/aiMeditationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
@@ -272,8 +271,16 @@ const AIMeditationGenerator: React.FC = () => {
 
           <div className='flex justify-center mt-8 space-x-8'>
             {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
-              cost && <span>You have run out of meditation credits for this subscription period.</span>}
-            {currentUser && currentUser?.isGod ? (
+              cost && (
+              <span>
+                You have run out of meditation credits for this subscription period. You can always topup using the link
+                above and continue generating bespoke meditations.
+              </span>
+            )}
+            {currentUser &&
+            (currentUser?.subscription.subId !== "reszen8-core" ||
+              currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits >=
+                cost) ? (
               <button
                 type='submit'
                 className='generate-btn'
@@ -296,7 +303,19 @@ const AIMeditationGenerator: React.FC = () => {
                 )}
               </button>
             ) : (
-              <span>Coming soon - generate bespoke, unique meditations to save and listen whenever you want.</span>
+              <>
+                <div className='signup-prompt'>
+                  <p>
+                    {" "}
+                    Experience the magic of generating bespoke, unique meditations wherever and whenever you want, - to
+                    save and listen whenever you want.
+                  </p>
+                  <Link className='signup-prompt__link' to='/memberships'>
+                    {" "}
+                    Sign Up Today{" "}
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </form>

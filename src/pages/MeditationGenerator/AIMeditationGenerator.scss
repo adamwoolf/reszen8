@@ -44,6 +44,27 @@
   text-fill-color: transparent;
 }
 
+.signup-prompt {
+  text-align: center;
+  padding: 20px;
+  color: orange;
+  border: 1px solid orange;
+  border-radius: 10px;
+
+  &__link {
+    background-color: orange;
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 10px 0;
+    display: block;
+    width: fit-content;
+    margin: auto;
+  }
+}
+
 .generator-header p {
   font-size: 1.1rem;
   color: #ffffff;
@@ -666,6 +687,5 @@ html {
   textarea {
     margin-bottom: 20px;
     background-color: whitesmoke;
-    color: black;
   }
 }

@@ -133,9 +133,9 @@ const Basket = () => {
         </div>
 
         <div className=''>
-          <div className=''>
+          <div className='basket__total'>
             <p>Total</p>
-            <p>£{total.toFixed(2)}</p>
+            <p className='basket__total__amount'>£{total.toFixed(2)}</p>
           </div>
 
           <div className=''>

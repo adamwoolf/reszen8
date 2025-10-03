@@ -29,3 +29,9 @@ export const getCurrentAudio = createSelector(
 
 export const getPublicationLikes = createSelector(getMeta, (meta): Like[] => meta.LIKES);
 export const getMeditationLikes = createSelector(getMeta, (meta): Like[] => meta.meditationLIKES);
+
+export const getPlanById = createSelector(
+  (state) => state.content.membershipTiers,
+  (state, id: string) => id,
+  (tiers: [], id: string) => tiers.find((t) => t.id === id)
+);
