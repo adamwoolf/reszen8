@@ -32,5 +32,5 @@ export const profanityFilter = (text) => {
     "shite",
     "dickhead",
   ];
-  return textArray.find((word: string) => profanities.includes(word));
+  return textArray.find((word: string) => profanities.includes(word.toLowerCase()));
 };

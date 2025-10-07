@@ -24,7 +24,10 @@ const Navbar: React.FC = () => {
   const meds = useSelector((state) => state?.content?.meditations);
   const userBespokeMeds =
     meds && currentUser ? Object.values(meds).filter((med) => med.createdBy === currentUser?.uid)?.length : 0;
-  const staticMeds = useSelector(getStaticMeditations);
+  const staticMeds = useSelector(getStaticMeditations)
+    ?.filter((med) => !med.collection)
+    ?.filter((med) => !med.introMed);
+
   const articles = useSelector(getPublications);
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
   const dashboardTotal = dashboardCount + userBespokeMeds;

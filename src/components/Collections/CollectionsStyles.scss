@@ -1,0 +1,32 @@
+.collections {
+  h2 {
+    text-align: center;
+  }
+
+  &__grid {
+    margin: 60px 0;
+  }
+
+  &__cards {
+    display: flex;
+    width: 100%;
+    min-width: 100%;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  &__card {
+    background-color: transparent;
+    border: 1px solid orange;
+    margin: 16px;
+    height: 350px;
+    width: 300px;
+    min-width: 300px;
+
+    scroll-snap-align: center; /* align item start with container snap */
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}

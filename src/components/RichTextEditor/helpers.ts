@@ -6,11 +6,9 @@
  * - Converts <li> into bullet-like lines
  * - Collapses multiple spaces/newlines
  */
-export function htmlToPlainText(html) {
-  console.log(html);
+export function htmlToPlainText(html, keepBreaks = true) {
   if (!html) return "";
 
-  // Replace line-breaking tags with \n
   let text = html
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
@@ -18,21 +16,25 @@ export function htmlToPlainText(html) {
     .replace(/<\/h[1-6]>/gi, "\n")
     .replace(/<\/li>/gi, "\n");
 
-  // Convert <li> to "- " prefix
   text = text.replace(/<li[^>]*>/gi, "- ");
+
+  // Step: Remove <break> tags if keepBreaks is false
+  if (!keepBreaks) {
+    text = text.replace(/<break\b[^>]*\/?>/gi, ""); // safely remove <break> or <break .../>
+  }
 
   // Strip all other tags
   text = text.replace(/<[^>]+>/g, "");
 
-  // Decode HTML entities (e.g. &amp; → &)
+  // Decode HTML entities
   const textarea = document.createElement("textarea");
   textarea.innerHTML = text;
   text = textarea.value;
 
   // Normalize whitespace
-  text = text.replace(/\n\s*\n\s*/g, "\n\n"); // collapse multiple blank lines
-  text = text.replace(/[ \t]+/g, " "); // collapse spaces/tabs
+  text = text.replace(/\n\s*\n\s*/g, "\n\n");
+  text = text.replace(/[ \t]+/g, " ");
   text = text.trim();
-  console.log(text);
+
   return text;
 }

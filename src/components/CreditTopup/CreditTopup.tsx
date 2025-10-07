@@ -11,7 +11,7 @@ const CreditTopup = () => {
   const [show, setShow] = useState(false);
   const { addItem } = useBasketStore();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, updateUser } = useAuth();
 
   const options = [
     {

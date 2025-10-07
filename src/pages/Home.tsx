@@ -88,10 +88,10 @@ const Home: React.FC = () => {
               className={`feature-card ${currentUser || feature.isTrial ? "clickable" : ""}`}
               variants={item}
               whileHover={{ y: currentUser || feature.isTrial ? -10 : 0, transition: { duration: 0.2 } }}
-              onClick={
-                currentUser || feature.isTrial || feature.path === "/publications"
-                  ? () => navigate(feature.path)
-                  : undefined
+              onClick={() =>
+                currentUser?.subscription?.subId === "reszen8-generate" && feature.path === "/articles"
+                  ? null
+                  : navigate(feature.path)
               }
               style={{
                 cursor: currentUser || feature.isTrial ? "pointer" : "default",

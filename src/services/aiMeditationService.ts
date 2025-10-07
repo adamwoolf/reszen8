@@ -94,7 +94,9 @@ export const generateStaticMedFromScript = async (
   script: string,
   voiceCode: string,
   immersive: boolean,
-  introMed?: boolean
+  introMed?: boolean,
+  collection?: string,
+  episode?: string
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -111,9 +113,10 @@ export const generateStaticMedFromScript = async (
       practiceType,
       immersive,
       introMed,
+      collection,
+      episode,
     });
 
-    console.log(uploadResponse);
     return uploadResponse;
   } catch (error) {
     console.error("Failed to generate meditation:", error);

@@ -14,11 +14,13 @@ const MeditationCard = ({
   i,
   showLike = true,
   handleAddItem,
+  customTitle,
 }: {
   handleAddItem?: (item: any) => void;
   showLike?: boolean;
   i: number;
   item: any;
+  customTitle?: string;
 }) => {
   const { currentUser } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
@@ -83,7 +85,7 @@ const MeditationCard = ({
     >
       <div className='publication__card-content'>
         <div className='publication__card-inner'>
-          <h3 className='publication__card-title'>{item.title}</h3>
+          <h3 className='publication__card-title'>{customTitle || item.title}</h3>
           {item.immersive && <img className='immersive-icon' src={immersiveLogo} />}
 
           <div className='publication__card-divider' />

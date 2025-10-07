@@ -58,6 +58,14 @@ export default function MembersArea() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  function sortByDate(items, order = "desc") {
+    return [...items].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return order === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  }
+
   return (
     <div className='home-page members-area'>
       <header className='mission-statement'>
@@ -91,9 +99,25 @@ export default function MembersArea() {
             ) : (
               <>
                 <p className='members-area__info'>
-                  Current plan: <b>{currentUser?.subscription?.planName || "Free Trial"}</b>
+                  Current plan:{" "}
+                  <b>
+                    {currentUser?.subscription?.planName && currentUser?.subscription?.active
+                      ? currentUser?.subscription?.planName
+                      : " You don't currently have an active subscription."}{" "}
+                  </b>
                 </p>
-                <p className='members-area__info'>{currentUser?.email}</p>
+                <p className='members-area__info'>
+                  Email: <span>{currentUser?.email}</span>
+                </p>
+                <div className='members-area__info'>
+                  <span> Included meditation credits:</span> <span>{currentUser?.subscription?.meditationCredits}</span>
+                </div>
+                <p className='members-area__info'>
+                  Extra meditation credits: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
+                </p>
+                {currentUser?.timeUntilRenewal && (
+                  <p className='members-area__info'>Renews in: {currentUser?.timeUntilRenewal}</p>
+                )}
               </>
             )}
             {(!currentUser?.subscription?.isActiveSub || currentUser?.subscription?.subscription === "free-trial") && (
@@ -113,8 +137,8 @@ export default function MembersArea() {
                     <div className='saved-item-details'>
                       <h4 className='saved-item-name'>{item.product.name}</h4>
                       {item.size && <p className='saved-item-size'>Size: {item.size}</p>}
-                      <p className='saved-item-quantity'>Qty: {item.quantity || 1}</p>
-                      <p className='saved-item-price'>£{item.product.price.toFixed(2)} each</p>
+                      <p className='purchased-item-date'>Qty: {item.quantity || 1}</p>
+                      <p className='purchased-item-date'>£{item.product.price.toFixed(2)} each</p>
                       {item.savedAt && <p className='saved-item-date'>Saved: {formatDate(item.savedAt)}</p>}
                     </div>
                   </div>
@@ -132,22 +156,30 @@ export default function MembersArea() {
           {/* Purchased Items Section */}
           <div className='feature-card'>
             <h3 className='feature-title'>Purchased Items</h3>
+
             {currentUser?.purchasedItems?.length > 0 ? (
-              <div className='purchased-items-container'>
-                {currentUser?.purchasedItems.map((item, index) => (
-                  <div key={`${item.id}-${index}`} className='purchased-item'>
-                    <div className='purchased-item-details'>
-                      <h4 className='purchased-item-name'>{item.name}</h4>
-                      {item.size && <p className='purchased-item-size'>Size: {item.size}</p>}
-                      {item.quantity && <p className='purchased-item-quantity'>Qty: {item.quantity || 1}</p>}
-                      <p className='purchased-item-price'>£{item.price.toFixed(2)}</p>
-                      {item.purchaseDate && (
-                        <p className='purchased-item-date'>Purchased: {formatDate(item.purchaseDate)}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className='purchased-items-container-fade' />
+
+                <div className='purchased-items-container'>
+                  {sortByDate(currentUser?.purchasedItems)?.map((item, index) => {
+                    const date = new Date(item.date);
+                    return (
+                      <div key={`${item.id}-${index}`} className='purchased-item'>
+                        <div className='purchased-item-details'>
+                          <h4 className='purchased-item-name'>{item.title}</h4>
+                          {item.date && <p className='purchased-item-date'>Purchase date: {date.toDateString()}</p>}
+                          {item.quantity && <p className='purchased-item-quantity'>Qty: {item.quantity || 1}</p>}
+                          <p className='purchased-item-date'>£{item.price.toFixed(2)}</p>
+                          {item.purchaseDate && (
+                            <p className='purchased-item-date'>Purchased: {formatDate(item.purchaseDate)}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             ) : (
               <p className='no-items-message'>You haven't purchased any items yet. Visit our store to get started!</p>
             )}

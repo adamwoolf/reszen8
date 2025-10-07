@@ -12,6 +12,7 @@ import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import ToggleContainer from "./ToggleContainer";
 import Popup from "../../components/Popup/Popup";
+import Collections from "../../components/Collections/Collections";
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
@@ -20,9 +21,12 @@ const DigitalLibrary = () => {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
   const [ImmersiveMeds, setImmersiveMeds] = useState(true);
-
+  const [activeCollection, setActiveCollection] = useState("");
   const { addItem } = useSavedItems();
-  const libraryMeditations = useSelector(getStaticMeds)?.filter((med) => !med.introMed);
+  const libraryMeditations = useSelector(getStaticMeds)
+    ?.filter((med) => !med.introMed)
+    .filter((med) => !med.collection);
+
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
@@ -61,7 +65,6 @@ const DigitalLibrary = () => {
   }
 
   const searchText = (e) => {
-    console.log("searching");
     const query = e.target.value;
     setSearch(query);
     setDisplayMeds(
@@ -192,8 +195,13 @@ const DigitalLibrary = () => {
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>Meditation Library</h1>
-      {renderSearch()}
-      {renderTabContent()}
+      {/* <Collections handleClick={setActiveCollection} /> */}
+      {!activeCollection && (
+        <>
+          {renderSearch()}
+          {renderTabContent()}
+        </>
+      )}
     </div>
   );
 };

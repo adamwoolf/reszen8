@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { Subscription, User } from "../models";
-import { useNavigate } from "react-router-dom";
+import { Subscription } from "../models";
 import { useDispatch } from "react-redux";
 import { getAWSArticles, getMeditationItems, getStaticMeditations } from "../store/apiUtils";
 import { setArticles, setMeditations, setStaticMeditations, setMembershipTiers } from "../store/contentSlice";
@@ -10,7 +9,6 @@ import { getMembershipTiers } from "../contentful";
 
 const UserManager = ({ children }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
   const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
@@ -81,7 +79,6 @@ const UserManager = ({ children }) => {
           },
         ];
       }, []);
-      console.log(membershipObjects);
       dispatch(setMembershipTiers(membershipObjects));
     }
   }, [membershipTiers]);

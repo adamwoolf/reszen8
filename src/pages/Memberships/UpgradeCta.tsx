@@ -13,7 +13,6 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
   const { currentUser, setCurrentUser } = useAuth();
   const [waiting, setWaiting] = useState(false);
   const plan = useSelector((state) => getPlanById(state, id));
-  console.log(plan);
   const handleClick = async () => {
     setWaiting(true);
     await switchSubscription(currentUser?.uid, plan.priceId, plan);

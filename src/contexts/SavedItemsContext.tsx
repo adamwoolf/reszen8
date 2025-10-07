@@ -26,8 +26,6 @@ type SavedItemsContextType = {
   removeItem: (itemId: number, type: keyof SavedItemsType) => void;
 };
 
-const LOCAL_STORAGE_KEY = "reszen8_saved_items";
-
 const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undefined);
 
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -40,12 +38,18 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     if (currentUser) {
       // REPLACE THIS AWS
       // addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
+      updateUser(currentUser.uid, { basket: items });
+      setCurrentUser({ ...currentUser, basket: items });
     }
   }, [items]);
 
   useEffect(() => {
     if (currentUser?.basket) {
-      setItems(Object.values(currentUser?.basket));
+      if (Array.isArray(currentUser.basket)) {
+        setItems(currentUser?.basket);
+      } else {
+        setItems([]);
+      }
     }
     if (!currentUser) {
       setItems([]);

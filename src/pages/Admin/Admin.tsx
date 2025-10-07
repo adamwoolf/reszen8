@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
+import "./AdminStyles.scss";
 interface MeditationState {
   title: string;
   content: string;
@@ -46,6 +47,8 @@ const Admin: React.FC = () => {
   const [contentType, setContentType] = useState("meditation");
   const [immersive, setImmersive] = useState(false);
   const [introMed, setIntroMed] = useState(false);
+  const [collection, setCollection] = useState("");
+  const [episode, setEpisode] = useState("");
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
@@ -155,7 +158,9 @@ const Admin: React.FC = () => {
         textToSend,
         voiceCode,
         immersive,
-        introMed
+        introMed,
+        collection,
+        episode
       );
 
       console.log("Static generated");
@@ -172,7 +177,7 @@ const Admin: React.FC = () => {
 
   const generateArticle = async () => {
     setIsGenerating(true);
-    console.log("article", title, script, voiceCode, meditationType, practiceType);
+
     await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType, immersive);
     setIsGenerating(false);
   };
@@ -190,11 +195,25 @@ const Admin: React.FC = () => {
             {isGenerating ? "api status: GENERATING" : "api status: idle"}
           </span>
           <label>Title</label>
-          <input value={title} placeholder='Enter title for static med' onChange={(e) => setTitle(e.target.value)} />
+          <input
+            className='admin__input'
+            value={title}
+            placeholder='Enter title for static med'
+            onChange={(e) => setTitle(e.target.value)}
+          />
           <div className='form-group form-group-block'>
             <label>Intro Meditation: </label>
 
             <ToggleSwitch onOffState noLabel checked={introMed} onChange={setIntroMed} />
+            <label>Collection Name</label>
+            <input
+              className='admin__input'
+              value={collection}
+              placeholder='Enter collection name. (The Awakening Collection)'
+              onChange={(e) => setCollection(e.target.value)}
+            />
+            <label>Episode Number</label>
+            <input className='admin__input' value={episode} onChange={(e) => setEpisode(e.target.value)} />
           </div>
           <div className='form-group form-group-block'>
             <label>Content type: Meditation or Article</label>
@@ -212,7 +231,12 @@ const Admin: React.FC = () => {
           </div>
           <div className='form-group form-group-block'>
             <label>Voice code</label>
-            <input value={voiceCode} placeholder='Enter voice code' onChange={(e) => setVoiceCode(e.target.value)} />
+            <input
+              className='admin__input'
+              value={voiceCode}
+              placeholder='Enter voice code'
+              onChange={(e) => setVoiceCode(e.target.value)}
+            />
           </div>
           <div className='form-grid'>
             {contentType === "meditation" && (
