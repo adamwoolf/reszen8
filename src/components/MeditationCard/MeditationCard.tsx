@@ -15,12 +15,16 @@ const MeditationCard = ({
   showLike = true,
   handleAddItem,
   customTitle,
+  customImage,
+  isCollection,
 }: {
   handleAddItem?: (item: any) => void;
   showLike?: boolean;
   i: number;
   item: any;
   customTitle?: string;
+  customImage?: string;
+  isCollection?: boolean;
 }) => {
   const { currentUser } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
@@ -96,13 +100,21 @@ const MeditationCard = ({
         <div className='publication__card-inner'>
           {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
           {/* {item.audioUrl && <AudioController2 audioUrl={item.audioUrl} />} */}
-          <button disabled={hasBeenSaved} onClick={() => handleAddItem?.(item)} className='publication__card-save-cta'>
-            {hasBeenSaved ? "Saved to My Journey" : "Save to My Journey"}
-          </button>
+          {!isCollection && (
+            <button
+              disabled={hasBeenSaved}
+              onClick={() => handleAddItem?.(item)}
+              className='publication__card-save-cta'
+            >
+              {hasBeenSaved ? "Saved to My Journey" : "Save to My Journey"}
+            </button>
+          )}
         </div>
-        <div className='publication__card-icon-container'>
-          <Icon type={item.category[0].category} />
-        </div>
+        {!customImage && (
+          <div className='publication__card-icon-container'>
+            <Icon type={item.category[0].category} />
+          </div>
+        )}
         {currentUser && showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
       </div>
       {currentUser && currentUser.isGod && !item.verified && item.staticMed && (

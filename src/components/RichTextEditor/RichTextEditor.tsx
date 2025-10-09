@@ -53,9 +53,24 @@ export default function RichTextEditor({ initialHtml = "", onChange }) {
     syncOutput();
   };
 
+  function preserveHtmlExceptBreaks(html) {
+    if (!html || typeof html !== "string") return "";
+
+    // Decode first to catch encoded breaks
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = html;
+    let decoded = textarea.value;
+
+    // Remove <break> tags
+    decoded = decoded.replace(/<break\b[^>]*\/?>/gi, "");
+
+    return decoded;
+  }
+
   const syncOutput = () => {
     const html = editorRef.current?.innerHTML || "";
-    setOutput(html);
+    console.log(preserveHtmlExceptBreaks(html));
+    setOutput(preserveHtmlExceptBreaks(html));
     setPlainText(htmlToPlainText(html));
     onChange({ html: output, plainText });
   };
@@ -225,7 +240,6 @@ export default function RichTextEditor({ initialHtml = "", onChange }) {
           style={{ whiteSpace: "pre-wrap" }}
         />
       </div>
-
     </div>
   );
 }

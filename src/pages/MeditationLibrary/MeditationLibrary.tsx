@@ -195,9 +195,10 @@ const DigitalLibrary = () => {
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>Meditation Library</h1>
-      {/* <Collections handleClick={setActiveCollection} /> */}
+      <Collections handleClick={setActiveCollection} />
       {!activeCollection && (
         <>
+          <h3 style={{ textAlign: "center", margin: "50px 0" }}>Browse Full Library</h3>
           {renderSearch()}
           {renderTabContent()}
         </>

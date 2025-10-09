@@ -35,7 +35,7 @@ const CheckoutForm = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearBasket } = useBasketStore();
   const { addPurchasedItems } = usePurchasedItemsStore();
-  const { currentUser } = useAuth();
+  const { currentUser, updateUser } = useAuth();
   const [waiting, setWaiting] = useState(false);
 
   // Redirect to basket if empty
@@ -43,7 +43,6 @@ const CheckoutForm = () => {
     return <Navigate to='/basket' />;
   }
 
-  console.log("ITEMS", items);
   const handleSubmitStripe = async (e: React.FormEvent) => {
     e.preventDefault();
     const { email, firstName, surName } = currentUser || {};
@@ -70,15 +69,13 @@ const CheckoutForm = () => {
     });
 
     const data = await res.json();
-    console.log("DATA", data);
+
+    await updateUser(currentUser?.uid, { basket: [] });
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
 
     setWaiting(false);
   };
-  const daySubPrice = "price_1SCjP9RpZB60VN5hWQdAoIwv";
-  const premiumPrice = "price_1SBZIPRpZB60VN5hMyQDAZ7n";
-  // const formattedTotal = totalPrice().toFixed(2);
 
   return (
     <form onSubmit={handleSubmitStripe} className='checkout-form'>

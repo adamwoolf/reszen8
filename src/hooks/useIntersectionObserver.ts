@@ -1,34 +1,38 @@
 import { useState, useEffect, RefObject } from "react";
 
-interface UseIntersectionObserverOptions extends IntersectionObserverInit {}
+interface UseIntersectionObserverOptions extends IntersectionObserverInit {
+  /** If true, will disconnect observer after first intersect */
+  once?: boolean;
+}
 
+/**
+ * Tracks if an element is intersecting the viewport (or a root element).
+ * Returns a boolean for simplicity.
+ */
 export function useIntersectionObserver(
   ref: RefObject<Element>,
   options: UseIntersectionObserverOptions = {}
 ): boolean {
+  const { once = false, ...observerOptions } = options;
   const [isIntersecting, setIsIntersecting] = useState(false);
 
   useEffect(() => {
-    if (!ref.current) return; // wait until ref exists
-
     const element = ref.current;
+    if (!element) return;
 
     const observer = new IntersectionObserver(([entry]) => {
       setIsIntersecting(entry.isIntersecting);
-    }, options);
+
+      // If we only care about the first intersection, disconnect
+      if (once && entry.isIntersecting) {
+        observer.disconnect();
+      }
+    }, observerOptions);
 
     observer.observe(element);
 
-    // Check initial visibility manually in case the element is already in view
-    // (important for first mount)
-    if (element) {
-      const rect = element.getBoundingClientRect();
-      const inView = rect.top < (options.root?.clientHeight || window.innerHeight) && rect.bottom > 0;
-      setIsIntersecting(inView);
-    }
-
     return () => observer.disconnect();
-  }, [ref.current, options.root, options.rootMargin, options.threshold]);
+  }, [ref, observerOptions.root, observerOptions.rootMargin, observerOptions.threshold, once]);
 
   return isIntersecting;
 }

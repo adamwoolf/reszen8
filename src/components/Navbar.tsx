@@ -145,7 +145,7 @@ const Navbar: React.FC = () => {
               </li>
               <li>
                 <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
-                  Bespoke Meditation Generator
+                  Bespoke
                 </NavLink>
               </li>
 
@@ -168,7 +168,7 @@ const Navbar: React.FC = () => {
                   {currentUser?.subscription.subId !== "reszen8-generate" && (
                     <li>
                       <NavLink to='/meditation-library' className={getNavLinkClass}>
-                        Meditation Library <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
+                        Meditations <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
                       </NavLink>
                     </li>
                   )}

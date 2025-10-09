@@ -12,16 +12,15 @@ import Popup from "../../components/Popup/Popup";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { getStaticMeditations } from "../../store/contentSelectors";
 import Panel from "./Panel";
+import { useHorizontalIntersectionObserver } from "../../hooks/useHorizontalScrollVisibility";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const { removeItem, savedItems } = useSavedItems();
-  const [activeTab, setActiveTab] = useState<TabType>("meditations");
+  const [activeTab, setActiveTab] = useState<TabType>("myMeds");
   const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const [myMeds, setMyMeds] = useState([]);
   const data = useSelector((state) => state.content.meditations);
   const tabsRef = useRef();
@@ -51,19 +50,6 @@ const Dashboard = () => {
       setMyMeds(Object.values(parsedMeds).reverse());
     }
   }, [data, currentUser]);
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      if (progressInterval.current) {
-        clearInterval(progressInterval.current);
-      }
-    };
-  }, []);
 
   const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
     removeItem(itemId, type);
@@ -104,6 +90,10 @@ const Dashboard = () => {
     });
   };
 
+  useEffect(() => {
+    handleScroll("myMeds");
+  }, []);
+
   const renderTabContent = (key: string) => {
     const data = allItems[key];
     const destination = activeTab === "publications" ? "articles" : "meditation-library";
@@ -118,6 +108,7 @@ const Dashboard = () => {
         itemToRemove={itemToRemove}
         setItemToRemove={setItemToRemove}
         setActiveTab={setActiveTab}
+        activeTab={activeTab}
         handleDeleteBespokeMed={handleDeleteBespokeMed}
         handleRemoveItem={handleRemoveItem}
       />
@@ -128,7 +119,7 @@ const Dashboard = () => {
     setActiveTab(tab);
     handleScroll(tab);
   };
-
+  console.log(activeTab);
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>My Journey</h1>
@@ -144,6 +135,15 @@ const Dashboard = () => {
             Introduction Meditations
             {introMeditations?.length > 0 && <span className='tab-count'>{introMeditations?.length}</span>}
           </button>
+          {/* <button
+            className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
+            onClick={() => handleTabClick("myMeds")}
+          >
+            My Collections
+            {myMeds?.filter((item) => !item.willDelete).length > 0 && (
+              <span className='tab-count'>{myMeds?.filter((item) => !item.willDelete).length}</span>
+            )}
+          </button> */}
           <button
             className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
             onClick={() => handleTabClick("myMeds")}
@@ -183,7 +183,6 @@ const Dashboard = () => {
       <div ref={carouselRef} className='dashboard__content-carousel'>
         {["introMeditations", "myMeds", "meditations", "publications", "deleted"].map((key) => renderTabContent(key))}
       </div>
-      <audio ref={audioRef} />
     </div>
   );
 };

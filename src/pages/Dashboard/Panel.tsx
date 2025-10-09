@@ -5,10 +5,7 @@ import { FaArrowRight } from "react-icons/fa";
 import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { Link } from "react-router-dom";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
-import { deleteBespokeMed, updateMeditationDeleteStatus } from "../../store/apiUtils";
 import Popup from "../../components/Popup/Popup";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 const Panel = ({
   dataKey,
   itemToRemove,
@@ -36,13 +33,15 @@ const Panel = ({
   handleRemoveItem: () => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const entry = useIntersectionObserver(containerRef);
+  const panelIds = ["introMeditations", "myMeds", "meditations", "publications", "deleted"];
 
-  useEffect(() => {
-    if (entry) {
-      setActiveTab(dataKey);
-    }
-  }, [entry]);
+  const mapKeyToTitle = {
+    myMeds: "My Bespoke Meditations",
+    introMeditations: "Introduction Meditations",
+    meditations: "Library Meditations",
+    publications: "My Articles",
+    deleted: "Recently Deleted",
+  };
 
   return (
     <div id={`panel-${dataKey}`} className='dashboard-content dashboard__content-panel'>
@@ -51,10 +50,10 @@ const Panel = ({
           {notification.message}
         </div>
       )}
-
+      <div ref={containerRef} style={{ position: "absolute", top: 0, left: 0 }} />
       {data?.length === 0 && dataKey !== "deleted" && dataKey !== "myMeds" ? (
         <div className='text-center py-10'>
-          <p className='text-gray-400 mb-4'>You haven't added any {activeTab} to your dashboard yet.</p>
+          <p className='text-gray-400 mb-4'>You haven't added any {dataKey} to your dashboard yet.</p>
           <Link to={`/${destination}`} className='text-orange-400 hover:text-orange-300 font-medium'>
             Browse{" "}
             {dataKey === "publications" ? "Articles" : dataKey.charAt(0).toUpperCase() + dataKey.slice(1, -1) + "s"} →
@@ -62,7 +61,7 @@ const Panel = ({
         </div>
       ) : (
         <>
-          <div ref={containerRef} />
+          <h3 className='panel-title'>{mapKeyToTitle[dataKey]}</h3>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {data
               ?.filter((item) => {
@@ -81,7 +80,6 @@ const Panel = ({
                     today.getDate() === dateToCheck.getDate()
                   );
                 }
-
                 function getDeletionCountdown(timestampSeconds: number) {
                   const now = new Date();
                   const deleteDate = new Date(timestampSeconds * 1000); // convert seconds → ms
@@ -112,7 +110,7 @@ const Panel = ({
                 )} */}
                           {item.style && <p>{item.style}</p>}
                           {item.willDelete && <p>This item will be deleted: {getDeletionCountdown(item.willDelete)}</p>}
-                          {item.createdAt && !item.staticMed && activeTab !== "publications" && (
+                          {item.createdAt && !item.staticMed && dataKey !== "publications" && (
                             <span className='dashboard__date'>
                               Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
                             </span>
@@ -126,19 +124,19 @@ const Panel = ({
                       )}
 
                       <div className='dashboard-buttons'>
-                        {item.audioUrl && activeTab !== "publications" && (
+                        {item.audioUrl && dataKey !== "publications" && (
                           <div className='dashboard__audio'>
                             <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
                           </div>
                         )}
-                        {activeTab === "publications" && (
+                        {dataKey === "publications" && (
                           <Link className='read-link' to={`/articles/${item.title}`}>
                             <span className='read-link-text'> Read</span>
                             <FaArrowRight />{" "}
                           </Link>
                         )}
                         <div>
-                          {activeTab === "deleted" && (
+                          {dataKey === "deleted" && (
                             <button
                               onClick={() => {
                                 handleDeleteBespokeMed(item.uid, false);
@@ -177,19 +175,19 @@ const Panel = ({
                             show={showPopup === item.uid}
                             onClose={() => setShowPopup("")}
                           >
-                            {activeTab !== "myMeds" ? (
+                            {dataKey !== "myMeds" ? (
                               <>
                                 <h3>Remove from your Journey</h3>
                                 <p>
                                   "{itemToRemove?.title}" will be removed from your Journey, but still be available in
-                                  the {activeTab === "publications" ? "the Articles page" : "the Meditation Library"}
+                                  the {dataKey === "publications" ? "the Articles page" : "the Meditation Library"}
                                 </p>
                                 <button onClick={() => setShowPopup(false)} className='dashboard-button'>
                                   Cancel
                                 </button>
                                 <button
                                   onClick={() => {
-                                    handleRemoveItem(itemToRemove, activeTab as keyof typeof savedItems, i);
+                                    handleRemoveItem(itemToRemove, dataKey as keyof typeof savedItems, i);
                                     setShowPopup(false);
                                   }}
                                   className='dashboard-button'

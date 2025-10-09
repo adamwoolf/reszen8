@@ -1,0 +1,157 @@
+:root {
+  --bg: #fff0e0;
+  --hill1: #ffb07a;
+  --hill2: #ffa05a;
+  --trunk: #9b3b08;
+  --foliage1: #ff9a2a;
+  --foliage2: #ff7a12;
+  --leaf: #ff7a12;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+}
+
+.scene {
+  width: min(900px, 92vw);
+  max-width: 1100px;
+  aspect-ratio: 3/2;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #ffd9a6 0%, #ffb573 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hills sway animation */
+.hills {
+  animation: hills-sway 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes hills-sway {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Foliage sway */
+.foliage {
+  transform-origin: 50% 85%;
+  animation: foliage-sway 4.5s ease-in-out infinite;
+}
+
+@keyframes foliage-sway {
+  0% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
+}
+
+/* Falling leaves */
+.leaf {
+  background-color: transparent;
+  position: absolute;
+  width: 28px;
+  height: 18px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: center;
+  animation: leaf-fall linear infinite, leaf-rotate ease-in-out infinite;
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(-10vh) translateX(0) scale(1);
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(40vw) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes leaf-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* Individual leaf timings */
+.leaf.l1 {
+  animation-duration: 5.6s;
+  animation-delay: 0s;
+  left: 68%;
+  top: 12%;
+}
+.leaf.l2 {
+  animation-duration: 6.8s;
+  animation-delay: 0.6s;
+  left: 56%;
+  top: 18%;
+}
+.leaf.l3 {
+  animation-duration: 5s;
+  animation-delay: 1s;
+  left: 78%;
+  top: 14%;
+}
+.leaf.l4 {
+  animation-duration: 7.2s;
+  animation-delay: 1.8s;
+  left: 48%;
+  top: 14%;
+}
+.leaf.l5 {
+  animation-duration: 6s;
+  animation-delay: 0.9s;
+  left: 70%;
+  top: 6%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 520px) {
+  .scene {
+    aspect-ratio: 4/5;
+  }
+  .leaf {
+    width: 20px;
+    height: 14px;
+  }
+}
+
+/* Caption */
+.caption {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.35);
+}

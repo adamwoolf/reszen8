@@ -83,7 +83,7 @@ export const generateArticleWithAudio = async (
     return uploadResponse;
   } catch (error) {
     console.error("Failed to generate meditation:", error);
-    throw new Error("Failed to generate meditation. Please try again later.");
+    throw new Error(`Failed to generate meditation. Please try again later. ${error.message}`);
   }
 };
 

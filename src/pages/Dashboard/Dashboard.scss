@@ -43,6 +43,7 @@
 
   &__content-carousel {
     display: flex;
+    gap: 40px;
     width: 100%;
     min-width: 100%;
     overflow: auto;
@@ -50,10 +51,9 @@
   }
 
   &__content-panel {
-    width: 90%;
-    min-width: 90%;
-    padding: 20px;
-    margin: 0 20px;
+    position: relative;
+    width: 100%;
+    min-width: 100%;
     scroll-snap-align: center; /* align item start with container snap */
   }
 }
@@ -119,14 +119,19 @@
   border: 1px solid orange;
 }
 
+.panel-title {
+  text-align: center;
+  font-size: 2rem;
+  margin: 40px 0;
+}
 .tab-btn:hover {
   background: rgba(255, 255, 255, 0.05);
   color: #e5e7eb;
 }
 
 .tab-btn.active {
-  font-weight: 600;
-  background-color: orange;
+  // font-weight: 600;
+  // background-color: orange;
 }
 
 .tab-count {
@@ -174,11 +179,11 @@
 .read-link {
   display: flex;
   align-items: center;
+  margin-bottom: -16px;
 }
 
 .read-link-text {
   color: orange;
-  margin-right: 8px;
 }
 
 /* Cards */

@@ -1,0 +1,16 @@
+.invoice-table {
+  width: 100%;
+}
+
+.invoices-cta {
+  background-color: transparent;
+  text-align: left;
+  font-size: 0.9rem;
+  color: orange;
+  text-decoration: underline;
+  padding: 0;
+  margin-bottom: 20px;
+  &:hover {
+    background-color: transparent;
+  }
+}

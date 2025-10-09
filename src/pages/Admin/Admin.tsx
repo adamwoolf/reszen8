@@ -177,7 +177,7 @@ const Admin: React.FC = () => {
 
   const generateArticle = async () => {
     setIsGenerating(true);
-
+    console.log(formattedArticle);
     await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType, immersive);
     setIsGenerating(false);
   };

@@ -30,8 +30,10 @@ const getImmersiveTracks = () =>
 
 const getPrivacyPolicy = () => client.getEntries({ content_type: "privacyPolicy" }).then((response) => response);
 const getTsAndCs = () => client.getEntries({ content_type: "termsAndConditions" }).then((response) => response);
+const getCollectionImages = () => client.getEntries({ content_type: "collectionImage" }).then((response) => response);
 
 export {
+  getCollectionImages,
   getTsAndCs,
   getPrivacyPolicy,
   getPublications,

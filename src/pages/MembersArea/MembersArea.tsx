@@ -1,6 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import "../CategoryPage.scss";
 import "../Home.scss";
 import "./MembersArea.scss";
@@ -14,11 +13,11 @@ import InviteAFriend from "../../components/InviteAFriend/InviteAFriend";
 import { IoMdLogOut } from "react-icons/io";
 import React from "react";
 import CancellationCta from "../../components/CancellationCta/CancellationCta";
+import InvoicePopup from "./InvoicePopup";
 
 export default function MembersArea() {
   const { currentUser, signOutRedirect } = useAuth();
-  const { purchasedItems } = usePurchasedItemsStore();
-  const { savedItems, removeSavedItem, moveToBasket } = useSavedItemsStore();
+  const { moveToBasket } = useSavedItemsStore();
   const { addItem } = useBasketStore();
 
   const cancellationTime = new Date(currentUser?.subscription?.willCancelOn * 1000).toLocaleDateString(undefined, {
@@ -120,6 +119,7 @@ export default function MembersArea() {
                 )}
               </>
             )}
+            <InvoicePopup />
             {(!currentUser?.subscription?.isActiveSub || currentUser?.subscription?.subscription === "free-trial") && (
               <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
                 Change Plan{" "}
