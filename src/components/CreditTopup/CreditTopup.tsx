@@ -6,6 +6,7 @@ import { useBasketStore } from "../../store/basketStore";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
+import { trackCTA } from "../../utils/analytics";
 
 const CreditTopup = () => {
   const [show, setShow] = useState(false);
@@ -74,7 +75,13 @@ const CreditTopup = () => {
 
   return (
     <div className='topup'>
-      <button onClick={() => setShow(true)} className='topup__cta'>
+      <button
+        onClick={() => {
+          trackCTA("Open Topup Popup");
+          setShow(true);
+        }}
+        className='topup__cta'
+      >
         top up <FaArrowRight />
       </button>
       <Popup show={show} onClose={() => setShow(false)} fitContent>

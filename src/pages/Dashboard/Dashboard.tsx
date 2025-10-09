@@ -12,7 +12,7 @@ import Popup from "../../components/Popup/Popup";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { getStaticMeditations } from "../../store/contentSelectors";
 import Panel from "./Panel";
-import { useHorizontalIntersectionObserver } from "../../hooks/useHorizontalScrollVisibility";
+import { trackCTA } from "../../utils/analytics";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
@@ -115,11 +115,12 @@ const Dashboard = () => {
     );
   };
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
+  const handleTabClick = (tab: string) => {
+    trackCTA(`Dashboard tab ${tab}`);
+    setActiveTab(tab as TabType);
     handleScroll(tab);
   };
-  console.log(activeTab);
+
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>My Journey</h1>

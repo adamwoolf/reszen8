@@ -6,6 +6,7 @@ import Icon from "../Icon/Icon";
 import "./MeditationCardStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
+import { trackCTA } from "../../utils/analytics";
 
 const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
@@ -103,7 +104,10 @@ const MeditationCard = ({
           {!isCollection && (
             <button
               disabled={hasBeenSaved}
-              onClick={() => handleAddItem?.(item)}
+              onClick={() => {
+                trackCTA(`Save meditation to My Journey-${item.title}`);
+                handleAddItem?.(item);
+              }}
               className='publication__card-save-cta'
             >
               {hasBeenSaved ? "Saved to My Journey" : "Save to My Journey"}

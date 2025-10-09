@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Popup from "../../components/Popup/Popup";
 import SignUp from "../Signup/Signup";
+import { trackCTA } from "../../utils/analytics";
+
 const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: string; tier: any }) => {
   const [showPopup, setShowPopup] = useState(false);
 
@@ -8,7 +10,13 @@ const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: stri
 
   return (
     <>
-      <button onClick={() => setShowPopup(true)} className='subscribe-button'>
+      <button
+        onClick={() => {
+          setShowPopup(true);
+          trackCTA("Open New User Signup Popup");
+        }}
+        className='subscribe-button'
+      >
         {tier.id === "free-trial" ? "Sign Up & Start Free Trial" : "Sign Up & Purchase"}
       </button>
       <Popup

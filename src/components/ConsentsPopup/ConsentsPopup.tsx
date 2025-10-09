@@ -6,6 +6,8 @@ import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { FaArrowCircleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
+import { trackCTA } from "../../utils/analytics";
+
 const ConsentsPopup = () => {
   const [show, setShow] = useState(false);
   const { currentUser, loading, updateUser, setCurrentUser } = useAuth();
@@ -20,6 +22,7 @@ const ConsentsPopup = () => {
   const planId = sessionStorage.getItem("pendingPlan");
 
   const handleUpdate = async () => {
+    trackCTA("Upodate Consents");
     setWaiting(true);
     if (!currentUser) return;
     setCurrentUser({ ...currentUser, consents: consentData });

@@ -13,6 +13,8 @@ import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import AudioController from "../../components/AudioPlayer/AudioController";
+import { trackCTA } from "../../utils/analytics";
+
 interface MeditationState {
   title: string;
   content: string;
@@ -54,6 +56,7 @@ const AIMeditationGenerator: React.FC = () => {
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
+    trackCTA("Generate Bespoke");
     e.preventDefault();
     if (isGenerating) return;
 

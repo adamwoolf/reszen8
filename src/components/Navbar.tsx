@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
 import { IoMdLogOut } from "react-icons/io";
+import { trackCTA } from "../utils/analytics";
+
 import ShareCta from "./ShareCta/ShareCta";
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
@@ -24,9 +26,7 @@ const Navbar: React.FC = () => {
   const meds = useSelector((state) => state?.content?.meditations);
   const userBespokeMeds =
     meds && currentUser ? Object.values(meds).filter((med) => med.createdBy === currentUser?.uid)?.length : 0;
-  const staticMeds = useSelector(getStaticMeditations)
-    ?.filter((med) => !med.collection)
-    ?.filter((med) => !med.introMed);
+  const staticMeds = useSelector(getStaticMeditations)?.filter((med) => !med.introMed);
 
   const articles = useSelector(getPublications);
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
@@ -192,7 +192,14 @@ const Navbar: React.FC = () => {
 
                   {!currentUser && !loading && (
                     <>
-                      <button onClick={() => auth.signinPopup()}>Sign in</button>
+                      <button
+                        onClick={() => {
+                          trackCTA("Sign In");
+                          auth.signinPopup();
+                        }}
+                      >
+                        Sign in
+                      </button>
                     </>
                   )}
                 </ul>

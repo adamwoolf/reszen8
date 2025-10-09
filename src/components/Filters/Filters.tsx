@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Icon, { getIcon } from "../Icon/Icon";
+import { trackCTA } from "../../utils/analytics";
 
 const Filters = ({ placeholder, searchText, filterPubs, activeFilter, search }) => {
   return (
@@ -11,7 +12,10 @@ const Filters = ({ placeholder, searchText, filterPubs, activeFilter, search }) 
             <button
               key={icon}
               className={activeFilter !== icon ? "publications__filter non-active-filter" : "publications__filter"}
-              onClick={() => filterPubs(icon)}
+              onClick={() => {
+                trackCTA(`Filter Icon - ${icon}`);
+                filterPubs(icon);
+              }}
             >
               <Icon large type={icon} />
             </button>

@@ -13,6 +13,8 @@ import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import ToggleContainer from "./ToggleContainer";
 import Popup from "../../components/Popup/Popup";
 import Collections from "../../components/Collections/Collections";
+import { trackCTA } from "../../utils/analytics";
+
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
@@ -147,7 +149,10 @@ const DigitalLibrary = () => {
             immersiveMedsCount={libraryMeditations.filter((m) => m.immersive).length}
             voiceMedsCount={libraryMeditations.filter((m) => !m.immersive).length}
             checked={ImmersiveMeds}
-            onChange={setImmersiveMeds}
+            onChange={(e) => {
+              trackCTA(`Immersive Toggle value: ${e}`);
+              setImmersiveMeds(e);
+            }}
             size='md'
           />
           <button className='meditation-library__toggle-container__info-cta' onClick={() => setShowPopup(true)}>

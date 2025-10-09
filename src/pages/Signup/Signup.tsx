@@ -9,7 +9,7 @@ import "./SignupStyles.scss";
 import { useAuth } from "react-oidc-context";
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
 import { AWS_DB_ENDPOINT } from "../../constants";
-import { loadStripe } from "@stripe/stripe-js";
+import { trackCTA } from "../../utils/analytics";
 
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
 
@@ -24,9 +24,9 @@ export default function Signup({ planId, tier, onSuccess }) {
   const [userName, setUserName] = useState("");
   const auth = useAuth();
   const [waiting, setWaiting] = useState(false);
-  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
   const handleSignup = async (e: React.FormEvent) => {
+    trackCTA("Sign Up New User");
     setWaiting(true);
     e.preventDefault();
     try {
@@ -61,6 +61,7 @@ export default function Signup({ planId, tier, onSuccess }) {
 
   const handleConfirm = async (e: React.FormEvent) => {
     setWaiting(true);
+    trackCTA("New User Confirm Email");
 
     e.preventDefault();
     try {

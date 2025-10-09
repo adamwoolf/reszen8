@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import warm from "../../assets/audio/elec.m4a";
 import rain from "../../assets/audio/rain.mp3";
 import space from "../../assets/audio/space.mp3";
 import ocean from "../../assets/audio/ocean.mp3";
@@ -9,6 +8,7 @@ import "./AmbientEnvStyles.scss";
 import { useSelector } from "react-redux";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { getImmersiveTracks } from "../../contentful";
+import { trackCTA } from "../../utils/analytics";
 
 const Envs = [
   { name: "Warm", url: space },
@@ -37,6 +37,7 @@ const AmbientEnv = () => {
 
   const handleChange = (e) => {
     const name = e.target.value;
+    trackCTA(`Immersive Audio Change ${name}`);
     const en = Envs.find((e) => e.name === name);
     dispatch(setImmersiveEnv(en));
     // if (en) setBackingUrl(en.url);

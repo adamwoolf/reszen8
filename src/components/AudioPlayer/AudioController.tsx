@@ -6,6 +6,7 @@ import CircularScrubber from "./CircularScrubber";
 import RadiatingWaves from "./Playing";
 import PlayPauseButton from "./PlayPauseIcon";
 import ThreeDotsLoader from "../ThreeDotsLoads";
+import { trackCTA } from "../../utils/analytics";
 
 const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmersive?: boolean }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +51,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
   }, [audioUrl, isVisible]);
 
   const togglePlayPause = () => {
+    trackCTA(`PlayPause-${audioUrl}`);
     if (currentAudio === audioUrl && playing) pause();
     else setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
   };

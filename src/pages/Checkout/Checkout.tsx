@@ -6,30 +6,12 @@ import { usePurchasedItemsStore } from "../../store/purchasedItemsStore";
 import "./Checkout.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { AWS_DB_ENDPOINT } from "../../constants";
+import { trackCTA } from "../../utils/analytics";
 
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
 import { createCheckoutSession } from "../../store/apiUtils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
-
-function SubscribeButton({ uid, priceId }) {
-  const handleSubscribe = async () => {
-    const stripe = await stripePromise;
-    const session = await createCheckoutSession(uid, priceId, "subscription", {
-      planName: "Pro",
-      meditationCredits: "20",
-      size: "large",
-    });
-
-    await stripe.redirectToCheckout({ sessionId: session.sessionId });
-  };
-
-  return (
-    <button type='button' onClick={handleSubscribe}>
-      Start Subscription
-    </button>
-  );
-}
 
 const CheckoutForm = () => {
   const navigate = useNavigate();
@@ -44,6 +26,7 @@ const CheckoutForm = () => {
   }
 
   const handleSubmitStripe = async (e: React.FormEvent) => {
+    trackCTA("Checkout");
     e.preventDefault();
     const { email, firstName, surName } = currentUser || {};
     const item = items?.[0]?.product;

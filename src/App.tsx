@@ -46,6 +46,7 @@ import Admin from "./pages/Admin/Admin";
 import LoadingScene from "./components/LoadingScene/LoadingScene";
 import { useSelector } from "react-redux";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
+import { useAnalytics } from "./hooks/useAnalytics";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -65,6 +66,7 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
+  useAnalytics();
 
   if (loading) return <LoadingScene />;
   if (landingPageActive) return null;

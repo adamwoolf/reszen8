@@ -43,13 +43,22 @@
   }
 
   &__card {
-    background-color: var(--bg-color-light);
+    background-color: rgba(rgb(5, 5, 41), 0.7);
+    backdrop-filter: blur(5px);
     margin: 16px;
     height: 300px;
     width: 250px;
     min-width: 250px;
     z-index: 3;
     box-shadow: 4px 5px 5px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: flex-end;
+
+    h3 {
+      color: rgb(236, 176, 102);
+      position: relative;
+      z-index: 10;
+    }
 
     @media (max-width: 768px) {
       height: 250px;
@@ -58,12 +67,27 @@
     }
 
     scroll-snap-align: center; /* align item start with container snap */
-
-    &-image {
-      width: 100%;
-    }
     &:hover {
-      background-color: var(--bg-color);
+      background-color: transparent;
+    }
+    &-image {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.2;
+      transition: 400ms;
+
+      &:hover {
+        opacity: 0.6;
+      }
+
+      &--active {
+        opacity: 0.6;
+      }
     }
   }
 

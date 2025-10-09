@@ -4,21 +4,23 @@ import { getStaticMeds } from "../../pages/MeditationLibrary/MeditationLibrary.s
 import "./CollectionsStyles.scss";
 import MeditationCard from "../MeditationCard/MeditationCard";
 import { getCollectionImages } from "../../contentful";
+import { trackCTA } from "../../utils/analytics";
+
 const Collections = ({ handleClick }: { handleClick?: (value: string) => void }) => {
   const [displayCol, setDisplayCol] = useState("");
   const collections = useSelector(getStaticMeds).filter((med) => med.collection);
   const [images, setImages] = useState([]);
 
-  console.log(images);
   const headerRef = useRef<HTMLDivElement>(null);
   const collectionTiles = [...new Set(collections.map((col) => col.collection))];
   const [selected, setSelected] = useState(collectionTiles[1]);
-  console.log(selected);
+
   useEffect(() => {
     getCollectionImages().then((data) => setImages(data.items.map((item) => ({ ...item.fields }))));
   }, []);
 
   const clickHandler = (collection: string) => {
+    trackCTA(`Collection select-tile-${collection}`);
     setDisplayCol(collections.filter((med) => med.collection === collection));
     handleClick?.(collection);
     setSelected(collection);
@@ -32,8 +34,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
     <div className='collections'>
       <h2>RESZEN8 Collections</h2>
       <div className='collections__cards'>
-        <div className='collections__background-overlay' />
-        {images.map((image) => (
+        {/* {images.map((image) => (
           <img
             className={
               selected === image.collectionName
@@ -42,20 +43,23 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
             }
             src={image.background?.fields?.file?.url}
           />
-        ))}
+        ))} */}
 
         {collectionTiles.map((col) => {
           const imgSrc = images.find((im) => im.collectionName === col)?.image?.fields?.file?.url;
-
+          console.log(col);
+          console.log(selected);
           return (
-            <button
-              onMouseEnter={() => setSelected(col)}
-              onClick={() => clickHandler(col)}
-              className='collections__card'
-            >
+            <button onClick={() => clickHandler(col)} className='collections__card'>
               <h3>{col}</h3>
-              <img className='collections__card-image' src={imgSrc} />
-              {/* <p>{`${col.collection} - Meditation ${col.episode}: ${col.title}`} </p> */}
+              <img
+                className={
+                  selected === col
+                    ? "collections__card-image collections__card-image--active"
+                    : "collections__card-image"
+                }
+                src={imgSrc}
+              />
             </button>
           );
         })}
