@@ -6,18 +6,18 @@ import AudioPlayer from "../../components/AudioPlayer/AudioController";
 import { Link } from "react-router-dom";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import Popup from "../../components/Popup/Popup";
+import CollectionOverlay from "./CollectionOverlay";
 const Panel = ({
   dataKey,
   itemToRemove,
   notification,
   data,
-  activeTab,
   destination,
   showPopup,
   setShowPopup,
   setItemToRemove,
-  setActiveTab,
   handleDeleteBespokeMed,
+  handleRemoveItem,
 }: {
   dataKey: string;
   itemToRemove: any;
@@ -33,7 +33,6 @@ const Panel = ({
   handleRemoveItem: () => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const panelIds = ["introMeditations", "myMeds", "meditations", "publications", "deleted"];
 
   const mapKeyToTitle = {
     myMeds: "My Bespoke Meditations",
@@ -41,15 +40,17 @@ const Panel = ({
     meditations: "Library Meditations",
     publications: "My Articles",
     deleted: "Recently Deleted",
+    collections: "My Collections",
+  };
+
+  const handleRemoveClick = (item: any) => {
+    setItemToRemove(item);
+    const id = item.uid || item.id;
+    setShowPopup(id);
   };
 
   return (
     <div id={`panel-${dataKey}`} className='dashboard-content dashboard__content-panel'>
-      {notification.show && (
-        <div className='fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'>
-          {notification.message}
-        </div>
-      )}
       <div ref={containerRef} style={{ position: "absolute", top: 0, left: 0 }} />
       {data?.length === 0 && dataKey !== "deleted" && dataKey !== "myMeds" ? (
         <div className='text-center py-10'>
@@ -70,6 +71,7 @@ const Panel = ({
               })
               .map((item, i) => {
                 const keyId = `${dataKey}-${item?.uid ?? item?.id ?? i}`;
+
                 function isToday(timestamp: number) {
                   const today = new Date();
                   const dateToCheck = new Date(timestamp);
@@ -98,7 +100,8 @@ const Panel = ({
                   if (minutes > 0) return `${minutes} min${minutes > 1 ? "s" : ""} left`;
                   return `${seconds} sec${seconds !== 1 ? "s" : ""} left`;
                 }
-
+                if (dataKey === "collections")
+                  return <CollectionOverlay handleRemoveItem={handleRemoveItem} collection={item} />;
                 return (
                   <div key={keyId} className='feature-card publication__card'>
                     <div className='publications__card-content dashboard__card-inner'>
@@ -150,8 +153,7 @@ const Panel = ({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setItemToRemove(item);
-                                setShowPopup(item.uid);
+                                handleRemoveClick(item);
                               }}
                               className='dashboard-button dashboard__remove-cta'
                             >
@@ -161,8 +163,7 @@ const Panel = ({
                           {dataKey === "myMeds" && (
                             <button
                               onClick={() => {
-                                setItemToRemove(item);
-                                setShowPopup(item.uid);
+                                handleRemoveClick(item);
                               }}
                               className='dashboard-button dashboard__remove-cta'
                             >
@@ -172,7 +173,7 @@ const Panel = ({
                           <Popup
                             showClose={false}
                             fitContent
-                            show={showPopup === item.uid}
+                            show={showPopup === item.uid || showPopup === item.id}
                             onClose={() => setShowPopup("")}
                           >
                             {dataKey !== "myMeds" ? (

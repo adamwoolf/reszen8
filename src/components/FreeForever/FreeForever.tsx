@@ -18,13 +18,13 @@ const FreeForever = () => {
           .filter((med) => med.immersive)
           .slice(1, 3)
           .map((med) => (
-            <MeditationCard key={med.title} item={med} />
+            <MeditationCard isCollection key={med.title} item={med} />
           ))}
         {meditations
           .filter((med) => !med.immersive)
           .slice(0, 1)
           .map((med) => (
-            <MeditationCard key={med.title} item={med} />
+            <MeditationCard isCollection key={med.title} item={med} />
           ))}
       </div>
       <div className='freemium__second-row'>

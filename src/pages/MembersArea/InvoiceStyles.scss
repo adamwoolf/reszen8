@@ -14,3 +14,9 @@
     background-color: transparent;
   }
 }
+
+.invoices__status {
+  @media (max-width: 786px) {
+    display: none;
+  }
+}

@@ -139,3 +139,5 @@ export const categoriser = (text: string) => {
   // Return top 3
   return results.slice(0, 3);
 };
+
+export const sortByEpisode = (array: any[]) => array.sort((a, b) => (Number(a.episode) > Number(b.episode) ? 1 : -1));

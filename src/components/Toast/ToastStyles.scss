@@ -1,0 +1,70 @@
+.message {
+  // bottom: -100px;
+  border: 1px solid orange;
+  background-color: var(--bg-color-light);
+  border-radius: 9px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
+  padding: 8px;
+  animation: appear 400ms ease-in-out;
+  animation-fill-mode: both;
+  display: flex;
+  align-items: center;
+
+  &--leaving {
+    animation: fadeOut 400ms ease-in-out;
+  }
+
+  &__icon {
+    margin-right: 8px;
+    margin-bottom: -6px;
+  }
+
+  &__close {
+    background-color: transparent;
+    color: orange;
+    font-size: 20px;
+    margin-bottom: -5px;
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &__text {
+    color: white;
+  }
+
+  &__container {
+    position: fixed;
+    top: 130px;
+    right: 20px;
+    z-index: 2000;
+    margin-top: 20px;
+    padding: 3px;
+    background-color: transparent;
+
+    @media (max-width: 786px) {
+      right: 10px;
+      left: 10px;
+    }
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

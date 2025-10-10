@@ -21,7 +21,7 @@ const UserManager = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(currentUser);
+    // console.log(currentUser);
     if (currentUser && currentUser?.subscription?.subscription === "free-trial") {
       const isActive = isSubscriptionActive(currentUser?.subscription);
       setisActiveSub(isActive);

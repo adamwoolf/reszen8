@@ -1,14 +1,13 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import useFirebasedatabase from "../hooks/useFirestoreCollection";
 import { useAuth } from "../contexts/AuthContext";
 import { useBasketStore } from "../store/basketStore";
 import { useSelector, useDispatch } from "react-redux";
-import { setDashboard } from "../store/contentSlice";
+import { createToast } from "../store/contentSlice";
 
 type ItemType = {
-  id: number;
+  id: number | string;
   title: string;
-  contentType: "meditation" | "publication";
+  contentType: "meditation" | "publication" | "collection";
   duration?: string;
   author?: string;
   savedDate?: string;
@@ -18,6 +17,7 @@ type SavedItemsType = {
   meditations: ItemType[];
   ebooks: ItemType[];
   publications: ItemType[];
+  collections: ItemType[];
 };
 
 type SavedItemsContextType = {
@@ -31,7 +31,12 @@ const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undef
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { meditations, dashboard } = useSelector((state) => state.content);
   const { currentUser, setCurrentUser, updateUser } = useAuth();
-  const [savedItems, setSavedItems] = useState<SavedItemsType>({ meditations: [], ebooks: [], publications: [] });
+  const [savedItems, setSavedItems] = useState<SavedItemsType>({
+    meditations: [],
+    ebooks: [],
+    publications: [],
+    collections: [],
+  });
   const { items, setItems } = useBasketStore();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -63,16 +68,27 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ebooks: currentUser?.savedItems?.ebooks || [],
         publications: currentUser?.savedItems?.publications || [],
         meditations: currentUser?.savedItems?.meditations || [],
+        collections: currentUser?.savedItems?.collections || [],
       });
     }
   }, [meditations, currentUser?.savedItems]);
 
   const addItem = (item: ItemType) => {
-    const itemType = item.contentType === "meditation" ? "meditations" : "publications";
-    const itemExists = savedItems[itemType].some((savedItem) => savedItem.createdAt === item.createdAt);
+    console.log(item);
+    const itemType =
+      item.contentType === "meditation"
+        ? "meditations"
+        : item.contentType === "collection"
+        ? "collections"
+        : "publications";
+    const itemExists =
+      itemType !== "collections"
+        ? savedItems[itemType].some((savedItem) => savedItem.uid === item.uid)
+        : savedItems[itemType].some((savedItem) => savedItem.id === item.id);
 
     if (itemExists) return false;
     if (currentUser.savedItems && currentUser.savedItems[itemType]) {
+      console.log(item);
       updateUser(currentUser?.uid, {
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
@@ -81,6 +97,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
+      dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
     } else {
       const newItems = !currentUser.savedItems
         ? { [itemType]: [item] }
@@ -91,15 +108,14 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ...currentUser,
         savedItems: newItems,
       });
+      dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
     }
     return true;
   };
 
   const removeItem = (item: any, type: keyof SavedItemsType) => {
-    console.log("item", item);
-
     const newItemsArray =
-      type !== "publications"
+      type !== "publications" && type !== "collections"
         ? [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)
         : [...currentUser?.savedItems[type]].filter((i) => i.id !== item.id);
 
@@ -113,6 +129,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         }
       : { ...currentUser, savedItems: {} };
     updateUser(currentUser?.uid, { savedItems: newSavedItems });
+    dispatch(createToast({ text: `${item.title} has been removed from My Journey`, type: "success" }));
 
     setCurrentUser(newUserObj);
   };

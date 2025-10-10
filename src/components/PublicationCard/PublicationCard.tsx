@@ -6,9 +6,12 @@ import { marked } from "marked";
 
 import Icon from "../Icon/Icon";
 import { FaVolumeUp } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { createToast } from "../../store/contentSlice";
 
 const PublicationCard = ({ item, showLike = true, onClose }) => {
   const { category } = item;
+  const dispatch = useDispatch();
   const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [saved, setSaved] = useState(false);
   function truncateTo25Words(text: string) {
@@ -39,6 +42,7 @@ const PublicationCard = ({ item, showLike = true, onClose }) => {
     };
     if (currentUser) updateUser(currentUser?.uid, { savedItems: newPubs });
     setCurrentUser(newData);
+    dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
   };
 
   const showSaveUI = () =>

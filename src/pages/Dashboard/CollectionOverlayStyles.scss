@@ -1,0 +1,76 @@
+.collection-overlay {
+  background-color: transparent;
+
+  &__cta {
+    background-color: transparent;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    aspect-ratio: 9/12;
+    overflow: hidden;
+    padding-bottom: 30px;
+
+    h3 {
+      font-weight: 400;
+      font-size: 1.5rem;
+    }
+    img {
+      opacity: 0.4;
+      transition: 300ms;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      object-fit: cover;
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &__card-wrapper {
+    position: relative;
+    aspect-ratio: 9/12;
+    display: flex;
+  }
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    background-color: transparent;
+
+    @media (max-width: 786px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__title {
+    text-align: center;
+    margin: 80px 0;
+    // position: sticky;
+    // top: 100px;
+    font-weight: 400;
+    font-size: 1.9rem;
+    z-index: 10;
+  }
+}
+
+.collection__remove-cta {
+  z-index: 300;
+  position: absolute;
+  bottom: 0;
+  right: 16px;
+  background-color: transparent;
+  color: var(--primary-color);
+
+  &:hover {
+    background-color: transparent;
+  }
+}

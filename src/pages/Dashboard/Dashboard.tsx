@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import "./Dashboard.scss";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Search from "../../components/Search/Search";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { deleteBespokeMed, updateMeditationDeleteStatus } from "../../store/apiUtils";
@@ -13,10 +13,13 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { getStaticMeditations } from "../../store/contentSelectors";
 import Panel from "./Panel";
 import { trackCTA } from "../../utils/analytics";
+import AmbientEnv from "../../components/AmbientEnv/AmbientEnv";
+import { createToast } from "../../store/contentSlice";
 
 type TabType = "meditations" | "publications" | "myMeds";
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
   const { currentUser } = useAuth();
   const { removeItem, savedItems } = useSavedItems();
   const [activeTab, setActiveTab] = useState<TabType>("myMeds");
@@ -51,17 +54,8 @@ const Dashboard = () => {
     }
   }, [data, currentUser]);
 
-  const handleRemoveItem = (itemId: number, type: keyof typeof savedItems, index: number) => {
-    removeItem(itemId, type);
-    setNotification({
-      show: true,
-      message: "Item removed from your Dashboard",
-    });
-
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      setNotification((prev) => ({ ...prev, show: false }));
-    }, 3000);
+  const handleRemoveItem = (item: any, type: keyof typeof savedItems) => {
+    removeItem(item, type);
   };
 
   const handleDeleteBespokeMed = async (itemId: string, shouldDelete: boolean) => {
@@ -103,7 +97,6 @@ const Dashboard = () => {
         setShowPopup={setShowPopup}
         dataKey={key}
         data={data}
-        notification={notification}
         destination={destination}
         itemToRemove={itemToRemove}
         setItemToRemove={setItemToRemove}
@@ -125,6 +118,8 @@ const Dashboard = () => {
     <div className='dashboard-container'>
       <h1 className='page-header'>My Journey</h1>
       <div className='dashboard__search-container'>
+        <AmbientEnv />
+
         <Search dashboard text='Search Journey Items' />
       </div>
       <div key={activeTab} className='tabs__container'>
@@ -136,15 +131,15 @@ const Dashboard = () => {
             Introduction Meditations
             {introMeditations?.length > 0 && <span className='tab-count'>{introMeditations?.length}</span>}
           </button>
-          {/* <button
+          <button
             className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
-            onClick={() => handleTabClick("myMeds")}
+            onClick={() => handleTabClick("collections")}
           >
             My Collections
             {myMeds?.filter((item) => !item.willDelete).length > 0 && (
-              <span className='tab-count'>{myMeds?.filter((item) => !item.willDelete).length}</span>
+              <span className='tab-count'>{savedItems?.collections.length}</span>
             )}
-          </button> */}
+          </button>
           <button
             className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
             onClick={() => handleTabClick("myMeds")}
@@ -182,7 +177,9 @@ const Dashboard = () => {
         </div>
       </div>
       <div ref={carouselRef} className='dashboard__content-carousel'>
-        {["introMeditations", "myMeds", "meditations", "publications", "deleted"].map((key) => renderTabContent(key))}
+        {["introMeditations", "collections", "myMeds", "meditations", "publications", "deleted"].map((key) =>
+          renderTabContent(key)
+        )}
       </div>
     </div>
   );

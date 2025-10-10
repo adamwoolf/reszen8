@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { FaFileDownload } from "react-icons/fa";
 import "./InvoiceStyles.scss";
 const InvoicePopup = () => {
-  const { currentUser, signOutRedirect } = useAuth();
+  const { currentUser } = useAuth();
   if (!currentUser) return null;
   const invoices = currentUser?.invoices;
   const [show, setShow] = useState(false);
@@ -24,9 +24,9 @@ const InvoicePopup = () => {
           {invoices.map((invoice) => (
             <tr>
               <td>{getDate(invoice.created)}</td>
-              <td>status: {invoice.status}</td>
+              <td className='invoices__status'>status: {invoice.status}</td>
               <td>{invoice.amount}</td>
-              <td>
+              <td className='invoices__status'>
                 <a target='_blank' href={invoice.invoicePdf}>
                   download pdf <FaFileDownload />
                 </a>

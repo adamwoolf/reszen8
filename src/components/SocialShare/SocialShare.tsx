@@ -57,7 +57,7 @@ const SocialShare = ({
         children={<WhatsappIcon round={true} className='share-icon' />}
         title={title}
       />
-      <div>
+      {/* <div>
         <small className='share-intro'> follow us on</small>
         <div className='share-links'>
           <a target='_blank' href='https://www.youtube.com/@RESZEN8'>
@@ -70,7 +70,7 @@ const SocialShare = ({
             <FaTiktok size={33} color='orange' />
           </a>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

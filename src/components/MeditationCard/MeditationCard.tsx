@@ -24,7 +24,7 @@ const MeditationCard = ({
   i: number;
   item: any;
   customTitle?: string;
-  customImage?: string;
+  customImage?: string | boolean;
   isCollection?: boolean;
 }) => {
   const { currentUser } = useAuth();
@@ -86,7 +86,11 @@ const MeditationCard = ({
   return (
     <article
       ref={cardRef}
-      className={!item.staticMed ? "feature-card publication__card " : "feature-card publication__card static-med"}
+      className={
+        !item.staticMed
+          ? "feature-card publication__card meditation-card"
+          : "feature-card publication__card meditation-card static-med"
+      }
     >
       <div className='publication__card-content'>
         <div className='publication__card-inner'>

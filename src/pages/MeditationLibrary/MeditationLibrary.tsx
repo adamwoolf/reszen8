@@ -6,7 +6,7 @@ import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { FaInfoCircle } from "react-icons/fa";
 import { Meditation } from "../../models";
 import MeditationCard from "../../components/MeditationCard/MeditationCard";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getStaticMeds } from "./MeditationLibrary.selectors";
 import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -14,12 +14,13 @@ import ToggleContainer from "./ToggleContainer";
 import Popup from "../../components/Popup/Popup";
 import Collections from "../../components/Collections/Collections";
 import { trackCTA } from "../../utils/analytics";
+import { createToast } from "../../store/contentSlice";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
+  const dispatch = useDispatch();
   const { currentUser } = useAuth();
-  const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
   const [ImmersiveMeds, setImmersiveMeds] = useState(true);
@@ -86,33 +87,11 @@ const DigitalLibrary = () => {
   };
 
   const handleAddItem = (item: any) => {
-    const wasAdded = addItem(item);
-    if (wasAdded) {
-      setNotification({
-        show: true,
-        message: `${item.title} has been added to your Journey`,
-      });
-    } else {
-      setNotification({
-        show: true,
-        message: `${item.title} is already in your Journey`,
-      });
-    }
-
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      setNotification((prev) => ({ ...prev, show: false }));
-    }, 3000);
+    addItem(item);
   };
   const renderTabContent = () => {
     return (
       <div className='dashboard-content'>
-        {notification.show && (
-          <div className='fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'>
-            {notification.message}
-          </div>
-        )}
-
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {displayMeds
             .filter((med) => {

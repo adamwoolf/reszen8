@@ -21,6 +21,7 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
     setShowPopup(false);
     setWaiting(false);
   };
+
   if (!currentUser || tier.id === "free-trial" || currentUser.subscription.planName === tier.title) return null;
   return (
     <>

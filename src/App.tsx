@@ -1,9 +1,8 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { PlayerProvider } from "./contexts/AudioContext";
-import { useAuth as useAwsAuth } from "react-oidc-context";
 
 import { SavedItemsProvider } from "./contexts/SavedItemsContext";
 import { BasketProvider } from "./contexts/BasketContext";
@@ -18,7 +17,6 @@ import Signup from "./pages/Signup/Signup";
 import MembersArea from "./pages/MembersArea/MembersArea";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import DigitalLibrary from "./pages/MeditationLibrary/MeditationLibrary";
-import AIChat from "./pages/AIChat";
 import Apparel from "./pages/Apparel/Apparel";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
 import Checkout from "./pages/Checkout/Checkout";
@@ -36,7 +34,6 @@ import Basket from "./pages/Basket/Basket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import PasswordResetPage from "./pages/PasswordReset/PasswordReset";
 import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
 import FullPublication from "./pages/Publications/FullPublication";
@@ -47,7 +44,7 @@ import LoadingScene from "./components/LoadingScene/LoadingScene";
 import { useSelector } from "react-redux";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import { useAnalytics } from "./hooks/useAnalytics";
-
+import Toast from "./components/Toast/ToastContainer";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
@@ -79,6 +76,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name='robots' content='index, follow' />
       </Helmet>
       <main className='main-content flex-grow'>
+        <Toast />
         <PageTransition>
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </PageTransition>

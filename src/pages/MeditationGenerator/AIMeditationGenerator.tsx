@@ -7,7 +7,7 @@ import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../.
 import Popup from "../../components/Popup/Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
-import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
+import { setMeditations, setStaticMeditations, createToast } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
@@ -134,9 +134,12 @@ const AIMeditationGenerator: React.FC = () => {
             },
           });
         }
+      dispatch(createToast({ text: `Meditation Generated Successfully.`, type: "success" }));
 
-      // handle result - open dashboard? display audio player with link to preview?
       if (!result) {
+        dispatch(
+          createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
+        );
         throw new Error("Failed to generate meditation");
       }
 
@@ -150,7 +153,6 @@ const AIMeditationGenerator: React.FC = () => {
       getMeditationItems(currentUser.uid).then((data) => {
         if (data) dispatch(setMeditations(data));
       });
-
       // Scroll to the generated content
       setTimeout(() => {
         const resultsElement = document.querySelector(".results-container");
@@ -160,6 +162,9 @@ const AIMeditationGenerator: React.FC = () => {
       }, 100);
     } catch (error) {
       console.error("Error generating meditation:", error);
+      dispatch(
+        createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
+      );
     } finally {
       setIsGenerating(false);
     }

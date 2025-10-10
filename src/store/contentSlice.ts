@@ -12,6 +12,7 @@ export interface ContentState {
   immersiveEnv: AmbientEnv;
   membershipTiers: [];
   landingPageActive: boolean;
+  toasts: any[];
 }
 
 export interface AudioObject {
@@ -33,6 +34,7 @@ const initialState: ContentState = {
   immersiveEnv: { name: "Warm", url: test },
   landingPageActive: true,
   membershipTiers: [],
+  toasts: [],
 };
 
 export const contentSlice = createSlice({
@@ -95,6 +97,12 @@ export const contentSlice = createSlice({
     setMembershipTiers: (state, action) => {
       state.membershipTiers = action.payload;
     },
+    createToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
+      state.toasts = [...state.toasts, action.payload];
+    },
+    deleteToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
+      state.toasts = state.toasts.filter((t) => t.text !== action.payload.text);
+    },
   },
 });
 
@@ -108,5 +116,7 @@ export const {
   setImmersiveEnv,
   setLandingPageActive,
   setMembershipTiers,
+  createToast,
+  deleteToast,
 } = contentSlice.actions;
 export default contentSlice.reducer;
