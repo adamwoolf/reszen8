@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import "./BasketStyles.scss";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../contexts/AuthContext";
 

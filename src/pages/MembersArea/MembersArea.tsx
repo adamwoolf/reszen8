@@ -7,7 +7,6 @@ import { usePurchasedItemsStore } from "../../store/purchasedItemsStore";
 import { useSavedItemsStore } from "../../store/savedItemsStore";
 import { useBasketStore } from "../../store/basketStore";
 import { FaArrowRight } from "react-icons/fa";
-import { toast } from "react-hot-toast";
 import CountDown from "../../components/AccountStatus/AccountStatus";
 import InviteAFriend from "../../components/InviteAFriend/InviteAFriend";
 import { IoMdLogOut } from "react-icons/io";
@@ -41,7 +40,6 @@ export default function MembersArea() {
         },
         product.quantity
       );
-      toast.success("Item moved to basket");
     }
   };
 

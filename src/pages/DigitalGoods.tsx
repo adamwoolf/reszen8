@@ -1,14 +1,13 @@
-import React from 'react';
-import { useBasketStore } from '../store/basketStore';
-import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import './CategoryPage.css';
+import React from "react";
+import { useBasketStore } from "../store/basketStore";
+import { useNavigate } from "react-router-dom";
+import "./CategoryPage.css";
 
 type SubscriptionTier = {
   id: string;
   name: string;
   price: number;
-  type: 'monthly' | 'annual';
+  type: "monthly" | "annual";
   description: string;
 };
 
@@ -18,19 +17,19 @@ const DigitalGoods: React.FC = () => {
 
   const subscriptionTiers: SubscriptionTier[] = [
     {
-      id: 'digital-monthly',
-      name: 'Monthly Digital Membership',
+      id: "digital-monthly",
+      name: "Monthly Digital Membership",
       price: 14.99,
-      type: 'monthly',
-      description: 'Full access to all digital resources, billed monthly.'
+      type: "monthly",
+      description: "Full access to all digital resources, billed monthly.",
     },
     {
-      id: 'digital-annual',
-      name: 'Annual Digital Membership',
+      id: "digital-annual",
+      name: "Annual Digital Membership",
       price: 119.99,
-      type: 'annual',
-      description: 'Full access to all digital resources, billed annually. Save 33% compared to monthly.'
-    }
+      type: "annual",
+      description: "Full access to all digital resources, billed annually. Save 33% compared to monthly.",
+    },
   ];
 
   const handleSubscribe = (tier: SubscriptionTier) => {
@@ -38,63 +37,79 @@ const DigitalGoods: React.FC = () => {
       id: tier.id,
       name: tier.name,
       price: tier.price,
-      description: tier.description
+      description: tier.description,
     });
-    
-    toast.success(`${tier.name} added to basket!`);
+
     // Optionally navigate to checkout
     // navigate('/checkout');
   };
 
   return (
-    <div className="category-page">
-      <header className="category-header">
+    <div className='category-page'>
+      <header className='category-header'>
         <h1>Digital Goods</h1>
-        <p className="subtitle">Digital resources to enhance your daily practice</p>
+        <p className='subtitle'>Digital resources to enhance your daily practice</p>
       </header>
 
-      <section className="category-content">
-        <div className="category-intro">
-          <p>In our increasingly digital world, RESZEN8 brings mindfulness to your devices with thoughtfully designed digital resources. Our collection of apps, guides, and audio experiences helps you maintain your practice anywhere, anytime.</p>
-          <p>Each digital product is created with the same attention to detail as our physical offerings, providing you with tools for mindfulness that integrate seamlessly into modern life.</p>
+      <section className='category-content'>
+        <div className='category-intro'>
+          <p>
+            In our increasingly digital world, RESZEN8 brings mindfulness to your devices with thoughtfully designed
+            digital resources. Our collection of apps, guides, and audio experiences helps you maintain your practice
+            anywhere, anytime.
+          </p>
+          <p>
+            Each digital product is created with the same attention to detail as our physical offerings, providing you
+            with tools for mindfulness that integrate seamlessly into modern life.
+          </p>
         </div>
 
-        <div className="feature-grid">
-          <div className="feature-item">
+        <div className='feature-grid'>
+          <div className='feature-item'>
             <h3>Meditation Apps</h3>
-            <p>Simple, intuitive applications designed to guide your practice without distraction or unnecessary complexity.</p>
+            <p>
+              Simple, intuitive applications designed to guide your practice without distraction or unnecessary
+              complexity.
+            </p>
           </div>
-          <div className="feature-item">
+          <div className='feature-item'>
             <h3>E-Books & Guides</h3>
-            <p>Comprehensive resources on mindfulness, breathwork, and meditation techniques written by experienced practitioners.</p>
+            <p>
+              Comprehensive resources on mindfulness, breathwork, and meditation techniques written by experienced
+              practitioners.
+            </p>
           </div>
-          <div className="feature-item">
+          <div className='feature-item'>
             <h3>Audio Libraries</h3>
-            <p>Curated collections of nature sounds, ambient music, and guided sessions to create the perfect atmosphere.</p>
+            <p>
+              Curated collections of nature sounds, ambient music, and guided sessions to create the perfect atmosphere.
+            </p>
           </div>
-          <div className="feature-item">
+          <div className='feature-item'>
             <h3>Practice Journals</h3>
-            <p>Digital journals with prompts and tracking features to help you maintain consistency and reflect on your progress.</p>
+            <p>
+              Digital journals with prompts and tracking features to help you maintain consistency and reflect on your
+              progress.
+            </p>
           </div>
         </div>
 
-        <div className="digital-subscription">
+        <div className='digital-subscription'>
           <h2>RESZEN8 Digital Membership</h2>
-          <p>Our all-access digital subscription gives you unlimited access to our complete library of digital resources, including exclusive content not available elsewhere. Members receive new content monthly and can join our online community of like-minded practitioners.</p>
-          <div className="subscription-tiers">
+          <p>
+            Our all-access digital subscription gives you unlimited access to our complete library of digital resources,
+            including exclusive content not available elsewhere. Members receive new content monthly and can join our
+            online community of like-minded practitioners.
+          </p>
+          <div className='subscription-tiers'>
             {subscriptionTiers.map((tier) => (
-              <div key={tier.id} className={`tier ${tier.type === 'annual' ? 'featured' : ''}`}>
-                <div className="tier-header">
-                  <h3>{tier.type === 'annual' ? 'Annual' : 'Monthly'}</h3>
-                  <p className="price">£{tier.price.toFixed(2)}</p>
+              <div key={tier.id} className={`tier ${tier.type === "annual" ? "featured" : ""}`}>
+                <div className='tier-header'>
+                  <h3>{tier.type === "annual" ? "Annual" : "Monthly"}</h3>
+                  <p className='price'>£{tier.price.toFixed(2)}</p>
                 </div>
-                {tier.type === 'annual' && (
-                  <p className="saving">Save 33%</p>
-                )}
-                <button 
-                  className="cta-button"
-                  onClick={() => handleSubscribe(tier)}
-                >
+                {tier.type === "annual" && <p className='saving'>Save 33%</p>}
+                <button className='cta-button' onClick={() => handleSubscribe(tier)}>
                   Subscribe
                 </button>
               </div>

@@ -7,7 +7,6 @@ import {
   generateStaticMedFromScript,
   generateArticleWithAudio,
 } from "../../services/aiMeditationService";
-import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
@@ -105,7 +104,6 @@ const Admin: React.FC = () => {
         }
       } catch (e) {
         console.error("Error playing audio:", e);
-        // toast.error("Failed to play audio. Please try again.");
       }
     }
     setIsPlaying(!isPlaying);
