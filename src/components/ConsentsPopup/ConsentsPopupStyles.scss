@@ -4,6 +4,10 @@
 
   @media (max-width: 768px) {
     height: 600px;
+
+    &--compact {
+      height: auto;
+    }
   }
   section,
   div {
@@ -23,6 +27,16 @@
   &__section {
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     padding: 16px 0;
+
+    &--compact {
+      padding: 8px 0;
+    }
+  }
+
+  &--disabled {
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.3;
   }
 
   &__section-header {
@@ -55,5 +69,13 @@
 
   &__accept {
     border: 1px solid orange;
+  }
+
+  &__small-description {
+    font-size: 0.7rem;
+  }
+
+  &__small-header {
+    font-size: 0.9rem;
   }
 }

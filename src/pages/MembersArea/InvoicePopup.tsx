@@ -26,11 +26,7 @@ const InvoicePopup = () => {
               <td>{getDate(invoice.created)}</td>
               <td className='invoices__status'>status: {invoice.status}</td>
               <td>{invoice.amount}</td>
-              <td className='invoices__status'>
-                <a target='_blank' href={invoice.invoicePdf}>
-                  download pdf <FaFileDownload />
-                </a>
-              </td>
+
               <td>
                 <a target='_blank' href={invoice.hostedInvoiceUrl}>
                   view in browser

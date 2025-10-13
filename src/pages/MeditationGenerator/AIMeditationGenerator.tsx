@@ -58,7 +58,7 @@ const AIMeditationGenerator: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     trackCTA("Generate Bespoke");
     e.preventDefault();
-    if (isGenerating) return;
+    if (isGenerating || !currentUser) return;
 
     // Reset any existing meditation
     setGeneratedMeditation(null);
@@ -75,7 +75,7 @@ const AIMeditationGenerator: React.FC = () => {
         title,
         immersive
       );
-      if (currentUser.subscription?.meditationCredits + currentUser.subscription?.extraBespokeMeditationCredits < cost)
+      if (currentUser?.subscription?.meditationCredits + currentUser.subscription?.extraBespokeMeditationCredits < cost)
         return;
       if (
         currentUser &&

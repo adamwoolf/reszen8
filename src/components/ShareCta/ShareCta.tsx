@@ -11,7 +11,7 @@ const ShareCta = () => {
 
   return (
     <div className='share-panel'>
-      <button onClick={() => setShow(!show)} className='share-panel__cta'>
+      <button aria-label='share-cta' onClick={() => setShow(!show)} className='share-panel__cta'>
         <FaShareAlt color='orange' />
       </button>
       {show && (

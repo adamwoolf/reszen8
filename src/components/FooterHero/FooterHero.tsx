@@ -86,8 +86,8 @@ const FooterHero = () => {
               logout
             </button>
           )}
-          <a href='https://apple.com'>
-            <img className='footer-hero__app-store' src={appStore} />
+          <a aria-label='app-store-link' href='https://apple.com'>
+            <img alt='app-store-link' className='footer-hero__app-store' src={appStore} />
           </a>
         </div>
         <ConsentsPopup />

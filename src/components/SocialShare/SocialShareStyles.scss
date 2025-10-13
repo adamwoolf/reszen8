@@ -1,6 +1,20 @@
 .share {
   margin: 50px 0;
 
+  &-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    max-width: 200px;
+    margin: auto;
+  }
+
+  &-link {
+    height: 50px;
+    display: flex;
+    align-items: center;
+  }
+
   &--no-margin {
     margin: 0;
   }
@@ -22,11 +36,10 @@
   }
 
   &-links {
-    display: flex;
-    justify-content: center;
-
     a {
       margin: 8px;
+      display: flex;
+      align-items: center;
       &:hover {
         opacity: 0.8;
       }

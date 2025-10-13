@@ -44,6 +44,8 @@
 
   &__card {
     background-color: rgba(rgb(5, 5, 41), 0.7);
+    background: none;
+
     backdrop-filter: blur(5px);
     margin: 16px;
     height: 300px;
@@ -83,11 +85,11 @@
       transition: 400ms;
 
       &:hover {
-        opacity: 0.6;
+        opacity: 0.7;
       }
 
       &--active {
-        opacity: 0.6;
+        opacity: 0.7;
       }
     }
   }
@@ -111,6 +113,8 @@
 
   &__close-cta {
     background-color: transparent;
+    background: none;
+
     color: orange;
     text-decoration: underline;
     font-size: 0.8rem;
@@ -124,6 +128,7 @@
     background-color: transparent;
     color: orange;
     text-decoration: underline;
+    background: none;
 
     &:hover {
       background-color: transparent;

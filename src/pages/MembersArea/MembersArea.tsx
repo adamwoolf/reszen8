@@ -13,6 +13,7 @@ import { IoMdLogOut } from "react-icons/io";
 import React from "react";
 import CancellationCta from "../../components/CancellationCta/CancellationCta";
 import InvoicePopup from "./InvoicePopup";
+import ConsentsConsole from "./ConsentsConsole";
 
 export default function MembersArea() {
   const { currentUser, signOutRedirect } = useAuth();
@@ -149,6 +150,10 @@ export default function MembersArea() {
             ) : (
               <p className='no-items-message'>You don't have any saved items. Save items from your basket for later.</p>
             )}
+          </div>
+
+          <div className='feature-card'>
+            <ConsentsConsole compact />
           </div>
 
           {/* Purchased Items Section */}

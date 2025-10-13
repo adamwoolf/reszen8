@@ -32,6 +32,8 @@
   &__filter {
     margin: 8px;
     background-color: transparent;
+    background: none;
+
     scale: 1.3;
     transition: 300ms;
     color: orange;
@@ -81,6 +83,7 @@
   &__title {
     padding-right: 70px;
     font-size: 1.8rem;
+    color: orange !important;
 
     @media (min-width: 768px) {
       font-size: 2.3rem;
@@ -106,11 +109,15 @@
 
     &__added {
       color: orange;
+      background: none;
+
       display: block;
     }
 
     &__add {
       background-color: transparent;
+      background: none;
+
       color: orange;
       padding-left: 0;
 
@@ -124,6 +131,8 @@
 
   &__heart-cta {
     background-color: transparent;
+    background: none;
+
     &:hover {
       background-color: transparent;
     }
@@ -181,6 +190,8 @@
   &__card-title {
     padding-right: 30px;
     min-height: 50px;
+    color: orange;
+    font-weight: bold;
     @media (max-width: 768px) {
       height: auto;
     }
@@ -195,6 +206,8 @@
 
   &__card-save-cta {
     background-color: transparent;
+    background: none;
+
     color: orange;
     width: fit-content;
     margin-bottom: -20px;
@@ -214,6 +227,8 @@
 
   &__card__add {
     background-color: transparent;
+    background: none;
+
     color: orange;
     padding-left: 0;
     text-align: left;
@@ -233,6 +248,7 @@
   &__card-saved {
     color: orange;
     font-size: 0.8rem;
+    background: none;
   }
 
   &__card-readmore {
@@ -259,6 +275,7 @@
 }
 
 .non-active-filter {
+  background: none;
   opacity: 0.9;
   scale: 1;
   transition: 300ms;

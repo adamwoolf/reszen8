@@ -87,7 +87,7 @@ const LikeCta = ({
   };
   return (
     <div style={{ top: large ? 32 : 12 }} className='likes'>
-      <button onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
+      <button aria-label='like-cta' onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
         <FaHeart
           size={large ? 30 : 15}
           className={isFavourite ? "publication__heart publication__heart--favourite" : "publication--heart"}

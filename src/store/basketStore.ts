@@ -38,19 +38,20 @@ export const useBasketStore = create<BasketStore>((set, get) => ({
         name: product.name || "Membership",
         price: product.price || 0,
       };
-      console.log(productWithDefaults);
+
       const existingItem = state.items.find(
         (item) => item.product.id === productWithDefaults.id && item.product.size === productWithDefaults.size
       );
 
       if (existingItem && product.type !== "subscription") {
-        return {
-          items: state.items.map((item) =>
-            item.product.id === productWithDefaults.id && item.product.size === productWithDefaults.size
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          ),
-        };
+        return state.items;
+        // return {
+        //   items: state.items.map((item) =>
+        //     item.product.id === productWithDefaults.id && item.product.size === productWithDefaults.size
+        //       ? { ...item, quantity: item.quantity + 1 }
+        //       : item
+        //   ),
+        // };
       }
 
       if (product.type === "subscription") {

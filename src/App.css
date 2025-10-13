@@ -141,8 +141,6 @@ a:hover {
   text-decoration: none;
 }
 
-
-
 .main-content-wrapper {
   background-color: var(--bg-color);
 }
@@ -323,7 +321,7 @@ div {
 
 .auth-container button {
   padding: 0.8rem;
-  background-color: var(--primary-color) !important;
+  background-color: var(--primary-gradient) !important;
   color: #000000;
   border: none;
   border-radius: var(--border-radius);
@@ -331,10 +329,6 @@ div {
   cursor: pointer;
   transition: var(--transition);
 }
-
-/* .auth-container button:hover {
-  background-color: var(--secondary-color);
-} */
 
 .auth-container button:disabled {
   background-color: #666;
@@ -363,6 +357,8 @@ div {
 
 .btn--text {
   background-color: transparent;
+  background: none;
+
   color: orange;
   width: fit-content;
   text-decoration: underline;
@@ -415,9 +411,6 @@ div {
   color: black !important;
 }
 
-.login-btn {
-}
-
 /* Footer Styles */
 .footer {
   background-color: var(--bg-color);
@@ -448,7 +441,7 @@ a:hover {
 button,
 .btn,
 .button {
-  background-color: var(--primary-color);
+  background-color: var(--primary-gradient);
   color: #000000;
   border: none;
   border-radius: var(--border-radius);
@@ -530,6 +523,7 @@ button,
 .btn,
 .button {
   background-color: var(--primary-color);
+  background: var(--primary-gradient);
   color: #000000;
   border: none;
   border-radius: var(--border-radius);

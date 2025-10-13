@@ -12,6 +12,7 @@ interface ToggleSwitchProps {
   voiceMedsCount?: number;
   noLabel?: boolean;
   onOffState?: boolean;
+  className?: string;
 }
 
 export default function ToggleSwitch({
@@ -25,6 +26,7 @@ export default function ToggleSwitch({
   voiceMedsCount,
   noLabel,
   onOffState = false,
+  className,
 }: ToggleSwitchProps) {
   const handleToggle = () => {
     if (disabled) return;
@@ -50,7 +52,7 @@ export default function ToggleSwitch({
   const offClassName = onOffState ? "is-off--grey" : "is-off";
 
   return (
-    <div className='toggle-container'>
+    <div className={`toggle-container ${className}`}>
       {!noLabel && (
         <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
           Voice<sup className='toggle-super-count'>{voiceMedsCount}</sup>

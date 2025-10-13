@@ -7,6 +7,7 @@ import "./MeditationCardStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { trackCTA } from "../../utils/analytics";
+import { FaCheckCircle } from "react-icons/fa";
 
 const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
@@ -94,9 +95,11 @@ const MeditationCard = ({
     >
       <div className='publication__card-content'>
         <div className='publication__card-inner'>
-          <h3 className='publication__card-title'>{customTitle || item.title}</h3>
+          <span className='publication__card-title'>{customTitle || item.title}</span>
           {item.immersive && <img className='immersive-icon' src={immersiveLogo} />}
-
+          {/* <span style={{ position: "absolute", top: 80, right: 14 }}>
+            <FaCheckCircle color='green' size={17} />
+          </span> */}
           <div className='publication__card-divider' />
 
           {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}

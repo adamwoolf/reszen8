@@ -21,6 +21,7 @@ const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, size = 26,
         backgroundColor: "transparent",
         cursor: "pointer",
         padding: 0,
+        background: "none",
       }}
     >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>

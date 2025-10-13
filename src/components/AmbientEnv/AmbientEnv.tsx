@@ -7,7 +7,6 @@ import { setImmersiveEnv } from "../../store/contentSlice";
 import "./AmbientEnvStyles.scss";
 import { useSelector } from "react-redux";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
-import { getImmersiveTracks } from "../../contentful";
 import { trackCTA } from "../../utils/analytics";
 
 const Envs = [
@@ -24,15 +23,11 @@ const AmbientEnv = () => {
   const selected = useSelector((state) => state.content.immersiveEnv);
 
   useEffect(() => {
-    getImmersiveTracks().then((data) => {
-      const newData = data.items.map((item) => ({
-        name: item?.fields.name,
-        url: item?.fields.track.fields.file.url,
-      }));
-      setEnvs(newData);
-      dispatch(setImmersiveEnv(Envs[0]));
-      // setBackingUrl(newData[0].url);
-    });
+    const savedImmersive = window.localStorage.getItem("immersive");
+
+    const env = savedImmersive ? Envs.find((e) => e.name === savedImmersive) : Envs[0];
+
+    dispatch(setImmersiveEnv(env));
   }, []);
 
   const handleChange = (e) => {
@@ -40,6 +35,7 @@ const AmbientEnv = () => {
     trackCTA(`Immersive Audio Change ${name}`);
     const en = Envs.find((e) => e.name === name);
     dispatch(setImmersiveEnv(en));
+    window.localStorage.setItem("immersive", name);
     // if (en) setBackingUrl(en.url);
   };
   return (

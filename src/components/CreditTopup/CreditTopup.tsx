@@ -7,12 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { trackCTA } from "../../utils/analytics";
+import { useDispatch } from "react-redux";
+import { createToast } from "../../store/contentSlice";
 
 const CreditTopup = () => {
   const [show, setShow] = useState(false);
   const { addItem } = useBasketStore();
   const navigate = useNavigate();
-  const { currentUser, updateUser } = useAuth();
+  const { currentUser } = useAuth();
+  const dispatch = useDispatch();
 
   const options = [
     {
@@ -69,9 +72,13 @@ const CreditTopup = () => {
     };
 
     addItem(product);
+
+    dispatch(createToast({ text: `${product.name} has been added to your basket`, type: "success" }));
     navigate("/basket");
     setShow(false);
   };
+
+  if (!currentUser?.subscription?.active) return null;
 
   return (
     <div className='topup'>
@@ -89,30 +96,38 @@ const CreditTopup = () => {
           <h2>Bespoke Meditation Credit Topup</h2>
           <p>Extra credits will be added to your account and remain available until used. There is no expiry time.</p>
           <div className='topup__options'>
-            {options.map((option) => (
-              <div key={option.name} className='feature-card topup__option'>
-                <h3>
-                  {option.name} {option.saving && <span className='topup__saving'> {`(${option.saving}% saved)`}</span>}
-                  {option.saving && <sup className='topup__saving'>*</sup>}
-                </h3>
-                <p>£{option.price}</p>
-                {currentUser?.subscription.subId !== "free-trial" ? (
-                  <button onClick={() => handleAdd(option)} className='subscribe-button topup__buy-now'>
-                    Add to Basket
-                  </button>
-                ) : (
-                  <Link
-                    onClick={() => setShow(false)}
-                    to='/memberships'
-                    disabled
-                    className='subscribe-button topup__buy-now'
-                  >
-                    Upgrade to Topup
-                  </Link>
-                )}
-              </div>
-            ))}
-            <span></span>
+            {options.map((option) => {
+              const isAdded = currentUser.basket.map((item) => item.product.id)?.includes(option.id);
+
+              return (
+                <div key={option.name} className='feature-card topup__option'>
+                  <h3>
+                    {option.name}{" "}
+                    {option.saving && <span className='topup__saving'> {`(${option.saving}% saved)`}</span>}
+                    {option.saving && <sup className='topup__saving'>*</sup>}
+                  </h3>
+                  <p>£{option.price}</p>
+                  {currentUser?.subscription.subId !== "free-trial" ? (
+                    <button
+                      disabled={isAdded}
+                      onClick={() => handleAdd(option)}
+                      className='subscribe-button topup__buy-now'
+                    >
+                      {isAdded ? "Added" : "Add to Basket"}
+                    </button>
+                  ) : (
+                    <Link
+                      onClick={() => setShow(false)}
+                      to='/memberships'
+                      disabled
+                      className='subscribe-button topup__buy-now'
+                    >
+                      Upgrade to Topup
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <span className='topup__disclaimer'>
             <sup>*</sup>when compared to 20 credit topup

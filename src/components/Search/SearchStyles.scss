@@ -8,6 +8,7 @@
   }
   &-cta {
     background-color: transparent;
+    background: none;
     display: flex;
     align-items: center;
 
@@ -41,6 +42,8 @@
 
   &__tile {
     background-color: transparent;
+    background: none;
+
     animation: stagger;
     animation-duration: 200ms;
     animation-fill-mode: both;

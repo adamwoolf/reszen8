@@ -12,7 +12,7 @@ import ScriptLab from "../../components/ScriptLab";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
-import { setMeditations, setStaticMeditations } from "../../store/contentSlice";
+import { setMeditations, setStaticMeditations, createToast } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
@@ -162,12 +162,14 @@ const Admin: React.FC = () => {
       );
 
       console.log("Static generated");
+      dispatch(createToast({ text: `${title} Generated Successfully.`, type: "success" }));
 
       getStaticMeditations().then((data) => {
         if (data) dispatch(setStaticMeditations(data));
       });
     } catch (error) {
       console.error("Error generating meditation:", error);
+      dispatch(createToast({ text: `There was a problem. Generation failed.`, type: "error" }));
     } finally {
       setIsGenerating(false);
     }
@@ -176,7 +178,20 @@ const Admin: React.FC = () => {
   const generateArticle = async () => {
     setIsGenerating(true);
     console.log(formattedArticle);
-    await generateArticleWithAudio(title, script, formattedArticle, voiceCode, meditationType, practiceType, immersive);
+    try {
+      await generateArticleWithAudio(
+        title,
+        script,
+        formattedArticle,
+        voiceCode,
+        meditationType,
+        practiceType,
+        immersive
+      );
+      dispatch(createToast({ text: `${title} Generated Successfully.`, type: "success" }));
+    } catch (error) {
+      dispatch(createToast({ text: `There was an error.`, type: "error" }));
+    }
     setIsGenerating(false);
   };
 

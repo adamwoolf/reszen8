@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import Popup from "../Popup/Popup";
 import { useAuth } from "../../contexts/AuthContext";
-import "./ConsentsPopupStyles.scss";
-import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
+// import "./ConsentsPopupStyles.scss";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { FaArrowCircleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 import { trackCTA } from "../../utils/analytics";
+import ThreeDotsLoader from "../../components/ThreeDotsLoads";
 
-const ConsentsPopup = () => {
+const ConsentsConsole = ({ compact }: { compact?: boolean }) => {
   const [show, setShow] = useState(false);
   const { currentUser, loading, updateUser, setCurrentUser } = useAuth();
   const [consentData, setConsentData] = useState({
@@ -34,6 +35,7 @@ const ConsentsPopup = () => {
   useEffect(() => {
     if (!currentUser || loading || planId) return;
     setShow(currentUser && (!currentUser?.consents?.termsAndConditions || !currentUser?.consents?.essentials));
+    setConsentData(currentUser.consents);
   }, [currentUser, planId]);
 
   const consents = [
@@ -61,61 +63,33 @@ const ConsentsPopup = () => {
   };
 
   return (
-    <Popup showClose={false} fitContent show={show} onClose={() => setShow(false)}>
-      <div className='consents'>
-        {!isTandCVisible && (
-          <button onClick={scrollToTandC} className='consents__scroller'>
-            <FaArrowCircleDown size={24} color='orange' />
-          </button>
-        )}
-        <h2>Manage Consent Preferences</h2>
-        {consents.map((consent) => (
-          <section key={consent.dataLink} className='consents__section'>
+    <div className='consents consents--compact'>
+      <h2>Manage Consent Preferences</h2>
+      {consents.map((consent) => {
+        return (
+          <section
+            key={consent.dataLink}
+            className={!compact ? "consents__section" : "consents__section consents__section--compact"}
+          >
             <div className='consents__section-header'>
-              <h3>{consent.title}</h3>
+              <h3 className={compact ? "consents__small-header" : ""}>{consent.title}</h3>
               <ToggleSwitch
                 onChange={(e) => setConsentData({ ...consentData, [consent.dataLink]: e })}
                 checked={consentData[consent.dataLink]}
                 noLabel
                 onOffState
+                className={consent.dataLink === "essentials" ? "consents--disabled" : ""}
               />
             </div>
-            <p>{consent.description}</p>
+            <p className={compact ? "consents__small-description" : ""}>{consent.description}</p>
           </section>
-        ))}
-
-        <h3 ref={termsAndConditionsRef}>Terms & Conditions (Required)</h3>
-        <div className='consents__section-header consents__section-header--t-and-c'>
-          <ToggleSwitch
-            checked={consentData.termsAndConditions}
-            onChange={(e) => setConsentData({ ...consentData, termsAndConditions: e })}
-            noLabel
-            onOffState
-          />
-          <p>
-            I agree to the RESZEN8 <Link to='terms-and-conditions'>Terms & Conditions</Link>
-          </p>
-        </div>
-        <p className='consents__privacy-link'> You must accept our Terms and Conditions in order to use RESZEN8.</p>
-        <span className='consents__privacy-link'>
-          See our <Link to='privacy-policy'>privacy policy</Link>
-        </span>
-
-        <div>
-          {currentUser?.consents?.termsAndConditions && currentUser?.consents?.essentials && (
-            <button className='consents__cancel'>Cancel</button>
-          )}
-          <button
-            onClick={handleUpdate}
-            disabled={!consentData.termsAndConditions || !consentData.essentials}
-            className='consents__accept'
-          >
-            {!waiting ? "Update Consent and Preferences" : "Updating your preferences"}
-          </button>
-        </div>
-      </div>
-    </Popup>
+        );
+      })}
+      <button style={{ display: "flex" }} onClick={handleUpdate}>
+        Update {waiting && <ThreeDotsLoader />}
+      </button>
+    </div>
   );
 };
 
-export default ConsentsPopup;
+export default ConsentsConsole;

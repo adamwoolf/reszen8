@@ -1,8 +1,11 @@
 .collection-overlay {
   background-color: transparent;
+  position: relative;
 
   &__cta {
     background-color: transparent;
+    background: none;
+
     position: relative;
     display: flex;
     align-items: flex-end;
@@ -63,6 +66,8 @@
 }
 
 .collection__remove-cta {
+  background: none;
+
   z-index: 300;
   position: absolute;
   bottom: 0;

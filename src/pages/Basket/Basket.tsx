@@ -4,9 +4,6 @@ import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./BasketStyles.scss";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSavedItemsStore } from "../../store/savedItemsStore";
-import "react-toastify/dist/ReactToastify.css";
-import { useAuth } from "../../contexts/AuthContext";
 
 interface BasketItem {
   id: string;
@@ -18,9 +15,7 @@ interface BasketItem {
 }
 
 const Basket = () => {
-  const { currentUser } = useAuth();
   const { items, removeItem, updateQuantity, clearBasket, totalPrice } = useBasketStore();
-  const { saveItem } = useSavedItemsStore();
   const subtotal = totalPrice();
   const total = subtotal;
 

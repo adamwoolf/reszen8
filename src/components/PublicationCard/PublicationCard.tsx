@@ -64,7 +64,7 @@ const PublicationCard = ({ item, showLike = true, onClose }) => {
           <div className='publication__card-icon-container'>
             <Icon type={category[0].category} />
           </div>
-          <h3 className='publication__card-title'>{item.title}</h3>
+          <span className='publication__card-title'>{item.title}</span>
           {currentUser && item.audioUrl && (
             <span className='publication__card-audio-icon'>
               <FaVolumeUp color='orange' />

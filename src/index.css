@@ -2,7 +2,8 @@
 
 /* Base Styles */
 :root {
-  --primary-color: #ffa500;
+  --primary-color: #ffa807;
+  --primary-gradient: linear-gradient(135deg, #ffa500, #ff8c00);
   --primary-color-darker: #937011;
   --secondary-color: #ff8c00;
   --accent-color: #755001;

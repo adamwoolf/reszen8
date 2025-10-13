@@ -7,6 +7,8 @@ import useContentful from "../hooks/useContentful";
 import { getHomePage } from "../contentful";
 import { marked } from "marked";
 import FreeForever from "../components/FreeForever/FreeForever";
+import Collections from "../components/Collections/Collections";
+import CollectionsCarousel from "../components/CollectionsCarousel/CollectionsCarousel";
 
 const features = [
   // {
@@ -71,7 +73,7 @@ const Home: React.FC = () => {
         </div>
       </section>
       <FreeForever />
-
+      <CollectionsCarousel />
       <section className='features-section'>
         <h2 className='features-title'>Our Digital Meditation Product</h2>
         <motion.div

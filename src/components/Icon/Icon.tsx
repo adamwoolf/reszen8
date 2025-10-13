@@ -32,7 +32,11 @@ export const getIcon = {
 const Icon = ({ type, large, gridItem }: { type: string; large?: boolean; gridItem?: boolean }) => {
   return (
     <div className='icon__container'>
-      <img className={!large ? "icon" : "icon icon--large"} src={getIcon[type?.replace(/\s+/g, "")]} />
+      <img
+        alt={`category-filter-icon--${type}`}
+        className={!large ? "icon" : "icon icon--large"}
+        src={getIcon[type?.replace(/\s+/g, "")]}
+      />
     </div>
   );
 };
