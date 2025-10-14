@@ -15,16 +15,13 @@ const CollectionsCarousel = ({ handleClick }: { handleClick?: (value: string) =>
 
   const [displayCol, setDisplayCol] = useState("");
   const collections = useSelector(getStaticMeds).filter((med) => med.collection);
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const collectionTiles = [...new Set(collections.map((col) => col.collection))];
   const [selected, setSelected] = useState<string>("");
   const isAdded = currentUser?.savedItems?.collections?.map((col) => col.title)?.includes(selected);
-
-  useEffect(() => {
-    getCollectionImages().then((data) => setImages(data.items.map((item) => ({ ...item.fields }))));
-  }, []);
+  const images = useSelector((state) => state.content.collectionImages);
 
   const clickHandler = (collection: string) => {
     trackCTA(`Collection select-tile-${collection}`);
@@ -63,7 +60,7 @@ const CollectionsCarousel = ({ handleClick }: { handleClick?: (value: string) =>
         {collectionTiles.map((col) => {
           const imgSrc = images.find((im) => im.collectionName === col)?.image?.fields?.file?.url;
           return (
-            <div className='c-carousel__card'>
+            <div key={col} className='c-carousel__card'>
               <img
                 alt={`collection-main-image--${col}`}
                 className={"c-carousel__card-image c-carousel__card-image--active"}

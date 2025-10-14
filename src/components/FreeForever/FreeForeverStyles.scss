@@ -11,6 +11,13 @@
     }
   }
 
+  &__sub-heading {
+    color: orange;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 16px;
+  }
+
   &__second-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

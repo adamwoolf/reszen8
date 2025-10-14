@@ -1,0 +1,85 @@
+.voice-options {
+  margin: 20px 0 40px;
+
+  &__title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #1976d2;
+  }
+
+  .voice-option {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-color-light);
+    padding: 12px;
+    border-radius: 12px;
+    margin: 6px 0;
+    transition: background-color 0.2s ease;
+
+    &.selected {
+      background-color: var(--bg-color-light);
+    }
+
+    .radio-circle {
+      position: relative;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      border: 2px solid #ff9800;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      padding: 0;
+
+      .inner-circle {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ff9800;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      &.checked .inner-circle {
+        opacity: 1;
+      }
+
+      &:hover {
+        border-color: #ffa733;
+      }
+    }
+
+    .label {
+      color: #fff;
+      font-size: 16px;
+      margin-left: 12px;
+      flex: 1;
+      user-select: none;
+    }
+
+    .play-button {
+      background-color: #ff9800;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      position: relative;
+
+      &:hover {
+        background-color: #e68900;
+      }
+    }
+  }
+}

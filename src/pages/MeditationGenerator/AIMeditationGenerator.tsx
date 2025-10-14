@@ -14,6 +14,9 @@ import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import AudioController from "../../components/AudioPlayer/AudioController";
 import { trackCTA } from "../../utils/analytics";
+import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
+import jordan from "../../assets/audio/Jordan.mp3";
+import willow from "../../assets/audio/Willow.mp3";
 
 interface MeditationState {
   title: string;
@@ -23,13 +26,18 @@ interface MeditationState {
   isImmersive: boolean;
 }
 
+const voiceOptionsArray = [
+  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: willow },
+  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: jordan },
+];
+
 const AIMeditationGenerator: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("Mindfulness");
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0].name);
   const allowedValues = Object.keys(mapDurationToWords);
-
+  const [voice, setVoice] = useState(voiceOptionsArray[0]);
   const [duration, setDuration] = useState(allowedValues[0]);
   const [durationIndex, setDurationIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,19 +48,19 @@ const AIMeditationGenerator: React.FC = () => {
   const [showPopup, setShowPopup] = useState("");
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
-  const [immersive, setImmersive] = useState(false);
+  const [immersive, setImmersive] = useState(true);
   const cost = immersive ? 2 : 1;
 
-  // Static Med generation data
-  const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
+  // // Static Med generation data
+  // const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
 
-  useEffect(() => {
-    setDuration(allowedValues[durationIndex]);
-  }, [durationIndex]);
+  // useEffect(() => {
+  //   setDuration(allowedValues[durationIndex]);
+  // }, [durationIndex]);
 
-  useEffect(() => {
-    setVoiceCode(!immersive ? "en-GB-BellaNeural" : "en-GB-OliviaNeural");
-  }, [immersive]);
+  // useEffect(() => {
+  //   setVoiceCode(!immersive ? "en-GB-BellaNeural" : "en-GB-OliviaNeural");
+  // }, [immersive]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +79,7 @@ const AIMeditationGenerator: React.FC = () => {
         selectedLanguage,
         practiceType,
         currentUser?.uid || "anonymous",
-        voiceCode,
+        voice.id,
         title,
         immersive
       );
@@ -226,6 +234,10 @@ const AIMeditationGenerator: React.FC = () => {
             <label>With Immersive Sound? </label>
             <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span>
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
+          </div>
+          <div className='form-group form-group-block'>
+            <label>Select a Voice </label>
+            <VoiceOptions selectedId={voice.id} onSelect={setVoice} options={voiceOptionsArray} />
           </div>
           <div className='form-grid'>
             <div className='form-group form-group-block'>

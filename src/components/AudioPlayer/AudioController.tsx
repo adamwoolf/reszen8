@@ -69,7 +69,11 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       .padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
-
+  // return (
+  //   <audio controls>
+  //     <source src={audioUrl} />
+  //   </audio>
+  // );
   return (
     <div style={isLoading ? { pointerEvents: "none" } : {}} className='audio-player__inner' ref={cardRef}>
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>

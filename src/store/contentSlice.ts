@@ -13,6 +13,7 @@ export interface ContentState {
   membershipTiers: [];
   landingPageActive: boolean;
   toasts: any[];
+  collectionImages: any[];
 }
 
 export interface AudioObject {
@@ -35,6 +36,7 @@ const initialState: ContentState = {
   landingPageActive: true,
   membershipTiers: [],
   toasts: [],
+  collectionImages: [],
 };
 
 export const contentSlice = createSlice({
@@ -103,6 +105,9 @@ export const contentSlice = createSlice({
     deleteToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
       state.toasts = state.toasts.filter((t) => t.text !== action.payload.text);
     },
+    setCollectionImages: (state, action) => {
+      state.collectionImages = action.payload;
+    },
   },
 });
 
@@ -118,5 +123,6 @@ export const {
   setMembershipTiers,
   createToast,
   deleteToast,
+  setCollectionImages,
 } = contentSlice.actions;
 export default contentSlice.reducer;

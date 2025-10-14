@@ -14,6 +14,7 @@ const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, size = 26,
 
   return (
     <button
+      aria-label='play-pause icon'
       onClick={onClick}
       style={{
         width: size,

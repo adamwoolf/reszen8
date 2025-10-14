@@ -1,8 +1,8 @@
 import { createClient } from "contentful";
 
 const client = createClient({
-  space: "jnlo9oy3q5fc",
-  accessToken: "3KaS-6qNzJgJiWW5Xe8t_pQXR1sIDb85Gvz0uYoRG6E",
+  space: import.meta.env.VITE_CONTENTFUL_SPACE_ID,
+  accessToken: import.meta.env.VITE_CONTENTFUL_API,
 });
 
 const getStoreItems = () =>
@@ -18,15 +18,10 @@ const getHomePage = () => client.getEntries({ content_type: "homepage" }).then((
 const getMembershipPage = () =>
   client.getEntries({ content_type: "membershipPage" }).then((response) => response.items[0]);
 const getCarouselSlides = () => client.getEntries({ content_type: "carouselSlide" }).then((response) => response);
-const getPublications = () =>
-  client.getEntries({ content_type: "publications", order: "-fields.publishDate" }).then((response) => response);
 
 const getFAQs = () => client.getEntries({ content_type: "faq" }).then((response) => response);
 const getMembershipTiers = () =>
   client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
-
-const getImmersiveTracks = () =>
-  client.getEntries({ content_type: "immersiveTrack", order: "fields.order" }).then((response) => response);
 
 const getPrivacyPolicy = () => client.getEntries({ content_type: "privacyPolicy" }).then((response) => response);
 const getTsAndCs = () => client.getEntries({ content_type: "termsAndConditions" }).then((response) => response);
@@ -36,7 +31,6 @@ export {
   getCollectionImages,
   getTsAndCs,
   getPrivacyPolicy,
-  getPublications,
   getMeditationItems,
   getStoreItems,
   getMeditationPage,
@@ -46,5 +40,4 @@ export {
   getFAQs,
   getMembershipPage,
   getMembershipTiers,
-  getImmersiveTracks,
 };

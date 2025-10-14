@@ -19,6 +19,7 @@ import { profanityFilter } from "./helper";
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import "./AdminStyles.scss";
+
 interface MeditationState {
   title: string;
   content: string;
@@ -242,6 +243,7 @@ const Admin: React.FC = () => {
             <label>With Immersive Sound? </label>
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
+
           <div className='form-group form-group-block'>
             <label>Voice code</label>
             <input

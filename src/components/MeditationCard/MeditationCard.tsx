@@ -96,7 +96,7 @@ const MeditationCard = ({
       <div className='publication__card-content'>
         <div className='publication__card-inner'>
           <span className='publication__card-title'>{customTitle || item.title}</span>
-          {item.immersive && <img className='immersive-icon' src={immersiveLogo} />}
+          {item.immersive && <img alt='immersive-audio-icon' className='immersive-icon' src={immersiveLogo} />}
           {/* <span style={{ position: "absolute", top: 80, right: 14 }}>
             <FaCheckCircle color='green' size={17} />
           </span> */}

@@ -3,9 +3,15 @@ import { useAuth } from "../contexts/AuthContext";
 import { Subscription } from "../models";
 import { useDispatch } from "react-redux";
 import { getAWSArticles, getMeditationItems, getStaticMeditations } from "../store/apiUtils";
-import { setArticles, setMeditations, setStaticMeditations, setMembershipTiers } from "../store/contentSlice";
+import {
+  setArticles,
+  setMeditations,
+  setStaticMeditations,
+  setMembershipTiers,
+  setCollectionImages,
+} from "../store/contentSlice";
 import useContentful from "../hooks/useContentful";
-import { getMembershipTiers } from "../contentful";
+import { getMembershipTiers, getCollectionImages } from "../contentful";
 
 const UserManager = ({ children }) => {
   const dispatch = useDispatch();
@@ -19,6 +25,10 @@ const UserManager = ({ children }) => {
 
     return Date.now() < expires.getTime();
   };
+
+  useEffect(() => {
+    getCollectionImages().then((data) => dispatch(setCollectionImages(data.items.map((item) => ({ ...item.fields })))));
+  }, []);
 
   useEffect(() => {
     // console.log(currentUser);

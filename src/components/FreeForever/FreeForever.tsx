@@ -29,7 +29,7 @@ const FreeForever = () => {
       </div>
       <div className='freemium__second-row'>
         <div className='freemium__section'>
-          <h3>Articles</h3>
+          <span className='freemium__sub-heading'>Articles</span>
           {articles.slice(0, 2).map((article) => (
             <Link key={article.title} className='freemium__article' to={`/articles/${article.title}`}>
               {article.title}
