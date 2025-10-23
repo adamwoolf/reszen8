@@ -9,9 +9,9 @@
   animation-fill-mode: both;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
   @media (max-width: 786px) {
-    justify-content: space-between;
     width: 100%;
   }
 
@@ -33,6 +33,7 @@
     margin-bottom: -5px;
     &:hover {
       background-color: transparent;
+      color: orange;
     }
   }
 

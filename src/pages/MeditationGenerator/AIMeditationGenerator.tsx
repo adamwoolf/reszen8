@@ -6,13 +6,12 @@ import "./AIMeditationGenerator.scss";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "../../components/Popup/Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
-import { getMeditationItems, getStaticMeditations, getUser } from "../../store/apiUtils";
-import { setMeditations, setStaticMeditations, createToast } from "../../store/contentSlice";
+import { getMeditationItems, getUser } from "../../store/apiUtils";
+import { setMeditations, createToast } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
-import AudioController from "../../components/AudioPlayer/AudioController";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
 import jordan from "../../assets/audio/Jordan.mp3";
@@ -237,43 +236,10 @@ const AIMeditationGenerator: React.FC = () => {
               placeholder='Enter a title'
               onChange={(e) => setTitle(e.target.value)}
             />
-
-            {/* <input
-              className='custom-slider'
-              type='range'
-              min={0}
-              max={allowedValues.length - 1}
-              step={1}
-              value={durationIndex}
-              onChange={(e) => setDurationIndex(Number(e.target.value))}
-              style={{ width: "100%" }}
-            />
-            <div className='slider-markers'>
-              {allowedValues.map((value, index) => (
-                <span key={`marker ${index}`} className='marker'>
-                  {value}
-                </span>
-              ))}
-            </div> */}
           </div>
           <div className='form-group form-group-block'>
             <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
-            {/* <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
-              learn more
-            </button>
-            {showPopup === "size" && (
-              <Popup fitContent show={!!showPopup} onClose={() => setShowPopup("")}>
-                {Object.keys(mapDurationToWords).map((key) => {
-                  const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
-                  return (
-                    <div className='popup__list-item' key={`list-item-${key}`}>
-                      <h4 className='popup__list-title'>{key}</h4>
-                      <p className='popup__list-desc'>{type.description}</p>
-                    </div>
-                  );
-                })}
-              </Popup>
-            )} */}
+
             <VoiceOptions
               selectedId={duration}
               onSelect={(e) => setDuration(e.id)}
@@ -305,7 +271,7 @@ const AIMeditationGenerator: React.FC = () => {
                 disabled={isGenerating}
               >
                 {MedTypesAndAffirmations.map((type, i) => (
-                  <option key={type.title + i} value={type.type}>
+                  <option key={"med-type" + type.title + i} value={type.type}>
                     {type.type}
                   </option>
                 ))}
@@ -322,7 +288,7 @@ const AIMeditationGenerator: React.FC = () => {
               {showPopup === "practiceType" && (
                 <Popup show={showPopup} onClose={() => setShowPopup("")}>
                   {PracticeTypes.map((type, i) => (
-                    <div className='popup__list-item' key={`${type.name}${i}`}>
+                    <div className='popup__list-item' key={`med-type-description - ${type.name}${i}`}>
                       <h4 className='popup__list-title'>{type.name}</h4>
                       <p className='popup__list-desc'>{type.description}</p>
                     </div>
@@ -336,7 +302,7 @@ const AIMeditationGenerator: React.FC = () => {
                 disabled={isGenerating}
               >
                 {PracticeTypes.map((lang, i) => (
-                  <option key={lang.name + i} value={lang.name}>
+                  <option key={"practice-type-" + lang.name + i} value={lang.name}>
                     <p> {lang.name}</p>
                   </option>
                 ))}

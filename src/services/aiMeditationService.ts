@@ -32,8 +32,8 @@ export const generateMeditation = async (
   script?: any
 ) => {
   try {
-    const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
-    // const endpoint = `https://rot47b3oq9.execute-api.eu-north-1.amazonaws.com/Prod/create-meditation`;
+    // const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
+    const endpoint = `https://rot47b3oq9.execute-api.eu-north-1.amazonaws.com/Prod/create-meditation`;
 
     const meditation = await axios.post(
       endpoint,
@@ -92,6 +92,7 @@ export const generateScript = async (
     });
 
     console.log("SCRIPT", script);
+    console.log("WORDS", script?.data?.content?.split(" ")?.length);
 
     return script;
   } catch (error) {
