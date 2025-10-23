@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
   color: #000000;
   border: none;
   border-radius: 50px;
@@ -29,7 +29,9 @@
 .cta-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(255, 165, 0, 0.4);
-  background: linear-gradient(135deg, #FF8C00, #FF6B00);
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
+  text-decoration: none;
+  color: var(--bg-color);
 }
 
 .cta-icon {
@@ -40,6 +42,11 @@
 
 .cta-text {
   font-size: 0.9rem;
+  transition: color 300ms;
+}
+
+.cta-text:hover {
+  color: var(--bg-color);
 }
 
 @keyframes float {
@@ -60,15 +67,15 @@
     bottom: 1.5rem;
     right: 1.5rem;
   }
-  
+
   .cta-button {
     padding: 0.6rem 1.2rem;
   }
-  
+
   .cta-text {
     display: none;
   }
-  
+
   .cta-icon {
     margin-right: 0;
     width: 1.5rem;

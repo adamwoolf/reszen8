@@ -43,10 +43,13 @@ const SocialShare = ({
           aria-label='share-to-pinterest'
           className='share-link'
           target='_blank'
-          href={`⁠https://pinterest.com/pin/create/button/?url=${shareUrl}&description=${shareTitle}`}
+          href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
+            shareUrl
+          )}&description=${encodeURIComponent(shareTitle)}`}
         >
           <PinterestIcon round={true} className='share-icon' />
         </a>
+
         <a className='share-link' target='_blank' href={` ⁠https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}>
           <TelegramIcon className='share-icon' round={true} />
         </a>

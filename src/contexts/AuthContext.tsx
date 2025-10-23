@@ -94,7 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         extraBespokeMeditationCredits: 0,
       };
 
-      console.log("PLANID", planId);
       if (planId && user && selectedPlan) {
         checkoutNewUserPlan(user, selectedPlan, selectedSubData);
         sessionStorage.removeItem("pendingPlan");

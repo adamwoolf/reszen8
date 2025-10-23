@@ -3,7 +3,15 @@ import Popup from "../../components/Popup/Popup";
 import SignUp from "../Signup/Signup";
 import { trackCTA } from "../../utils/analytics";
 
-const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: string; tier: any }) => {
+const NewUserPlanPurchaseCta = ({
+  homepage,
+  yearlySelected,
+  tier = { id: "free-trial" },
+}: {
+  homepage: boolean;
+  yearlySelected: string;
+  tier: any;
+}) => {
   const [showPopup, setShowPopup] = useState(false);
 
   const planId = yearlySelected === tier.id ? tier.yearlyId : tier.id;
@@ -15,7 +23,7 @@ const NewUserPlanPurchaseCta = ({ yearlySelected, tier }: { yearlySelected: stri
           setShowPopup(true);
           trackCTA("Open New User Signup Popup");
         }}
-        className='subscribe-button'
+        className={!homepage ? "subscribe-button" : ""}
       >
         {tier.id === "free-trial" ? "Sign Up & Start Free Trial" : "Sign Up & Purchase"}
       </button>

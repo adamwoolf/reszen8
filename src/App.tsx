@@ -176,14 +176,14 @@ const AnimatedRoutes = () => {
         /> */}
 
         {/* Public Routes */}
-        <Route
+        {/* <Route
           path='/apparel'
           element={
             <Layout>
               <Apparel />
             </Layout>
           }
-        />
+        /> */}
 
         <Route
           path='/bespoke-meditation-generator'
@@ -211,14 +211,14 @@ const AnimatedRoutes = () => {
             </Layout>
           }
         />
-        <Route
+        {/* <Route
           path='/order-success'
           element={
             <Layout>
               <OrderSuccess />
             </Layout>
           }
-        />
+        /> */}
         <Route
           path='/articles/:slug'
           element={
@@ -230,9 +230,11 @@ const AnimatedRoutes = () => {
         <Route
           path='/articles'
           element={
-            <Layout>
-              <Publications />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Publications />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -264,14 +266,6 @@ const AnimatedRoutes = () => {
           element={
             <Layout>
               <Sitemap />
-            </Layout>
-          }
-        />
-        <Route
-          path='/test-payment'
-          element={
-            <Layout>
-              <TestPaymentPage />
             </Layout>
           }
         />

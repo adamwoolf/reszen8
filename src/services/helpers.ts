@@ -132,29 +132,26 @@ export const PracticeTypes = [
 // };
 
 export const mapDurationToWords = {
-  MiniMed: {
+  Recharge: {
     words: "350–380",
     breaks: 17,
     totalPauseTime: "40",
     duration: 1,
-    description:
-      "A quick dip into meditation, ideal for beginners or for testing the practice. Just a few mindful breaths can help you pause, reset, and reconnect with yourself. Additionally, if you’re on the move and just need a moment of calm, this one is for you. ",
+    description: "a quick reset.",
   },
-  Reset: {
+  Refresh: {
     words: "550–600",
     breaks: 19,
     totalPauseTime: "70",
     duration: 4,
-    description:
-      "A short but powerful session designed to clear your head and refresh your focus. Perfect for slipping in between meetings, before a big event, or whenever you need a quick mental reset.",
+    description: "a short, energising pause.",
   },
-  Timeout: {
+  Relax: {
     words: "900–950",
     breaks: 28,
     totalPauseTime: "90",
     duration: 8,
-    description:
-      "A longer, immersive session that gives you enough space to step away from the busyness of life. It helps you let go of stress and return to a calm, a cantered state, your personal safe space.",
+    description: "soften tension and slow your pace.",
   },
   // Relax: {
   //   words: "1100–1150",

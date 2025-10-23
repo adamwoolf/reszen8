@@ -107,7 +107,6 @@ const MeditationCard = ({
         </div>
         <div className='publication__card-inner'>
           {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
-          {/* {item.audioUrl && <AudioController2 audioUrl={item.audioUrl} />} */}
           {!isCollection && (
             <button
               disabled={hasBeenSaved}

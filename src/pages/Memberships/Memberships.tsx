@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { useAuth as useAWSAuth } from "react-oidc-context";
 import MembershipCta from "./MembershipCta";
 import YearlyUpgrade from "./YearlyUpgrade";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 type MembershipTier = {
   id: string;
@@ -27,12 +27,13 @@ const Memberships: React.FC = () => {
   const navigate = useNavigate();
   const { addItem, items } = useBasketStore();
   const { currentUser } = useAuth();
-  const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
-  const content = useContentful(getMembershipPage)?.content?.fields;
-  const faqs = useContentful(getFAQs)?.content?.items;
+  const membershipTiers = useSelector((state) => state.content.membershipTiers)?.filter(
+    (t) => t.id !== "reszen8-premium-annual"
+  );
+  const content = useContentful(getMembershipPage)?.content;
+  const faqs = useContentful(getFAQs)?.content;
   const auth = useAWSAuth();
   const [yearlyUpgrade, setYearlyUpgrade] = useState("");
-
   // Define the standard features for Digital Hub memberships
   const digitalHubFeatures = [
     "Full Meditation Library access",
@@ -57,7 +58,6 @@ const Memberships: React.FC = () => {
     }
     let product;
     if (yearlyUpgrade === tier.id) {
-      console.log(yearlyUpgrade);
       // Create a proper product object with all required fields for yearly
       product = {
         id: tier.id,
@@ -88,6 +88,7 @@ const Memberships: React.FC = () => {
     addItem(product);
     navigate("/basket");
   };
+
   return (
     <div className='memberships-page'>
       <header className='memberships-header'>
@@ -97,8 +98,8 @@ const Memberships: React.FC = () => {
 
       <div className='membership-grid'>
         {membershipTiers
-          ?.sort((a: any, b: any) => a.fields.order - b.fields.order)
-          ?.map(({ fields: tier }) => {
+          ?.sort((a: any, b: any) => a.order - b.order)
+          ?.map((tier) => {
             // Use the standard features for Digital Hub memberships and free trial
             const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
             const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
@@ -175,10 +176,10 @@ const Memberships: React.FC = () => {
       <div className='membership-faq'>
         <h2>Frequently Asked Questions</h2>
         <div className='faq-grid'>
-          {faqs?.map(({ fields }: { fields: { item: { question: string; answer: string } } }) => (
+          {faqs?.map((item) => (
             <div className='faq-item'>
-              <h3>{fields?.question}</h3>
-              <p>{fields?.answer}</p>
+              <h3>{item.question}</h3>
+              <p>{item.answer}</p>
             </div>
           ))}
         </div>

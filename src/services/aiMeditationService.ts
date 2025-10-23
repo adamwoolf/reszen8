@@ -28,28 +28,75 @@ export const generateMeditation = async (
   userId: string,
   voiceCode = "en-GB-BellaNeural",
   title: string,
-  immersive: boolean
+  immersive: boolean,
+  script?: any
 ) => {
   try {
     const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
+    // const endpoint = `https://rot47b3oq9.execute-api.eu-north-1.amazonaws.com/Prod/create-meditation`;
 
-    const meditation = await axios.post(endpoint, {
-      meditationType,
-      duration,
-      language,
-      practiceType,
-      userId,
-      voiceCode,
-      title,
-      immersive,
-    });
+    const meditation = await axios.post(
+      endpoint,
+      {
+        meditationType,
+        duration,
+        language,
+        practiceType,
+        userId,
+        voiceCode,
+        title,
+        immersive,
+        script,
+      },
+
+      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 }
+    );
 
     console.log("MEDITATION", meditation);
 
     return meditation;
   } catch (error) {
-    console.error("Failed to generate meditation:", error);
-    throw new Error("Failed to generate meditation. Please try again later.");
+    const status = error?.response?.status;
+
+    if (status === 503 || status === 504) {
+      // Gateway timed out — tell user to check back later
+      return {
+        message: "Your meditation is being processed. Please check Your Dashboard in a few minutes.",
+        status: status,
+      };
+    } else {
+      console.error("Failed to generate meditation:", error);
+      throw new Error("Failed to generate meditation. Please try again later.");
+    }
+  }
+};
+
+export const generateScript = async (
+  meditationType: string,
+  duration: string,
+  language: string = "en",
+  practiceType: string,
+  title: string,
+  immersive: boolean
+) => {
+  try {
+    const endpoint = `${AWS_DB_ENDPOINT}/generateScript`;
+
+    const script = await axios.post(endpoint, {
+      meditationType,
+      duration,
+      language,
+      practiceType,
+      title,
+      immersive,
+    });
+
+    console.log("SCRIPT", script);
+
+    return script;
+  } catch (error) {
+    console.error("Failed to generate script:", error);
+    throw new Error("Failed to generate script. Please try again later.");
   }
 };
 

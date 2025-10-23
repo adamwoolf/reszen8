@@ -22,9 +22,11 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
   const collectionTiles = [...new Set(collections.map((col) => col.collection))];
   const [selected, setSelected] = useState<string>("");
   const isAdded = currentUser?.savedItems?.collections?.map((col) => col.title)?.includes(selected);
-  console.log(isAdded);
+
   useEffect(() => {
-    getCollectionImages().then((data) => setImages(data.items.map((item) => ({ ...item.fields }))));
+    getCollectionImages().then((data) => {
+      setImages(data);
+    });
   }, []);
 
   const clickHandler = (collection: string) => {
@@ -49,12 +51,10 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       title: selected,
       id: selected,
       episodes: sortByEpisode(meditations),
-      image: image?.image?.fields?.file?.url,
+      image: image?.url,
       contentType: "collection",
     };
     await addItem(collection);
-
-    console.log("ADDED", collection);
   };
 
   return (
@@ -73,7 +73,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
         ))} */}
 
         {collectionTiles.map((col) => {
-          const imgSrc = images.find((im) => im.collectionName === col)?.image?.fields?.file?.url;
+          const imgSrc = images.find((im) => im.collectionName === col)?.image?.url;
           return (
             <button onClick={() => clickHandler(col)} className='collections__card'>
               <h3>{col}</h3>
@@ -93,7 +93,11 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       {displayCol.length > 0 && (
         <div className='collections__selected'>
           <h3 className='collections__selected-heading'>{selected}</h3>
-          <button disabled={isAdded} onClick={handleAddToJourney} className={!isAdded ? 'collections__save-cta' :'collections__save-cta collections__save-cta--disabled'}>
+          <button
+            disabled={isAdded}
+            onClick={handleAddToJourney}
+            className={!isAdded ? "collections__save-cta" : "collections__save-cta collections__save-cta--disabled"}
+          >
             {isAdded ? "Added to My Journey" : "Add to My Journey"}
           </button>
           <button className='collections__close-cta' onClick={() => clickHandler("")}>

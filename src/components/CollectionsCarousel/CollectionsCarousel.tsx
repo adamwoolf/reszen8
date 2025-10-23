@@ -22,7 +22,6 @@ const CollectionsCarousel = ({ handleClick }: { handleClick?: (value: string) =>
   const [selected, setSelected] = useState<string>("");
   const isAdded = currentUser?.savedItems?.collections?.map((col) => col.title)?.includes(selected);
   const images = useSelector((state) => state.content.collectionImages);
-
   const clickHandler = (collection: string) => {
     trackCTA(`Collection select-tile-${collection}`);
     setDisplayCol(collections.filter((med) => med.collection === collection));
@@ -45,7 +44,7 @@ const CollectionsCarousel = ({ handleClick }: { handleClick?: (value: string) =>
       title: selected,
       id: selected,
       episodes: sortByEpisode(meditations),
-      image: image?.image?.fields?.file?.url,
+      image: image?.image?.file?.url,
       contentType: "collection",
     };
     await addItem(collection);
@@ -58,7 +57,7 @@ const CollectionsCarousel = ({ handleClick }: { handleClick?: (value: string) =>
       <h2>RESZEN8 Collections</h2>
       <div className='c-carousel__cards'>
         {collectionTiles.map((col) => {
-          const imgSrc = images.find((im) => im.collectionName === col)?.image?.fields?.file?.url;
+          const imgSrc = images.find((im) => im.collectionName === col)?.image?.url;
           return (
             <div key={col} className='c-carousel__card'>
               <img

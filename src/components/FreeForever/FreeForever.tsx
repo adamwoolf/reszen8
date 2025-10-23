@@ -6,13 +6,24 @@ import MeditationCard from "../MeditationCard/MeditationCard";
 import QuoteOfTheDay from "../QuoteOfTheDay/QuoteOdTheDay";
 import { Link } from "react-router-dom";
 import "./FreeForeverStyles.scss";
+import NewUserPlanPurchaseCta from "../../pages/Memberships/NewUserPlanPurchaseCta";
+import { useAuth } from "../../contexts/AuthContext";
+
 const FreeForever = () => {
   const meditations = useSelector(getStaticMeds);
   const articles = useSelector(getPublicationsWithCategories);
+  const { currentUser } = useAuth();
   if (!articles.length || !meditations.length) return null;
+
   return (
     <div className='freemium'>
+      {!currentUser && (
+        <div className='freemium__cta'>
+          <NewUserPlanPurchaseCta homepage />
+        </div>
+      )}
       <h1 className='freemium__title'>Begin Your Journey</h1>
+
       <div className='freemium__top-row'>
         {meditations
           .filter((med) => med.immersive)

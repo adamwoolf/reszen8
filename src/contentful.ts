@@ -1,31 +1,130 @@
-import { createClient } from "contentful";
+const SPACE_ID = import.meta.env.VITE_CONTENTFUL_SPACE_ID;
+const TOKEN = import.meta.env.VITE_CONTENTFUL_API;
+const GRAPHQL_URL = `https://graphql.contentful.com/content/v1/spaces/${SPACE_ID}`;
 
-const client = createClient({
-  space: import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-  accessToken: import.meta.env.VITE_CONTENTFUL_API,
-});
+async function fetchGraphQL(query: string) {
+  const res = await fetch(GRAPHQL_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${TOKEN}`,
+    },
+    body: JSON.stringify({ query }),
+  });
 
-const getStoreItems = () =>
-  client.getEntries({ content_type: "storeItem", order: "fields.order" }).then((response) => response.items);
-const getMeditationItems = () =>
-  client.getEntries({ content_type: "meditationItem" }).then((response) => response.items);
+  const text = await res.text(); // get raw response
+  if (!res.ok) {
+    console.error("GraphQL fetch failed:", text);
+    throw new Error("Failed to fetch Contentful GraphQL data");
+  }
 
-const getMeditationPage = () =>
-  client.getEntries({ content_type: "meditationHubPage" }).then((response) => response.items[0]);
+  return JSON.parse(text).data;
+}
 
-const getApparelPage = () => client.getEntries({ content_type: "apparelPage" }).then((response) => response.items[0]);
-const getHomePage = () => client.getEntries({ content_type: "homepage" }).then((response) => response.items[0]);
-const getMembershipPage = () =>
-  client.getEntries({ content_type: "membershipPage" }).then((response) => response.items[0]);
-const getCarouselSlides = () => client.getEntries({ content_type: "carouselSlide" }).then((response) => response);
+// single GraphQL query for all content types
+const ALL_CONTENT_QUERY = `
+query AllContent {
+  homepageCollection {
+    items { sys { id } title description tagline  }
+  }
+  membershipPageCollection {
+    items { sys { id } title subtitle }
+  }
+  
+  faqCollection {
+    items { sys { id } question answer }
+  }
+  membershipTierCollection(order: order_ASC) {
+    items { sys { id } title price billing description id features order freeTrial badge priceId medCredits yearlyPriceId yearlyPriceDescription yearlyMeditationCredits yearlyId yearlyBilling yearlyPrice  }
+  }
+  privacyPolicyCollection {
+    items { sys { id } text }
+  }
+  termsAndConditionsCollection {
+    items { sys { id } text }
+  }
+  collectionImageCollection {
+    items {
+      sys { id }
+      collectionName
+      image {
+        url
+      }
+    }
+  }
+}
 
-const getFAQs = () => client.getEntries({ content_type: "faq" }).then((response) => response);
-const getMembershipTiers = () =>
-  client.getEntries({ content_type: "membershipTier", order: "fields.order" }).then((response) => response);
+`;
 
-const getPrivacyPolicy = () => client.getEntries({ content_type: "privacyPolicy" }).then((response) => response);
-const getTsAndCs = () => client.getEntries({ content_type: "termsAndConditions" }).then((response) => response);
-const getCollectionImages = () => client.getEntries({ content_type: "collectionImage" }).then((response) => response);
+// fetch all content once
+let cachedContent: any = null;
+async function getAllContent() {
+  if (!cachedContent) {
+    cachedContent = await fetchGraphQL(ALL_CONTENT_QUERY);
+  }
+  return cachedContent;
+}
+
+// keep the same exported functions as before
+const getStoreItems = async () => {
+  const data = await getAllContent();
+  return data.storeItemCollection.items;
+};
+
+const getMeditationItems = async () => {
+  const data = await getAllContent();
+  return data.meditationItemCollection.items;
+};
+
+const getMeditationPage = async () => {
+  const data = await getAllContent();
+  return data.meditationHubPageCollection.items[0];
+};
+
+const getApparelPage = async () => {
+  const data = await getAllContent();
+  return data.apparelPageCollection.items[0];
+};
+
+const getHomePage = async () => {
+  const data = await getAllContent();
+  return data.homepageCollection.items[0];
+};
+
+const getMembershipPage = async () => {
+  const data = await getAllContent();
+  return data.membershipPageCollection.items[0];
+};
+
+const getCarouselSlides = async () => {
+  const data = await getAllContent();
+  return data.carouselSlideCollection.items;
+};
+
+const getFAQs = async () => {
+  const data = await getAllContent();
+  return data.faqCollection.items;
+};
+
+const getMembershipTiers = async () => {
+  const data = await getAllContent();
+  return data.membershipTierCollection.items;
+};
+
+const getPrivacyPolicy = async () => {
+  const data = await getAllContent();
+  return data.privacyPolicyCollection.items[0];
+};
+
+const getTsAndCs = async () => {
+  const data = await getAllContent();
+  return data.termsAndConditionsCollection.items[0];
+};
+
+const getCollectionImages = async () => {
+  const data = await getAllContent();
+  return data.collectionImageCollection.items;
+};
 
 export {
   getCollectionImages,

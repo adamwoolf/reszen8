@@ -62,6 +62,18 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
   const progress = Math.min(Math.max(usedTime / safeDuration, 0), 1);
   const countdown = Math.max(duration - usedTime, 0);
 
+  // reset countdown/duration when track ends
+  useEffect(() => {
+    if (!isCurrent) return; // only reset for the active track
+    if (duration > 0 && currentTime >= duration) {
+      // wait a moment so the UI catches the last frame
+      setTimeout(() => {
+        reset(); // stops + resets playback in your AudioContext
+        setDuration(duration); // keeps duration value so countdown shows correctly
+      }, 300);
+    }
+  }, [currentTime, duration, isCurrent, reset]);
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60)
@@ -69,11 +81,7 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
       .padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
-  // return (
-  //   <audio controls>
-  //     <source src={audioUrl} />
-  //   </audio>
-  // );
+
   return (
     <div style={isLoading ? { pointerEvents: "none" } : {}} className='audio-player__inner' ref={cardRef}>
       <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>

@@ -26,7 +26,6 @@ export const deleteBespokeMed = async (userId: string, uid: string) => {
   });
 };
 
-// utils/meditations.ts
 export const updateMeditationDeleteStatus = async (userId: string, uid: string, markForDeletion: boolean) => {
   try {
     const response = await fetch(`${AWS_DB_ENDPOINT}/updateMeditationDeleteStatus`, {
@@ -44,12 +43,10 @@ export const updateMeditationDeleteStatus = async (userId: string, uid: string, 
     });
 
     const data = await response.json();
-    console.log(data);
     if (!response.ok) {
       throw new Error(data.error || "Failed to update meditation delete status");
     }
     await getMeditationItems(userId);
-    console.info("retrieved bespoke meditations");
     return data; // usually contains confirmation info
   } catch (err) {
     console.error("updateMeditationDeleteStatus error:", err);
@@ -88,3 +85,9 @@ export async function cancelSubscription(uid, cancelAtPeriodEnd = true) {
   });
   return res.json();
 }
+
+export const getUser = async (id: string) => {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${id}`);
+  const json = res.json();
+  return json;
+};

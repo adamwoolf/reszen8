@@ -11,6 +11,7 @@
   --text-secondary: #cccccc;
   --bg-color: #05011f;
   --bg-color-light: #151228;
+  --bg-color-lighter: #1d1729;
   --bg-color-light-transparent: rgba(21, 18, 40, 0.42);
   --testbg-color: #151228;
   --bg-secondary: #121212;
@@ -179,7 +180,12 @@ button,
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color color 0.3s;
+}
+
+button:hover,
+.btn:hover {
+  color: var(--bg-color);
 }
 
 @media (prefers-color-scheme: light) {

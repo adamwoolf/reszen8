@@ -36,7 +36,7 @@ const InviteAFriend = ({ text }: { text?: boolean }) => {
       <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Friend's name" />
 
       <input type='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Friend's email" />
-      <button style={{ display: "flex" }} onClick={handleSend}>
+      <button style={{ display: "flex", justifyContent: "center" }} onClick={handleSend}>
         Invite {sending && <ThreeDotsLoader />}
       </button>
     </div>

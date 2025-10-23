@@ -21,8 +21,13 @@
   margin-right: auto;
 }
 
-.message {
+.next-steps-container {
+  text-align: center;
+}
+.next-steps {
   color: orange;
+  margin-bottom: 16px;
+  display: block;
 }
 
 .credit-count {
@@ -98,7 +103,6 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 0.75rem;
   font-weight: 600;
   color: #ffa500;
   font-size: 1.05rem;

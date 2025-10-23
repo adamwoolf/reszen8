@@ -28,8 +28,10 @@ const Toast = ({ toast }) => {
     );
   return (
     <div onAnimationEnd={handleAnimationEnd} className={!leaving ? "message" : "message message--leaving"}>
-      <span className='message__icon'>{icon}</span>
-      <span className='message__text'>{toast.text}</span>{" "}
+      <span>
+        <span className='message__icon'>{icon}</span>
+        <span className='message__text'>{toast.text}</span>{" "}
+      </span>
       <button onClick={() => setLeaving(true)} className='message__close'>
         <AiFillCloseCircle />{" "}
       </button>

@@ -17,7 +17,6 @@ const UserManager = ({ children }) => {
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
-  const membershipTiers = useContentful(getMembershipTiers)?.content?.items;
 
   const isSubscriptionActive = (subscription: Subscription): boolean => {
     const created = new Date(subscription.startDate); // already ms
@@ -27,7 +26,9 @@ const UserManager = ({ children }) => {
   };
 
   useEffect(() => {
-    getCollectionImages().then((data) => dispatch(setCollectionImages(data.items.map((item) => ({ ...item.fields })))));
+    getCollectionImages().then((data) => {
+      dispatch(setCollectionImages(data));
+    });
   }, []);
 
   useEffect(() => {
@@ -63,35 +64,35 @@ const UserManager = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (membershipTiers) {
-      const membershipObjects = membershipTiers.reduce((acc, tier) => {
-        if (tier.fields.yearlyPriceId)
+    getMembershipTiers().then((data) => {
+      const membershipObjects = data.reduce((acc, tier) => {
+        if (tier.yearlyPriceId)
           acc = [
             ...acc,
             {
-              priceId: tier.fields.yearlyPriceId,
-              meditationCredits: tier.fields.yearlyMeditationCredits,
-              id: tier.fields.yearlyId,
-              price: tier.fields.yearlyPrice,
-              title: tier.fields.title,
-              planName: tier.fields.title,
-              billing: tier.fields.yearlyBilling,
-              description: tier.fields.description,
+              priceId: tier.yearlyPriceId,
+              meditationCredits: tier.yearlyMeditationCredits,
+              id: tier.yearlyId,
+              price: tier.yearlyPrice,
+              title: tier.title,
+              planName: tier.title,
+              billing: tier.yearlyBilling,
+              description: tier.description,
             },
           ];
         return [
           ...acc,
           {
-            ...tier.fields,
-            meditationCredits: tier.fields.medCredits,
-            subId: tier.fields.id,
-            planName: tier.fields.title,
+            ...tier,
+            meditationCredits: tier.medCredits,
+            subId: tier.id,
+            planName: tier.title,
           },
         ];
       }, []);
       dispatch(setMembershipTiers(membershipObjects));
-    }
-  }, [membershipTiers]);
+    });
+  }, []);
 
   return <div>{children}</div>;
 };

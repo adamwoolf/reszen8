@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 
-import { generateMeditation } from "../../services/aiMeditationService";
+import { generateMeditation, generateScript } from "../../services/aiMeditationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./AIMeditationGenerator.scss";
 import { MedTypesAndAffirmations, PracticeTypes, mapDurationToWords } from "../../services/helpers";
 import Popup from "../../components/Popup/Popup";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
-import { getMeditationItems, getStaticMeditations } from "../../store/apiUtils";
+import { getMeditationItems, getStaticMeditations, getUser } from "../../store/apiUtils";
 import { setMeditations, setStaticMeditations, createToast } from "../../store/contentSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -51,28 +51,43 @@ const AIMeditationGenerator: React.FC = () => {
   const [immersive, setImmersive] = useState(true);
   const cost = immersive ? 2 : 1;
 
-  // // Static Med generation data
-  // const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
+  const checkCredits = async () => {
+    if (!currentUser) return;
+    const user = await getUser(currentUser.uid);
+    console.log(user);
+    setCurrentUser(user);
+    const { meditationCredits, extraBespokeMeditationCredits } = user?.subscription || {};
+    return meditationCredits + extraBespokeMeditationCredits;
+  };
 
-  // useEffect(() => {
-  //   setDuration(allowedValues[durationIndex]);
-  // }, [durationIndex]);
-
-  // useEffect(() => {
-  //   setVoiceCode(!immersive ? "en-GB-BellaNeural" : "en-GB-OliviaNeural");
-  // }, [immersive]);
+  useEffect(() => {
+    setDuration(allowedValues[durationIndex]);
+  }, [durationIndex]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
+    // Reset any existing meditation
+    setGeneratedMeditation(null);
+    setIsGenerating(true);
     trackCTA("Generate Bespoke");
     e.preventDefault();
     if (isGenerating || !currentUser) return;
 
-    // Reset any existing meditation
-    setGeneratedMeditation(null);
-    setIsGenerating(true);
+    // update user details and return early and alert user if they have used credits on another device.
+    const credit = await checkCredits();
+    if (!credit)
+      return dispatch(
+        createToast({
+          text:
+            "You do not currently have enough credit.  Please purchase a topup pack or wait for your subscription to renew.",
+          type: "error",
+        })
+      );
 
     try {
+      dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
+      const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
+      dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
       const result = await generateMeditation(
         meditationType,
         duration,
@@ -81,8 +96,22 @@ const AIMeditationGenerator: React.FC = () => {
         currentUser?.uid || "anonymous",
         voice.id,
         title,
-        immersive
+        immersive,
+        script.data || ""
       );
+
+      console.log(result);
+      if (!result) {
+        dispatch(
+          createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
+        );
+        throw new Error("Failed to generate meditation");
+      }
+
+      if (result.message) {
+        dispatch(createToast({ text: result.message, type: "success" }));
+      }
+
       if (currentUser?.subscription?.meditationCredits + currentUser.subscription?.extraBespokeMeditationCredits < cost)
         return;
       if (
@@ -131,7 +160,7 @@ const AIMeditationGenerator: React.FC = () => {
             subscription: {
               ...currentUser?.subscription,
               meditationCredits: 0,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
+              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
             },
           });
           setCurrentUser({
@@ -142,25 +171,21 @@ const AIMeditationGenerator: React.FC = () => {
             },
           });
         }
-      dispatch(createToast({ text: `Meditation Generated Successfully.`, type: "success" }));
-
-      if (!result) {
-        dispatch(
-          createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
-        );
-        throw new Error("Failed to generate meditation");
-      }
 
       // Update the state with the new meditation
       setGeneratedMeditation({
-        title: result.data.script.title,
-        content: result.data.script.content,
-        audioUrl: result.data.audioUrl,
-        isImmersive: result.data.dbItem.immersive,
+        title: "ready",
+        content: "script too long",
+        audioUrl: "result.data.audioUrl",
+        isImmersive: true,
       });
       getMeditationItems(currentUser.uid).then((data) => {
         if (data) dispatch(setMeditations(data));
       });
+      if (!result.message) {
+        dispatch(createToast({ text: `Meditation Generated Successfully.`, type: "success" }));
+      }
+
       // Scroll to the generated content
       setTimeout(() => {
         const resultsElement = document.querySelector(".results-container");
@@ -170,13 +195,20 @@ const AIMeditationGenerator: React.FC = () => {
       }, 100);
     } catch (error) {
       console.error("Error generating meditation:", error);
-      dispatch(
-        createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
-      );
+      // dispatch(cradmeateToast({ text: `There was an error.  Please try again later.`, type: "error" }));
     } finally {
       setIsGenerating(false);
     }
   };
+
+  const loadingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isGenerating) loadingRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [isGenerating]);
+
+  const titleRef = useRef(null);
+
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
@@ -186,7 +218,12 @@ const AIMeditationGenerator: React.FC = () => {
           Bespoke Meditation Generator craft the perfect guided meditation for you.
         </p>
       </div>
-      {isGenerating && <LoadingScene />}
+      {isGenerating && (
+        <div ref={loadingRef}>
+          {" "}
+          <LoadingScene />
+        </div>
+      )}
       {!isGenerating && (
         <form onSubmit={handleSubmit} className='generator-form'>
           <div className='form-group'>
@@ -194,25 +231,14 @@ const AIMeditationGenerator: React.FC = () => {
             {profanityFilter(title) && (
               <p className='ai-meditation-generator__warning'>Title must not contain profanities</p>
             )}
-            <input value={title} placeholder='Enter a title' onChange={(e) => setTitle(e.target.value)} />
-            <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
-            <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
-              learn more
-            </button>
-            {showPopup === "size" && (
-              <Popup fitContent show={!!showPopup} onClose={() => setShowPopup("")}>
-                {Object.keys(mapDurationToWords).map((key) => {
-                  const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
-                  return (
-                    <div className='popup__list-item' key={`list-item-${key}`}>
-                      <h4 className='popup__list-title'>{key}</h4>
-                      <p className='popup__list-desc'>{type.description}</p>
-                    </div>
-                  );
-                })}
-              </Popup>
-            )}
             <input
+              ref={titleRef}
+              value={title}
+              placeholder='Enter a title'
+              onChange={(e) => setTitle(e.target.value)}
+            />
+
+            {/* <input
               className='custom-slider'
               type='range'
               min={0}
@@ -228,7 +254,36 @@ const AIMeditationGenerator: React.FC = () => {
                   {value}
                 </span>
               ))}
-            </div>
+            </div> */}
+          </div>
+          <div className='form-group form-group-block'>
+            <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
+            {/* <button type='button' onClick={() => setShowPopup("size")} className='btn--text'>
+              learn more
+            </button>
+            {showPopup === "size" && (
+              <Popup fitContent show={!!showPopup} onClose={() => setShowPopup("")}>
+                {Object.keys(mapDurationToWords).map((key) => {
+                  const type = mapDurationToWords[key as keyof typeof mapDurationToWords];
+                  return (
+                    <div className='popup__list-item' key={`list-item-${key}`}>
+                      <h4 className='popup__list-title'>{key}</h4>
+                      <p className='popup__list-desc'>{type.description}</p>
+                    </div>
+                  );
+                })}
+              </Popup>
+            )} */}
+            <VoiceOptions
+              selectedId={duration}
+              onSelect={(e) => setDuration(e.id)}
+              options={allowedValues.map((option) => ({
+                id: option,
+                label: option,
+                sampleUri: "",
+                description: mapDurationToWords[option].description,
+              }))}
+            />
           </div>
           <div className='form-group form-group-block'>
             <label>With Immersive Sound? </label>
@@ -346,23 +401,27 @@ const AIMeditationGenerator: React.FC = () => {
           <div className='meditation-content'>
             <h2 className='text-2xl font-bold mb-6 text-orange-400'>{generatedMeditation?.title}</h2>
             <div className='audio-player bg-gray-800 rounded-lg p-6'>
-              <h3 className='text-lg font-semibold mb-4 text-orange-400'>Preview Your Meditation</h3>
               <div className='player-controls'>
-                {isAudioGenerating ? (
-                  <div className='spinner-small'></div>
-                ) : generatedMeditation.audioUrl ? (
-                  <AudioController
-                    audioUrl={generatedMeditation.audioUrl}
-                    isImmersive={generatedMeditation.isImmersive}
-                  />
-                ) : null}
-              </div>
-
-              <div className='flex justify-center mt-10 space-x-8'>
-                <span className='message'>
-                  Your meditation has been saved to the Bespoke Meditations tab in your{" "}
-                  <Link to='/journey'>Journey</Link>
-                </span>
+                <div className='next-steps-container '>
+                  <span className='next-steps'>
+                    You can now enjoy your meditation in Your Journey, or click the Start Again button to generate
+                    another.
+                  </span>
+                  <span>
+                    <Link className='btn' style={{ marginRight: 8 }} to='/journey'>
+                      Go to Your Journey
+                    </Link>
+                  </span>
+                  <button
+                    onClick={() => {
+                      setTitle("");
+                      window.scrollTo({ top: 0 });
+                      titleRef?.current?.focus();
+                    }}
+                  >
+                    Start Again
+                  </button>
+                </div>
               </div>
             </div>
           </div>

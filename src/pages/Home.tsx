@@ -46,7 +46,7 @@ const features = [
 const Home: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const content = useContentful(getHomePage)?.content?.fields;
+  const content = useContentful(getHomePage)?.content;
   const container = {
     hidden: { opacity: 0 },
     show: {
