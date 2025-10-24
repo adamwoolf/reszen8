@@ -98,7 +98,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         const backingAudio = new Audio(backingUrl);
         backingRef.current = backingAudio;
         backingAudio.loop = true;
-        backingAudio.volume = 0;
         backingAudio.currentTime = currentAudio === mainUrl ? lastPositionRef.current.backing : 0;
 
         backingAudio.play();
@@ -107,7 +106,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         const fadeSteps = 20;
         const fadeInterval = setInterval(() => {
           step++;
-          backingAudio.volume = Math.min(step / fadeSteps, 1);
+          backingAudio.volume = Math.min(step / fadeSteps, 0.4);
           if (step >= fadeSteps) clearInterval(fadeInterval);
         }, 50);
 

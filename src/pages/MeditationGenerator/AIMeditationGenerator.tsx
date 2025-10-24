@@ -16,6 +16,7 @@ import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
 import jordan from "../../assets/audio/Jordan.mp3";
 import willow from "../../assets/audio/Willow.mp3";
+import Consult8 from "../../components/Consult8/Consult8";
 
 interface MeditationState {
   title: string;
@@ -53,7 +54,7 @@ const AIMeditationGenerator: React.FC = () => {
   const checkCredits = async () => {
     if (!currentUser) return;
     const user = await getUser(currentUser.uid);
-    console.log(user);
+
     setCurrentUser(user);
     const { meditationCredits, extraBespokeMeditationCredits } = user?.subscription || {};
     return meditationCredits + extraBespokeMeditationCredits;
@@ -225,20 +226,10 @@ const AIMeditationGenerator: React.FC = () => {
       )}
       {!isGenerating && (
         <form onSubmit={handleSubmit} className='generator-form'>
-          <div className='form-group'>
-            <label>Title</label>
-            {profanityFilter(title) && (
-              <p className='ai-meditation-generator__warning'>Title must not contain profanities</p>
-            )}
-            <input
-              ref={titleRef}
-              value={title}
-              placeholder='Enter a title'
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
+          <Consult8 setMeditationType={setMeditationType} />
+
           <div className='form-group form-group-block'>
-            <label htmlFor='duration'>Meditation Size: {allowedValues[durationIndex]}</label>
+            <label htmlFor='duration'>Select a Size: {allowedValues[durationIndex]}</label>
 
             <VoiceOptions
               selectedId={duration}
@@ -260,25 +251,37 @@ const AIMeditationGenerator: React.FC = () => {
             <label>Select a Voice </label>
             <VoiceOptions selectedId={voice.id} onSelect={setVoice} options={voiceOptionsArray} />
           </div>
-          <div className='form-grid'>
-            <div className='form-group form-group-block'>
-              <label htmlFor='meditation-type'>Meditation Type</label>
+          <div className='form-group'>
+            <label>Name your meditation</label>
+            {profanityFilter(title) && (
+              <p className='ai-meditation-generator__warning'>Title must not contain profanities</p>
+            )}
+            <input
+              ref={titleRef}
+              value={title}
+              placeholder='Enter a title'
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          {/* <div className='form-grid'> */}
+          {/* <div className='form-group form-group-block'>
+            <label htmlFor='meditation-type'>Meditation Type</label>
 
-              <select
-                id='meditation-type'
-                value={meditationType}
-                onChange={(e) => setMeditationType(e.target.value)}
-                disabled={isGenerating}
-              >
-                {MedTypesAndAffirmations.map((type, i) => (
-                  <option key={"med-type" + type.title + i} value={type.type}>
-                    {type.type}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              id='meditation-type'
+              value={meditationType}
+              onChange={(e) => setMeditationType(e.target.value)}
+              disabled={isGenerating}
+            >
+              {MedTypesAndAffirmations.map((type, i) => (
+                <option key={"med-type" + type.title + i} value={type.type}>
+                  {type.type}
+                </option>
+              ))}
+            </select>
+          </div> */}
 
-            <div className='form-group'>
+          {/* <div className='form-group'>
               <div>
                 <label htmlFor='practiceType'>Practice Type</label>
                 <button type='button' onClick={() => setShowPopup("practiceType")} className='btn--text'>
@@ -307,10 +310,10 @@ const AIMeditationGenerator: React.FC = () => {
                   </option>
                 ))}
               </select>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
 
-          <div className='flex justify-center mt-8 space-x-8'>
+          <div className='generator-cta'>
             {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
               cost && (
               <span>

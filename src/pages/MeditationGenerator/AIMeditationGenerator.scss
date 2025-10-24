@@ -21,6 +21,11 @@
   margin-right: auto;
 }
 
+.generator-cta {
+  display: flex;
+  justify-content: center;
+}
+
 .next-steps-container {
   text-align: center;
 }
@@ -35,6 +40,7 @@
   font-size: 0.7rem;
   margin-top: -10px;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .generator-header h1 {
@@ -107,6 +113,7 @@
   color: #ffa500;
   font-size: 1.05rem;
   letter-spacing: 0.5px;
+  // text-align: center;
 }
 
 /* Select and Input Styling */

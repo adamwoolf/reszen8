@@ -1,0 +1,27 @@
+.feelings {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  &__container {
+    text-align: center;
+  }
+  margin: 10px 0;
+
+  &__button {
+    width: auto;
+    // flex: 1;
+    margin: 8px;
+    background: none;
+    border: 1px solid orange;
+
+    &:hover:not(.feelings__button--selected) {
+      background: none;
+      color: white;
+    }
+
+    &--selected {
+      color: var(--bg-color);
+      background: orange;
+    }
+  }
+}
