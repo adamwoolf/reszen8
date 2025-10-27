@@ -70,6 +70,7 @@ export async function switchSubscription(uid, newPriceId, updates) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ uid, newPriceId, updates }),
   });
+  console.log(res);
   if (!res.ok) {
     const errData = await res.json();
     throw new Error(errData.error || "Failed to switch subscription");

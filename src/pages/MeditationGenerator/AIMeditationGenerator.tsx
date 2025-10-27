@@ -54,7 +54,7 @@ const AIMeditationGenerator: React.FC = () => {
   const checkCredits = async () => {
     if (!currentUser) return;
     const user = await getUser(currentUser.uid);
-
+    console.log(user);
     setCurrentUser(user);
     const { meditationCredits, extraBespokeMeditationCredits } = user?.subscription || {};
     return meditationCredits + extraBespokeMeditationCredits;
@@ -87,6 +87,7 @@ const AIMeditationGenerator: React.FC = () => {
     try {
       dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
       const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
+      console.log("SCRIPT", script);
       dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
       const result = await generateMeditation(
         meditationType,

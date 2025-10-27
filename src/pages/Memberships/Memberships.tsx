@@ -66,7 +66,7 @@ const Memberships: React.FC = () => {
         description: tier.yearlyPriceDescription || "",
         size: tier.yearlyBilling, // Store billing cycle as size
         priceId: tier.yearlyPriceId, // for Stripe subscriptions
-        medCredits: tier.yearlyMeditationCredits,
+        meditationCredits: tier.yearlyMeditationCredits,
         type: "subscription",
         title: `${tier.title} - ${tier.yearlyBilling}`,
       };
@@ -79,7 +79,7 @@ const Memberships: React.FC = () => {
         description: tier.description || "",
         size: tier.billing, // Store billing cycle as size
         priceId: tier.priceId, // for Stripe subscriptions
-        medCredits: tier.medCredits,
+        meditationCredits: tier.medCredits,
         type: "subscription",
         title: tier.title,
       };

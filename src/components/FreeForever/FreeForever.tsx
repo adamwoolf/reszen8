@@ -27,7 +27,9 @@ const FreeForever = () => {
       <div className='freemium__top-row'>
         {meditations
           .filter((med) => med.immersive)
-          .slice(1, 3)
+          .filter(
+            (med) => med.title === "Resilience, Immersive Tibetan Meditation" || med.title === "Stillness of Breath"
+          )
           .map((med) => (
             <MeditationCard isCollection key={med.title} item={med} />
           ))}

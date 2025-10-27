@@ -6,6 +6,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import Popup from "../../components/Popup/Popup";
 import "./UpgradeCtaStyles.scss";
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
+import { AWS_DB_ENDPOINT } from "../../constants";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 
 const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: any }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -13,9 +15,45 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
   const { currentUser, setCurrentUser } = useAuth();
   const [waiting, setWaiting] = useState(false);
   const plan = useSelector((state) => getPlanById(state, id));
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
+
+  const upgradeFromTrial = async (user: any, selectedPlan: any, selectedSubData: any) => {
+    const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "subscription",
+        email: user.email,
+        firstName: currentUser?.firstName,
+        lastName: currentUser?.surName,
+        uid: user.uid,
+        planId: selectedPlan.priceId,
+        metadata: { uid: user?.uid },
+        lineItems: [{ price: selectedPlan.priceId, quantity: 1 }], // 👈 send array of line items
+        subscription: selectedSubData,
+      }),
+    });
+    const data = await res.json();
+    const stripe = await stripePromise;
+    await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+  };
+  console.log(currentUser);
   const handleClick = async () => {
     setWaiting(true);
-    await switchSubscription(currentUser?.uid, plan.priceId, plan);
+    const selectedSubData = {
+      hasCompletedTrial: true,
+      meditationCredits: plan?.medCredits,
+      size: plan?.billing,
+      subId: plan?.id,
+      planName: plan?.title,
+      extraBespokeMeditationCredits: 0,
+      subscription: plan.id,
+    };
+    if (currentUser?.subscription?.subscription === "free-trial") {
+      await upgradeFromTrial(currentUser, plan, selectedSubData);
+    } else {
+      await switchSubscription(currentUser?.uid, plan.priceId, plan);
+    }
     setCurrentUser({ ...currentUser, subscription: { ...currentUser?.subscription, ...plan } });
 
     setShowPopup(false);
@@ -56,8 +94,10 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
             </button>
           </div>
           <small className='overview__disclaimer'>
-            By clicking Change Plan, you will immediately be moved to your new plan and will be charged or credited for
-            outstanding time or credit accordingly.{" "}
+            When you click Change Plan Now, if you are upgrading from the free trial, you will be taken to our Stripe
+            checkout to enter your card details and start your plan. Otherwise, you will immediately be moved to your
+            new plan, without leaving our site, and will be charged or credited for outstanding time or credit
+            accordingly.
           </small>
         </div>
       </Popup>
