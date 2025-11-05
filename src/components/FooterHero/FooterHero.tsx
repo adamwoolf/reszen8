@@ -16,7 +16,7 @@ const members = [
   { label: "Bespoke Meditation Generator", path: "/bespoke-meditation-generator" },
   { label: "Meditation Library", path: "/meditation-library" },
   { label: "Articles", path: "/articles" },
-  { label: "My Journey", path: "/journey" },
+  { label: "Your Journey", path: "/journey" },
   { label: "Members Area", path: "/members" },
 ];
 

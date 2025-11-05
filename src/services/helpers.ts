@@ -162,3 +162,226 @@ export const mapDurationToWords = {
   // },
   // 15: { words: 1900, breaks: 55 },
 };
+
+const test = {
+  Mindfulness: {
+    Recharge: {
+      words: 550,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 550 words focused on Mindfulness. Include gentle breathing cues, body awareness, and sensory imagery in 5 short sections, ending with a slow mindful close.",
+    },
+    Refresh: {
+      words: 1250,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1250 words focused on Mindfulness. Use 6–7 sections with progressive awareness, expanding from breath to body to environment, ending with a reflective close.",
+    },
+    Relax: {
+      words: 1750,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1750 words focused on Mindfulness. Include detailed pacing, breath counts, progressive awareness, and a closing reflection to ground the listener.",
+    },
+  },
+  "Stress Relief": {
+    Recharge: {
+      words: 570,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 570 words focused on Stress Relief. Guide the listener to release tension through breath and visualization in 5 sections.",
+    },
+    Refresh: {
+      words: 1280,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1280 words focused on Stress Relief. Include progressive relaxation, soothing imagery, and positive affirmations.",
+    },
+    Relax: {
+      words: 1800,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1800 words focused on Stress Relief. Blend breathwork, visualization, and full-body release with a gentle closing section.",
+    },
+  },
+  "Better Sleep": {
+    Recharge: {
+      words: 590,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 590 words for Better Sleep. Use slow rhythm, soft language, and calming bedtime imagery to prepare the listener for rest.",
+    },
+    Refresh: {
+      words: 1320,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1320 words for Better Sleep. Include a full body scan, nighttime imagery, and gentle countdown relaxation.",
+    },
+    Relax: {
+      words: 1860,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1860 words for Better Sleep. Build a complete sleep-induction sequence with detailed sensory relaxation and a peaceful ending.",
+    },
+  },
+  "Loving-Kindness": {
+    Recharge: {
+      words: 610,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 610 words for Loving-Kindness. Focus on compassion phrases and heart-centered breathing.",
+    },
+    Refresh: {
+      words: 1360,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1360 words for Loving-Kindness. Expand love and goodwill outward in stages—from self to others to the world.",
+    },
+    Relax: {
+      words: 1910,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1910 words for Loving-Kindness. Create a deep compassion journey ending in gratitude and connection.",
+    },
+  },
+  Gratitude: {
+    Recharge: {
+      words: 640,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 640 words focused on Gratitude. Encourage reflection on three things the listener appreciates today.",
+    },
+    Refresh: {
+      words: 1420,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1420 words focused on Gratitude. Guide through layered appreciation of body, people, and life experiences.",
+    },
+    Relax: {
+      words: 2000,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2000 words focused on Gratitude. Include extended reflective moments and positive affirmations to close.",
+    },
+  },
+  "Anxiety Relief": {
+    Recharge: {
+      words: 660,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 660 words for Anxiety Relief. Use gentle breathing counts and self-reassurance to create calm.",
+    },
+    Refresh: {
+      words: 1450,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1450 words for Anxiety Relief. Include gradual relaxation, grounding the body, and emotional soothing.",
+    },
+    Relax: {
+      words: 2050,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2050 words for Anxiety Relief. Create a full release sequence with breathwork, visualization, and supportive tone.",
+    },
+  },
+  Compassion: {
+    Recharge: {
+      words: 680,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 680 words focused on Compassion. Emphasize gentle self-kindness and empathy.",
+    },
+    Refresh: {
+      words: 1480,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1480 words focused on Compassion. Combine self-compassion, compassion for others, and compassion for the world in 3 phases.",
+    },
+    Relax: {
+      words: 2090,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2090 words focused on Compassion. Include rich imagery and a closing reflection of universal compassion.",
+    },
+  },
+  "Focus & Concentration": {
+    Recharge: {
+      words: 730,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 730 words for Focus and Concentration. Include step-by-step attention training and breath anchors.",
+    },
+    Refresh: {
+      words: 1550,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1550 words for Focus and Concentration. Provide 6 structured focus exercises with clear pacing and guidance.",
+    },
+    Relax: {
+      words: 2180,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2180 words for Focus and Concentration. Include detailed progressive attention and flow-state guidance.",
+    },
+  },
+  Resilience: {
+    Recharge: {
+      words: 770,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 770 words focused on Resilience. Blend breath awareness with positive inner dialogue and strength imagery.",
+    },
+    Refresh: {
+      words: 1600,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1600 words focused on Resilience. Use visualization of overcoming challenges and rebuilding inner strength.",
+    },
+    Relax: {
+      words: 2250,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2250 words focused on Resilience. Create a narrative meditation guiding through adversity to calm confidence.",
+    },
+  },
+  Relationships: {
+    Recharge: {
+      words: 800,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 800 words focused on Relationships. Center on empathy, connection, and forgiveness.",
+    },
+    Refresh: {
+      words: 1650,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1650 words focused on Relationships. Reflect on loved ones and compassionate communication.",
+    },
+    Relax: {
+      words: 2320,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2320 words focused on Relationships. Use visualization to deepen understanding, connection, and peaceful closure.",
+    },
+  },
+  Anger: {
+    Recharge: {
+      words: 830,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 830 words for Anger Release. Use cooling breath imagery, body scan, and slow relaxation techniques.",
+    },
+    Refresh: {
+      words: 1700,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 1700 words for Anger Release. Guide the listener through recognizing, softening, and releasing anger safely.",
+    },
+    Relax: {
+      words: 2400,
+      tone: "soothing",
+      prompt:
+        "Generate a soothing guided meditation of about 2400 words for Anger Release. Include long cooling visualization, forgiveness practice, and gentle closing section.",
+    },
+  },
+};

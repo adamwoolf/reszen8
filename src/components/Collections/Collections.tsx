@@ -47,13 +47,15 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       ?.sort((a, b) => (a.episode > b.episode ? 1 : -1));
 
     const image = images.find((image) => image.collectionName === selected);
+
     const collection = {
       title: selected,
       id: selected,
       episodes: sortByEpisode(meditations),
-      image: image?.url,
+      image: image?.image?.url,
       contentType: "collection",
     };
+
     await addItem(collection);
   };
 
@@ -98,7 +100,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
             onClick={handleAddToJourney}
             className={!isAdded ? "collections__save-cta" : "collections__save-cta collections__save-cta--disabled"}
           >
-            {isAdded ? "Added to My Journey" : "Add to My Journey"}
+            {isAdded ? "Added to Your Journey" : "Add to Your Journey"}
           </button>
           <button className='collections__close-cta' onClick={() => clickHandler("")}>
             close collection

@@ -31,13 +31,23 @@ const FreeForever = () => {
             (med) => med.title === "Resilience, Immersive Tibetan Meditation" || med.title === "Stillness of Breath"
           )
           .map((med) => (
-            <MeditationCard isCollection key={med.title} item={med} />
+            <MeditationCard
+              showLike={false}
+              customTitle={
+                med.title === "Stillness of Breath"
+                  ? "The Awakening Collection - Meditation 1: Stillness of Breath"
+                  : ""
+              }
+              isCollection
+              key={med.title}
+              item={med}
+            />
           ))}
         {meditations
           .filter((med) => !med.immersive)
           .slice(0, 1)
           .map((med) => (
-            <MeditationCard isCollection key={med.title} item={med} />
+            <MeditationCard showLike={false} isCollection key={med.title} item={med} />
           ))}
       </div>
       <div className='freemium__second-row'>

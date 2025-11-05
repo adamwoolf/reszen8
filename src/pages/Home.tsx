@@ -26,11 +26,11 @@ const features = [
   {
     title: "Bespoke Meditation Generator",
     description:
-      "Create personalised meditation sessions with Reszen8's unique,  bespoke Meditation Generator & save them to your Journey for later",
+      "Create personalised meditation sessions with Reszen8's unique,  bespoke Meditation Generator & save them to Your Journey for later",
     path: "/bespoke-meditation-generator",
   },
   {
-    title: "My Journey",
+    title: "Your Journey",
     description: "Listen to your saved meditations, read meditation guides and customise your journey",
     path: "/journey",
   },
@@ -72,6 +72,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      {/* <Drawing /> */}
       <FreeForever />
       <CollectionsCarousel />
       <section className='features-section'>
@@ -141,3 +142,18 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+const Drawing = () => {
+  const radius = 100;
+  const stroke = 3;
+  // const outerRadius = 200;
+  const innerRadius = 70;
+  const cy = 80;
+  const cx = 80;
+  return (
+    <div className='test-container'>
+      <div className='test' />
+      <div className='test2' />
+    </div>
+  );
+};

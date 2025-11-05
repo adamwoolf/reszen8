@@ -80,19 +80,23 @@ export const generateScript = async (
   immersive: boolean
 ) => {
   try {
-    const endpoint = `${AWS_DB_ENDPOINT}/generateScript`;
+    // const endpoint = `${AWS_DB_ENDPOINT}/generateScript`;
+    const endpoint = `https://rot47b3oq9.execute-api.eu-north-1.amazonaws.com/Prod/create-script`;
 
-    const script = await axios.post(endpoint, {
-      meditationType,
-      duration,
-      language,
-      practiceType,
-      title,
-      immersive,
-    });
+    const script = await axios.post(
+      endpoint,
+      {
+        meditationType,
+        duration,
+        language,
+        practiceType,
+        title,
+        immersive,
+      },
+      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 }
+    );
 
     console.log("SCRIPT", script);
-    console.log("WORDS", script?.data?.content?.split(" ")?.length);
 
     return script;
   } catch (error) {

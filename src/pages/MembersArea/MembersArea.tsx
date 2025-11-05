@@ -194,7 +194,7 @@ export default function MembersArea() {
               <p className='feature-description'>
                 We're sorry to see you go. If you cancel, you'll lose access to all premium features at the end of your
                 billing period. As long as you have credits you will still be able to access the Bespoke Generator and
-                listen to your Bespoke Meditation in the My Journey area.
+                listen to your Bespoke Meditation in the Your Journey area.
                 <br />
                 <br />
                 <strong>Note:</strong> You can reactivate your membership at any time.

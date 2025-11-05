@@ -50,11 +50,11 @@ const FullPublication = () => {
   const showSaveUI = () =>
     saved ? (
       <span className='publication__full__added'>
-        Saved to <Link to='/journey'> My Journey</Link>
+        Saved to <Link to='/journey'> Your Journey</Link>
       </span>
     ) : (
       <button className='publication__full__add' onClick={savePublication}>
-        Save to My Journey
+        Save to Your Journey
       </button>
     );
 

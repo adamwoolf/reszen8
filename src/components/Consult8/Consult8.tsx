@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ConsultStyles.scss";
 import { MedTypesAndAffirmations } from "../../services/helpers";
+import { trackCTA } from "../../utils/analytics";
 
 const feelings = [
   "Calm",
@@ -52,10 +53,11 @@ function getRecommendedMeditation(selectedFeelings) {
   return bestMatches[0];
 }
 
-const Consult8 = ({ setMeditationType }) => {
+const Consult8 = ({ setMeditationType }: { setMeditationType: (value: string) => void }) => {
   const [choices, setChoices] = useState<string[]>([]);
 
   const handleClick = (option: string) => {
+    trackCTA("Consult8 Mood CTA", option);
     if (choices.includes(option)) {
       setChoices([...choices].filter((c) => c !== option));
     } else {
@@ -77,6 +79,7 @@ const Consult8 = ({ setMeditationType }) => {
             className={choices.includes(f) ? "feelings__button feelings__button--selected" : "feelings__button"}
             type='button'
             onClick={() => handleClick(f)}
+            key={f}
           >
             {f}
           </button>

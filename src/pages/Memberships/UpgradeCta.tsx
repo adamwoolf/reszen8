@@ -52,7 +52,7 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
     if (currentUser?.subscription?.subscription === "free-trial") {
       await upgradeFromTrial(currentUser, plan, selectedSubData);
     } else {
-      await switchSubscription(currentUser?.uid, plan.priceId, plan);
+      await switchSubscription(currentUser?.uid, plan.priceId, plan, currentUser?.email, currentUser.firstName);
     }
     setCurrentUser({ ...currentUser, subscription: { ...currentUser?.subscription, ...plan } });
 

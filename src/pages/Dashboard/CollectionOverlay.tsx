@@ -42,6 +42,7 @@ const CollectionOverlay = ({
                 showLike={false}
                 i={index}
                 item={episode}
+                key={episode.title}
               />
             ))}
           </div>

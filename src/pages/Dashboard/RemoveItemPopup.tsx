@@ -5,9 +5,9 @@ const RemoveItemPopup = ({ show, onClose, handleRemoveItem, item }) => {
   return (
     <Popup showClose={false} fitContent show={show} onClose={onClose}>
       <>
-        <h3>Remove from your Journey</h3>
+        <h3>Remove from Your Journey</h3>
         <p>
-          "{item?.title}" will be removed from your Journey, but still be available in the Collections area of the
+          "{item?.title}" will be removed from Your Journey, but still be available in the Collections area of the
           Meditation Library.
         </p>
         <button onClick={onClose} className='dashboard-button'>

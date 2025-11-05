@@ -111,12 +111,12 @@ const MeditationCard = ({
             <button
               disabled={hasBeenSaved}
               onClick={() => {
-                trackCTA(`Save meditation to My Journey-${item.title}`);
+                trackCTA(`Save meditation to Your Journey-${item.title}`);
                 handleAddItem?.(item);
               }}
               className='publication__card-save-cta'
             >
-              {hasBeenSaved ? "Saved to My Journey" : "Save to My Journey"}
+              {hasBeenSaved ? "Saved to Your Journey" : "Save to Your Journey"}
             </button>
           )}
         </div>

@@ -38,7 +38,7 @@ const Memberships: React.FC = () => {
   const digitalHubFeatures = [
     "Full Meditation Library access",
     "AI Meditation Generator",
-    "Personalized 'My Journey'",
+    "Personalized 'Your Journey'",
     "New content when available",
     "Access to E-Books",
     "Access to publications",

@@ -87,7 +87,10 @@ const AIMeditationGenerator: React.FC = () => {
     try {
       dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
       const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
-      console.log("SCRIPT", script);
+      console.log("SCRIPT", JSON.parse(script.data.body));
+      console.log("WORDS", JSON.parse(script.data.body)?.content.split(" ")?.length);
+
+      const content = JSON.parse(script.data.body);
       dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
       const result = await generateMeditation(
         meditationType,
@@ -98,7 +101,7 @@ const AIMeditationGenerator: React.FC = () => {
         voice.id,
         title,
         immersive,
-        script.data || ""
+        content
       );
 
       console.log(result);
@@ -175,10 +178,10 @@ const AIMeditationGenerator: React.FC = () => {
 
       // Update the state with the new meditation
       setGeneratedMeditation({
-        title: "ready",
+        title: result?.data?.title,
         content: "script too long",
-        audioUrl: "result.data.audioUrl",
-        isImmersive: true,
+        audioUrl: result?.data?.audioUrl,
+        isImmersive: result?.data?.immersive,
       });
       getMeditationItems(currentUser.uid).then((data) => {
         if (data) dispatch(setMeditations(data));

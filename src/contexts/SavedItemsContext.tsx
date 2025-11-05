@@ -97,7 +97,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ...currentUser,
         savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
       });
-      dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
+      dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
     } else {
       const newItems = !currentUser.savedItems
         ? { [itemType]: [item] }
@@ -108,7 +108,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         ...currentUser,
         savedItems: newItems,
       });
-      dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
+      dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
     }
     return true;
   };
@@ -129,7 +129,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         }
       : { ...currentUser, savedItems: {} };
     updateUser(currentUser?.uid, { savedItems: newSavedItems });
-    dispatch(createToast({ text: `${item.title} has been removed from My Journey`, type: "success" }));
+    dispatch(createToast({ text: `${item.title} has been removed from Your Journey`, type: "success" }));
 
     setCurrentUser(newUserObj);
   };

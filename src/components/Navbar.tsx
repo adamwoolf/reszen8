@@ -12,6 +12,7 @@ import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
 import { IoMdLogOut } from "react-icons/io";
 import { trackCTA } from "../utils/analytics";
+import user from "../assets/logoPNG.png";
 
 import ShareCta from "./ShareCta/ShareCta";
 const Navbar: React.FC = () => {
@@ -177,7 +178,7 @@ const Navbar: React.FC = () => {
                   )}
                   <li>
                     <NavLink to='/journey' className={getNavLinkClass}>
-                      My Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
+                      Your Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
                     </NavLink>
                   </li>
                 </>
@@ -234,7 +235,8 @@ const Navbar: React.FC = () => {
                 <NavLink style={{ marginLeft: 10, marginRight: 10 }} to='/members'>
                   <span className='user-address'>{name}</span>
 
-                  <FaUser size={18} color='orange' />
+                  {/* <FaUser size={18} color='orange' /> */}
+                  {/* <img src={user} className='user-icon' /> */}
                 </NavLink>
               )}
               <ShareCta />

@@ -116,7 +116,7 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard-container'>
-      <h1 className='page-header'>My Journey</h1>
+      <h1 className='page-header'>Your Journey</h1>
       <div className='dashboard__search-container'>
         <AmbientEnv />
 

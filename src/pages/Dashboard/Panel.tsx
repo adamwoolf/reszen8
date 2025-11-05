@@ -178,9 +178,9 @@ const Panel = ({
                           >
                             {dataKey !== "myMeds" ? (
                               <>
-                                <h3>Remove from your Journey</h3>
+                                <h3>Remove from Your Journey</h3>
                                 <p>
-                                  "{itemToRemove?.title}" will be removed from your Journey, but still be available in
+                                  "{itemToRemove?.title}" will be removed from Your Journey, but still be available in
                                   the {dataKey === "publications" ? "the Articles page" : "the Meditation Library"}
                                 </p>
                                 <button onClick={() => setShowPopup(false)} className='dashboard-button'>

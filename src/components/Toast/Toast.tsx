@@ -28,7 +28,7 @@ const Toast = ({ toast }) => {
     );
   return (
     <div onAnimationEnd={handleAnimationEnd} className={!leaving ? "message" : "message message--leaving"}>
-      <span>
+      <span className='message__content'>
         <span className='message__icon'>{icon}</span>
         <span className='message__text'>{toast.text}</span>{" "}
       </span>

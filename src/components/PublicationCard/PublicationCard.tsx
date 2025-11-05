@@ -42,17 +42,17 @@ const PublicationCard = ({ item, showLike = true, onClose }) => {
     };
     if (currentUser) updateUser(currentUser?.uid, { savedItems: newPubs });
     setCurrentUser(newData);
-    dispatch(createToast({ text: `${item.title} has been added to My Journey`, type: "success" }));
+    dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
   };
 
   const showSaveUI = () =>
     saved ? (
       <span className='publication__card__added'>
-        saved to <Link to='/journey'> My Journey</Link>
+        saved to <Link to='/journey'> Your Journey</Link>
       </span>
     ) : (
       <button className='publication__card__add' onClick={savePublication}>
-        save to My Journey
+        save to Your Journey
       </button>
     );
   return (

@@ -64,7 +64,38 @@ export async function createCheckoutSession(uid, priceId, mode = "subscription",
   return data; // contains Stripe sessionId
 }
 
-export async function switchSubscription(uid, newPriceId, updates) {
+const sendMail = async (recipient, subject, html) => {
+  const endPoint = `${AWS_DB_ENDPOINT}/sendMail`;
+
+  await fetch(endPoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: recipient,
+      cc: "",
+      subject,
+      html,
+    }),
+  });
+};
+
+async function sendEmailSES(data) {
+  const res = await fetch(`${AWS_DB_ENDPOINT}/ses-mail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: "user@example.com",
+      subject: "Welcome to our app!",
+      message: "<p>Thanks for signing up 🙌</p>",
+    }),
+  });
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error);
+  return result;
+}
+
+export async function switchSubscription(uid, newPriceId, updates, userEmail, firstName) {
   const res = await fetch(`${AWS_DB_ENDPOINT}/switch-subscription`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -75,6 +106,14 @@ export async function switchSubscription(uid, newPriceId, updates) {
     const errData = await res.json();
     throw new Error(errData.error || "Failed to switch subscription");
   }
+  await sendMail(
+    userEmail,
+    `Welcome to your ${updates.planName} RESZEN8 plan`,
+    `<p>Hi ${firstName},</p>
+        <p>Your account has been upgraded to ${updates?.planName} and you can start enjoying your plan benefits right away.</p>
+        <p>Thank you for continuing to enjoy RESZEN8</p>
+        <p>The RESZEN8 Team</p>`
+  );
   return res.json();
 }
 

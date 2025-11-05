@@ -19,9 +19,15 @@
     animation: fadeOut 400ms ease-in-out;
   }
 
+  &__content {
+    display: flex;
+    align-items: center;
+  }
+
   &__icon {
     margin-right: 8px;
-    margin-bottom: -6px;
+    margin-bottom: -7px;
+    display: block;
   }
 
   &__close {

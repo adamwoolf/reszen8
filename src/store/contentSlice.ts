@@ -103,7 +103,7 @@ export const contentSlice = createSlice({
       state.toasts = [...state.toasts, action.payload];
     },
     deleteToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
-      state.toasts = state.toasts.filter((t) => t.text !== action.payload.text);
+      state.toasts = [...state.toasts].filter((t) => t.text !== action.payload.text);
     },
     setCollectionImages: (state, action) => {
       state.collectionImages = action.payload;

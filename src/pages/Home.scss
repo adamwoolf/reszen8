@@ -326,3 +326,37 @@
     padding: 0;
   }
 }
+
+.test {
+  height: 100px;
+  width: 100px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  z-index: 3;
+}
+
+.test3 {
+  height: 100px;
+  width: 100px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.test2 {
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border: 3px solid red;
+  position: absolute;
+  top: 0;
+  z-index: 0;
+}
+
+.test-container {
+  position: relative;
+}
