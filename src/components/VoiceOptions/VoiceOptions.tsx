@@ -98,9 +98,13 @@ export default function VoiceOptions({ options, onSelect, selectedId }: VoiceOpt
                 {selected && <span className='inner-circle' />}
               </span>
               <span className='label'>
+                {/* <div className='label__main'> */}
                 {option.label}
                 {option.description && ":"}
                 {option.description && <span className='voice-option__description'>{option.description}</span>}
+                {option.description2 && <span className='voice-option__description2'>{option.description2}</span>}
+
+                {/* </div> */}
               </span>
             </span>
             {option.sampleUri && (

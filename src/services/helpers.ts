@@ -123,14 +123,6 @@ export const PracticeTypes = [
   },
 ];
 
-// export const mapDurationToWords = {
-//   3: { words: 375, breaks: 17 },
-//   5: { words: 625, breaks: 19 },
-//   8: { words: 1000, breaks: 28 },
-//   10: { words: 1250, breaks: 35 },
-//   15: { words: 1900, breaks: 55 },
-// };
-
 export const mapDurationToWords = {
   Recharge: {
     words: "350–380",
@@ -138,6 +130,8 @@ export const mapDurationToWords = {
     totalPauseTime: "40",
     duration: 1,
     description: "a quick reset.",
+    description2: "(2 credits)",
+    loadingMessage: "Preparing meditation in real time 30 to 45 seconds, blink and it’s done!",
   },
   Refresh: {
     words: "550–600",
@@ -145,6 +139,8 @@ export const mapDurationToWords = {
     totalPauseTime: "70",
     duration: 4,
     description: "a short, energising pause.",
+    description2: "(3 credits)",
+    loadingMessage: "Preparing meditation in real time 60 to 120 seconds, take a few breaths!",
   },
   Relax: {
     words: "900–950",
@@ -152,6 +148,8 @@ export const mapDurationToWords = {
     totalPauseTime: "90",
     duration: 8,
     description: "soften tension and slow your pace.",
+    description2: "(4 credits)",
+    loadingMessage: "Preparing meditation in real time 120 to 180 seconds, grab a drink!",
   },
   // Relax: {
   //   words: "1100–1150",

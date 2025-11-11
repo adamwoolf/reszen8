@@ -162,8 +162,6 @@ export default function MembersArea() {
 
             {currentUser?.purchasedItems?.length > 0 ? (
               <>
-                <div className='purchased-items-container-fade' />
-
                 <div className='purchased-items-container'>
                   {sortByDate(currentUser?.purchasedItems)?.map((item, index) => {
                     const date = new Date(item.date);

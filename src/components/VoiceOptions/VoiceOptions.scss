@@ -54,6 +54,15 @@
       position: relative;
     }
 
+    &__description2 {
+      font-size: 0.7rem;
+      display: inline-block;
+      margin-left: 8px;
+      margin-top: 1px;
+      position: relative;
+      color: orange;
+    }
+
     .radio-circle {
       position: relative;
       height: 24px;
@@ -95,9 +104,18 @@
       flex: 1;
       user-select: none;
       display: flex;
+      align-items: center;
+
+      &__name {
+        display: flex;
+      }
 
       &__name {
         color: orange;
+      }
+
+      @media (max-width: 768px) {
+        flex-direction: column;
       }
     }
 

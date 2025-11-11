@@ -152,22 +152,32 @@ export const generateStaticMedFromScript = async (
 ) => {
   try {
     // Generate audio via Azure TTS
+    const endpoint = `https://rot47b3oq9.execute-api.eu-north-1.amazonaws.com/Prod/create-static-meditation`;
 
-    const endpoint = `${AWS_DB_ENDPOINT}/generateStaticMeditation`;
+    // const endpoint = `${AWS_DB_ENDPOINT}/generateStaticMeditation`;
 
-    const uploadResponse = await axios.post(endpoint, {
-      title,
-      generatedBy: "RESZEN8",
-      id: uuidv4(),
-      voiceCode,
-      script,
-      meditationType,
-      practiceType,
-      immersive,
-      introMed,
-      collection,
-      episode,
-    });
+    const uploadResponse = await axios.post(
+      endpoint,
+      {
+        title,
+        generatedBy: "RESZEN8",
+        id: uuidv4(),
+        voiceCode,
+        script,
+        meditationType,
+        practiceType,
+        immersive,
+        introMed,
+        collection,
+        episode,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        timeout: 300000, // 5 minutes
+
+        validateStatus: (status) => status < 500,
+      }
+    );
 
     return uploadResponse;
   } catch (error) {

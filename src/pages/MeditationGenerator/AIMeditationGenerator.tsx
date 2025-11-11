@@ -39,30 +39,69 @@ const AIMeditationGenerator: React.FC = () => {
   const allowedValues = Object.keys(mapDurationToWords);
   const [voice, setVoice] = useState(voiceOptionsArray[0]);
   const [duration, setDuration] = useState(allowedValues[0]);
-  const [durationIndex, setDurationIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [generatedMeditation, setGeneratedMeditation] = useState<MeditationState | null>(null);
-  const [isAudioGenerating, setIsAudioGenerating] = useState(false);
   const { currentUser, setCurrentUser, updateUser } = useAuth();
-  const [showPopup, setShowPopup] = useState("");
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [immersive, setImmersive] = useState(true);
-  const cost = immersive ? 2 : 1;
+  const [loadingMessage, setLoadingMessage] = useState("");
+
+  const mapDurationToCost = {
+    Recharge: 2,
+    Refresh: 3,
+    Relax: 4,
+  };
+  const cost = mapDurationToCost[duration as keyof typeof mapDurationToCost];
+
+  const deductCost = () => {
+    const { subscription } = currentUser || {};
+    if (!currentUser) return;
+
+    const availableCredit = subscription?.meditationCredits + (subscription?.extraBespokeMeditationCredits || 0);
+    if (cost > availableCredit) return;
+
+    const remainder = subscription?.meditationCredits - cost;
+
+    let planCreditAmount = 0;
+    let splitAmount = 0;
+
+    if (remainder >= 0) planCreditAmount = cost;
+
+    if (remainder <= 0) {
+      planCreditAmount = subscription?.meditationCredits || 0;
+      splitAmount = Math.abs(remainder);
+    }
+    const newSubscription = {
+      ...currentUser?.subscription,
+      meditationCredits: (currentUser?.subscription?.meditationCredits || 0) - planCreditAmount,
+      extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits
+        ? currentUser?.subscription?.extraBespokeMeditationCredits - splitAmount
+        : 0,
+    };
+    updateUser(currentUser?.uid, {
+      subscription: newSubscription,
+    });
+
+    setCurrentUser({
+      ...currentUser,
+      subscription: newSubscription,
+    });
+  };
 
   const checkCredits = async () => {
     if (!currentUser) return;
     const user = await getUser(currentUser.uid);
-    console.log(user);
+
     setCurrentUser(user);
     const { meditationCredits, extraBespokeMeditationCredits } = user?.subscription || {};
     return meditationCredits + extraBespokeMeditationCredits;
   };
 
   useEffect(() => {
-    setDuration(allowedValues[durationIndex]);
-  }, [durationIndex]);
+    setLoadingMessage(mapDurationToWords[duration].loadingMessage);
+  }, [duration]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -115,66 +154,9 @@ const AIMeditationGenerator: React.FC = () => {
       if (result.message) {
         dispatch(createToast({ text: result.message, type: "success" }));
       }
-
+      deductCost();
       if (currentUser?.subscription?.meditationCredits + currentUser.subscription?.extraBespokeMeditationCredits < cost)
         return;
-      if (
-        currentUser &&
-        (currentUser.subscription?.meditationCredits || currentUser?.subscription?.extraBespokeMeditationCredits)
-      )
-        if (currentUser.subscription?.meditationCredits >= cost) {
-          updateUser(currentUser?.uid, {
-            subscription: {
-              ...currentUser?.subscription,
-              meditationCredits: currentUser?.subscription?.meditationCredits - cost,
-            },
-          });
-          setCurrentUser({
-            ...currentUser,
-            subscription: {
-              ...currentUser?.subscription,
-              meditationCredits: currentUser?.subscription?.meditationCredits - cost,
-            },
-          });
-        } else if (
-          cost === 2 &&
-          currentUser.subscription?.meditationCredits === 1 &&
-          currentUser?.subscription?.extraBespokeMeditationCredits
-        ) {
-          updateUser(currentUser?.uid, {
-            subscription: {
-              ...currentUser?.subscription,
-              meditationCredits: 0,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
-            },
-          });
-          setCurrentUser({
-            ...currentUser,
-            subscription: {
-              ...currentUser?.subscription,
-              meditationCredits: 0,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - 1,
-            },
-          });
-        } else if (
-          !currentUser.subscription?.meditationCredits &&
-          currentUser?.subscription?.extraBespokeMeditationCredits >= cost
-        ) {
-          updateUser(currentUser?.uid, {
-            subscription: {
-              ...currentUser?.subscription,
-              meditationCredits: 0,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
-            },
-          });
-          setCurrentUser({
-            ...currentUser,
-            subscription: {
-              ...currentUser?.subscription,
-              extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits - cost,
-            },
-          });
-        }
 
       // Update the state with the new meditation
       setGeneratedMeditation({
@@ -218,14 +200,12 @@ const AIMeditationGenerator: React.FC = () => {
       <div className='generator-header'>
         <h1>Bespoke Meditation Generator</h1>
         <p className='text-white'>
-          Create a personalised meditation session tailored to your needs. Select your preferences below and let our
-          Bespoke Meditation Generator craft the perfect guided meditation for you.
+          Reflective moments crafted by you. A guided meditation or a simple moment of clarity. Your choice...
         </p>
       </div>
       {isGenerating && (
-        <div ref={loadingRef}>
-          {" "}
-          <LoadingScene />
+        <div className='generator__loading' ref={loadingRef}>
+          <h3 className='generator__loading__text'>{loadingMessage}</h3> <LoadingScene />
         </div>
       )}
       {!isGenerating && (
@@ -233,8 +213,10 @@ const AIMeditationGenerator: React.FC = () => {
           <Consult8 setMeditationType={setMeditationType} />
 
           <div className='form-group form-group-block'>
-            <label htmlFor='duration'>Select a Size: {allowedValues[durationIndex]}</label>
-
+            <label htmlFor='duration'>Select a Size</label>
+            <small className='credit-count'>
+              Depending on emotions selected (step 1) and size selected (step 2) meditation times will vary.
+            </small>
             <VoiceOptions
               selectedId={duration}
               onSelect={(e) => setDuration(e.id)}
@@ -243,12 +225,13 @@ const AIMeditationGenerator: React.FC = () => {
                 label: option,
                 sampleUri: "",
                 description: mapDurationToWords[option].description,
+                description2: mapDurationToWords[option].description2,
               }))}
             />
           </div>
           <div className='form-group form-group-block'>
             <label>With Immersive Sound? </label>
-            <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span>
+            {/* <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span> */}
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
           <div className='form-group form-group-block'>
@@ -267,55 +250,6 @@ const AIMeditationGenerator: React.FC = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          {/* <div className='form-grid'> */}
-          {/* <div className='form-group form-group-block'>
-            <label htmlFor='meditation-type'>Meditation Type</label>
-
-            <select
-              id='meditation-type'
-              value={meditationType}
-              onChange={(e) => setMeditationType(e.target.value)}
-              disabled={isGenerating}
-            >
-              {MedTypesAndAffirmations.map((type, i) => (
-                <option key={"med-type" + type.title + i} value={type.type}>
-                  {type.type}
-                </option>
-              ))}
-            </select>
-          </div> */}
-
-          {/* <div className='form-group'>
-              <div>
-                <label htmlFor='practiceType'>Practice Type</label>
-                <button type='button' onClick={() => setShowPopup("practiceType")} className='btn--text'>
-                  learn more
-                </button>
-              </div>
-              {showPopup === "practiceType" && (
-                <Popup show={showPopup} onClose={() => setShowPopup("")}>
-                  {PracticeTypes.map((type, i) => (
-                    <div className='popup__list-item' key={`med-type-description - ${type.name}${i}`}>
-                      <h4 className='popup__list-title'>{type.name}</h4>
-                      <p className='popup__list-desc'>{type.description}</p>
-                    </div>
-                  ))}
-                </Popup>
-              )}
-              <select
-                id='practiceType'
-                value={practiceType.name}
-                onChange={(e) => setPracticeType(e.target.value)}
-                disabled={isGenerating}
-              >
-                {PracticeTypes.map((lang, i) => (
-                  <option key={"practice-type-" + lang.name + i} value={lang.name}>
-                    <p> {lang.name}</p>
-                  </option>
-                ))}
-              </select>
-            </div> */}
-          {/* </div> */}
 
           <div className='generator-cta'>
             {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
@@ -389,7 +323,6 @@ const AIMeditationGenerator: React.FC = () => {
                     onClick={() => {
                       setTitle("");
                       window.scrollTo({ top: 0 });
-                      titleRef?.current?.focus();
                     }}
                   >
                     Start Again
