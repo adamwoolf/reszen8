@@ -24,13 +24,13 @@ const feelingToMeditations = {
   Tired: { "Better Sleep": 3, Mindfulness: 1 },
   Anxious: { "Anxiety Relief": 3, "Stress Relief": 2, Mindfulness: 1 },
   Angry: { Anger: 3, Compassion: 2, "Stress Relief": 1 },
-  Grateful: { Gratitude: 3, "Loving & Kindness": 2 },
-  Focused: { "Focus & Concentration": 3, Mindfulness: 2 },
-  Lonely: { Relationships: 3, Compassion: 2, "Loving & Kindness": 2 },
+  Grateful: { Gratitude: 3, "Loving Kindness": 2 },
+  Focused: { "Focus and Concentration": 3, Mindfulness: 2 },
+  Lonely: { Relationships: 3, Compassion: 2, "Loving Kindness": 2 },
   Hopeful: { Resilience: 3, Gratitude: 2 },
   Restless: { Mindfulness: 2, "Better Sleep": 2, "Anxiety Relief": 3 },
-  Sad: { Compassion: 3, "Loving & Kindness": 2, Resilience: 2 },
-  Distracted: { "Focus & Concentration": 3, Mindfulness: 2 },
+  Sad: { Compassion: 3, "Loving Kindness": 2, Resilience: 2 },
+  Distracted: { "Focus and Concentration": 3, Mindfulness: 2 },
 };
 
 function getRecommendedMeditation(selectedFeelings) {

@@ -8,7 +8,7 @@ const NewUserPlanPurchaseCta = ({
   yearlySelected,
   tier = { id: "free-trial" },
 }: {
-  homepage: boolean;
+  homepage?: boolean;
   yearlySelected: string;
   tier: any;
 }) => {

@@ -167,7 +167,9 @@ const Memberships: React.FC = () => {
                   ))}
                 </ul>
 
-                {currentUser?.subscription?.planName === tier.title && <div className='popular-badge'>Active</div>}
+                {currentUser?.subscription?.active && currentUser?.subscription?.planName === tier.title && (
+                  <div className='popular-badge'>Active</div>
+                )}
               </div>
             );
           })}

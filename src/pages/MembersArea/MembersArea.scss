@@ -37,10 +37,9 @@
 
 .purchased-items-container {
   position: relative;
-  height: 200px;
+  max-height: 400px;
   overflow-y: auto;
 }
-
 
 /* Trial Banner */
 .trial-banner {

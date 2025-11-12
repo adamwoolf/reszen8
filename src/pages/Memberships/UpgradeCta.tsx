@@ -38,7 +38,9 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
   };
   console.log(currentUser);
+
   const handleClick = async () => {
+    console.log("here");
     setWaiting(true);
     const selectedSubData = {
       hasCompletedTrial: true,
@@ -48,19 +50,21 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
       planName: plan?.title,
       extraBespokeMeditationCredits: 0,
       subscription: plan.id,
+      active: true,
+      status: "active",
     };
-    if (currentUser?.subscription?.subscription === "free-trial") {
+    if (currentUser?.subscription?.subscription === "free-trial" || currentUser?.subscription?.status === "canceled") {
       await upgradeFromTrial(currentUser, plan, selectedSubData);
     } else {
       await switchSubscription(currentUser?.uid, plan.priceId, plan, currentUser?.email, currentUser.firstName);
     }
-    setCurrentUser({ ...currentUser, subscription: { ...currentUser?.subscription, ...plan } });
+    setCurrentUser({ ...currentUser, subscription: { ...plan, ...selectedSubData } });
 
     setShowPopup(false);
     setWaiting(false);
   };
 
-  if (!currentUser || tier.id === "free-trial" || currentUser.subscription.planName === tier.title) return null;
+  if (!currentUser || tier.id === "free-trial") return null;
   return (
     <>
       <button type='button' onClick={() => setShowPopup(true)} className='subscribe-button'>
@@ -94,10 +98,10 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
             </button>
           </div>
           <small className='overview__disclaimer'>
-            When you click Change Plan Now, if you are upgrading from the free trial, you will be taken to our Stripe
-            checkout to enter your card details and start your plan. Otherwise, you will immediately be moved to your
-            new plan, without leaving our site, and will be charged or credited for outstanding time or credit
-            accordingly.
+            When you click Change Plan Now, if you are upgrading from the free trial or rejoining from an expired plan,
+            you will be taken to our Stripe checkout to enter your card details and start your plan. Otherwise, you will
+            immediately be moved to your new plan, without leaving our site, and will be charged or credited for
+            outstanding time or credit accordingly.
           </small>
         </div>
       </Popup>

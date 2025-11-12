@@ -113,8 +113,14 @@ export default function MembersArea() {
                 <p className='members-area__info'>
                   Extra meditation credits: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
                 </p>
-                {currentUser?.timeUntilRenewal && (
+                {currentUser?.timeUntilRenewal && !currentUser?.subscription.cancelAtPeriodEnd && (
                   <p className='members-area__info'>Renews in: {currentUser?.timeUntilRenewal}</p>
+                )}
+                {cancellationTime && currentUser?.subscription?.willCancelOn && (
+                  <p>
+                    Your subscription will end on:
+                    <br /> <span style={{ color: "orange" }}>{cancellationTime}</span>
+                  </p>
                 )}
               </>
             )}

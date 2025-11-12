@@ -20,8 +20,8 @@ const MembershipCta = ({
 
   return (
     <>
-      {currentUser?.subscription?.subscription === tier.id ||
-      currentUser?.subscription?.subId === tier.id ||
+      {(currentUser?.subscription?.subscription === tier.id && currentUser?.subscription?.active) ||
+      (currentUser?.subscription?.subId === tier.id && currentUser?.subscription?.active) ||
       (currentUser?.subscription?.hasCompletedTrial && tier.id === "free-trial") ||
       isAdded ||
       tier.title.includes("Enterprise") ? (

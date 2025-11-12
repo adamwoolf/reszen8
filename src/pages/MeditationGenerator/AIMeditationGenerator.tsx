@@ -124,13 +124,13 @@ const AIMeditationGenerator: React.FC = () => {
       );
 
     try {
-      dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
+      // dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
       const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
       console.log("SCRIPT", JSON.parse(script.data.body));
-      console.log("WORDS", JSON.parse(script.data.body)?.content.split(" ")?.length);
+      console.log("WORDS", JSON.parse(script.data.body)?.content?.split(" ")?.length);
 
       const content = JSON.parse(script.data.body);
-      dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
+      // dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
       const result = await generateMeditation(
         meditationType,
         duration,
@@ -194,7 +194,7 @@ const AIMeditationGenerator: React.FC = () => {
   }, [isGenerating]);
 
   const titleRef = useRef(null);
-
+  console.log(duration);
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
@@ -214,9 +214,9 @@ const AIMeditationGenerator: React.FC = () => {
 
           <div className='form-group form-group-block'>
             <label htmlFor='duration'>Select a Size</label>
-            <small className='credit-count'>
+            {/* <small className='credit-count'>
               Depending on emotions selected (step 1) and size selected (step 2) meditation times will vary.
-            </small>
+            </small> */}
             <VoiceOptions
               selectedId={duration}
               onSelect={(e) => setDuration(e.id)}
@@ -234,10 +234,18 @@ const AIMeditationGenerator: React.FC = () => {
             {/* <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span> */}
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
-          <div className='form-group form-group-block'>
-            <label>Select a Voice </label>
-            <VoiceOptions selectedId={voice.id} onSelect={setVoice} options={voiceOptionsArray} />
-          </div>
+          {duration !== "Relax" && (
+            <div className='form-group form-group-block'>
+              <label>Select a Voice </label>
+              <VoiceOptions
+                selectedId={voice.id}
+                onSelect={setVoice}
+                options={
+                  duration !== "Relax" ? voiceOptionsArray : voiceOptionsArray.filter((item) => item.label === "Willow")
+                }
+              />
+            </div>
+          )}
           <div className='form-group'>
             <label>Name your meditation</label>
             {profanityFilter(title) && (
@@ -260,6 +268,7 @@ const AIMeditationGenerator: React.FC = () => {
               </span>
             )}
             {currentUser &&
+            currentUser?.subscription?.active &&
             (currentUser?.subscription.subId !== "reszen8-core" ||
               currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits >=
                 cost) ? (

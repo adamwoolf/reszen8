@@ -3,12 +3,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import { cancelSubscription } from "../../store/apiUtils";
 import useSendMail from "../../hooks/useSendEmail";
 import ThreeDotsLoader from "../ThreeDotsLoads";
+import { getMeditationItems, getUser } from "../../store/apiUtils";
 
 const CancellationCta = () => {
   const { currentUser, signOutRedirect } = useAuth();
   const { sendMail } = useSendMail();
   const [waiting, setWaiting] = useState(false);
   const [message, setMessage] = useState("");
+  const [label, setLabel] = useState("Cancel Subscription");
 
   const subject = "Membership Cancellation: We’re sad to see you go 💙";
   const html = `<p>Hi ${currentUser?.firstName} ${currentUser?.surName},</p>
@@ -27,13 +29,20 @@ const CancellationCta = () => {
     await cancelSubscription(currentUser.uid);
     console.log("CANCELLED");
     sendMail(html, subject, currentUser.email);
+    setLabel("Subscription Cancelled");
+    await getUser(currentUser?.uid);
+
     setWaiting(false);
   };
 
   if (currentUser?.subscription.cancelAtPeriodEnd) return null;
   return (
-    <button disabled={waiting} style={{ display: "flex" }} onClick={handleCancelMembership}>
-      Cancel Subscription {waiting && <ThreeDotsLoader />}
+    <button
+      disabled={waiting || label === "Subscription Cancelled"}
+      style={{ display: "flex" }}
+      onClick={handleCancelMembership}
+    >
+      {label} {waiting && <ThreeDotsLoader />}
     </button>
   );
 };
