@@ -19,14 +19,8 @@ const Contact: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    sendMail(
-      formData.message,
-      `New message from  ${formData.name}: ${formData.email} via RESZEN8 contact form.`,
-      "connect@reszen8.com"
-    );
 
     sendMail(
       formData.message,

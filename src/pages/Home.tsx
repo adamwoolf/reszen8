@@ -9,6 +9,7 @@ import { marked } from "marked";
 import FreeForever from "../components/FreeForever/FreeForever";
 import Collections from "../components/Collections/Collections";
 import CollectionsCarousel from "../components/CollectionsCarousel/CollectionsCarousel";
+import { sendEmailSES } from "../store/apiUtils";
 
 const features = [
   // {

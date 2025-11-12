@@ -101,6 +101,7 @@ const AIMeditationGenerator: React.FC = () => {
 
   useEffect(() => {
     setLoadingMessage(mapDurationToWords[duration].loadingMessage);
+    if (duration === "Relax") setVoice(voiceOptionsArray[0]);
   }, [duration]);
 
   // Handle form submission
@@ -234,7 +235,7 @@ const AIMeditationGenerator: React.FC = () => {
             {/* <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span> */}
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
-          {duration !== "Relax" && (
+          {duration !== "Relax" ? (
             <div className='form-group form-group-block'>
               <label>Select a Voice </label>
               <VoiceOptions
@@ -244,6 +245,10 @@ const AIMeditationGenerator: React.FC = () => {
                   duration !== "Relax" ? voiceOptionsArray : voiceOptionsArray.filter((item) => item.label === "Willow")
                 }
               />
+            </div>
+          ) : (
+            <div className='form-group form-group-block'>
+              <label>Voice: Willow </label>
             </div>
           )}
           <div className='form-group'>
@@ -263,38 +268,39 @@ const AIMeditationGenerator: React.FC = () => {
             {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
               cost && (
               <span>
-                You have run out of meditation credits for this subscription period. You can always topup using the link
-                above and continue generating bespoke meditations.
+                You do not have sufficient credits. You can always topup using the link above and continue generating
+                bespoke meditations.
               </span>
             )}
             {currentUser &&
-            currentUser?.subscription?.active &&
-            (currentUser?.subscription.subId !== "reszen8-core" ||
+              currentUser?.subscription?.active &&
+              currentUser?.subscription.subId !== "reszen8-core" &&
               currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits >=
-                cost) ? (
-              <button
-                type='submit'
-                className='generate-btn'
-                disabled={
-                  isGenerating ||
-                  !title ||
-                  profanityFilter(title) ||
-                  currentUser?.subscription?.meditationCredits +
-                    currentUser?.subscription?.extraBespokeMeditationCredits <
-                    cost
-                }
-              >
-                {isGenerating ? (
-                  <>
-                    <span className='spinner'></span>
-                    Generating...
-                  </>
-                ) : (
-                  "Generate Meditation"
-                )}
-              </button>
-            ) : (
-              <>
+                cost && (
+                <button
+                  type='submit'
+                  className='generate-btn'
+                  disabled={
+                    isGenerating ||
+                    !title ||
+                    profanityFilter(title) ||
+                    currentUser?.subscription?.meditationCredits +
+                      currentUser?.subscription?.extraBespokeMeditationCredits <
+                      cost
+                  }
+                >
+                  {isGenerating ? (
+                    <>
+                      <span className='spinner'></span>
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Meditation"
+                  )}
+                </button>
+              )}
+            {!currentUser ||
+              (!currentUser?.subscription?.active && (
                 <div className='signup-prompt'>
                   <p>
                     {" "}
@@ -306,8 +312,7 @@ const AIMeditationGenerator: React.FC = () => {
                     Sign Up Today{" "}
                   </Link>
                 </div>
-              </>
-            )}
+              ))}
           </div>
         </form>
       )}

@@ -71,56 +71,6 @@ const Navbar: React.FC = () => {
     meditationCredits: 8,
   };
 
-  const resetTrial = () => {
-    if (currentUser && currentUser.firebaseId && currentUser?.isGod && window.godControls) {
-      const reset = () => {
-        const newUserData = {
-          ...currentUser,
-          subscription: newTrial,
-          purchasedItems: [{ name: "Free Trial", price: 0, purchasedDate: Date.now() }],
-        };
-        setCurrentUser(newUserData);
-        sendMail(`welcome, ${currentUser?.name}`, "Welcome to your RESZEN8 Free Trial!", currentUser?.email);
-        sendMail(
-          `${currentUser?.name} just started a free trial`,
-          `New user: ${currentUser?.name}: ${currentUser?.email}:`,
-          "connect@reszen8.com"
-        );
-      };
-      return (
-        <button style={{ marginRight: 8 }} onClick={reset}>
-          god reset free trial
-        </button>
-      );
-    }
-    return null;
-  };
-
-  const endSub = () => {
-    if (currentUser && currentUser.firebaseId && currentUser?.isGod && window.godControls) {
-      const reset = () => {
-        const thirtyFiveDaysAgo = Date.now() - 35 * 24 * 60 * 60 * 1000;
-
-        const newUserData = {
-          ...currentUser,
-          subscription: { ...newTrial, startDate: thirtyFiveDaysAgo, hasCompletedTrial: true },
-        };
-        setCurrentUser(newUserData);
-        sendMail("we are sorry to see you go", "RESZEN8 cancellation", currentUser?.email);
-        sendMail(
-          `${currentUser?.name} just cancelled`,
-          `${currentUser?.name}: ${currentUser?.email}:  RESZEN8 cancellation`,
-          "connect@reszen8.com"
-        );
-      };
-      return (
-        <button style={{ marginRight: 8 }} onClick={reset}>
-          end sub
-        </button>
-      );
-    }
-    return null;
-  };
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ` : "";
   if (loading || landingPageActive) return null;
   return (
@@ -222,11 +172,7 @@ const Navbar: React.FC = () => {
         </div>
         {currentUser && (
           <div className='user-items'>
-            <span className='countdown'>
-              {resetTrial()}
-              {endSub()}
-              {<AccountStatus user={currentUser} />}
-            </span>
+            <span className='countdown'>{<AccountStatus user={currentUser} />}</span>
             <div className='navbar__search-desktop'>
               <Search />
             </div>
