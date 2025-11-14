@@ -10,7 +10,6 @@ import Navbar from "./components/Navbar";
 import PageTransition from "./components/PageTransition";
 import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
-import AboutMe from "./pages/AboutMe";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
@@ -20,11 +19,9 @@ import DigitalLibrary from "./pages/MeditationLibrary/MeditationLibrary";
 import Apparel from "./pages/Apparel/Apparel";
 import AIMeditationGenerator from "./pages/MeditationGenerator/AIMeditationGenerator";
 import Checkout from "./pages/Checkout/Checkout";
-import OrderSuccess from "./pages/OrderSuccess";
 import Memberships from "./pages/Memberships/Memberships";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TestPaymentPage from "./pages/TestPaymentPage";
 import Sitemap from "./pages/Sitemap";
 import LoadingSpinner from "./components/LoadingSpinner";
 import FloatingCTA from "./components/FloatingCTA";
@@ -102,14 +99,6 @@ const AnimatedRoutes = () => {
           element={
             <Layout>
               <Home />
-            </Layout>
-          }
-        />
-        <Route
-          path='/about'
-          element={
-            <Layout>
-              <AboutMe />
             </Layout>
           }
         />
