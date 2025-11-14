@@ -8,21 +8,52 @@ export type Subscription = {
   extraBespokeMeditationCredits?: number;
 };
 
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+  description?: string;
+  size?: string;
+  quantity?: number;
+}
+
+export interface BasketItem {
+  product: Product;
+  quantity: number;
+}
+
+export interface SavedItem {
+  id: number | string;
+  title: string;
+  contentType: "meditation" | "publication" | "collection";
+  duration?: string;
+  author?: string;
+  savedDate?: string;
+}
+
+export interface SavedItemsType {
+  meditations: SavedItem[];
+  ebooks: SavedItem[];
+  publications: SavedItem[];
+  collections: SavedItem[];
+}
+
 export interface User {
   uid: string;
   email: string | null;
   emailVerified: boolean;
-  meditations?: [];
-  basket?: {};
+  meditations?: Meditation[];
+  basket?: BasketItem[];
   firebaseId: string;
   firstName?: string;
   surName?: string;
-  savedItems?: {};
+  savedItems?: SavedItemsType;
   subscription?: Subscription;
   isGod?: boolean;
   favourites?: {
-    publications?: [];
-    meditations?: [];
+    publications?: string[];
+    meditations?: string[];
   };
   consents?: {
     termsAndConditions: boolean;

@@ -1,10 +1,15 @@
-import React from "react";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { useState, useEffect } from "react";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import "./LandingImages.css";
 
+interface ImageUrls {
+  aiMedGen: string;
+  library: string;
+  dashboard: string;
+}
+
 const LandingImages = () => {
-  const [images, setImages] = useState<{ [key: string]: string }>({
+  const [images, setImages] = useState<ImageUrls>({
     aiMedGen: "",
     library: "",
     dashboard: "",
@@ -25,12 +30,16 @@ const LandingImages = () => {
           dashboard: dashboardUrl,
         });
       } catch (error) {
-        console.error("Error loading images:", error);
+        // Failed to load images from Firebase storage
       }
     };
 
     loadImages();
   }, []);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.style.display = "none";
+  };
 
   return (
     <div className='landing-images-container'>
@@ -39,10 +48,7 @@ const LandingImages = () => {
           src={images.library}
           alt='Digital Library'
           className='landing-image'
-          onError={(e) => {
-            // @ts-ignore
-            e.target.style.display = "none";
-          }}
+          onError={handleImageError}
         />
         <h3>Meditation Library</h3>
       </div>
@@ -51,10 +57,7 @@ const LandingImages = () => {
           src={images.aiMedGen}
           alt='AI Meditation Generator'
           className='landing-image'
-          onError={(e) => {
-            // @ts-ignore
-            e.target.style.display = "none";
-          }}
+          onError={handleImageError}
         />
         <h3>AI Meditation Generator</h3>
       </div>
@@ -63,10 +66,7 @@ const LandingImages = () => {
           src={images.dashboard}
           alt='Personalised Journey'
           className='landing-image'
-          onError={(e) => {
-            // @ts-ignore
-            e.target.style.display = "none";
-          }}
+          onError={handleImageError}
         />
         <h3>Personalised Dashboard</h3>
       </div>

@@ -125,13 +125,9 @@ const AIMeditationGenerator: React.FC = () => {
       );
 
     try {
-      // dispatch(createToast({ text: "Preparing your meditation", type: "info" }));
       const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
-      console.log("SCRIPT", JSON.parse(script.data.body));
-      console.log("WORDS", JSON.parse(script.data.body)?.content?.split(" ")?.length);
-
       const content = JSON.parse(script.data.body);
-      // dispatch(createToast({ text: "Applying your affirmations", type: "info" }));
+
       const result = await generateMeditation(
         meditationType,
         duration,
@@ -143,8 +139,6 @@ const AIMeditationGenerator: React.FC = () => {
         immersive,
         content
       );
-
-      console.log(result);
       if (!result) {
         dispatch(
           createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
@@ -181,8 +175,7 @@ const AIMeditationGenerator: React.FC = () => {
         }
       }, 100);
     } catch (error) {
-      console.error("Error generating meditation:", error);
-      // dispatch(cradmeateToast({ text: `There was an error.  Please try again later.`, type: "error" }));
+      // Failed to generate meditation
     } finally {
       setIsGenerating(false);
     }
@@ -195,7 +188,7 @@ const AIMeditationGenerator: React.FC = () => {
   }, [isGenerating]);
 
   const titleRef = useRef(null);
-  console.log(duration);
+
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>

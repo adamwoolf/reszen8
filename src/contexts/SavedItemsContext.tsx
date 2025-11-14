@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { useAuth } from "../contexts/AuthContext";
 import { useBasketStore } from "../store/basketStore";
 import { useSelector, useDispatch } from "react-redux";
-import { createToast } from "../store/contentSlice";
+import { createToast, ContentState } from "../store/contentSlice";
 
 type ItemType = {
   id: number | string;
@@ -11,6 +11,8 @@ type ItemType = {
   duration?: string;
   author?: string;
   savedDate?: string;
+  uid?: string;
+  createdAt?: number;
 };
 
 type SavedItemsType = {
@@ -22,14 +24,18 @@ type SavedItemsType = {
 
 type SavedItemsContextType = {
   savedItems: SavedItemsType;
-  addItem: (item: ItemType) => void;
-  removeItem: (itemId: number, type: keyof SavedItemsType) => void;
+  addItem: (item: ItemType) => boolean;
+  removeItem: (item: ItemType, type: keyof SavedItemsType) => void;
 };
 
 const SavedItemsContext = createContext<SavedItemsContextType | undefined>(undefined);
 
+interface RootState {
+  content: ContentState;
+}
+
 export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { meditations, dashboard } = useSelector((state) => state.content);
+  const { meditations } = useSelector((state: RootState) => state.content);
   const { currentUser, setCurrentUser, updateUser } = useAuth();
   const [savedItems, setSavedItems] = useState<SavedItemsType>({
     meditations: [],
@@ -73,8 +79,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser?.savedItems]);
 
-  const addItem = (item: ItemType) => {
-    console.log(item);
+  const addItem = (item: ItemType): boolean => {
     const itemType =
       item.contentType === "meditation"
         ? "meditations"
@@ -87,22 +92,21 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
         : savedItems[itemType].some((savedItem) => savedItem.id === item.id);
 
     if (itemExists) return false;
-    if (currentUser.savedItems && currentUser.savedItems[itemType]) {
-      console.log(item);
-      updateUser(currentUser?.uid, {
-        savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
+    if (currentUser?.savedItems && currentUser.savedItems[itemType]) {
+      updateUser(currentUser.uid, {
+        savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
       });
 
       setCurrentUser({
         ...currentUser,
-        savedItems: { ...currentUser?.savedItems, [itemType]: [...currentUser.savedItems?.[itemType], item] },
+        savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
       });
       dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
     } else {
-      const newItems = !currentUser.savedItems
+      const newItems = !currentUser?.savedItems
         ? { [itemType]: [item] }
-        : { ...currentUser?.savedItems, [itemType]: [item] };
-      updateUser(currentUser?.uid, { savedItems: newItems });
+        : { ...currentUser.savedItems, [itemType]: [item] };
+      updateUser(currentUser.uid, { savedItems: newItems });
 
       setCurrentUser({
         ...currentUser,
@@ -113,7 +117,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     return true;
   };
 
-  const removeItem = (item: any, type: keyof SavedItemsType) => {
+  const removeItem = (item: ItemType, type: keyof SavedItemsType): void => {
     const newItemsArray =
       type !== "publications" && type !== "collections"
         ? [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)

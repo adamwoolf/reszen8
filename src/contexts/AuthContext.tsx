@@ -5,13 +5,23 @@ import { AWS_DB_ENDPOINT } from "../constants";
 import { useSelector } from "react-redux";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 
+interface UserUpdates {
+  firstName?: string;
+  surName?: string;
+  email?: string;
+  savedItems?: unknown;
+  basket?: unknown;
+  subscription?: Partial<User["subscription"]>;
+  [key: string]: unknown;
+}
+
 interface AuthContextType {
   currentUser: User | null;
-  setCurrentUser: (user: any) => void;
+  setCurrentUser: (user: User | null) => void;
   loading: boolean;
   error: string | null;
   clearError: () => void;
-  updateUser: (id: string, update: any) => void;
+  updateUser: (id: string, update: UserUpdates) => Promise<User | null>;
   signOutRedirect: () => void;
 }
 
@@ -61,10 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
         setCurrentUser(data);
-      } catch (err: any) {
-        console.error("Failed to fetch user:", err);
+      } catch (err) {
         setCurrentUser(null);
-        setError(err.message || "Failed to fetch user");
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch user";
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -101,18 +111,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [awsAuth.isAuthenticated, subscriptionTiers]);
 
-  const checkoutNewUserPlan = async (user: any, selectedPlan: any, selectedSubData: any) => {
+  interface CognitoUserProfile {
+    email?: string;
+    given_name?: string;
+    family_name?: string;
+    sub: string;
+  }
+
+  interface SubscriptionPlan {
+    id: string;
+    priceId: string;
+    medCredits?: number;
+    billing?: string;
+    title?: string;
+  }
+
+  interface SubscriptionData {
+    hasCompletedTrial: boolean;
+    meditationCredits?: number;
+    size?: string;
+    subId: string;
+    planName?: string;
+    extraBespokeMeditationCredits: number;
+  }
+
+  const checkoutNewUserPlan = async (
+    user: CognitoUserProfile,
+    selectedPlan: SubscriptionPlan,
+    selectedSubData: SubscriptionData
+  ) => {
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mode: "subscription",
         email: user.email,
-        firstName: user["given_name"],
-        lastName: user["family_name"],
+        firstName: user.given_name,
+        lastName: user.family_name,
         uid: user.sub,
         metadata: { uid: currentUser?.uid },
-        lineItems: [{ price: selectedPlan.priceId, quantity: 1 }], // 👈 send array of line items
+        lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
         subscription: selectedSubData,
       }),
     });
@@ -134,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.replace(logoutUrl); // redirect to Cognito logout
   };
 
-  const updateUser = async (uid: string, updates: any) => {
+  const updateUser = async (uid: string, updates: UserUpdates): Promise<User | null> => {
     try {
       const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
         method: "POST",
@@ -145,7 +183,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       return data.updatedUser;
     } catch (err) {
-      console.error("Failed to update user:", err);
       return null;
     }
   };

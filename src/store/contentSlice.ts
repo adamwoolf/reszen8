@@ -1,19 +1,42 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Publication, AmbientEnv } from "../models";
+import { Publication, AmbientEnv, Meditation } from "../models";
 import test from "../assets/audio/space.mp3";
 
+export interface Toast {
+  text: string;
+  type: string;
+}
+
+export interface MembershipTier {
+  id: string;
+  name: string;
+  price: number;
+  features?: string[];
+}
+
+export interface CollectionImage {
+  id: string;
+  url: string;
+  title?: string;
+}
+
+export interface MetaData {
+  likes: Array<{ id: string; count: number }>;
+  meditationLikes: Array<{ id: string; count: number }>;
+}
+
 export interface ContentState {
-  meditations: any[];
-  publications: any[];
-  meta: any;
-  staticMeditations: any[];
-  currentAudio: AudioObject;
-  articles: any[];
+  meditations: Meditation[];
+  publications: Publication[];
+  meta: MetaData;
+  staticMeditations: Meditation[];
+  currentAudio?: AudioObject;
+  articles: Publication[];
   immersiveEnv: AmbientEnv;
-  membershipTiers: [];
+  membershipTiers: MembershipTier[];
   landingPageActive: boolean;
-  toasts: any[];
-  collectionImages: any[];
+  toasts: Toast[];
+  collectionImages: CollectionImage[];
 }
 
 export interface AudioObject {
@@ -43,69 +66,59 @@ export const contentSlice = createSlice({
   name: "content",
   initialState,
   reducers: {
-    setMeditations: (state, action: PayloadAction<any[]>) => {
+    setMeditations: (state, action: PayloadAction<Meditation[]>) => {
       state.meditations = action.payload;
     },
     setPublications: (state, action: PayloadAction<Publication[]>) => {
       state.publications = action.payload;
     },
-    setMeta: (state, action: PayloadAction<any>) => {
+    setMeta: (state, action: PayloadAction<MetaData>) => {
       state.meta = action.payload;
     },
-    setStaticMeditations: (state, action: PayloadAction<any>) => {
+    setStaticMeditations: (state, action: PayloadAction<Meditation[]>) => {
       state.staticMeditations = action.payload;
     },
-    // setCurrentAudio: (state, action: PayloadAction<AudioObject>) => {
-    //   state.currentAudio = action.payload;
-    // },
-    setArticles: (state, action: PayloadAction<any[]>) => {
-      const awsArticles = action.payload.map((a) => ({
-        fields: { ...a, body: a.content, slug: a.title, audioFile: { fields: { file: { url: a.audioUrl } } } },
-        sys: { ...a },
-      }));
+    setArticles: (state, action: PayloadAction<Publication[]>) => {
       state.articles = action.payload;
       state.publications = action.payload;
     },
-    setLikes: (state, action) => {
+    setLikes: (state, action: PayloadAction<{ likes: number; uid: string; content: string }>) => {
       const { likes, uid, content } = action.payload;
       if (content === "Bespoke_Meditations") {
-        state.meditations = [...state.meditations].map((med) => {
-          console.log(likes, uid);
-          if (uid === med.uid) return { ...med, likes };
+        state.meditations = state.meditations.map((med) => {
+          if ('uid' in med && uid === med.uid) return { ...med, likes };
           return med;
         });
       }
       if (content === "Articles") {
-        state.publications = [...state.publications].map((med) => {
-          console.log(likes, uid);
-          if (uid === med.uid) return { ...med, likes };
-          return med;
+        state.publications = state.publications.map((pub) => {
+          if ('uid' in pub && uid === pub.uid) return { ...pub, likes };
+          return pub;
         });
       }
       if (content === "Static_Meditations") {
-        state.staticMeditations = [...state.staticMeditations].map((med) => {
-          console.log(likes, uid);
-          if (uid === med.uid) return { ...med, likes };
+        state.staticMeditations = state.staticMeditations.map((med) => {
+          if ('uid' in med && uid === med.uid) return { ...med, likes };
           return med;
         });
       }
     },
-    setImmersiveEnv: (state, action) => {
+    setImmersiveEnv: (state, action: PayloadAction<AmbientEnv>) => {
       state.immersiveEnv = action.payload;
     },
-    setLandingPageActive: (state, action) => {
+    setLandingPageActive: (state, action: PayloadAction<boolean>) => {
       state.landingPageActive = action.payload;
     },
-    setMembershipTiers: (state, action) => {
+    setMembershipTiers: (state, action: PayloadAction<MembershipTier[]>) => {
       state.membershipTiers = action.payload;
     },
-    createToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
+    createToast: (state, action: PayloadAction<Toast>) => {
       state.toasts = [...state.toasts, action.payload];
     },
-    deleteToast: (state, action: PayloadAction<{ text: string; type: string }>) => {
-      state.toasts = [...state.toasts].filter((t) => t.text !== action.payload.text);
+    deleteToast: (state, action: PayloadAction<Toast>) => {
+      state.toasts = state.toasts.filter((t) => t.text !== action.payload.text);
     },
-    setCollectionImages: (state, action) => {
+    setCollectionImages: (state, action: PayloadAction<CollectionImage[]>) => {
       state.collectionImages = action.payload;
     },
   },
