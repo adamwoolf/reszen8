@@ -36,7 +36,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     const backing = backingRef.current;
     if (!backing) return;
 
-    console.log("Starting fade out...");
     const fadeDuration = 2000;
     const steps = 20;
     const stepTime = fadeDuration / steps;
@@ -52,7 +51,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         backing.pause();
         backing.currentTime = 0;
         backing.volume = startVolume;
-        console.log("Fade complete");
       }
     }, stepTime);
   }, []);

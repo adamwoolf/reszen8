@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
 type Product = {
@@ -122,47 +122,46 @@ export const BasketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     totalPrice: 0,
   });
 
-  const addToBasket = (product: Product, quantity: number = 1, size?: string) => {
+  const addToBasket = useCallback((product: Product, quantity: number = 1, size?: string) => {
     dispatch({ type: 'ADD_ITEM', payload: product, quantity, size });
     toast.success(`${product.name} added to basket!`);
-  };
+  }, []);
 
-  const removeFromBasket = (id: string) => {
+  const removeFromBasket = useCallback((id: string) => {
     dispatch({ type: 'REMOVE_ITEM', payload: id });
-  };
+  }, []);
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity < 1) return;
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
-  };
+  }, []);
 
-  const clearBasket = () => {
+  const clearBasket = useCallback(() => {
     dispatch({ type: 'CLEAR_BASKET' });
-  };
+  }, []);
 
-  const getItemCount = () => {
+  const getItemCount = useCallback(() => {
     return basket.itemCount;
-  };
+  }, [basket.itemCount]);
 
-  const getTotalPrice = () => {
+  const getTotalPrice = useCallback(() => {
     return basket.totalPrice;
-  };
+  }, [basket.totalPrice]);
 
-  return (
-    <BasketContext.Provider
-      value={{
-        basket,
-        addToBasket,
-        removeFromBasket,
-        updateQuantity,
-        clearBasket,
-        getItemCount,
-        getTotalPrice,
-      }}
-    >
-      {children}
-    </BasketContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      basket,
+      addToBasket,
+      removeFromBasket,
+      updateQuantity,
+      clearBasket,
+      getItemCount,
+      getTotalPrice,
+    }),
+    [basket, addToBasket, removeFromBasket, updateQuantity, clearBasket, getItemCount, getTotalPrice]
   );
+
+  return <BasketContext.Provider value={contextValue}>{children}</BasketContext.Provider>;
 };
 
 export const useBasket = () => {

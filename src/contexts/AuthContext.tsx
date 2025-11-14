@@ -1,9 +1,9 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { User } from "../models";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
 import { useSelector } from "react-redux";
-import { loadStripe, Stripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 interface UserUpdates {
   firstName?: string;
@@ -159,43 +159,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
   };
 
-  // ✅ only triggers when auth state changes, no loops
-
-  const signOutRedirect = async () => {
+  const signOutRedirect = useCallback(async () => {
     const clientId = "the72up8nv2sbq9tea7v5f0ai";
-    const logoutUri = import.meta.env.VITE_BASE_URL; // must match Cognito allowed sign-out URLs
+    const logoutUri = import.meta.env.VITE_BASE_URL;
     const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
 
     const logoutUrl = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
     setLoading(true);
-    await awsAuth.removeUser(); // clear local state
-    window.location.replace(logoutUrl); // redirect to Cognito logout
-  };
+    await awsAuth.removeUser();
+    window.location.replace(logoutUrl);
+  }, [awsAuth]);
 
-  const updateUser = async (uid: string, updates: UserUpdates): Promise<User | null> => {
-    try {
-      const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, ...updates }),
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      return data.updatedUser;
-    } catch (err) {
-      return null;
-    }
-  };
+  const updateUser = useCallback(
+    async (uid: string, updates: UserUpdates): Promise<User | null> => {
+      try {
+        const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid, ...updates }),
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        return data.updatedUser;
+      } catch (err) {
+        return null;
+      }
+    },
+    []
+  );
 
-  const value: AuthContextType = {
-    currentUser,
-    setCurrentUser,
-    loading,
-    error,
-    clearError,
-    updateUser,
-    signOutRedirect,
-  };
+  const value = useMemo<AuthContextType>(
+    () => ({
+      currentUser,
+      setCurrentUser,
+      loading,
+      error,
+      clearError,
+      updateUser,
+      signOutRedirect,
+    }),
+    [currentUser, loading, error, clearError, updateUser, signOutRedirect]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useBasketStore } from "../store/basketStore";
 import { useSelector, useDispatch } from "react-redux";
@@ -47,17 +47,16 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
   const dispatch = useDispatch();
   useEffect(() => {
     if (currentUser) {
-      // REPLACE THIS AWS
-      // addOrUpdate(currentUser?.firebaseId, { ...currentUser, basket: items });
       updateUser(currentUser.uid, { basket: items });
       setCurrentUser({ ...currentUser, basket: items });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   useEffect(() => {
     if (currentUser?.basket) {
       if (Array.isArray(currentUser.basket)) {
-        setItems(currentUser?.basket);
+        setItems(currentUser.basket);
       } else {
         setItems([]);
       }
@@ -65,7 +64,7 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     if (!currentUser) {
       setItems([]);
     }
-  }, [currentUser]);
+  }, [currentUser, setItems]);
 
   // set savedItems with data from db
   useEffect(() => {
@@ -79,68 +78,79 @@ export const SavedItemsProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, [meditations, currentUser?.savedItems]);
 
-  const addItem = (item: ItemType): boolean => {
-    const itemType =
-      item.contentType === "meditation"
-        ? "meditations"
-        : item.contentType === "collection"
-        ? "collections"
-        : "publications";
-    const itemExists =
-      itemType !== "collections"
-        ? savedItems[itemType].some((savedItem) => savedItem.uid === item.uid)
-        : savedItems[itemType].some((savedItem) => savedItem.id === item.id);
+  const addItem = useCallback(
+    (item: ItemType): boolean => {
+      const itemType =
+        item.contentType === "meditation"
+          ? "meditations"
+          : item.contentType === "collection"
+          ? "collections"
+          : "publications";
+      const itemExists =
+        itemType !== "collections"
+          ? savedItems[itemType].some((savedItem) => savedItem.uid === item.uid)
+          : savedItems[itemType].some((savedItem) => savedItem.id === item.id);
 
-    if (itemExists) return false;
-    if (currentUser?.savedItems && currentUser.savedItems[itemType]) {
-      updateUser(currentUser.uid, {
-        savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
-      });
+      if (itemExists) return false;
+      if (currentUser?.savedItems && currentUser.savedItems[itemType]) {
+        updateUser(currentUser.uid, {
+          savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
+        });
 
-      setCurrentUser({
-        ...currentUser,
-        savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
-      });
-      dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
-    } else {
-      const newItems = !currentUser?.savedItems
-        ? { [itemType]: [item] }
-        : { ...currentUser.savedItems, [itemType]: [item] };
-      updateUser(currentUser.uid, { savedItems: newItems });
-
-      setCurrentUser({
-        ...currentUser,
-        savedItems: newItems,
-      });
-      dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
-    }
-    return true;
-  };
-
-  const removeItem = (item: ItemType, type: keyof SavedItemsType): void => {
-    const newItemsArray =
-      type !== "publications" && type !== "collections"
-        ? [...currentUser?.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)
-        : [...currentUser?.savedItems[type]].filter((i) => i.id !== item.id);
-
-    let newSavedItems = { ...currentUser?.savedItems, [type]: newItemsArray };
-    if (!newItemsArray.length) delete newSavedItems[type];
-
-    const newUserObj = Object.keys(newSavedItems).length
-      ? {
+        setCurrentUser({
           ...currentUser,
-          savedItems: newSavedItems,
-        }
-      : { ...currentUser, savedItems: {} };
-    updateUser(currentUser?.uid, { savedItems: newSavedItems });
-    dispatch(createToast({ text: `${item.title} has been removed from Your Journey`, type: "success" }));
+          savedItems: { ...currentUser.savedItems, [itemType]: [...currentUser.savedItems[itemType], item] },
+        });
+        dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
+      } else {
+        const newItems = !currentUser?.savedItems
+          ? { [itemType]: [item] }
+          : { ...currentUser.savedItems, [itemType]: [item] };
+        updateUser(currentUser.uid, { savedItems: newItems });
 
-    setCurrentUser(newUserObj);
-  };
-
-  return (
-    <SavedItemsContext.Provider value={{ savedItems, addItem, removeItem }}>{children}</SavedItemsContext.Provider>
+        setCurrentUser({
+          ...currentUser,
+          savedItems: newItems,
+        });
+        dispatch(createToast({ text: `${item.title} has been added to Your Journey`, type: "success" }));
+      }
+      return true;
+    },
+    [savedItems, currentUser, updateUser, setCurrentUser, dispatch]
   );
+
+  const removeItem = useCallback(
+    (item: ItemType, type: keyof SavedItemsType): void => {
+      if (!currentUser?.savedItems) return;
+
+      const newItemsArray =
+        type !== "publications" && type !== "collections"
+          ? [...currentUser.savedItems[type]].filter((i) => i.createdAt !== item.createdAt)
+          : [...currentUser.savedItems[type]].filter((i) => i.id !== item.id);
+
+      let newSavedItems = { ...currentUser.savedItems, [type]: newItemsArray };
+      if (!newItemsArray.length) delete newSavedItems[type];
+
+      const newUserObj = Object.keys(newSavedItems).length
+        ? {
+            ...currentUser,
+            savedItems: newSavedItems,
+          }
+        : { ...currentUser, savedItems: {} };
+      updateUser(currentUser.uid, { savedItems: newSavedItems });
+      dispatch(createToast({ text: `${item.title} has been removed from Your Journey`, type: "success" }));
+
+      setCurrentUser(newUserObj);
+    },
+    [currentUser, updateUser, setCurrentUser, dispatch]
+  );
+
+  const contextValue = useMemo(
+    () => ({ savedItems, addItem, removeItem }),
+    [savedItems, addItem, removeItem]
+  );
+
+  return <SavedItemsContext.Provider value={contextValue}>{children}</SavedItemsContext.Provider>;
 };
 
 export const useSavedItems = () => {
