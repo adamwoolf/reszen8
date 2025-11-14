@@ -24,6 +24,12 @@ dist-ssr
 *.sw?
 
 .env
+.env.*
+*.ENV
+*.ENV.*
+functions/.env
 functions/.env.*
+server/.env
+server/.env.*
 
 

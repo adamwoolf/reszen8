@@ -54,7 +54,7 @@ export const updateMeditationDeleteStatus = async (userId: string, uid: string, 
   }
 };
 
-export async function createCheckoutSession(uid, priceId, mode = "subscription", metadata = {}) {
+export async function createCheckoutSession(uid: string, priceId: string, mode = "subscription", metadata = {}) {
   const res = await fetch(`${AWS_DB_ENDPOINT}/create-checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -63,21 +63,6 @@ export async function createCheckoutSession(uid, priceId, mode = "subscription",
   const data = await res.json();
   return data; // contains Stripe sessionId
 }
-
-const sendMail = async (recipient, subject, html) => {
-  const endPoint = `${AWS_DB_ENDPOINT}/sendMail`;
-
-  await fetch(endPoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      to: recipient,
-      cc: "",
-      subject,
-      html,
-    }),
-  });
-};
 
 export async function sendEmailSES(data: { email: string; subject: string; message: string }) {
   const { email, subject, message } = data;
@@ -96,7 +81,7 @@ export async function sendEmailSES(data: { email: string; subject: string; messa
   return result;
 }
 
-export async function switchSubscription(uid, newPriceId, updates) {
+export async function switchSubscription(uid: string, newPriceId: string, updates: any) {
   const res = await fetch(`${AWS_DB_ENDPOINT}/switch-subscription`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -111,7 +96,7 @@ export async function switchSubscription(uid, newPriceId, updates) {
   return res.json();
 }
 
-export async function cancelSubscription(uid, cancelAtPeriodEnd = true) {
+export async function cancelSubscription(uid: string, cancelAtPeriodEnd = true) {
   const res = await fetch(`${AWS_DB_ENDPOINT}/cancel-subscription`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

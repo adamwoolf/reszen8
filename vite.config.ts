@@ -16,14 +16,8 @@ export default defineConfig(({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    // Expose .env variables to the client
-    define: {
-      "process.env": {
-        VITE_STRIPE_PUBLIC_KEY: JSON.stringify(env.VITE_STRIPE_PUBLIC_KEY),
-        VITE_OPENAI_API_KEY: JSON.stringify(env.VITE_OPENAI_API_KEY),
-        VITE_ELEVENLABS_API_KEY: JSON.stringify(env.VITE_ELEVENLABS_API_KEY),
-      },
-    },
+    // Note: Vite automatically exposes VITE_* env variables to the client via import.meta.env
+    // No need to manually define them here
     server: {
       port: 5173,
       strictPort: true,
