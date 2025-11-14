@@ -29,7 +29,7 @@ const InviteAFriend = ({ text }: { text?: boolean }) => {
       {text && (
         <div className='invite__text'>
           {" "}
-          <p>Invite a friend to sign up and win credits.</p>
+          <p>Invite a friend to sign up and win meditation tokens.</p>
           <p>Just enter their email address, click 'Invite' and we'll do the rest.</p>
         </div>
       )}

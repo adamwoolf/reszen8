@@ -51,7 +51,7 @@ const AccountStatus = ({ user }: { user: User }) => {
               </span>
             </span>
             <span>
-              bespoke credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+              meditation tokens: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
             </span>
             <CreditTopup />
           </div>
@@ -66,7 +66,7 @@ const AccountStatus = ({ user }: { user: User }) => {
         <div className='credit-info__text'>
           <div>
             <span>
-              Credits: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
+              Meditation Tokens: <span style={{ color: "orange" }}> {user.subscription.meditationCredits}</span>
             </span>
             {user.subscription?.extraBespokeMeditationCredits > 0 && (
               <span style={{ color: "orange", marginLeft: 5 }}>

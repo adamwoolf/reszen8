@@ -14,6 +14,8 @@ import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
+import jordan from "../../assets/audio/Jordan.mp3";
+import willow from "../../assets/audio/Willow.mp3";
 import Consult8 from "../../components/Consult8/Consult8";
 
 interface MeditationState {
@@ -24,10 +26,9 @@ interface MeditationState {
   isImmersive: boolean;
 }
 
-// Voice sample audio files served from public folder
 const voiceOptionsArray = [
-  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: "/audio/Willow.mp3" },
-  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: "/audio/Jordan.mp3" },
+  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: willow },
+  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: jordan },
 ];
 
 const AIMeditationGenerator: React.FC = () => {
@@ -47,12 +48,7 @@ const AIMeditationGenerator: React.FC = () => {
   const [immersive, setImmersive] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("");
 
-  const mapDurationToCost = {
-    Recharge: 2,
-    Refresh: 3,
-    Relax: 4,
-  };
-  const cost = mapDurationToCost[duration as keyof typeof mapDurationToCost];
+  const cost = immersive ? 3 : 2;
 
   const deductCost = () => {
     const { subscription } = currentUser || {};
@@ -117,8 +113,7 @@ const AIMeditationGenerator: React.FC = () => {
     if (!credit)
       return dispatch(
         createToast({
-          text:
-            "You do not currently have enough credit.  Please purchase a topup pack or wait for your subscription to renew.",
+          text: "You do not currently have enough credit.  Please purchase a topup pack or wait for your subscription to renew.",
           type: "error",
         })
       );
@@ -191,7 +186,7 @@ const AIMeditationGenerator: React.FC = () => {
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
-        <h1>Bespoke Meditation Generator</h1>
+        <h1>Bespoke Meditations</h1>
         <p className='text-white'>
           Reflective moments crafted by you. A guided meditation or a simple moment of clarity. Your choice...
         </p>
@@ -218,13 +213,12 @@ const AIMeditationGenerator: React.FC = () => {
                 label: option,
                 sampleUri: "",
                 description: mapDurationToWords[option].description,
-                description2: mapDurationToWords[option].description2,
               }))}
             />
           </div>
           <div className='form-group form-group-block'>
             <label>With Immersive Sound? </label>
-            {/* <span className='credit-count'>Voice only: 1 credit, Immersive: 2 credits </span> */}
+            <span className='credit-count'>Voice only = 2 meditation tokens, Immersive = 3. </span>
             <ToggleSwitch checked={immersive} onChange={setImmersive} />
           </div>
           {duration !== "Relax" ? (
@@ -260,8 +254,8 @@ const AIMeditationGenerator: React.FC = () => {
             {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
               cost && (
               <span>
-                You do not have sufficient credits. You can always topup using the link above and continue generating
-                bespoke meditations.
+                You do not have sufficient meditation tokens. You can always topup using the link above and continue
+                generating bespoke meditations.
               </span>
             )}
             {currentUser &&

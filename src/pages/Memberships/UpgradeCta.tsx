@@ -86,7 +86,7 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
             <span>Price: </span>£{plan.price}
           </p>
           <p>
-            <span>Meditation Credits included per payment term: </span>
+            <span>Meditation Tokens included per payment term: </span>
             {plan.meditationCredits}
           </p>
           <div style={{ display: "flex", background: "transparent" }}>

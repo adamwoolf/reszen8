@@ -130,7 +130,6 @@ export const mapDurationToWords = {
     totalPauseTime: "40",
     duration: 1,
     description: "a quick reset.",
-    description2: "(2 credits)",
     loadingMessage: "Preparing meditation in real time 30 to 45 seconds, blink and it’s done!",
   },
   Refresh: {
@@ -139,7 +138,6 @@ export const mapDurationToWords = {
     totalPauseTime: "70",
     duration: 4,
     description: "a short, energising pause.",
-    description2: "(3 credits)",
     loadingMessage: "Preparing meditation in real time 60 to 120 seconds, take a few breaths!",
   },
   Relax: {
@@ -148,7 +146,6 @@ export const mapDurationToWords = {
     totalPauseTime: "90",
     duration: 8,
     description: "soften tension and slow your pace.",
-    description2: "(4 credits)",
     loadingMessage: "Preparing meditation in real time 120 to 180 seconds, grab a drink!",
   },
   // Relax: {

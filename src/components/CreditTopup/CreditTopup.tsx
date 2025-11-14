@@ -20,14 +20,14 @@ const CreditTopup = () => {
   const options = [
     {
       priceId: "price_1SAzGrRpZB60VN5hHkOuaOjh",
-      name: "20 Credits",
+      name: "20 Tokens",
       price: "5.99",
       id: "creditTopup20",
       credits: 20,
     },
     {
       priceId: "price_1SAzFVRpZB60VN5hlXqOFzJV",
-      name: "40 Credits",
+      name: "40 Tokens",
       saving: 8,
       price: "10.99",
       id: "creditTopup40",
@@ -35,7 +35,7 @@ const CreditTopup = () => {
     },
     {
       priceId: "price_1SAzHpRpZB60VN5hqm9qKeij",
-      name: "60 Credits",
+      name: "60 Tokens",
       saving: 17,
       price: "14.99",
       id: "creditTopup60",
@@ -43,7 +43,7 @@ const CreditTopup = () => {
     },
     {
       priceId: "price_1SAzISRpZB60VN5hcsF6X0Ld",
-      name: "80 Credits",
+      name: "80 Tokens",
       saving: 21,
       price: "18.99",
       id: "creditTopup80",
@@ -51,7 +51,7 @@ const CreditTopup = () => {
     },
     {
       priceId: "price_1SAzJ4RpZB60VN5hmzlgIWEz",
-      name: "100 Credits",
+      name: "100 Tokens",
       saving: 23,
       price: "22.99",
       id: "creditTopup100",
@@ -65,7 +65,7 @@ const CreditTopup = () => {
       id: item.id,
       name: item.name, // Ensure name is always defined
       price: +item.price || 0,
-      description: "Bespoke Meditation credit topup pack",
+      description: "Meditation Token topup pack",
       priceId: item.priceId, // for Stripe subscriptions
       type: "payment",
       value: item.credits,
@@ -93,8 +93,8 @@ const CreditTopup = () => {
       </button>
       <Popup show={show} onClose={() => setShow(false)} fitContent>
         <div className='topup__container'>
-          <h2>Bespoke Meditation Credit Topup</h2>
-          <p>Extra credits will be added to your account and remain available until used. There is no expiry time.</p>
+          <h2>Bespoke Meditation Tokens Topup</h2>
+          <p>Extra tokens will be added to your account and remain available until used. There is no expiry time.</p>
           <div className='topup__options'>
             {options.map((option) => {
               const isAdded = currentUser.basket.map((item) => item.product.id)?.includes(option.id);
@@ -130,7 +130,7 @@ const CreditTopup = () => {
             })}
           </div>
           <span className='topup__disclaimer'>
-            <sup>*</sup>when compared to 20 credit topup
+            <sup>*</sup>when compared to 20 token topup
           </span>
         </div>
       </Popup>

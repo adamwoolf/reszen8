@@ -7,6 +7,7 @@ type VoiceOption = {
   id: string;
   label: string;
   sampleUri: string;
+  description?: string;
 };
 
 type VoiceOptionsProps = {
@@ -102,7 +103,6 @@ export default function VoiceOptions({ options, onSelect, selectedId }: VoiceOpt
                 {option.label}
                 {option.description && ":"}
                 {option.description && <span className='voice-option__description'>{option.description}</span>}
-                {option.description2 && <span className='voice-option__description2'>{option.description2}</span>}
 
                 {/* </div> */}
               </span>

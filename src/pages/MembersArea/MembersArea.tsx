@@ -78,7 +78,7 @@ export default function MembersArea() {
           </p>
           <p className='members-area__info'>
             Give your code to a friend (or pop their email in below). When they sign up to a membership, you both get 5
-            free meditation credits!
+            free meditation tokens!
           </p>
 
           <InviteAFriend />
@@ -108,7 +108,7 @@ export default function MembersArea() {
                   Email: <span>{currentUser?.email}</span>
                 </p>
                 <div className='members-area__info'>
-                  <span> Included meditation credits:</span> <span>{currentUser?.subscription?.meditationCredits}</span>
+                  <span> Included meditation tokens:</span> <span>{currentUser?.subscription?.meditationCredits}</span>
                 </div>
                 <p className='members-area__info'>
                   Extra meditation credits: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
@@ -197,8 +197,8 @@ export default function MembersArea() {
               <h3 className='feature-title'>Cancel Membership</h3>
               <p className='feature-description'>
                 We're sorry to see you go. If you cancel, you'll lose access to all premium features at the end of your
-                billing period. As long as you have credits you will still be able to access the Bespoke Generator and
-                listen to your Bespoke Meditation in the Your Journey area.
+                billing period. Until then, as long as you have meditation tokens, you will still be able to access the
+                Bespoke Generator and listen to your Bespoke Meditation in the Your Journey area..
                 <br />
                 <br />
                 <strong>Note:</strong> You can reactivate your membership at any time.
