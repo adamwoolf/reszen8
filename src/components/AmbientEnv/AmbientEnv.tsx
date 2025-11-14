@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import rain from "../../assets/audio/rain.mp3";
-import space from "../../assets/audio/space.mp3";
-import ocean from "../../assets/audio/ocean.mp3";
 import { useDispatch } from "react-redux";
 import { setImmersiveEnv } from "../../store/contentSlice";
 import "./AmbientEnvStyles.scss";
@@ -9,11 +6,11 @@ import { useSelector } from "react-redux";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { trackCTA } from "../../utils/analytics";
 
+// Audio files served from public folder - not bundled
 const Envs = [
-  { name: "Warm", url: space },
-
-  { name: "Ocean", url: ocean },
-  { name: "Rain", url: rain },
+  { name: "Warm", url: "/audio/space.mp3" },
+  { name: "Ocean", url: "/audio/ocean.mp3" },
+  { name: "Rain", url: "/audio/rain.mp3" },
   { name: "None", url: "" },
 ];
 

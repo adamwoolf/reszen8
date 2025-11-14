@@ -35,14 +35,20 @@ export default defineConfig(() => {
     build: {
       outDir: "dist",
       sourcemap: true,
-      // Fix for chunk size warning
-      chunkSizeWarningLimit: 1600,
+      chunkSizeWarningLimit: 500, // Restore proper limit to catch large chunks
       rollupOptions: {
         output: {
-          // manualChunks: {
-          //   react: ["react", "react-dom", "react-router-dom"],
-          //   stripe: ["@stripe/stripe-js", "@stripe/react-stripe-js"],
-          // },
+          manualChunks: {
+            // Vendor chunks
+            react: ["react", "react-dom", "react-router-dom"],
+            redux: ["@reduxjs/toolkit", "react-redux"],
+            stripe: ["@stripe/stripe-js", "@stripe/react-stripe-js"],
+            aws: ["aws-amplify", "@aws-amplify/ui-react", "@aws-sdk/client-cognito-identity-provider"],
+            firebase: ["firebase"],
+            ui: ["framer-motion", "@mui/icons-material", "@heroicons/react", "react-icons", "@mdi/react"],
+            contentful: ["contentful"],
+            utils: ["axios", "uuid", "marked", "howler"],
+          },
         },
       },
     },

@@ -14,8 +14,6 @@ import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
-import jordan from "../../assets/audio/Jordan.mp3";
-import willow from "../../assets/audio/Willow.mp3";
 import Consult8 from "../../components/Consult8/Consult8";
 
 interface MeditationState {
@@ -26,9 +24,10 @@ interface MeditationState {
   isImmersive: boolean;
 }
 
+// Voice sample audio files served from public folder
 const voiceOptionsArray = [
-  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: willow },
-  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: jordan },
+  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: "/audio/Willow.mp3" },
+  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: "/audio/Jordan.mp3" },
 ];
 
 const AIMeditationGenerator: React.FC = () => {

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Publication, AmbientEnv, Meditation } from "../models";
-import test from "../assets/audio/space.mp3";
 
 export interface Toast {
   text: string;
@@ -53,9 +52,8 @@ const initialState: ContentState = {
     meditationLikes: [],
   },
   staticMeditations: [],
-  // currentAudio: { url: "", isImmersive: false },
   articles: [],
-  immersiveEnv: { name: "Warm", url: test },
+  immersiveEnv: { name: "Warm", url: "/audio/space.mp3" },
   landingPageActive: true,
   membershipTiers: [],
   toasts: [],
