@@ -183,6 +183,11 @@ const AIMeditationGenerator: React.FC = () => {
 
   const titleRef = useRef(null);
 
+  const userHasEnoughTokens =
+    (currentUser?.subscription?.meditationCredits || 0) +
+      (currentUser?.subscription?.extraBespokeMeditationCredits || 0) >=
+    cost;
+
   return (
     <div className='ai-meditation-generator'>
       <div className='generator-header'>
@@ -251,54 +256,41 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
 
           <div className='generator-cta'>
-            {currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits <
-              cost && (
-              <span>
+            {!userHasEnoughTokens && (
+              <span className='signup-prompt'>
                 You do not have sufficient meditation tokens. You can always topup using the link above and continue
                 generating bespoke meditations.
               </span>
             )}
-            {currentUser &&
-              currentUser?.subscription?.active &&
-              currentUser?.subscription.subId !== "reszen8-core" &&
-              currentUser?.subscription?.meditationCredits + currentUser?.subscription?.extraBespokeMeditationCredits >=
-                cost && (
-                <button
-                  type='submit'
-                  className='generate-btn'
-                  disabled={
-                    isGenerating ||
-                    !title ||
-                    profanityFilter(title) ||
-                    currentUser?.subscription?.meditationCredits +
-                      currentUser?.subscription?.extraBespokeMeditationCredits <
-                      cost
-                  }
-                >
-                  {isGenerating ? (
-                    <>
-                      <span className='spinner'></span>
-                      Generating...
-                    </>
-                  ) : (
-                    "Generate Meditation"
-                  )}
-                </button>
-              )}
-            {!currentUser ||
-              (!currentUser?.subscription?.active && (
-                <div className='signup-prompt'>
-                  <p>
-                    {" "}
-                    Experience the magic of generating bespoke, unique meditations wherever and whenever you want, - to
-                    save and listen whenever you want.
-                  </p>
-                  <Link className='signup-prompt__link' to='/memberships'>
-                    {" "}
-                    Sign Up Today{" "}
-                  </Link>
-                </div>
-              ))}
+            {currentUser && currentUser?.subscription?.active && userHasEnoughTokens && (
+              <button
+                type='submit'
+                className='generate-btn'
+                disabled={isGenerating || !title || profanityFilter(title) || !userHasEnoughTokens}
+              >
+                {isGenerating ? (
+                  <>
+                    <span className='spinner'></span>
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Meditation"
+                )}
+              </button>
+            )}
+            {(!currentUser || !currentUser?.subscription?.active) && (
+              <div className='signup-prompt'>
+                <p>
+                  {" "}
+                  Experience the magic of generating bespoke, unique meditations wherever and whenever you want, - to
+                  save and listen whenever you want.
+                </p>
+                <Link className='signup-prompt__link' to='/memberships'>
+                  {" "}
+                  Sign Up Today{" "}
+                </Link>
+              </div>
+            )}
           </div>
         </form>
       )}

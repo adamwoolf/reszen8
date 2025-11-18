@@ -44,7 +44,6 @@ export default defineConfig(() => {
             redux: ["@reduxjs/toolkit", "react-redux"],
             stripe: ["@stripe/stripe-js", "@stripe/react-stripe-js"],
             aws: ["aws-amplify", "@aws-amplify/ui-react", "@aws-sdk/client-cognito-identity-provider"],
-            firebase: ["firebase"],
             ui: ["framer-motion", "@mui/icons-material", "@heroicons/react", "react-icons", "@mdi/react"],
             contentful: ["contentful"],
             utils: ["axios", "uuid", "marked", "howler"],
