@@ -45,20 +45,51 @@ import Toast from "./components/Toast/ToastContainer";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-  if (loading) return null;
+  const location = useLocation();
 
-  // return currentUser?.subscription?.isActiveSub ? <>{children}</> : <Navigate to='/login' replace />;
-  return currentUser ? <>{children}</> : <Navigate to='/' />;
+  console.log("🛡️ ProtectedRoute:", { loading, hasUser: !!currentUser, path: location.pathname });
+
+  if (loading) {
+    console.log("⏳ ProtectedRoute: Showing loading scene");
+    return <LoadingScene />;
+  }
+
+  if (!currentUser) {
+    console.log("🚫 ProtectedRoute: No user, redirecting to /");
+    // Store the intended destination
+    sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+    return <Navigate to='/' replace />;
+  }
+
+  console.log("✅ ProtectedRoute: User authenticated, rendering children");
+  return <>{children}</>;
 };
 
 const UserRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
+  const location = useLocation();
 
-  return currentUser ? <>{children}</> : <Navigate to='/' />;
+  console.log("👤 UserRoute:", { loading, hasUser: !!currentUser, path: location.pathname });
+
+  if (loading) {
+    console.log("⏳ UserRoute: Showing loading scene");
+    return <LoadingScene />;
+  }
+
+  if (!currentUser) {
+    console.log("🚫 UserRoute: No user, redirecting to /");
+    // Store the intended destination
+    sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+    return <Navigate to='/' replace />;
+  }
+
+  console.log("✅ UserRoute: User authenticated, rendering children");
+  return <>{children}</>;
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
+  console.log("LOADING", loading);
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
   useAnalytics();
 
@@ -90,7 +121,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 // AnimatedRoutes component to handle page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const { currentUser } = useAuth();
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>

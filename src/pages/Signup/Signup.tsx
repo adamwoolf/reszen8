@@ -13,7 +13,13 @@ import { trackCTA } from "../../utils/analytics";
 
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
 
-export default function Signup({ planId, tier, onSuccess }) {
+interface SignupProps {
+  planId?: string;
+  tier?: any;
+  onSuccess?: () => void;
+}
+
+export default function Signup({ planId, tier, onSuccess }: SignupProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import LoginForm from "../../components/LoginForm/LoginForm";
 import "./LoginStyles.css";
 import { useAuth } from "react-oidc-context";
@@ -8,11 +9,22 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 
 const Login = () => {
-  // <div className='login-container'>
-  //   <LoginForm />
-  // </div>
   const auth = useAuth();
   const { currentUser, setCurrentUser, signOutRedirect } = useAuthContext();
+  const navigate = useNavigate();
+
+  // Redirect after successful authentication
+  useEffect(() => {
+    if (auth.isAuthenticated && currentUser) {
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectPath) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectPath);
+      } else {
+        navigate('/journey');
+      }
+    }
+  }, [auth.isAuthenticated, currentUser, navigate]);
 
   if (auth.isLoading) {
     return <LoadingScene />;
@@ -23,20 +35,8 @@ const Login = () => {
   }
 
   if (auth.isAuthenticated) {
-    console.log(auth);
-    return (
-      <div>
-        <pre>
-          {" "}
-          Hello: {auth.user?.profile.email}, {auth.user?.profile.given_name}, {auth.user?.profile.family_name}{" "}
-        </pre>
-        <pre> ID Token: {auth.user?.id_token} </pre>
-        <pre> Access Token: {auth.user?.access_token} </pre>
-        <pre> Refresh Token: {auth.user?.refresh_token} </pre>
-
-        <button onClick={() => auth.removeUser()}>Sign out</button>
-      </div>
-    );
+    // Show loading while redirecting
+    return <LoadingScene />;
   }
 
   return (

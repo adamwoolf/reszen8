@@ -37,10 +37,8 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
   };
-  console.log(currentUser);
 
   const handleClick = async () => {
-    console.log("here");
     setWaiting(true);
     const selectedSubData = {
       hasCompletedTrial: true,
@@ -48,7 +46,6 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
       size: plan?.billing,
       subId: plan?.id,
       planName: plan?.title,
-      extraBespokeMeditationCredits: 0,
       subscription: plan.id,
       active: true,
       status: "active",
@@ -56,7 +53,13 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
     if (currentUser?.subscription?.subscription === "free-trial" || currentUser?.subscription?.status === "canceled") {
       await upgradeFromTrial(currentUser, plan, selectedSubData);
     } else {
-      await switchSubscription(currentUser?.uid, plan.priceId, plan, currentUser?.email, currentUser.firstName);
+      await switchSubscription(
+        currentUser?.uid,
+        plan.priceId,
+        selectedSubData,
+        currentUser?.email,
+        currentUser.firstName
+      );
     }
     setCurrentUser({ ...currentUser, subscription: { ...plan, ...selectedSubData } });
 

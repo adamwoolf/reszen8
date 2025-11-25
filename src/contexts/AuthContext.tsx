@@ -36,56 +36,57 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const awsAuth = useAwsAuth();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false); // Track if initial auth check is complete
   const [error, setError] = useState<string | null>(null);
   const subscriptionTiers = useSelector((state) => state.content.membershipTiers);
   const clearError = useCallback(() => setError(null), []);
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
-  // 1️⃣ Restore Cognito session on mount (once)
-  useEffect(() => {
-    const restoreSession = async () => {
-      setLoading(true);
-      try {
-        await awsAuth.signinSilent().catch(() => {
-          // no session exists
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    restoreSession();
-  }, []); // ✅ empty array ensures it runs only once
-
-  // 2️⃣ Fetch app user whenever Cognito session changes
+  // Fetch app user whenever Cognito session changes
   useEffect(() => {
     const fetchUser = async () => {
-      if (!awsAuth.isAuthenticated || !awsAuth.user?.profile?.sub) {
-        setCurrentUser(null);
+      console.log('🔍 Auth state:', {
+        isAuthenticated: awsAuth.isAuthenticated,
+        isLoading: awsAuth.isLoading,
+        hasUser: !!awsAuth.user,
+        userSub: awsAuth.user?.profile?.sub,
+        initialized
+      });
+
+      // Wait for AWS auth to finish loading before making decisions
+      if (awsAuth.isLoading) {
+        console.log('⏳ AWS auth still loading, waiting...');
         return;
       }
 
-      setLoading(true);
+      console.log('✅ AWS auth loaded, checking authentication...');
+
+      if (!awsAuth.isAuthenticated || !awsAuth.user?.profile?.sub) {
+        console.log('❌ Not authenticated or no user sub');
+        setCurrentUser(null);
+        setInitialized(true); // Mark as initialized even if not authenticated
+        return;
+      }
+
+      console.log('✅ Authenticated, fetching user data...');
       try {
         const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
+        console.log('✅ User data fetched:', data?.email);
         setCurrentUser(data);
       } catch (err) {
+        console.error('❌ User fetch error:', err);
         setCurrentUser(null);
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch user";
         setError(errorMessage);
       } finally {
-        setLoading(false);
+        setInitialized(true); // Mark as initialized after fetch attempt
       }
     };
 
     fetchUser();
-  }, [awsAuth.isAuthenticated, awsAuth.user?.profile?.sub]);
-
-  useEffect(() => {
-    setLoading(awsAuth.isLoading);
-  }, [awsAuth.isLoading]);
+  }, [awsAuth.isAuthenticated, awsAuth.user?.profile?.sub, awsAuth.isLoading]);
 
   // // Signup new user directly to paid sub
   useEffect(() => {
@@ -165,7 +166,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
 
     const logoutUrl = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-    setLoading(true);
     await awsAuth.removeUser();
     window.location.replace(logoutUrl);
   }, [awsAuth]);
@@ -188,6 +188,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  // Compute loading state: we're loading if AWS is loading OR we haven't initialized yet
+  const loading = awsAuth.isLoading || !initialized;
+
   const value = useMemo<AuthContextType>(
     () => ({
       currentUser,
@@ -200,6 +203,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }),
     [currentUser, loading, error, clearError, updateUser, signOutRedirect]
   );
+
+  console.log('📊 Context state:', { loading, initialized, isAuthenticated: awsAuth.isAuthenticated, hasUser: !!currentUser });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "./CookieBannerStyles.scss";
 
 const CookieBanner = () => {
+  const { currentUser } = useAuth();
   const [leaving, setLeaving] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(true);
@@ -16,9 +18,15 @@ const CookieBanner = () => {
   const COOKIES_KEY = "cookies-accepted";
 
   useEffect(() => {
+    // Don't show banner if user is logged in
+    if (currentUser) {
+      setShow(false);
+      return;
+    }
+
     const accepted = !!sessionStorage.getItem("cookies-accepted");
     setShow(!accepted);
-  }, []);
+  }, [currentUser]);
 
   const acceptClick = () => {
     sessionStorage.setItem(COOKIES_KEY, "true");

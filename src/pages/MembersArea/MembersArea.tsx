@@ -111,7 +111,7 @@ export default function MembersArea() {
                   <span> Included meditation tokens:</span> <span>{currentUser?.subscription?.meditationCredits}</span>
                 </div>
                 <p className='members-area__info'>
-                  Extra meditation credits: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
+                  Extra meditation tokens: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
                 </p>
                 {currentUser?.timeUntilRenewal && !currentUser?.subscription.cancelAtPeriodEnd && (
                   <p className='members-area__info'>Renews in: {currentUser?.timeUntilRenewal}</p>

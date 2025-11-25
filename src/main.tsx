@@ -5,6 +5,7 @@ import "./index.css";
 import { reduxStore } from "./store/reduxStore";
 import { Provider } from "react-redux";
 import { AuthProvider } from "react-oidc-context";
+import { WebStorageStateStore } from "oidc-client-ts";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
@@ -15,7 +16,9 @@ const cognitoAuthConfig = {
   redirect_uri: import.meta.env.VITE_BASE_URL,
   response_type: "code",
   scope: "phone openid email profile",
-  automaticSilentRenew: true, // <-- key
+  automaticSilentRenew: true,
+  // Store user in localStorage instead of sessionStorage for persistence across tabs
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
 };
 
 // if ("serviceWorker" in navigator) {
