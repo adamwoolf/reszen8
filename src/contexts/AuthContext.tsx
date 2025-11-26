@@ -45,38 +45,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Fetch app user whenever Cognito session changes
   useEffect(() => {
     const fetchUser = async () => {
-      console.log('🔍 Auth state:', {
-        isAuthenticated: awsAuth.isAuthenticated,
-        isLoading: awsAuth.isLoading,
-        hasUser: !!awsAuth.user,
-        userSub: awsAuth.user?.profile?.sub,
-        initialized
-      });
-
       // Wait for AWS auth to finish loading before making decisions
       if (awsAuth.isLoading) {
-        console.log('⏳ AWS auth still loading, waiting...');
         return;
       }
 
-      console.log('✅ AWS auth loaded, checking authentication...');
-
       if (!awsAuth.isAuthenticated || !awsAuth.user?.profile?.sub) {
-        console.log('❌ Not authenticated or no user sub');
         setCurrentUser(null);
         setInitialized(true); // Mark as initialized even if not authenticated
         return;
       }
 
-      console.log('✅ Authenticated, fetching user data...');
       try {
         const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
-        console.log('✅ User data fetched:', data?.email);
         setCurrentUser(data);
       } catch (err) {
-        console.error('❌ User fetch error:', err);
         setCurrentUser(null);
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch user";
         setError(errorMessage);
@@ -170,23 +155,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.replace(logoutUrl);
   }, [awsAuth]);
 
-  const updateUser = useCallback(
-    async (uid: string, updates: UserUpdates): Promise<User | null> => {
-      try {
-        const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid, ...updates }),
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        return data.updatedUser;
-      } catch (err) {
-        return null;
-      }
-    },
-    []
-  );
+  const updateUser = useCallback(async (uid: string, updates: UserUpdates): Promise<User | null> => {
+    try {
+      const response = await fetch(`${AWS_DB_ENDPOINT}/UpdateUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid, ...updates }),
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      return data.updatedUser;
+    } catch (err) {
+      return null;
+    }
+  }, []);
 
   // Compute loading state: we're loading if AWS is loading OR we haven't initialized yet
   const loading = awsAuth.isLoading || !initialized;
@@ -203,8 +185,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }),
     [currentUser, loading, error, clearError, updateUser, signOutRedirect]
   );
-
-  console.log('📊 Context state:', { loading, initialized, isAuthenticated: awsAuth.isAuthenticated, hasUser: !!currentUser });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

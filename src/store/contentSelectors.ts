@@ -3,28 +3,28 @@ import { Publication, Like } from "../models";
 import { AudioObject } from "./contentSlice";
 
 export const getPublications = createSelector(
-  (state) => state.content.publications,
-  (pubs: Publication[]): Publication[] => pubs
+  (state) => state.content,
+  (pubs: Publication[]): Publication[] => pubs.publications
 );
 
 export const getMeditations = createSelector(
-  (state) => state.content.meditations,
-  (meds) => meds
+  (state) => state.content,
+  (meds) => meds.meditations
 );
 
 export const getStaticMeditations = createSelector(
-  (state) => state.content.staticMeditations,
-  (meds) => meds
+  (state) => state.content,
+  (meds) => meds.staticMeditations
 );
 
 export const getMeta = createSelector(
-  (state) => state.content.meta,
-  (meta) => meta
+  (state) => state.content,
+  (meta) => meta.meta
 );
 
 export const getCurrentAudio = createSelector(
-  (state) => state.content.currentAudio,
-  (audio): AudioObject => audio
+  (state) => state.content,
+  (audio): AudioObject => audio.currentAudio
 );
 
 export const getPublicationLikes = createSelector(getMeta, (meta): Like[] => meta.LIKES);
