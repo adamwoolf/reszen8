@@ -13,16 +13,27 @@
     display: flex;
     gap: 20px;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    overflow-y: hidden;
+
+    // Hide scrollbar but keep functionality
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    // Prevent any scroll behavior interference
+    scroll-behavior: auto;
   }
 
   &__card {
     width: 25%;
     min-width: 300px;
+    flex-shrink: 0;
     aspect-ratio: 1/1;
     overflow: hidden;
     border-radius: 8px;
-    scroll-snap-align: center;
 
     img {
       width: 100%;

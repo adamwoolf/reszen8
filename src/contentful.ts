@@ -43,10 +43,11 @@ query AllContent {
   termsAndConditionsCollection {
     items { sys { id } text }
   }
-  collectionImageCollection {
+  collectionImageCollection(order: order_ASC) {
     items {
       sys { id }
       collectionName
+      order
       image {
         url
       }

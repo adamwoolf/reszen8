@@ -9,6 +9,13 @@ import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { sortByEpisode } from "../../Util";
 import AmbientEnv from "../AmbientEnv/AmbientEnv";
 import { useAuth } from "../../contexts/AuthContext";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+interface CollectionImage {
+  collectionName: string;
+  image: { url: string };
+  order?: number;
+}
 
 const Collections = ({ handleClick }: { handleClick?: (value: string) => void }) => {
   const { addItem } = useSavedItems();
@@ -16,29 +23,69 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
 
   const [displayCol, setDisplayCol] = useState("");
   const collections = useSelector(getStaticMeds).filter((med) => med.collection);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<CollectionImage[]>([]);
 
   const headerRef = useRef<HTMLDivElement>(null);
-  const collectionTiles = [...new Set(collections.map((col) => col.collection))];
+  const carouselRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string>("");
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const isAdded = currentUser?.savedItems?.collections?.map((col) => col.title)?.includes(selected);
-
+  const collectionTiles = [...new Set(collections.map((col) => col.collection))];
   useEffect(() => {
     getCollectionImages().then((data) => {
+      console.log(data);
       setImages(data);
     });
   }, []);
 
-  const clickHandler = (collection: string) => {
-    trackCTA(`Collection select-tile-${collection}`);
-    setDisplayCol(collections.filter((med) => med.collection === collection));
-    handleClick?.(collection);
-    setSelected(collection);
-    if (collection) {
-      headerRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: 0 });
+  // Check scroll position to show/hide chevrons
+  const checkScrollPosition = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
+  };
+
+  useEffect(() => {
+    checkScrollPosition();
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener("scroll", checkScrollPosition);
+      window.addEventListener("resize", checkScrollPosition);
+      return () => {
+        carousel.removeEventListener("scroll", checkScrollPosition);
+        window.removeEventListener("resize", checkScrollPosition);
+      };
+    }
+  }, [images]);
+
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
+  const clickHandler = (collection: CollectionImage | "") => {
+    if (!collection) {
+      setDisplayCol("");
+      setSelected("");
+      window.scrollTo({ top: 0 });
+      return;
+    }
+
+    trackCTA(`Collection select-tile-${collection.collectionName}`);
+    setDisplayCol(collections.filter((med) => med.collection === collection.collectionName));
+    handleClick?.(collection.collectionName);
+    setSelected(collection.collectionName);
+    headerRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleAddToJourney = async () => {
@@ -62,34 +109,35 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
   return (
     <div className='collections'>
       <h2>RESZEN8 Collections</h2>
-      <div className='collections__cards'>
-        {/* {images.map((image) => (
-          <img
-            className={
-              selected === image.collectionName
-                ? "collections__background collections__background--active"
-                : "collections__background"
-            }
-            src={image.background?.fields?.file?.url}
-          />
-        ))} */}
-
-        {collectionTiles.map((col) => {
-          const imgSrc = images.find((im) => im.collectionName === col)?.image?.url;
-          return (
-            <button onClick={() => clickHandler(col)} className='collections__card'>
-              <h3>{col}</h3>
-              <img
-                className={
-                  selected === col
-                    ? "collections__card-image collections__card-image--active"
-                    : "collections__card-image"
-                }
-                src={imgSrc}
-              />
-            </button>
-          );
-        })}
+      <div className='collections__carousel-container'>
+        {canScrollLeft && (
+          <button className='collections__chevron collections__chevron--left' onClick={scrollLeft} aria-label='Scroll left'>
+            <FaChevronLeft />
+          </button>
+        )}
+        <div className='collections__cards' ref={carouselRef}>
+          {images.map((col) => {
+            return (
+              <button onClick={() => clickHandler(col)} className='collections__card' key={col.collectionName}>
+                <h3>{col.collectionName}</h3>
+                <img
+                  className={
+                    selected === col.collectionName
+                      ? "collections__card-image collections__card-image--active"
+                      : "collections__card-image"
+                  }
+                  src={col.image.url}
+                  alt={col.collectionName}
+                />
+              </button>
+            );
+          })}
+        </div>
+        {canScrollRight && (
+          <button className='collections__chevron collections__chevron--right' onClick={scrollRight} aria-label='Scroll right'>
+            <FaChevronRight />
+          </button>
+        )}
       </div>
       <div className='collections__selected-anchor' ref={headerRef} />
       {displayCol.length > 0 && (
@@ -110,11 +158,12 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       )}
       {displayCol.length > 0 && (
         <div className='collections__grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {sortByEpisode(displayCol).map((med) => {
-            const imgSrc = images.find((im) => im.collectionName === med.collection)?.image?.fields?.file?.url;
+          {sortByEpisode(displayCol).map((med, index) => {
+            const imgSrc = images.find((im) => im.collectionName === med.collection)?.image?.url;
 
             return (
               <MeditationCard
+                key={`${med.collection}-${med.episode}-${index}`}
                 customTitle={
                   med.episode !== "0"
                     ? `${med.collection} - Meditation ${med.episode}: ${med.title}`
@@ -124,6 +173,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
                 showLike={false}
                 customImage={imgSrc}
                 isCollection
+                i={index}
               />
             );
           })}

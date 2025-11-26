@@ -44,10 +44,16 @@ const FreeForever = () => {
             />
           ))}
         {meditations
-          .filter((med) => !med.immersive)
-          .slice(0, 1)
+          .filter((med) => !med.mmersive)
+          .filter((med) => med.title === "Smiling from Within")
           .map((med) => (
-            <MeditationCard showLike={false} isCollection key={med.title} item={med} />
+            <MeditationCard
+              customTitle='The Joy Practice Collection - Smiling from Within'
+              showLike={false}
+              isCollection
+              key={med.title}
+              item={med}
+            />
           ))}
       </div>
       <div className='freemium__second-row'>

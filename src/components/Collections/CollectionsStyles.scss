@@ -33,6 +33,58 @@
     margin: 60px 0;
   }
 
+  &__carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__chevron {
+    position: absolute;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.6);
+    background: transparent;
+    color: darkorange;
+    border: 2px solid darkorange;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+
+    &:hover {
+      background-color: rgba(255, 165, 0, 0.2);
+      transform: scale(1.1);
+      color: orange;
+    }
+
+    &--left {
+      left: 10px;
+    }
+
+    &--right {
+      right: 10px;
+    }
+
+    svg {
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      width: 40px;
+      height: 40px;
+
+      svg {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
   &__cards {
     display: flex;
     width: 100%;
@@ -40,6 +92,15 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     position: relative;
+    scroll-behavior: smooth;
+
+    // Hide scrollbar but keep functionality
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
   }
 
   &__card {

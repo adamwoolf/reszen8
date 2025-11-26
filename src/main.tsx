@@ -16,9 +16,18 @@ const cognitoAuthConfig = {
   redirect_uri: import.meta.env.VITE_BASE_URL,
   response_type: "code",
   scope: "phone openid email profile",
-  automaticSilentRenew: true,
-  // Store user in localStorage instead of sessionStorage for persistence across tabs
+
+  // Token renewal settings
+  automaticSilentRenew: true, // Automatically renew access token before it expires
+  silent_redirect_uri: import.meta.env.VITE_BASE_URL, // URI for silent renewal
+  accessTokenExpiringNotificationTimeInSeconds: 300, // Notify 5 minutes before expiration
+
+  // Store user in localStorage for persistence across tabs and sessions
   userStore: new WebStorageStateStore({ store: window.localStorage }),
+
+  // Additional settings for better session management
+  loadUserInfo: true, // Load user info from the UserInfo endpoint
+  monitorSession: true, // Monitor the session state
 };
 
 // if ("serviceWorker" in navigator) {
