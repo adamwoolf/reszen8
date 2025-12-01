@@ -49,6 +49,7 @@ const UpgradeCta = ({ tier, yearlySelected }: { yearlySelected: string; tier: an
       subscription: plan.id,
       active: true,
       status: "active",
+      planCredits: plan?.medCredits,
     };
     if (currentUser?.subscription?.subscription === "free-trial" || currentUser?.subscription?.status === "canceled") {
       await upgradeFromTrial(currentUser, plan, selectedSubData);

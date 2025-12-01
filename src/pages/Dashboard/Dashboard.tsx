@@ -93,6 +93,7 @@ const Dashboard = () => {
     const destination = activeTab === "publications" ? "articles" : "meditation-library";
     return (
       <Panel
+        key={key}
         showPopup={showPopup}
         setShowPopup={setShowPopup}
         dataKey={key}

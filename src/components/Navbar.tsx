@@ -10,9 +10,8 @@ import Search from "./Search/Search";
 import { useSelector } from "react-redux";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { getStaticMeditations, getPublications } from "../store/contentSelectors";
-import { IoMdLogOut } from "react-icons/io";
 import { trackCTA } from "../utils/analytics";
-import user from "../assets/logoPNG.png";
+import user from "../assets/logoNew.png";
 
 import ShareCta from "./ShareCta/ShareCta";
 const Navbar: React.FC = () => {
@@ -178,11 +177,9 @@ const Navbar: React.FC = () => {
             </div>
             <span className='user-items-right'>
               {currentUser && (
-                <NavLink style={{ marginLeft: 10, marginRight: 10 }} to='/members'>
+                <NavLink className='user-link' to='/members'>
+                  <img src={user} className='user-icon' />
                   <span className='user-address'>{name}</span>
-
-                  {/* <FaUser size={18} color='orange' /> */}
-                  {/* <img src={user} className='user-icon' /> */}
                 </NavLink>
               )}
               <ShareCta />

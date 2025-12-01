@@ -82,6 +82,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
   useAnalytics();
 
+  // return <LoadingScene />;
+
   if (loading) return <LoadingScene />;
   if (landingPageActive) return null;
   return (

@@ -43,7 +43,7 @@ const UserManager = ({ children }) => {
     if (currentUser && isActiveSub !== currentUser?.subscription?.isActiveSub) {
       setCurrentUser({ ...currentUser, subscription: { ...currentUser.subscription, isActiveSub } });
     }
-  }, [isActiveSub, currentUser]);
+  }, [isActiveSub]); // Removed currentUser to prevent infinite loop
 
   useEffect(() => {
     getAWSArticles().then((data) => {

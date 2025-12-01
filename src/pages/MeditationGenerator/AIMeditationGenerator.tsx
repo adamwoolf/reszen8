@@ -28,7 +28,7 @@ interface MeditationState {
 
 const voiceOptionsArray = [
   { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: willow },
-  { id: "en-GB-OllieMultilingualNeural", label: "Jordan", sampleUri: jordan },
+  { id: "en-GB-OllieMultilingualNeural", label: "Rune", sampleUri: jordan },
 ];
 
 const AIMeditationGenerator: React.FC = () => {
@@ -198,7 +198,7 @@ const AIMeditationGenerator: React.FC = () => {
       </div>
       {isGenerating && (
         <div className='generator__loading' ref={loadingRef}>
-          <h3 className='generator__loading__text'>{loadingMessage}</h3> <LoadingScene />
+          <h3 className='generator__loading__text'>{loadingMessage}</h3> <LoadingScene slow />
         </div>
       )}
       {!isGenerating && (

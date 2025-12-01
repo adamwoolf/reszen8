@@ -101,7 +101,7 @@ const Panel = ({
                   return `${seconds} sec${seconds !== 1 ? "s" : ""} left`;
                 }
                 if (dataKey === "collections")
-                  return <CollectionOverlay handleRemoveItem={handleRemoveItem} collection={item} />;
+                  return <CollectionOverlay key={keyId} handleRemoveItem={handleRemoveItem} collection={item} />;
                 return (
                   <div key={keyId} className='feature-card publication__card'>
                     <div className='publications__card-content dashboard__card-inner'>

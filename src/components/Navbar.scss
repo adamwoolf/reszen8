@@ -391,6 +391,19 @@
   margin-left: 1rem;
 }
 
+.user-icon {
+  width: 25px;
+  display: inline-block;
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  img {
+    margin-right: 8px;
+  }
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .navbar.scrolled {

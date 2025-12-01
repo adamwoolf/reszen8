@@ -1,3 +1,5 @@
+@import "../../variables.scss";
+
 /* Full-screen layout */
 .concentric-loader {
   background: var(--bg-color);
@@ -36,6 +38,31 @@
   width: 60px;
   height: 60px;
   animation-delay: 2s;
+}
+
+.circle__logo {
+  height: 40px;
+  position: relative;
+  animation: grow 3s ease-in;
+  animation-fill-mode: both;
+  background-color: var(--bg-color);
+  border-radius: 50%;
+
+  &--long {
+    animation-duration: 60s;
+  }
+}
+
+@keyframes grow {
+  from {
+    scale: 0.1;
+    opacity: 0;
+  }
+
+  to {
+    scale: 2;
+    opacity: 1;
+  }
 }
 
 /* Rippling animation */

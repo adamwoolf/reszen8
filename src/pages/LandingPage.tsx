@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setLandingPageActive } from "../store/contentSlice";
 import "./LandingPage.scss";
+import logo from "../assets/logoNew.png";
 
 const LandingPage: React.FC = () => {
   const [show, setShow] = useState(false);
@@ -45,8 +46,9 @@ const LandingPage: React.FC = () => {
       className={!leaving ? "landing-page" : "landing-page landing-page--leaving"}
     >
       <button className='logo-container' onClick={handleLogoClick}>
+        <img className='logo__image' src={logo} />
         <h1 className='logo'>
-          RESZEN8<sup className='landing-page__sup'>TM</sup>
+          RESZEN8<sup className='landing-page__sup'>R</sup>
         </h1>
         <p className='click-prompt'>Click to enter</p>
       </button>

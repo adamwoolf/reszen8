@@ -108,11 +108,7 @@ interface EmailResponse {
   error?: string;
 }
 
-export async function sendEmailSES(data: {
-  email: string;
-  subject: string;
-  message: string;
-}): Promise<EmailResponse> {
+export async function sendEmailSES(data: { email: string; subject: string; message: string }): Promise<EmailResponse> {
   const { email, subject, message } = data;
   const res = await fetch(`${AWS_DB_ENDPOINT}/ses-mail`, {
     method: "POST",
@@ -154,16 +150,14 @@ export async function switchSubscription(
 
   if (!res.ok) {
     const errData: SubscriptionResponse = await res.json();
+    console.error(errData);
     throw new Error(errData.error || "Failed to switch subscription");
   }
 
   return res.json();
 }
 
-export async function cancelSubscription(
-  uid: string,
-  cancelAtPeriodEnd = true
-): Promise<SubscriptionResponse> {
+export async function cancelSubscription(uid: string, cancelAtPeriodEnd = true): Promise<SubscriptionResponse> {
   const res = await fetch(`${AWS_DB_ENDPOINT}/cancel-subscription`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
