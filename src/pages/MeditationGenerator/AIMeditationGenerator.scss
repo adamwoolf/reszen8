@@ -52,6 +52,10 @@
   color: orange;
   margin-bottom: 16px;
   display: block;
+
+  &__cta {
+    margin: 8px;
+  }
 }
 
 .credit-count {

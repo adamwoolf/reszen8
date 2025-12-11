@@ -185,7 +185,7 @@ button,
 
 button:hover,
 .btn:hover {
-  color: var(--bg-color);
+  /* color: var(--bg-color); */
 }
 
 @media (prefers-color-scheme: light) {

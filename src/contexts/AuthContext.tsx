@@ -42,6 +42,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const clearError = useCallback(() => setError(null), []);
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
+  // Clear storage when returning from logout
+  useEffect(() => {
+    const loggingOut = sessionStorage.getItem('logging_out');
+    if (loggingOut === 'true') {
+      // Clear all localStorage (this removes OIDC tokens)
+      localStorage.clear();
+
+      // Clear all sessionStorage (including the logging_out flag)
+      sessionStorage.clear();
+
+      // Clear current user state
+      setCurrentUser(null);
+    }
+  }, []);
+
   // Fetch app user whenever Cognito session changes
   useEffect(() => {
     const fetchUser = async () => {
@@ -145,14 +160,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
   };
 
-  const signOutRedirect = useCallback(async () => {
-    const clientId = "the72up8nv2sbq9tea7v5f0ai";
-    const logoutUri = import.meta.env.VITE_BASE_URL;
-    const cognitoDomain = "https://eu-north-1yhww2guih.auth.eu-north-1.amazoncognito.com";
+  const signOutRedirect = useCallback(() => {
+    // Set a flag in sessionStorage BEFORE redirecting
+    // This will survive the redirect and tell us to clear storage when we return
+    sessionStorage.setItem('logging_out', 'true');
 
+    // Use the actual client ID from the OIDC config
+    const clientId = awsAuth.settings.client_id;
+    const logoutUri = window.location.origin;
+
+    // Construct the correct Cognito logout domain from the authority
+    // Authority format: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_ggtKgQ7DR
+    // Logout domain format: https://eu-north-1ggtkgq7dr.auth.eu-north-1.amazoncognito.com
+    const authority = awsAuth.settings.authority;
+    const userPoolId = authority?.split('/').pop() || '';
+    const region = authority?.match(/cognito-idp\.([^.]+)/)?.[1] || 'eu-north-1';
+    const domainPrefix = userPoolId.toLowerCase().replace(/_/g, '');
+    const cognitoDomain = `https://${domainPrefix}.auth.${region}.amazoncognito.com`;
+
+    // Redirect to Cognito logout endpoint
+    // This will clear the Cognito session and redirect back to the app
     const logoutUrl = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-    await awsAuth.removeUser();
-    window.location.replace(logoutUrl);
+    window.location.href = logoutUrl;
   }, [awsAuth]);
 
   const updateUser = useCallback(async (uid: string, updates: UserUpdates): Promise<User | null> => {

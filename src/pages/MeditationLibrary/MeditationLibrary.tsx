@@ -6,7 +6,7 @@ import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { FaInfoCircle } from "react-icons/fa";
 import { Meditation } from "../../models";
 import MeditationCard from "../../components/MeditationCard/MeditationCard";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { getStaticMeds } from "./MeditationLibrary.selectors";
 import Filters from "../../components/Filters/Filters";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -19,7 +19,6 @@ import { createToast } from "../../store/contentSlice";
 type TabType = "meditations" | "ebooks" | "publications";
 
 const DigitalLibrary = () => {
-  const dispatch = useDispatch();
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
@@ -33,7 +32,7 @@ const DigitalLibrary = () => {
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
-
+  console.log(currentUser);
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);

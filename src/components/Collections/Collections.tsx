@@ -34,7 +34,6 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
   const collectionTiles = [...new Set(collections.map((col) => col.collection))];
   useEffect(() => {
     getCollectionImages().then((data) => {
-      console.log(data);
       setImages(data);
     });
   }, []);
@@ -111,7 +110,11 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       <h2>RESZEN8 Collections</h2>
       <div className='collections__carousel-container'>
         {canScrollLeft && (
-          <button className='collections__chevron collections__chevron--left' onClick={scrollLeft} aria-label='Scroll left'>
+          <button
+            className='collections__chevron collections__chevron--left'
+            onClick={scrollLeft}
+            aria-label='Scroll left'
+          >
             <FaChevronLeft />
           </button>
         )}
@@ -134,7 +137,11 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
           })}
         </div>
         {canScrollRight && (
-          <button className='collections__chevron collections__chevron--right' onClick={scrollRight} aria-label='Scroll right'>
+          <button
+            className='collections__chevron collections__chevron--right'
+            onClick={scrollRight}
+            aria-label='Scroll right'
+          >
             <FaChevronRight />
           </button>
         )}

@@ -27,7 +27,7 @@ const cognitoAuthConfig = {
 
   // Additional settings for better session management
   loadUserInfo: true, // Load user info from the UserInfo endpoint
-  monitorSession: true, // Monitor the session state
+  monitorSession: false, // Disable session monitoring to prevent automatic logout triggers
 };
 
 // if ("serviceWorker" in navigator) {

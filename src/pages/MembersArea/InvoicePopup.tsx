@@ -21,19 +21,21 @@ const InvoicePopup = () => {
       <Popup show={show} onClose={() => setShow(false)}>
         <h3>Recent Invoices</h3>
         <table className='invoice-table'>
-          {invoices.map((invoice) => (
-            <tr>
-              <td>{getDate(invoice.created)}</td>
-              <td className='invoices__status'>status: {invoice.status}</td>
-              <td>{invoice.amount}</td>
+          <tbody>
+            {invoices.map((invoice) => (
+              <tr key={invoice.created}>
+                <td>{getDate(invoice.created)}</td>
+                <td className='invoices__status'>status: {invoice.status}</td>
+                <td>{invoice.amount}</td>
 
-              <td>
-                <a target='_blank' href={invoice.hostedInvoiceUrl}>
-                  view in browser
-                </a>
-              </td>
-            </tr>
-          ))}
+                <td>
+                  <a target='_blank' href={invoice.hostedInvoiceUrl}>
+                    view in browser
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </Popup>
     </>

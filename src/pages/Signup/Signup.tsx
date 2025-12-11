@@ -3,12 +3,10 @@ import {
   CognitoIdentityProviderClient,
   SignUpCommand,
   ConfirmSignUpCommand,
-  InitiateAuthCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import "./SignupStyles.scss";
 import { useAuth } from "react-oidc-context";
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
-import { AWS_DB_ENDPOINT } from "../../constants";
 import { trackCTA } from "../../utils/analytics";
 
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
@@ -22,101 +20,95 @@ interface SignupProps {
 export default function Signup({ planId, tier, onSuccess }: SignupProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"signup" | "confirm">("signup");
   const [message, setMessage] = useState("");
   const [givenName, setGivenName] = useState("");
   const [familyName, setFamilyName] = useState("");
-  const [userName, setUserName] = useState("");
   const auth = useAuth();
   const [waiting, setWaiting] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     trackCTA("Sign Up New User");
-    setWaiting(true);
     e.preventDefault();
+    setWaiting(true);
+
     try {
       const command = new SignUpCommand({
         ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
-        Username: userName,
+        Username: email, // use email as username
         Password: password,
         UserAttributes: [
           { Name: "email", Value: email },
-          { Name: "username", Value: userName },
           { Name: "given_name", Value: givenName },
           { Name: "family_name", Value: familyName },
         ],
       });
+
       const response = await client.send(command);
       console.log("Signup response:", response);
 
       if (response.UserConfirmed) {
         setMessage("Signup successful! You can log in now.");
-        // optional: redirect to login or start subscription
       } else {
         setStep("confirm"); // show confirmation code input
         setMessage("Check your email for the confirmation code.");
-        setWaiting(false);
       }
     } catch (error: any) {
       console.error(error);
       setMessage(error.message || "Signup failed.");
+    } finally {
       setWaiting(false);
     }
   };
 
   const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault();
     setWaiting(true);
     trackCTA("New User Confirm Email");
 
-    e.preventDefault();
     try {
       const command = new ConfirmSignUpCommand({
         ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
-        Username: userName,
+        Username: email, // email is username
         ConfirmationCode: code,
       });
       await client.send(command);
+
       setMessage("Logging you in");
       onSuccess?.();
       maybeSavePlanIdAndLogin();
-      setWaiting(false);
     } catch (error: any) {
       console.error(error);
       setMessage(error.message || "Confirmation failed.");
+    } finally {
       setWaiting(false);
     }
   };
 
   const maybeSavePlanIdAndLogin = async () => {
-    if (planId !== "free-trial") {
+    if (planId && planId !== "free-trial") {
       sessionStorage.setItem("pendingPlan", planId);
     }
-    // free trial - nothing to buy so just log in
+
     auth.signinPopup({
       extraQueryParams: {
-        login_hint: userName, // pre-fill the username/email
+        login_hint: email, // pre-fill email
       },
     });
   };
 
+  const passwordsNotTheSame = password !== password2 && password2 && password;
+
   return (
     <div className='signup'>
-      <h2 className=''>{step === "signup" ? "Create Account" : "Confirm Account"}</h2>
+      <h2>{step === "signup" ? "Create Account" : "Confirm Account"}</h2>
 
       <form className='signup-form' onSubmit={step === "signup" ? handleSignup : handleConfirm}>
         {step === "signup" && (
           <>
-            <label className='signup-form-label'>Username </label>
-            <input
-              className='signup-form__input'
-              placeholder='Enter username'
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              required
-            />
-            <label className='signup-form-label'>Email </label>
-
+            <label className='signup-form-label'>Email</label>
             <input
               className='signup-form__input'
               type='email'
@@ -125,8 +117,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <label className='signup-form-label'>First Name </label>
 
+            <label className='signup-form-label'>First Name</label>
             <input
               className='signup-form__input'
               placeholder='Enter First Name'
@@ -134,8 +126,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setGivenName(e.target.value)}
               required
             />
-            <label className='signup-form-label'>Family Name </label>
 
+            <label className='signup-form-label'>Family Name</label>
             <input
               className='signup-form__input'
               placeholder='Enter Family Name'
@@ -143,8 +135,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setFamilyName(e.target.value)}
               required
             />
-            <label className='signup-form-label'>Password </label>
 
+            <label className='signup-form-label'>Password</label>
             <input
               className='signup-form__input'
               type='password'
@@ -153,13 +145,22 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <label className='signup-form-label'>Confirm Password</label>
+            <input
+              className='signup-form__input'
+              type='password'
+              placeholder='Confirm Password'
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+              required
+            />
+            {passwordsNotTheSame && <span className='signup-form-message'>passwords do not match</span>}
           </>
         )}
 
         {step === "confirm" && (
           <>
-            <label className='signup-form-label'>Confirmation Code </label>
-
+            <label className='signup-form-label'>Confirmation Code</label>
             <input
               type='text'
               placeholder='Enter Confirmation Code'
@@ -171,18 +172,20 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
           </>
         )}
 
-        <button className='signup-form__cta' type='submit'>
+        <button disabled={!!passwordsNotTheSame} className='signup-form__cta' type='submit'>
           {step === "signup" ? "Sign Up" : "Confirm"}
           {waiting && <ThreeDotsLoader />}
         </button>
       </form>
+
       <p className='signup-legal'>
         RESZEN8 is for ages 16 and up. By signing up, you confirm you meet this requirement. Please refer to our{" "}
-        <a href='https://reszen8.com/terms-and-conditions' target='_blank'>
+        <a href='https://reszen8.com/terms-and-conditions' target='_blank' rel='noreferrer'>
           Terms and Conditions
         </a>
       </p>
-      {message && <p className=''>{message}</p>}
+
+      {message && <p>{message}</p>}
     </div>
   );
 }

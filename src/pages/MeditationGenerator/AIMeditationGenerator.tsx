@@ -307,11 +307,12 @@ const AIMeditationGenerator: React.FC = () => {
                     another.
                   </span>
                   <span>
-                    <Link className='btn' style={{ marginRight: 8 }} to='/journey'>
+                    <Link className='btn next-steps__cta' style={{ marginRight: 8 }} to='/journey'>
                       Go to Your Journey
                     </Link>
                   </span>
                   <button
+                    className='next-steps__cta'
                     onClick={() => {
                       setTitle("");
                       window.scrollTo({ top: 0 });
