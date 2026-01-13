@@ -27,9 +27,9 @@ const Memberships: React.FC = () => {
   const navigate = useNavigate();
   const { addItem, items } = useBasketStore();
   const { currentUser } = useAuth();
-  console.log(currentUser);
+
   const membershipTiers = useSelector((state) => state.content.membershipTiers)?.filter(
-    (t) => t.id !== "reszen8-premium-annual"
+    (t) => t.id !== "reszen8-core-unlimited-annual"
   );
   const content = useContentful(getMembershipPage)?.content;
   const faqs = useContentful(getFAQs)?.content;
@@ -102,8 +102,7 @@ const Memberships: React.FC = () => {
           ?.sort((a: any, b: any) => a.order - b.order)
           ?.map((tier) => {
             // Use the standard features for Digital Hub memberships and free trial
-            const isDigitalHub = tier.title?.toLowerCase().includes("digital hub") || tier.type === "digital";
-            const featuresToShow = isDigitalHub ? digitalHubFeatures : tier.features;
+            const featuresToShow = tier.features;
             const isAdded = items.some((item) => item.product.id === tier.id);
 
             return (
@@ -144,17 +143,17 @@ const Memberships: React.FC = () => {
                       {tier.id === "bespoke-journey" && <span className='coming-soon-tag'>Coming Soon</span>}
                     </p>
                   </div>
-                  {/* <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} /> */}
+                  <YearlyUpgrade checked={yearlyUpgrade} onCheck={setYearlyUpgrade} tier={tier} />
+
                   <MembershipCta
                     yearlySelected={yearlyUpgrade}
                     tier={tier}
                     isAdded={isAdded}
                     handleSubscribe={handleSubscribe}
                   />
-                  {/* <span>Coming soon</span> */}
                 </div>
                 <ul className='features'>
-                  {featuresToShow.map((feature: string, index: number) => (
+                  {featuresToShow?.map((feature: string, index: number) => (
                     <li key={index} className='feature-item'>
                       <svg className='check-icon' viewBox='0 0 20 20' fill='currentColor'>
                         <path

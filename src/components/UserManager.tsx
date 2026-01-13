@@ -78,6 +78,10 @@ const UserManager = ({ children }) => {
               planName: tier.title,
               billing: tier.yearlyBilling,
               description: tier.description,
+              planCredits: tier.yearlyMeditationCredits,
+              subId: tier.id,
+              size: tier.id,
+              planId: tier.id,
             },
           ];
         return [

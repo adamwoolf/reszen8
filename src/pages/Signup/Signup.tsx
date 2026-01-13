@@ -90,6 +90,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
     }
   };
 
+  console.log(planId);
+  console.log(tier);
   const maybeSavePlanIdAndLogin = async () => {
     if (planId) {
       sessionStorage.setItem("pendingPlan", planId);

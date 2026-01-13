@@ -3,6 +3,8 @@ import MembershipCta from "./MembershipCta";
 import { useAuth } from "../../contexts/AuthContext";
 import Checkbox from "../../components/Checkbox/Checkbox";
 import "./Memberships.scss";
+import ToggleContainer from "../MeditationLibrary/ToggleContainer";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 const YearlyUpgrade = ({
   tier,
   onCheck,
@@ -12,7 +14,6 @@ const YearlyUpgrade = ({
   onCheck: (value: string) => void;
   checked: boolean;
 }) => {
-  // console.log(tier);
   const { currentUser } = useAuth();
 
   if (!tier.yearlyPriceDescription || currentUser?.subscription?.planName === `${tier.title} - ${tier.yearlyBilling}`)
@@ -26,8 +27,10 @@ const YearlyUpgrade = ({
   return (
     <div>
       <span className='membership__upgrade-info'>{tier.yearlyPriceDescription}</span>
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
-        <Checkbox size={40} checked={checked === tier.id} onChange={handleCheck} />
+      <div className='yearly__container'>
+        <span className='yearly__label'>Monthly</span>
+        <ToggleSwitch noLabel checked={checked === tier.id} onChange={handleCheck} />
+        <span className='yearly__label'>Yearly</span>
       </div>
     </div>
   );

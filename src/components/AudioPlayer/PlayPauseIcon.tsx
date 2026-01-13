@@ -13,9 +13,9 @@ const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, size = 26,
   const gap = size * 0.1;
 
   return (
-    <button
+    <span
       aria-label='play-pause icon'
-      onClick={onClick}
+      // onClick={onClick}
       style={{
         width: size,
         height: size,
@@ -71,7 +71,7 @@ const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, size = 26,
           )}
         </AnimatePresence>
       </svg>
-    </button>
+    </span>
   );
 };
 

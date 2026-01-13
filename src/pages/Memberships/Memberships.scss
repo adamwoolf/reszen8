@@ -515,3 +515,17 @@
     border-color: #333333;
   }
 }
+
+.yearly {
+  &__container {
+    display: flex;
+    margin-bottom: 30px;
+  }
+
+  &__label {
+    color: orange;
+    margin: 10px;
+    font-weight: bold;
+    font-size: 1.3rem;
+  }
+}

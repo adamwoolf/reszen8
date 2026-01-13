@@ -97,18 +97,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const planId = sessionStorage.getItem("pendingPlan");
 
       const isTrial = planId === "free-trial";
-      console.log("IS TRIAL", isTrial);
-      const selectedPlan = subscriptionTiers?.find((tier) => tier.id === planId);
 
-      console.log("SELECTED", selectedPlan);
+      const selectedPlan = subscriptionTiers?.find((tier) => tier.id === planId);
 
       const selectedSubData = {
         hasCompletedTrial: true,
-        meditationCredits: selectedPlan?.medCredits,
+        meditationCredits: selectedPlan?.medCredits || selectedPlan?.meditationCredits,
         size: selectedPlan?.billing,
         subId: selectedPlan?.id,
         planName: selectedPlan?.title,
         extraBespokeMeditationCredits: 0,
+        planCredits: selectedPlan?.meditationCredits,
       };
 
       if (planId && user && (selectedPlan || isTrial)) {
@@ -170,6 +169,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await stripe?.redirectToCheckout({ sessionId: data.sessionId });
       return;
     }
+    console.log(selectedSubData);
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -182,6 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         metadata: { uid: currentUser?.uid },
         lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
         subscription: selectedSubData,
+        planId: selectedPlan.priceId,
       }),
     });
     const data = await res.json();

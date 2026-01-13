@@ -35,7 +35,7 @@ const CancellationCta = () => {
     setWaiting(false);
   };
 
-  if (currentUser?.subscription.cancelAtPeriodEnd) return null;
+  if (currentUser?.subscription?.cancelAtPeriodEnd) return null;
   return (
     <button
       disabled={waiting || label === "Subscription Cancelled"}
