@@ -42,6 +42,8 @@ import { useSelector } from "react-redux";
 import CookieBanner from "./components/CookieBanner/CookieBanner";
 import { useAnalytics } from "./hooks/useAnalytics";
 import Toast from "./components/Toast/ToastContainer";
+import LocationManager from "./components/LocationManager/LocationManager";
+import LocationBlocked from "./pages/LocationBlocked/LocationBlocked";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
@@ -90,9 +92,38 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     // <ErrorBoundary>
     <div className='app-container'>
       <Helmet>
-        <title>Welcome to Reszen8</title>
-        <meta name='description' content='Your destination for meditative experiences.' />
+        {/* Title & Meta */}
+        <title>RESZEN8</title>
+        <meta name='description' content='Bespoke wellbeing & meditation solutions.' />
         <meta name='robots' content='index, follow' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+        {/* Favicon */}
+        <link rel='icon' type='image/png' href='https://reszen8.com/logoNew.png' />
+
+        {/* Open Graph / Facebook */}
+        <meta property='og:title' content='Reszen8.com' />
+        <meta property='og:description' content='Bespoke wellbeing & meditation solutions.' />
+        <meta property='og:image' content='https://reszen8.com/logoNew.png' />
+        <meta property='og:url' content='https://reszen8.com' />
+        <meta property='og:type' content='website' />
+
+        {/* Twitter Card */}
+        <meta name='twitter:card' content='summary_large_image' />
+        <meta name='twitter:title' content='Reszen8.com' />
+        <meta name='twitter:description' content='Bespoke wellbeing & meditation solutions.' />
+        <meta name='twitter:image' content='https://reszen8.com/logoNew.png' />
+
+        {/* Structured Data for Google */}
+        <script type='application/ld+json'>
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Reszen8",
+            url: "https://reszen8.com",
+            logo: "https://reszen8.com/logoNew.png",
+          })}
+        </script>
       </Helmet>
       <main className='main-content flex-grow'>
         <Toast />
@@ -243,6 +274,16 @@ const AnimatedRoutes = () => {
             <ProtectedRoute>
               <Layout>
                 <Publications />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/location-blocked'
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <LocationBlocked />
               </Layout>
             </ProtectedRoute>
           }

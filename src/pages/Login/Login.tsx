@@ -16,12 +16,12 @@ const Login = () => {
   // Redirect after successful authentication
   useEffect(() => {
     if (auth.isAuthenticated && currentUser) {
-      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
       if (redirectPath) {
-        sessionStorage.removeItem('redirectAfterLogin');
+        sessionStorage.removeItem("redirectAfterLogin");
         navigate(redirectPath);
       } else {
-        navigate('/journey');
+        navigate("/journey");
       }
     }
   }, [auth.isAuthenticated, currentUser, navigate]);
@@ -41,7 +41,7 @@ const Login = () => {
 
   return (
     <div className='login-cta-container'>
-      <button onClick={() => auth.signinPopup()}>Sign in</button>
+      <button onClick={() => auth.signinRedirect()}>Sign in</button>
       <button onClick={() => signOutRedirect()}>Sign out</button>
     </div>
   );

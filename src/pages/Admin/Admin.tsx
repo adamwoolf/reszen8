@@ -19,6 +19,7 @@ import { profanityFilter } from "./helper";
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import "./AdminStyles.scss";
+import { AWS_DB_ENDPOINT } from "../../constants";
 
 interface MeditationState {
   title: string;
@@ -57,6 +58,24 @@ const Admin: React.FC = () => {
   const [script, setScript] = useState("");
   const [formattedArticle, setFormattedArticle] = useState("");
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
+
+  const getAllUsers = async () => {
+    const data = await fetch(`${AWS_DB_ENDPOINT}/getUsers`);
+    const json = await data.json();
+    console.info("USER COUNT", json?.length);
+    console.table(
+      json.map(({ firstName, email, surName }) => ({
+        firstName,
+        surName,
+        email,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    if (!window.location.href.includes("localhost")) return;
+    getAllUsers();
+  }, []);
 
   // Clean up on unmount
   useEffect(() => {
@@ -265,7 +284,7 @@ const Admin: React.FC = () => {
                   disabled={isGenerating}
                 >
                   {MedTypesAndAffirmations.map((type, i) => (
-                    <option key={type.title + i} value={type.type}>
+                    <option key={`${type?.title || "option"}-${i} `} value={type.type}>
                       {type.type}
                     </option>
                   ))}

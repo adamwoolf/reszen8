@@ -3,12 +3,13 @@ import { useDispatch } from "react-redux";
 import { setLandingPageActive } from "../store/contentSlice";
 import "./LandingPage.scss";
 import logo from "../assets/logoNew.png";
+import { useLocation } from "react-router-dom";
 
 const LandingPage: React.FC = () => {
   const [show, setShow] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const dispatch = useDispatch();
-
+  const { search } = useLocation();
   const handleLogoClick = () => {
     sessionStorage.setItem("hideLandingpage", "true");
     setLeaving(true);
@@ -16,7 +17,9 @@ const LandingPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const shouldHide = !!sessionStorage.getItem("hideLandingpage");
+    const hasQuery = search.includes("landing=true");
+    console.log(hasQuery);
+    const shouldHide = !!sessionStorage.getItem("hideLandingpage") || hasQuery;
     setShow(!shouldHide);
     dispatch(setLandingPageActive(!shouldHide));
   }, []);

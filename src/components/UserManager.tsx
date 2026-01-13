@@ -17,6 +17,7 @@ const UserManager = ({ children }) => {
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser } = useAuth();
   const [isActiveSub, setisActiveSub] = useState(false);
+
   const isSubscriptionActive = (subscription: Subscription): boolean => {
     const created = new Date(subscription.startDate); // already ms
     const expires = new Date(created.getTime() + subscription.duration * 24 * 60 * 60 * 1000);

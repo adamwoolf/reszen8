@@ -35,6 +35,8 @@ const Navbar: React.FC = () => {
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
   const dashboardTotal = dashboardCount + userBespokeMeds;
 
+  const locationAllowed = useSelector((state) => state?.content?.locationAllowed);
+
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -79,97 +81,101 @@ const Navbar: React.FC = () => {
           <div className='nav-brand'>
             <NavLink to='/'>RESZEN8</NavLink>
           </div>
-          {currentUser && (
-            <div className='navbar__search-mobile'>
-              <Search />
-            </div>
-          )}
-          <div className='nav-sections'>
-            <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
-              <li>
-                <NavLink to='/' end className={getNavLinkClass}>
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to='/memberships' className={getNavLinkClass}>
-                  Memberships
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
-                  Bespoke
-                </NavLink>
-              </li>
+          {locationAllowed && (
+            <>
+              {currentUser && (
+                <div className='navbar__search-mobile'>
+                  <Search />
+                </div>
+              )}
+              <div className='nav-sections'>
+                <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
+                  <li>
+                    <NavLink to='/' end className={getNavLinkClass}>
+                      Home
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/memberships' className={getNavLinkClass}>
+                      Memberships
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
+                      Bespoke
+                    </NavLink>
+                  </li>
 
-              {/* <li>
+                  {/* <li>
                 <NavLink to='/ai-chat' className={getNavLinkClass}>
                   RESZEN8 Chat
                 </NavLink>
               </li> */}
 
-              {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
-                <>
-                  {currentUser?.subscription.subId !== "reszen8-generate" && (
-                    <li>
-                      <NavLink to='/articles' className={getNavLinkClass}>
-                        Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
-                      </NavLink>
-                    </li>
-                  )}
-
-                  {currentUser?.subscription.subId !== "reszen8-generate" && (
-                    <li>
-                      <NavLink to='/meditation-library' className={getNavLinkClass}>
-                        Meditations <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
-                      </NavLink>
-                    </li>
-                  )}
-                  <li>
-                    <NavLink to='/journey' className={getNavLinkClass}>
-                      Your Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
-
-            <div className='nav-right'>
-              <div className='flex items-center space-x-4'>
-                <ul className='auth-links'>
-                  {currentUser && (
-                    <li className='flex items-center'>
-                      <CartIcon />
-                    </li>
-                  )}
-
-                  {!currentUser && !loading && (
+                  {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
                     <>
-                      <button
-                        onClick={() => {
-                          trackCTA("Sign In");
-                          auth.signinPopup();
-                        }}
-                      >
-                        Sign in
-                      </button>
+                      {currentUser?.subscription.subId !== "reszen8-generate" && (
+                        <li>
+                          <NavLink to='/articles' className={getNavLinkClass}>
+                            Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
+                          </NavLink>
+                        </li>
+                      )}
+
+                      {currentUser?.subscription.subId !== "reszen8-generate" && (
+                        <li>
+                          <NavLink to='/meditation-library' className={getNavLinkClass}>
+                            Meditations <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
+                          </NavLink>
+                        </li>
+                      )}
+                      <li>
+                        <NavLink to='/journey' className={getNavLinkClass}>
+                          Your Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>
+                        </NavLink>
+                      </li>
                     </>
                   )}
                 </ul>
-              </div>
-            </div>
-          </div>
 
-          <button
-            className='mobile-menu-button'
-            onClick={toggleMobileMenu}
-            aria-label='Toggle menu'
-            aria-expanded={isMobileMenuOpen}
-          >
-            <FaBars style={{ color: "orange", fontSize: 24 }} />
-          </button>
+                <div className='nav-right'>
+                  <div className='flex items-center space-x-4'>
+                    <ul className='auth-links'>
+                      {currentUser && (
+                        <li className='flex items-center'>
+                          <CartIcon />
+                        </li>
+                      )}
+
+                      {!currentUser && !loading && (
+                        <>
+                          <button
+                            onClick={() => {
+                              trackCTA("Sign In");
+                              auth.signinRedirect();
+                            }}
+                          >
+                            Sign in
+                          </button>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                className='mobile-menu-button'
+                onClick={toggleMobileMenu}
+                aria-label='Toggle menu'
+                aria-expanded={isMobileMenuOpen}
+              >
+                <FaBars style={{ color: "orange", fontSize: 24 }} />
+              </button>
+            </>
+          )}
         </div>
-        {currentUser && (
+        {currentUser && locationAllowed && (
           <div className='user-items'>
             <span className='countdown'>{<AccountStatus user={currentUser} />}</span>
             <div className='navbar__search-desktop'>

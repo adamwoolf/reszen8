@@ -18,15 +18,22 @@ const CreditTopup = () => {
   const dispatch = useDispatch();
 
   const options = [
+    // {
+    //   priceId: "price_1SnIyFRsbteEEn7jOG2ElD1f",
+    //   name: "2000 Tokens",
+    //   price: "0.30",
+    //   id: "creditTopupLiveTest",
+    //   credits: 2000,
+    // },
     {
-      priceId: "price_1SAzGrRpZB60VN5hHkOuaOjh",
+      priceId: "price_1SmqqZRsbteEEn7jOjWLlnSN",
       name: "20 Tokens",
       price: "5.99",
       id: "creditTopup20",
       credits: 20,
     },
     {
-      priceId: "price_1SAzFVRpZB60VN5hlXqOFzJV",
+      priceId: "price_1SmqqfRsbteEEn7jTBLVn8uy",
       name: "40 Tokens",
       saving: 8,
       price: "10.99",
@@ -34,7 +41,7 @@ const CreditTopup = () => {
       credits: 40,
     },
     {
-      priceId: "price_1SAzHpRpZB60VN5hqm9qKeij",
+      priceId: "price_1SmqqpRsbteEEn7jyX052Ts8",
       name: "60 Tokens",
       saving: 17,
       price: "14.99",
@@ -42,7 +49,7 @@ const CreditTopup = () => {
       credits: 60,
     },
     {
-      priceId: "price_1SAzISRpZB60VN5hcsF6X0Ld",
+      priceId: "price_1SmqrzRsbteEEn7jsdLRePxH",
       name: "80 Tokens",
       saving: 21,
       price: "18.99",
@@ -50,7 +57,7 @@ const CreditTopup = () => {
       credits: 80,
     },
     {
-      priceId: "price_1SAzJ4RpZB60VN5hmzlgIWEz",
+      priceId: "price_1SmqqvRsbteEEn7jPnN2s3ow",
       name: "100 Tokens",
       saving: 23,
       price: "22.99",
@@ -116,15 +123,11 @@ const CreditTopup = () => {
                       {isAdded ? "Added" : "Add to Basket"}
                     </button>
                   ) : (
-                    <Link
-                      onClick={() => setShow(false)}
-                      to='/memberships'
-                      disabled
-                      className='subscribe-button topup__buy-now'
-                    >
+                    <Link onClick={() => setShow(false)} to='/memberships' className='subscribe-button topup__buy-now'>
                       Upgrade to Topup
                     </Link>
                   )}
+                  {/* <div>Coming Soon</div> */}
                 </div>
               );
             })}

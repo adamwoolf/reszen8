@@ -19,9 +19,13 @@
   }
 
   &__cta {
-    margin-bottom: 60px;
+    margin-bottom: 70px;
     display: flex;
     flex-direction: column;
+
+    &--bottom {
+      margin-top: 90px;
+    }
     button {
       width: 320px;
 

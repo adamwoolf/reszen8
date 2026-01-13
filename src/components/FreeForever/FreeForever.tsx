@@ -22,7 +22,7 @@ const FreeForever = () => {
           <NewUserPlanPurchaseCta homepage />
         </div>
       )}
-      <h1 className='freemium__title'>Begin Your Journey</h1>
+      <h1 className='freemium__title'>Sample Content</h1>
 
       <div className='freemium__top-row'>
         {meditations
@@ -69,6 +69,11 @@ const FreeForever = () => {
           <QuoteOfTheDay />
         </div>
       </div>
+      {!currentUser && (
+        <div className='freemium__cta freemium__cta--bottom'>
+          <NewUserPlanPurchaseCta homepage />
+        </div>
+      )}
     </div>
   );
 };

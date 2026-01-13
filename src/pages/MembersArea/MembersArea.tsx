@@ -124,7 +124,7 @@ export default function MembersArea() {
                 )}
               </>
             )}
-            <InvoicePopup />
+            {/* <InvoicePopup /> */}
             {(!currentUser?.subscription?.isActiveSub || currentUser?.subscription?.subscription === "free-trial") && (
               <Link className='membership-cta' style={{ marginTop: "1rem" }} to='/memberships'>
                 Change Plan{" "}

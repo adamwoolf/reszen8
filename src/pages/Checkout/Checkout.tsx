@@ -83,7 +83,7 @@ const CheckoutForm = () => {
           <span>Total</span>
           <span>£{items.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)}</span>
         </div>
-        <button onClick={() => navigate("/basket")} className='back-link'>
+        <button type='button' onClick={() => navigate("/basket")} className='back-link'>
           <svg
             className='w-5 h-5'
             fill='none'
@@ -104,6 +104,11 @@ const CheckoutForm = () => {
           <div className='payment-method-header'>
             <button className='payment-tab active'>Pay Now{waiting && <ThreeDotsLoader />}</button>
             <p className='checkout__disclaimer'> All payment are handled by Stripe (secure payment page)</p>
+            <p className='checkout__disclaimer'>
+              {" "}
+              As Reszen8 is currently only available to UK residents, we can only accept payments from UK issued bank
+              cards.
+            </p>
             {/* {items.some(item => item?.product?.id === 'digital-monthly') && currentUser?.isGod && window.godControls && <button type="button" onClick={godSignUp} >God test monthly signup</button>} */}
           </div>
         </div>

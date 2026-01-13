@@ -76,6 +76,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
     if (!collection) {
       setDisplayCol("");
       setSelected("");
+      handleClick?.("");
       window.scrollTo({ top: 0 });
       return;
     }

@@ -65,14 +65,6 @@ const Home: React.FC = () => {
 
   return (
     <div className='home-page'>
-      <section className='mission-statement'>
-        <div className='mission-content'>
-          <h2>{content?.title}</h2>
-          <div className='mission-text'>
-            {content?.description && <p dangerouslySetInnerHTML={{ __html: marked(content?.description) }} />}
-          </div>
-        </div>
-      </section>
       {/* <Drawing /> */}
       <FreeForever />
       <CollectionsCarousel />

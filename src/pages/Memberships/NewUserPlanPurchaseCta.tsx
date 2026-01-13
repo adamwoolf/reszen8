@@ -25,7 +25,7 @@ const NewUserPlanPurchaseCta = ({
         }}
         className={!homepage ? "subscribe-button" : ""}
       >
-        {tier.id === "free-trial" ? "Sign Up & Start Free Trial" : "Sign Up & Purchase"}
+        {tier.id === "free-trial" ? "Sign Up & Start Trial" : "Sign Up & Purchase"}
       </button>
       <Popup
         fitContent

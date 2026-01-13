@@ -27,6 +27,7 @@ const Memberships: React.FC = () => {
   const navigate = useNavigate();
   const { addItem, items } = useBasketStore();
   const { currentUser } = useAuth();
+  console.log(currentUser);
   const membershipTiers = useSelector((state) => state.content.membershipTiers)?.filter(
     (t) => t.id !== "reszen8-premium-annual"
   );
@@ -51,7 +52,7 @@ const Memberships: React.FC = () => {
       return;
     }
     if (tier.freeTrial) {
-      auth.signinPopup({
+      auth.signinRedirect({
         extraQueryParams: { screen_hint: "signup" },
       });
       return;
@@ -93,7 +94,7 @@ const Memberships: React.FC = () => {
     <div className='memberships-page'>
       <header className='memberships-header'>
         <h1>{content?.title}</h1>
-        <p className='subtitle'>{content?.subtitle}</p>
+        <h3>{content?.subtitle}</h3>
       </header>
 
       <div className='membership-grid'>
@@ -113,7 +114,6 @@ const Memberships: React.FC = () => {
                 <div className='membership-header'>
                   <div>
                     <h3>{tier.title}</h3>
-
                     {tier?.badge ||
                       (tier.id === "reszen8-premium" && currentUser?.subscription?.planName !== tier.title && (
                         <div className='popular-badge'>
@@ -151,6 +151,7 @@ const Memberships: React.FC = () => {
                     isAdded={isAdded}
                     handleSubscribe={handleSubscribe}
                   />
+                  {/* <span>Coming soon</span> */}
                 </div>
                 <ul className='features'>
                   {featuresToShow.map((feature: string, index: number) => (

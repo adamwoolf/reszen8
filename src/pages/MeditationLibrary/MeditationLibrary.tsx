@@ -32,7 +32,7 @@ const DigitalLibrary = () => {
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
-  console.log(currentUser);
+
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
@@ -174,7 +174,7 @@ const DigitalLibrary = () => {
       </div>
     );
   };
-
+  console.log(activeCollection);
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>Meditation Library</h1>

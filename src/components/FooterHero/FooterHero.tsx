@@ -7,6 +7,7 @@ import appStore from "../../assets/app-store.webp";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import SocialShare from "../SocialShare/SocialShare";
 import logo from "../../assets/logoNew.png";
+import { useSelector } from "react-redux";
 
 const ourContent = [
   { label: "Home", path: "/" },
@@ -30,13 +31,17 @@ const policiesContact = [
 const FooterHero = () => {
   const { currentUser, signOutRedirect } = useAuth();
   const auth = useAwsAuth();
-
+  const locationAllowed = useSelector((state) => state?.content?.locationAllowed);
   const renderColumn = (array: [], memberRoutes = false) => {
     if (memberRoutes && !currentUser)
       return (
         <div className='footer-hero__column-list'>
           {array.map((item) => (
-            <button key={item.label} className='footer-hero__column-list-redirect' onClick={() => auth.signinPopup()}>
+            <button
+              key={item.label}
+              className='footer-hero__column-list-redirect'
+              onClick={() => auth.signinRedirect()}
+            >
               {item.label}
             </button>
           ))}
@@ -61,7 +66,7 @@ const FooterHero = () => {
       console.error("Failed to log out", error);
     }
   };
-
+  if (!locationAllowed) return null;
   return (
     <div className='footer-hero'>
       <SocialShare url={"https://reszen8.com"} title={"RESZEN8"} quote={"Crafted Calm"} />
@@ -81,13 +86,17 @@ const FooterHero = () => {
         </div>
         <div className='footer-hero__column'>
           <h3>My Reszen8</h3>
-          {!currentUser && <button onClick={() => auth.signinPopup()}>Sign in</button>}
+          {!currentUser && <button onClick={() => auth.signinRedirect()}>Sign in</button>}
           {currentUser && (
             <button className='logout-cta' onClick={handleLogout}>
               logout
             </button>
           )}
-          <a aria-label='app-store-link' href='https://apple.com'>
+          <a
+            aria-label='app-store-link'
+            target='_blank'
+            href='https://apps.apple.com/es/app/reszen8/id6752923475?l=en-GB'
+          >
             <img alt='app-store-link' className='footer-hero__app-store' src={appStore} />
           </a>
         </div>

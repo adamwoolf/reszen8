@@ -8,6 +8,7 @@ import "./SignupStyles.scss";
 import { useAuth } from "react-oidc-context";
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
 import { trackCTA } from "../../utils/analytics";
+import Checkbox from "../../components/Checkbox/Checkbox";
 
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
 
@@ -28,6 +29,7 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
   const [familyName, setFamilyName] = useState("");
   const auth = useAuth();
   const [waiting, setWaiting] = useState(false);
+  const [country, setCountry] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
     trackCTA("Sign Up New User");
@@ -43,6 +45,7 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
           { Name: "email", Value: email },
           { Name: "given_name", Value: givenName },
           { Name: "family_name", Value: familyName },
+          { Name: "custom:country", Value: country },
         ],
       });
 
@@ -88,17 +91,20 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
   };
 
   const maybeSavePlanIdAndLogin = async () => {
-    if (planId && planId !== "free-trial") {
+    if (planId) {
       sessionStorage.setItem("pendingPlan", planId);
     }
 
-    auth.signinPopup({
+    auth.signinRedirect({
       extraQueryParams: {
         login_hint: email, // pre-fill email
       },
     });
   };
 
+  const handleCountryCheck = () => {
+    setCountry(!country ? "GB" : "");
+  };
   const passwordsNotTheSame = password !== password2 && password2 && password;
 
   return (
@@ -108,6 +114,10 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
       <form className='signup-form' onSubmit={step === "signup" ? handleSignup : handleConfirm}>
         {step === "signup" && (
           <>
+            <div className='signup-form__country'>
+              <label className='signup-form-label'>I live in the UK</label>
+              <Checkbox checked={country === "GB"} size={32} onChange={handleCountryCheck} />
+            </div>
             <label className='signup-form-label'>Email</label>
             <input
               className='signup-form__input'
@@ -172,7 +182,7 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
           </>
         )}
 
-        <button disabled={!!passwordsNotTheSame} className='signup-form__cta' type='submit'>
+        <button disabled={!!passwordsNotTheSame || !country} className='signup-form__cta' type='submit'>
           {step === "signup" ? "Sign Up" : "Confirm"}
           {waiting && <ThreeDotsLoader />}
         </button>

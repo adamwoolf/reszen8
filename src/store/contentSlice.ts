@@ -36,6 +36,7 @@ export interface ContentState {
   landingPageActive: boolean;
   toasts: Toast[];
   collectionImages: CollectionImage[];
+  locationAllowed: boolean;
 }
 
 export interface AudioObject {
@@ -58,6 +59,7 @@ const initialState: ContentState = {
   membershipTiers: [],
   toasts: [],
   collectionImages: [],
+  locationAllowed: true,
 };
 
 export const contentSlice = createSlice({
@@ -84,19 +86,19 @@ export const contentSlice = createSlice({
       const { likes, uid, content } = action.payload;
       if (content === "Bespoke_Meditations") {
         state.meditations = state.meditations.map((med) => {
-          if ('uid' in med && uid === med.uid) return { ...med, likes };
+          if ("uid" in med && uid === med.uid) return { ...med, likes };
           return med;
         });
       }
       if (content === "Articles") {
         state.publications = state.publications.map((pub) => {
-          if ('uid' in pub && uid === pub.uid) return { ...pub, likes };
+          if ("uid" in pub && uid === pub.uid) return { ...pub, likes };
           return pub;
         });
       }
       if (content === "Static_Meditations") {
         state.staticMeditations = state.staticMeditations.map((med) => {
-          if ('uid' in med && uid === med.uid) return { ...med, likes };
+          if ("uid" in med && uid === med.uid) return { ...med, likes };
           return med;
         });
       }
@@ -119,6 +121,9 @@ export const contentSlice = createSlice({
     setCollectionImages: (state, action: PayloadAction<CollectionImage[]>) => {
       state.collectionImages = action.payload;
     },
+    setLocationAllowed: (state, action) => {
+      state.locationAllowed = action.payload;
+    },
   },
 });
 
@@ -135,5 +140,6 @@ export const {
   createToast,
   deleteToast,
   setCollectionImages,
+  setLocationAllowed,
 } = contentSlice.actions;
 export default contentSlice.reducer;

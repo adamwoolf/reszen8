@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Clear storage when returning from logout
   useEffect(() => {
-    const loggingOut = sessionStorage.getItem('logging_out');
-    if (loggingOut === 'true') {
+    const loggingOut = sessionStorage.getItem("logging_out");
+    if (loggingOut === "true") {
       // Clear all localStorage (this removes OIDC tokens)
       localStorage.clear();
 
@@ -91,10 +91,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // // Signup new user directly to paid sub
   useEffect(() => {
     if (awsAuth.isAuthenticated) {
+      console.log("authenticated");
       const user = awsAuth.user?.profile;
 
       const planId = sessionStorage.getItem("pendingPlan");
+
+      const isTrial = planId === "free-trial";
+      console.log("IS TRIAL", isTrial);
       const selectedPlan = subscriptionTiers?.find((tier) => tier.id === planId);
+
+      console.log("SELECTED", selectedPlan);
 
       const selectedSubData = {
         hasCompletedTrial: true,
@@ -105,8 +111,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         extraBespokeMeditationCredits: 0,
       };
 
-      if (planId && user && selectedPlan) {
-        checkoutNewUserPlan(user, selectedPlan, selectedSubData);
+      if (planId && user && (selectedPlan || isTrial)) {
+        console.log("HERE", planId);
+        checkoutNewUserPlan(user, selectedPlan, selectedSubData, isTrial);
         sessionStorage.removeItem("pendingPlan");
       }
     }
@@ -139,8 +146,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkoutNewUserPlan = async (
     user: CognitoUserProfile,
     selectedPlan: SubscriptionPlan,
-    selectedSubData: SubscriptionData
+    selectedSubData: SubscriptionData,
+    trialSignup: boolean
   ) => {
+    if (trialSignup) {
+      const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "payment",
+          email: user.email,
+          firstName: user.given_name,
+          lastName: user.family_name,
+          uid: user.sub,
+          metadata: { uid: currentUser?.uid },
+          lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
+          subscription: selectedSubData,
+          planId: selectedPlan.priceId,
+        }),
+      });
+      const data = await res.json();
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId: data.sessionId });
+      return;
+    }
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -163,7 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOutRedirect = useCallback(() => {
     // Set a flag in sessionStorage BEFORE redirecting
     // This will survive the redirect and tell us to clear storage when we return
-    sessionStorage.setItem('logging_out', 'true');
+    sessionStorage.setItem("logging_out", "true");
 
     // Use the actual client ID from the OIDC config
     const clientId = awsAuth.settings.client_id;
@@ -173,9 +202,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Authority format: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_ggtKgQ7DR
     // Logout domain format: https://eu-north-1ggtkgq7dr.auth.eu-north-1.amazoncognito.com
     const authority = awsAuth.settings.authority;
-    const userPoolId = authority?.split('/').pop() || '';
-    const region = authority?.match(/cognito-idp\.([^.]+)/)?.[1] || 'eu-north-1';
-    const domainPrefix = userPoolId.toLowerCase().replace(/_/g, '');
+    const userPoolId = authority?.split("/").pop() || "";
+    const region = authority?.match(/cognito-idp\.([^.]+)/)?.[1] || "eu-north-1";
+    const domainPrefix = userPoolId.toLowerCase().replace(/_/g, "");
     const cognitoDomain = `https://${domainPrefix}.auth.${region}.amazoncognito.com`;
 
     // Redirect to Cognito logout endpoint

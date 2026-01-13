@@ -20,6 +20,16 @@
       color: black;
     }
 
+    &__country {
+      background-color: transparent;
+      text-align: left;
+      margin: 10px 0;
+
+      label {
+        margin-right: 10px;
+      }
+    }
+
     &__cta {
       display: flex;
       justify-content: center;

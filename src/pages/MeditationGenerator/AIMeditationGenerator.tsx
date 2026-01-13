@@ -110,13 +110,13 @@ const AIMeditationGenerator: React.FC = () => {
 
     // update user details and return early and alert user if they have used credits on another device.
     const credit = await checkCredits();
-    if (!credit)
-      return dispatch(
-        createToast({
-          text: "You do not currently have enough credit.  Please purchase a topup pack or wait for your subscription to renew.",
-          type: "error",
-        })
-      );
+    // if (!credit)
+    //   return dispatch(
+    //     createToast({
+    //       text: "You do not currently have enough credit.  Please purchase a topup pack or wait for your subscription to renew.",
+    //       type: "error",
+    //     })
+    //   );
 
     try {
       const script = await generateScript(meditationType, duration, selectedLanguage, practiceType, title, immersive);
@@ -256,29 +256,32 @@ const AIMeditationGenerator: React.FC = () => {
           </div>
 
           <div className='generator-cta'>
-            {!userHasEnoughTokens && (
+            {!userHasEnoughTokens && currentUser && (
               <span className='signup-prompt'>
                 You do not have sufficient meditation tokens. You can always topup using the link above and continue
                 generating bespoke meditations.
               </span>
             )}
-            {currentUser && currentUser?.subscription?.active && userHasEnoughTokens && (
-              <button
-                type='submit'
-                className='generate-btn'
-                disabled={isGenerating || !title || profanityFilter(title) || !userHasEnoughTokens}
-              >
-                {isGenerating ? (
-                  <>
-                    <span className='spinner'></span>
-                    Generating...
-                  </>
-                ) : (
-                  "Generate Meditation"
-                )}
-              </button>
-            )}
-            {(!currentUser || !currentUser?.subscription?.active) && (
+            {currentUser &&
+              (currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) &&
+              userHasEnoughTokens && (
+                <button
+                  type='submit'
+                  className='generate-btn'
+                  disabled={isGenerating || !title || profanityFilter(title) || !userHasEnoughTokens}
+                >
+                  {isGenerating ? (
+                    <>
+                      <span className='spinner'></span>
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Meditation"
+                  )}
+                </button>
+              )}
+            {(!currentUser ||
+              (!currentUser?.subscription?.active && currentUser?.subscription?.subscription !== "free-trial")) && (
               <div className='signup-prompt'>
                 <p>
                   {" "}
