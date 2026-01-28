@@ -10,7 +10,7 @@ export const getStaticMeds = createSelector(getStaticMeditations, (staticMs): Me
     return {
       ...staticMs[key],
       contentType: "meditation",
-      category: categoriser(`${staticMs[key].title}-${staticMs[key].content}`),
+      category: categoriser(`${staticMs[key].title} - ${staticMs[key].content}`),
     };
   });
 

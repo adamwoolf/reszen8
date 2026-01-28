@@ -174,7 +174,6 @@ const DigitalLibrary = () => {
       </div>
     );
   };
-  console.log(activeCollection);
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>Meditation Library</h1>

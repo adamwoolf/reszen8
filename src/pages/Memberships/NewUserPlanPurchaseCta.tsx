@@ -36,7 +36,7 @@ const NewUserPlanPurchaseCta = ({
         }}
       >
         <div className='subscribe-popup'>
-          <h3>Thank you for joining RESZEN8</h3>
+          {/* <h3>Thank you for joining RESZEN8</h3> */}
           <SignUp
             onSuccess={() => {
               setShowPopup(false);

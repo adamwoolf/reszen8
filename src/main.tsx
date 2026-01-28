@@ -30,33 +30,6 @@ const cognitoAuthConfig = {
   monitorSession: false, // Disable session monitoring to prevent automatic logout triggers
 };
 
-// if ("serviceWorker" in navigator) {
-//   window.addEventListener("load", () => {
-//     navigator.serviceWorker
-//       .register("/service-worker.js")
-//       .then((registration) => {
-//         console.log("Service Worker registered with scope:", registration.scope);
-//       })
-//       .catch((err) => {
-//         console.error("Service Worker registration failed:", err);
-//       });
-//   });
-// }
-
-// export function restoreOfflineUser(dispatch: any) {
-//   if (!navigator.onLine) {
-//     const saved = localStorage.getItem("offlineUser");
-//     if (saved) {
-//       const userData = JSON.parse(saved);
-//       // Set your Redux/Zustand state here
-//       dispatch({
-//         type: "auth/loginSuccess",
-//         payload: userData,
-//       });
-//     }
-//   }
-// }
-
 // restoreOfflineUser(reduxStore.dispatch);
 
 const root = createRoot(container);
@@ -68,5 +41,5 @@ root.render(
         <App />
       </Provider>
     </AuthProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

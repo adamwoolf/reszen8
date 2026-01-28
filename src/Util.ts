@@ -1,5 +1,40 @@
 export const categoriser = (text: string) => {
+  const TITLE_OVERRIDE_KEYWORDS: Record<string, string[]> = {
+    Trauma: ["trauma", "traumatic", "ptsd", "cptsd"],
+
+    "Anxiety Relief": ["anxiety", "anxious", "panic"],
+    "Better Sleep": ["sleep", "sleeping", "insomnia", "bedtime"],
+    "Stress Relief": ["stress", "stressed", "overwhelm", "overwhelmed"],
+    Anger: ["anger", "angry", "rage"],
+    Gratitude: ["gratitude", "grateful", "thankful"],
+    Mindfulness: ["mindfulness", "mindful", "awareness"],
+    Compassion: ["compassion", "compassionate", "empathy"],
+    "Loving Kindness": ["loving", "kindness", "love"],
+    Relationships: ["relationship", "relationships", "connection"],
+    Resilience: ["resilience", "resilient", "strength"],
+    "Focus and Concentration": ["focus", "focused", "concentration"],
+  };
+
   const content = text.toLowerCase();
+
+  const lower = text.toLowerCase();
+
+  // --- TITLE OVERRIDE (FIRST 4 WORDS) ---
+  const titlePart = lower.split(" - ")[0] ?? "";
+
+  const firstFourWords = titlePart
+    .replace(/[^\w\s]/g, "") // strip punctuation / hyphens
+    .trim()
+    .split(/\s+/)
+    .slice(0, 4);
+
+  for (const [category, keywords] of Object.entries(TITLE_OVERRIDE_KEYWORDS)) {
+    const match = firstFourWords.some((word) => keywords.some((kw) => word.startsWith(kw)));
+
+    if (match) {
+      return [{ category, confidence: 100 }];
+    }
+  }
 
   // Category keywords with optional weights
   const categories = {

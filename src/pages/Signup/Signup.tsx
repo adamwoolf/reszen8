@@ -116,10 +116,6 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
       <form className='signup-form' onSubmit={step === "signup" ? handleSignup : handleConfirm}>
         {step === "signup" && (
           <>
-            <div className='signup-form__country'>
-              <label className='signup-form-label'>I live in the UK</label>
-              <Checkbox checked={country === "GB"} size={32} onChange={handleCountryCheck} />
-            </div>
             <label className='signup-form-label'>Email</label>
             <input
               className='signup-form__input'
@@ -129,7 +125,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-
+<div className="signup-form__columns" >
+  <div className="signup-form__columns__column" >
             <label className='signup-form-label'>First Name</label>
             <input
               className='signup-form__input'
@@ -138,7 +135,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setGivenName(e.target.value)}
               required
             />
-
+            </div>
+<div className="signup-form__columns__column" >
             <label className='signup-form-label'>Family Name</label>
             <input
               className='signup-form__input'
@@ -147,6 +145,8 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setFamilyName(e.target.value)}
               required
             />
+            </div>
+            </div>
 
             <label className='signup-form-label'>Password</label>
             <input
@@ -167,6 +167,10 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               required
             />
             {passwordsNotTheSame && <span className='signup-form-message'>passwords do not match</span>}
+            <div className='signup-form__country'>
+              <label className='signup-form-label'>I confirm that I live in the UK</label>
+              <Checkbox checked={country === "GB"} size={32} onChange={handleCountryCheck} />
+            </div>
           </>
         )}
 
@@ -184,7 +188,13 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
           </>
         )}
 
-        <button disabled={!!passwordsNotTheSame || !country} className='signup-form__cta' type='submit'>
+        <button
+          disabled={!!passwordsNotTheSame || !country}
+          className={
+            !!passwordsNotTheSame || !country ? "signup-form__cta signup-form__cta--disabled" : "signup-form__cta"
+          }
+          type='submit'
+        >
           {step === "signup" ? "Sign Up" : "Confirm"}
           {waiting && <ThreeDotsLoader />}
         </button>

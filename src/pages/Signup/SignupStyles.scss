@@ -5,6 +5,7 @@
   text-align: center;
   overflow-y: auto;
   height: 73dvh !important;
+
   &-form {
     display: flex;
     flex-direction: column;
@@ -34,13 +35,40 @@
       display: flex;
       justify-content: center;
       margin-top: 30px !important;
+
+      &--disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    &__columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background-color: transparent !important;
+      background: none;
+      margin-top: 10px;
+
+      @media (max-width: 786px) {
+        grid-template-columns: 1fr;
+      }
+
+      &__column {
+        background-color: transparent;
+        background: none;
+        text-align: left;
+
+        input {
+          width: 90%;
+        }
+      }
     }
 
     &-label {
       text-align: left;
       color: orange;
       margin-left: 10px;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     &-message {
