@@ -7,14 +7,18 @@ const NewUserPlanPurchaseCta = ({
   homepage,
   yearlySelected,
   tier = { id: "free-trial" },
+  label,
 }: {
   homepage?: boolean;
   yearlySelected: string;
-  tier: any;
+  tier?: any;
+  label?: string;
 }) => {
   const [showPopup, setShowPopup] = useState(false);
 
   const planId = yearlySelected === tier.id ? tier.yearlyId : tier.id;
+
+  const getLabel = () => (label ? label : tier.id === "free-trial" ? "Sign Up & Start Trial" : "Sign Up & Purchase");
 
   return (
     <>
@@ -25,7 +29,7 @@ const NewUserPlanPurchaseCta = ({
         }}
         className={!homepage ? "subscribe-button" : ""}
       >
-        {tier.id === "free-trial" ? "Sign Up & Start Trial" : "Sign Up & Purchase"}
+        {getLabel()}
       </button>
       <Popup
         fitContent

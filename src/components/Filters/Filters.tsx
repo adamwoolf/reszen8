@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Icon, { getIcon } from "../Icon/Icon";
 import { trackCTA } from "../../utils/analytics";
 

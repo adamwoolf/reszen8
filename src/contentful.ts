@@ -43,6 +43,9 @@ query AllContent {
   termsAndConditionsCollection {
     items { sys { id } text }
   }
+  meditationThemeCollection {
+   items  { sys { id } title description }
+  }
   collectionImageCollection(order: order_ASC) {
     items {
       sys { id }
@@ -126,8 +129,13 @@ const getCollectionImages = async () => {
   const data = await getAllContent();
   return data.collectionImageCollection.items;
 };
+const getMeditationThemes = async () => {
+  const data = await getAllContent();
+  return data.meditationThemeCollection.items;
+};
 
 export {
+  getMeditationThemes,
   getCollectionImages,
   getTsAndCs,
   getPrivacyPolicy,

@@ -9,9 +9,10 @@ import {
   setStaticMeditations,
   setMembershipTiers,
   setCollectionImages,
+  setMeditationThemes,
 } from "../store/contentSlice";
 import useContentful from "../hooks/useContentful";
-import { getMembershipTiers, getCollectionImages } from "../contentful";
+import { getMembershipTiers, getCollectionImages, getMeditationThemes } from "../contentful";
 
 const UserManager = ({ children }) => {
   const dispatch = useDispatch();
@@ -28,6 +29,9 @@ const UserManager = ({ children }) => {
   useEffect(() => {
     getCollectionImages().then((data) => {
       dispatch(setCollectionImages(data));
+    });
+    getMeditationThemes().then((data) => {
+      dispatch(setMeditationThemes(data));
     });
   }, []);
 

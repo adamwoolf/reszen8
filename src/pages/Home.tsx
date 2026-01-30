@@ -10,6 +10,7 @@ import FreeForever from "../components/FreeForever/FreeForever";
 import Collections from "../components/Collections/Collections";
 import CollectionsCarousel from "../components/CollectionsCarousel/CollectionsCarousel";
 import { sendEmailSES } from "../store/apiUtils";
+import OnboardingHero from "../components/OnboardingHero/OnboardingHero";
 
 const features = [
   // {
@@ -66,6 +67,7 @@ const Home: React.FC = () => {
   return (
     <div className='home-page'>
       {/* <Drawing /> */}
+      {!currentUser && <OnboardingHero />}
       <FreeForever />
       <CollectionsCarousel />
       <section className='features-section'>

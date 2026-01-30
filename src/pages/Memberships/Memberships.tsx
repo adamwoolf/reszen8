@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useBasketStore } from "../../store/basketStore";
 import "./Memberships.scss";
 import useContentful from "../../hooks/useContentful";
-import { getMembershipTiers, getMembershipPage, getFAQs } from "../../contentful";
+import { getMembershipPage, getFAQs } from "../../contentful";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { useAuth as useAWSAuth } from "react-oidc-context";
@@ -29,7 +29,7 @@ const Memberships: React.FC = () => {
   const { currentUser } = useAuth();
 
   const membershipTiers = useSelector((state) => state.content.membershipTiers)?.filter(
-    (t) => t.id !== "reszen8-core-unlimited-annual"
+    (t) => t.id !== "reszen8-core-unlimited-annual",
   );
   const content = useContentful(getMembershipPage)?.content;
   const faqs = useContentful(getFAQs)?.content;
@@ -119,8 +119,8 @@ const Memberships: React.FC = () => {
                           {tier.id === "reszen8-premium"
                             ? "Best Value"
                             : currentUser?.subscription?.hasCompletedTrial
-                            ? "Completed"
-                            : tier?.badge}
+                              ? "Completed"
+                              : tier?.badge}
                         </div>
                       ))}
                     {!tier.title.includes("Enterprise") ? (
@@ -128,8 +128,8 @@ const Memberships: React.FC = () => {
                         {tier.price > 0 && yearlyUpgrade !== tier.id
                           ? `£${tier.price.toFixed(2)}`
                           : yearlyUpgrade === tier.id
-                          ? `£${tier.yearlyPrice.toFixed(2)}`
-                          : "£0.00"}
+                            ? `£${tier.yearlyPrice.toFixed(2)}`
+                            : "£0.00"}
                         {tier.billing !== "enquire" && yearlyUpgrade !== tier.id && (
                           <span className='billing'>/ {tier.billing}</span>
                         )}

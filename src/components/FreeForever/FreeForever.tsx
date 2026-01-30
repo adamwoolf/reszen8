@@ -16,19 +16,14 @@ const FreeForever = () => {
   if (!articles.length || !meditations.length) return null;
 
   return (
-    <div className='freemium'>
-      {!currentUser && (
-        <div className='freemium__cta'>
-          <NewUserPlanPurchaseCta homepage />
-        </div>
-      )}
+    <div id='freemium' className='freemium'>
       <h1 className='freemium__title'>Sample Content</h1>
 
       <div className='freemium__top-row'>
         {meditations
           .filter((med) => med.immersive)
           .filter(
-            (med) => med.title === "Resilience, Immersive Tibetan Meditation" || med.title === "Stillness of Breath"
+            (med) => med.title === "Resilience, Immersive Tibetan Meditation" || med.title === "Stillness of Breath",
           )
           .map((med) => (
             <MeditationCard

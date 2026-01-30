@@ -37,6 +37,7 @@ export interface ContentState {
   toasts: Toast[];
   collectionImages: CollectionImage[];
   locationAllowed: boolean;
+  meditationThemes: any[];
 }
 
 export interface AudioObject {
@@ -60,6 +61,7 @@ const initialState: ContentState = {
   toasts: [],
   collectionImages: [],
   locationAllowed: true,
+  meditationThemes: [],
 };
 
 export const contentSlice = createSlice({
@@ -121,6 +123,9 @@ export const contentSlice = createSlice({
     setCollectionImages: (state, action: PayloadAction<CollectionImage[]>) => {
       state.collectionImages = action.payload;
     },
+    setMeditationThemes: (state, action: PayloadAction<any[]>) => {
+      state.meditationThemes = action.payload;
+    },
     setLocationAllowed: (state, action) => {
       state.locationAllowed = action.payload;
     },
@@ -128,6 +133,7 @@ export const contentSlice = createSlice({
 });
 
 export const {
+  setMeditationThemes,
   setMeditations,
   setArticles,
   setPublications,

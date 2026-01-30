@@ -1,0 +1,78 @@
+.onboarding {
+  padding: 30px 0;
+  padding-bottom: 80px;
+  width: 50%;
+  margin: auto;
+  min-height: 90vh;
+
+  @media (max-width: 786px) {
+    width: 100%;
+  }
+
+  &__logo {
+    height: 100px;
+    width: 100px;
+    margin: 20px auto;
+  }
+  &__ctas {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+
+    button {
+      margin: 10px 0;
+    }
+  }
+
+  &__cta-secondary {
+    background-color: transparent !important;
+    background: none;
+    border: 2px solid orange;
+    color: orange;
+    display: flex;
+    align-items: center;
+    margin-top: 40px !important;
+  }
+
+  &__cta-icon {
+    margin-left: 8px;
+    display: block;
+    margin-top: 3px;
+    color: orange;
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 800ms ease-in-out;
+    animation-fill-mode: both;
+    height: 100vh;
+
+    button {
+      margin-top: 20px;
+      width: 200px;
+    }
+
+    &-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      margin: 10px;
+      padding: 5px;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

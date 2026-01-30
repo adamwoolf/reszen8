@@ -33,10 +33,10 @@ const feelingToMeditations = {
   Distracted: { "Focus and Concentration": 3, Mindfulness: 2 },
 };
 
-function getRecommendedMeditation(selectedFeelings) {
+function getRecommendedMeditation(selectedFeelings = [], returnAll = false) {
   const scores = {};
 
-  [selectedFeelings].forEach((feeling) => {
+  selectedFeelings.forEach((feeling) => {
     const mapping = feelingToMeditations[feeling];
     if (!mapping) return;
 
@@ -45,15 +45,25 @@ function getRecommendedMeditation(selectedFeelings) {
     }
   });
 
+  console.log(scores);
+
   if (Object.keys(scores).length === 0) return "Mindfulness";
 
   const maxScore = Math.max(...Object.values(scores));
   const bestMatches = Object.keys(scores).filter((meditation) => scores[meditation] === maxScore);
 
-  return bestMatches[0];
+  return returnAll ? bestMatches : bestMatches[0];
 }
 
-const Consult8 = ({ setMeditationType }: { setMeditationType: (value: string) => void }) => {
+const Consult8 = ({
+  setMeditationType,
+  header,
+  returnAllTypes,
+}: {
+  returnAllTypes: (value: any) => void;
+  setMeditationType: (value: string) => void;
+  header?: boolean;
+}) => {
   const [choices, setChoices] = useState<string[]>([]);
 
   const handleClick = (option: string) => {
@@ -66,13 +76,15 @@ const Consult8 = ({ setMeditationType }: { setMeditationType: (value: string) =>
   };
 
   useEffect(() => {
-    setMeditationType(getRecommendedMeditation(choices));
-  }, [choices]);
+    setMeditationType?.(getRecommendedMeditation(choices));
+    returnAllTypes?.(getRecommendedMeditation(choices, true));
+  }, [choices, returnAllTypes]);
 
+  const Tag = header ? "h1" : "h3";
   return (
     <div className='feelings__container'>
-      <h3>How are you feeling?</h3>
-      <p>select up to 3 choices</p>
+      <Tag>How are you feeling?</Tag>
+      <p>select up to 3 emotions</p>
       <div className='feelings'>
         {feelings.map((f) => (
           <button
