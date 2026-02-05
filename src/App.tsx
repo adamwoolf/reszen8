@@ -28,8 +28,6 @@ import FloatingCTA from "./components/FloatingCTA";
 import Footer from "./components/Footer/Footer";
 import NotFound from "./pages/NotFound";
 import Basket from "./pages/Basket/Basket";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import UserManager from "./components/UserManager";
 import Publications from "./pages/Publications/Publications";
@@ -44,6 +42,8 @@ import { useAnalytics } from "./hooks/useAnalytics";
 import Toast from "./components/Toast/ToastContainer";
 import LocationManager from "./components/LocationManager/LocationManager";
 import LocationBlocked from "./pages/LocationBlocked/LocationBlocked";
+import SignupModal from "./components/SignupModal/SignupModal";
+import Insights from "./pages/Insights/Insights";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
@@ -132,9 +132,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </PageTransition>
       </main>
       <Footer />
+      <SignupModal />
       <FloatingCTA />
       <CookieBanner />
-      <ToastContainer aria-label={"toast"} position='bottom-right' autoClose={3000} />
     </div>
     // </ErrorBoundary>
   );
@@ -190,11 +190,21 @@ const AnimatedRoutes = () => {
         <Route
           path='/meditation-library'
           element={
-            <ProtectedRoute>
-              <Layout>
-                <DigitalLibrary />
-              </Layout>
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <Layout>
+              <DigitalLibrary />
+            </Layout>
+            // </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/insights'
+          element={
+            // <ProtectedRoute>
+            <Layout>
+              <Insights />
+            </Layout>
+            // </ProtectedRoute>
           }
         />
         <Route
@@ -271,11 +281,11 @@ const AnimatedRoutes = () => {
         <Route
           path='/articles'
           element={
-            <ProtectedRoute>
-              <Layout>
-                <Publications />
-              </Layout>
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <Layout>
+              <Publications />
+            </Layout>
+            // </ProtectedRoute>
           }
         />
         <Route

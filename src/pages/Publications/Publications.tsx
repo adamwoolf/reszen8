@@ -32,7 +32,7 @@ const Publications = () => {
       publications.filter((pub: Publication) => {
         const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
         return cats.includes(word);
-      })
+      }),
     );
 
     const isMobile = window.innerWidth < 768;
@@ -57,8 +57,8 @@ const Publications = () => {
       publications.filter(
         (pub: Publication) =>
           pub.content.toLowerCase().includes(query.toLowerCase()) ||
-          pub.title.toLowerCase().includes(query.toLowerCase())
-      )
+          pub.title.toLowerCase().includes(query.toLowerCase()),
+      ),
     );
   };
 
@@ -107,8 +107,8 @@ const Publications = () => {
       )}
 
       <div className='publication__grid'>
-        {displayPubs?.map((item) => (
-          <PublicationCard key={item.uid} item={item} />
+        {displayPubs?.map((item, index) => (
+          <PublicationCard index={index} key={item.uid} item={item} />
         ))}
       </div>
     </div>

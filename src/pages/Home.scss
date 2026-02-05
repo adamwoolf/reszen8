@@ -7,6 +7,8 @@
   justify-content: flex-start;
   align-items: center;
   padding: 2rem 0 0;
+  animation: fadeIn 700ms;
+  animation-fill-mode: both;
 }
 
 .mission-statement {
@@ -109,7 +111,10 @@
 }
 
 .feature-card.clickable {
-  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  transition:
+    all 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .feature-card.clickable:hover {
@@ -359,4 +364,14 @@
 
 .test-container {
   position: relative;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

@@ -10,6 +10,7 @@ import { useAuth as useAWSAuth } from "react-oidc-context";
 import MembershipCta from "./MembershipCta";
 import YearlyUpgrade from "./YearlyUpgrade";
 import { useDispatch, useSelector } from "react-redux";
+import Vimeo from "../../components/Vimeo/Vimeo";
 
 type MembershipTier = {
   id: string;
@@ -96,7 +97,6 @@ const Memberships: React.FC = () => {
         <h1>{content?.title}</h1>
         <h3>{content?.subtitle}</h3>
       </header>
-
       <div className='membership-grid'>
         {membershipTiers
           ?.sort((a: any, b: any) => a.order - b.order)
@@ -104,7 +104,8 @@ const Memberships: React.FC = () => {
             // Use the standard features for Digital Hub memberships and free trial
             const featuresToShow = tier.features;
             const isAdded = items.some((item) => item.product.id === tier.id);
-
+            const yearlyMonthPrice = tier.yearlyPrice?.toFixed(2) / 12;
+            const yearlyMonthPriceShort = Math.floor(yearlyMonthPrice * 100) / 100;
             return (
               <div
                 key={tier.id}
@@ -133,7 +134,12 @@ const Memberships: React.FC = () => {
                         {tier.billing !== "enquire" && yearlyUpgrade !== tier.id && (
                           <span className='billing'>/ {tier.billing}</span>
                         )}
-                        {yearlyUpgrade === tier.id && <span className='billing'>/ {tier.yearlyBilling}</span>}
+                        {yearlyUpgrade === tier.id && (
+                          <div className='billing__container'>
+                            <span className='billing'>/ {tier.yearlyBilling}</span>
+                            <span className='billing__breakdown'>£{yearlyMonthPriceShort} per month</span>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <h4 className='please-enquire'>{tier.billing}</h4>

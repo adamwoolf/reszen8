@@ -55,8 +55,14 @@
     color: orange;
     display: block;
     font-size: 0.7rem;
-    margin: 16px 0;
     float: right;
+
+    &-container {
+      float: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
   }
 
   &__options {

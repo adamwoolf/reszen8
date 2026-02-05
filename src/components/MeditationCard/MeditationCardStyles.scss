@@ -1,5 +1,5 @@
 .static-med {
-  border: 1px solid rgb(175, 128, 10) !important;
+  border: 2px solid rgb(175, 128, 10) !important;
   padding-bottom: 4px !important;
 }
 
@@ -7,4 +7,14 @@
   height: 50px;
   position: absolute;
   left: 25px;
+}
+
+.free-preview-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 8px;
+  background-color: orange !important;
+  border-bottom-right-radius: 5px;
+  color: var(--bg-color);
 }

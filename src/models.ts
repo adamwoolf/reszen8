@@ -39,6 +39,12 @@ export interface SavedItemsType {
   collections: SavedItem[];
 }
 
+interface activityItem {
+  id: string;
+  category: string;
+  duration?: number;
+  timeStamp: number;
+}
 export interface User {
   uid: string;
   email: string | null;
@@ -61,6 +67,12 @@ export interface User {
     marketing: boolean;
     essentials: boolean;
   };
+
+  activity?: {
+    meditations: activityItem[];
+    articles: activityItem[];
+    collections?: activityItem[];
+  };
 }
 
 export interface Meditation {
@@ -72,6 +84,7 @@ export interface Meditation {
   type: string;
   content: string;
   likes?: number;
+  category?: any[];
 }
 
 export interface Publication {

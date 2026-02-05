@@ -8,8 +8,6 @@ interface ToggleSwitchProps {
   disabled?: boolean;
   size?: "sm" | "md" | "lg"; // maps to CSS sizes
   id?: string;
-  immersiveMedsCount?: number;
-  voiceMedsCount?: number;
   noLabel?: boolean;
   onOffState?: boolean;
   className?: string;
@@ -22,8 +20,6 @@ export default function ToggleSwitch({
   disabled = false,
   size = "md",
   id,
-  immersiveMedsCount,
-  voiceMedsCount,
   noLabel,
   onOffState = false,
   className,
@@ -53,11 +49,7 @@ export default function ToggleSwitch({
 
   return (
     <div className={`toggle-container ${className}`}>
-      {!noLabel && (
-        <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
-          Voice<sup className='toggle-super-count'>{voiceMedsCount}</sup>
-        </span>
-      )}
+      {!noLabel && <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>Voice</span>}
       <button
         id={id}
         type='button'
@@ -75,11 +67,7 @@ export default function ToggleSwitch({
           <span className='toggle-knob' />
         </span>
       </button>
-      {!noLabel && (
-        <span className={!checked ? "toggle-label" : "toggle-label toggle-label--selected"}>
-          Immersive<sup className='toggle-super-count'>{immersiveMedsCount}</sup>
-        </span>
-      )}
+      {!noLabel && <span className={!checked ? "toggle-label" : "toggle-label toggle-label--selected"}>Immersive</span>}
     </div>
   );
 }

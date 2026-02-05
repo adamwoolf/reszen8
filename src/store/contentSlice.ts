@@ -38,6 +38,7 @@ export interface ContentState {
   collectionImages: CollectionImage[];
   locationAllowed: boolean;
   meditationThemes: any[];
+  showSignupModal: boolean;
 }
 
 export interface AudioObject {
@@ -62,6 +63,7 @@ const initialState: ContentState = {
   collectionImages: [],
   locationAllowed: true,
   meditationThemes: [],
+  showSignupModal: false,
 };
 
 export const contentSlice = createSlice({
@@ -129,6 +131,9 @@ export const contentSlice = createSlice({
     setLocationAllowed: (state, action) => {
       state.locationAllowed = action.payload;
     },
+    setShowSignupModal: (state, action) => {
+      state.showSignupModal = action.payload;
+    },
   },
 });
 
@@ -147,5 +152,6 @@ export const {
   deleteToast,
   setCollectionImages,
   setLocationAllowed,
+  setShowSignupModal,
 } = contentSlice.actions;
 export default contentSlice.reducer;

@@ -45,8 +45,6 @@ function getRecommendedMeditation(selectedFeelings = [], returnAll = false) {
     }
   });
 
-  console.log(scores);
-
   if (Object.keys(scores).length === 0) return "Mindfulness";
 
   const maxScore = Math.max(...Object.values(scores));

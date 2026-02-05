@@ -3,22 +3,14 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./Home.scss";
-import useContentful from "../hooks/useContentful";
-import { getHomePage } from "../contentful";
-import { marked } from "marked";
 import FreeForever from "../components/FreeForever/FreeForever";
-import Collections from "../components/Collections/Collections";
 import CollectionsCarousel from "../components/CollectionsCarousel/CollectionsCarousel";
-import { sendEmailSES } from "../store/apiUtils";
 import OnboardingHero from "../components/OnboardingHero/OnboardingHero";
-
+import LoadingScene from "../components/LoadingScene/LoadingScene";
+import { useSelector } from "react-redux";
+import { getStaticMeditations } from "../store/contentSelectors";
+import YourJourneyPanel from "../components/YourJourneyPanel/YourJourneyPanel";
 const features = [
-  // {
-  //   title: "Digital Meditation Library",
-  //   description:
-  //     "Listen to your saved meditations, read meditation guides and customise your journey. Meditations for all requirements, from simple relaxation to focused practice",
-  //   path: "/digital-library",
-  // },
   {
     title: "Articles",
     description:
@@ -36,19 +28,11 @@ const features = [
     description: "Listen to your saved meditations, read meditation guides and customise your journey",
     path: "/journey",
   },
-  // {
-  //   title: "7 Day Free Trial",
-  //   description:
-  //     "Start your journey to mindfulness with our risk-free trial. Get full access to all digital platform features for 7 days.",
-  //   path: "/memberships",
-  //   isTrial: true,
-  // },
 ];
 
 const Home: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const content = useContentful(getHomePage)?.content;
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -59,16 +43,22 @@ const Home: React.FC = () => {
     },
   };
 
+  const meditations = useSelector(getStaticMeditations);
+  console.log(meditations.length);
+
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
+  if (!meditations.length) return <LoadingScene />;
+
   return (
     <div className='home-page'>
       {/* <Drawing /> */}
       {!currentUser && <OnboardingHero />}
-      <FreeForever />
+      {!currentUser?.isGod && <FreeForever />}
+      <YourJourneyPanel />
       <CollectionsCarousel />
       <section className='features-section'>
         <h2 className='features-title'>Our Digital Meditation Product</h2>

@@ -26,6 +26,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-transition-group": "^4.4.12",
     "@types/uuid": "^10.0.0",
+    "@vimeo/player": "^2.30.2",
     "aws-amplify": "^6.15.5",
     "axios": "^1.9.0",
     "contentful": "^11.5.24",

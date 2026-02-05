@@ -7,7 +7,8 @@ import appStore from "../../assets/app-store.webp";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import SocialShare from "../SocialShare/SocialShare";
 import logo from "../../assets/logoNew.png";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setShowSignupModal } from "../../store/contentSlice";
 
 const ourContent = [
   { label: "Home", path: "/" },
@@ -18,8 +19,8 @@ const members = [
   { label: "Bespoke Meditation Generator", path: "/bespoke-meditation-generator" },
   { label: "Meditation Library", path: "/meditation-library" },
   { label: "Articles", path: "/articles" },
-  { label: "Your Journey", path: "/journey" },
-  { label: "Members Area", path: "/members" },
+  { label: "Your Journey", path: "/journey", triggerPopup: true },
+  { label: "Members Area", path: "/members", triggerPopup: true },
 ];
 
 const policiesContact = [
@@ -32,28 +33,31 @@ const FooterHero = () => {
   const { currentUser, signOutRedirect } = useAuth();
   const auth = useAwsAuth();
   const locationAllowed = useSelector((state) => state?.content?.locationAllowed);
+  const dispatch = useDispatch();
   const renderColumn = (array: [], memberRoutes = false) => {
-    if (memberRoutes && !currentUser)
-      return (
-        <div className='footer-hero__column-list'>
-          {array.map((item) => (
-            <button
-              key={item.label}
-              className='footer-hero__column-list-redirect'
-              onClick={() => auth.signinRedirect()}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      );
     return (
       <div className='footer-hero__column-list'>
-        {array.map((item) => (
-          <Link key={item.path} className='footer-hero__column-list-link' to={item.path}>
-            {item.label}
-          </Link>
-        ))}
+        {array.map((item) => {
+          // if (item.triggerPopup)
+          //   return (
+          //     <button
+          //       key={item.label}
+          //       className='footer-hero__column-list-redirect'
+          //       onClick={() => dispatch(setShowSignupModal(true))}
+          //     >
+          //       {item.label}
+          //     </button>
+          //   );
+          return (
+            <Link
+              key={item.path}
+              className='footer-hero__column-list-link'
+              to={item.triggerPopup && !currentUser ? "/memberships" : item.path}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
       </div>
     );
   };
@@ -73,11 +77,8 @@ const FooterHero = () => {
       <img className='footer-hero__logo' src={logo} />
       <div className='footer-hero__content'>
         <div className='footer-hero__column'>
-          <h3>Our Content</h3>
+          <h3>Site Pages</h3>
           {renderColumn(ourContent)}
-        </div>
-        <div className='footer-hero__column'>
-          <h3>Member Pages</h3>
           {renderColumn(members, true)}
         </div>
         <div className='footer-hero__column'>

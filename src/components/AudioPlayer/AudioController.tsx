@@ -7,13 +7,31 @@ import RadiatingWaves from "./Playing";
 import PlayPauseButton from "./PlayPauseIcon";
 import ThreeDotsLoader from "../ThreeDotsLoads";
 import { trackCTA } from "../../utils/analytics";
+import { FaLock } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { setShowSignupModal } from "../../store/contentSlice";
+import { useAuth } from "../../contexts/AuthContext";
+import { categoriser } from "../../Util";
 
-const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmersive?: boolean }) => {
+const AudioController = ({
+  audioUrl,
+  isImmersive,
+  locked = false,
+  contentType,
+  item,
+}: {
+  audioUrl: string;
+  isImmersive?: boolean;
+  locked?: boolean;
+  contentType?: string;
+  item?: any;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [duration, setDuration] = useState(0);
-
+  const dispatch = useDispatch();
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const { currentUser, updateUser, setCurrentUser } = useAuth();
 
   const { currentAudio, playing, play, pause, reset, loading, seek, currentTime } = usePlayer();
 
@@ -51,9 +69,16 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
   }, [audioUrl, isVisible]);
 
   const togglePlayPause = () => {
+    if (locked) {
+      dispatch(setShowSignupModal(true));
+      return;
+    }
     trackCTA(`PlayPause-${audioUrl}`);
     if (currentAudio === audioUrl && playing) pause();
-    else setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
+    else {
+      trackUserActivity();
+      setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
+    }
   };
 
   const isCurrent = currentAudio === audioUrl;
@@ -82,17 +107,43 @@ const AudioController = ({ audioUrl, isImmersive }: { audioUrl: string; isImmers
     return `${minutes}:${seconds}`;
   };
 
+  const trackUserActivity = () => {
+    if (!currentUser || !contentType) return;
+    const category = item?.category?.[0]?.category || categoriser(item.content)?.[0]?.category;
+
+    if (contentType === "meditations" && !item.collection) {
+      const userMeditations = currentUser?.activity?.meditations || [];
+      const meditationActivityArray = [...userMeditations, { id: item.uid, category, duration, timeStamp: Date.now() }];
+      updateUser(currentUser?.uid, { activity: { ...currentUser?.activity, meditations: meditationActivityArray } });
+      setCurrentUser({ ...currentUser, activity: { ...currentUser?.activity, meditations: meditationActivityArray } });
+    }
+
+    if (contentType === "meditations" && item.collection) {
+      const userCollections = currentUser?.activity?.collections || [];
+      const meditationActivityArray = [...userCollections, { id: item.uid, category, duration, timeStamp: Date.now() }];
+      updateUser(currentUser?.uid, {
+        activity: { ...currentUser?.activity, collections: meditationActivityArray },
+      });
+      setCurrentUser({ ...currentUser, activity: { ...currentUser?.activity, collections: meditationActivityArray } });
+    }
+  };
+
   return (
     <div style={isLoading ? { pointerEvents: "none" } : {}} className='audio-player__inner' ref={cardRef}>
-      <button className='audio-btn-wrapper' onClick={togglePlayPause} disabled={isLoading}>
+      <button className={"audio-btn-wrapper"} onClick={togglePlayPause} disabled={isLoading}>
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
             {isCurrent && playing && <RadiatingWaves />}
             {countdown > 0 && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
             {(isLoading || (currentAudio === audioUrl && loading)) && <ThreeDotsLoader />}
-            {!isLoading && (
+            {!isLoading && !locked && (
               <div className='audio-player__icons'>
                 <PlayPauseButton isPlaying={playing && isCurrent} />
+              </div>
+            )}
+            {locked && (
+              <div className='audio-player__icons'>
+                <FaLock />
               </div>
             )}
           </div>

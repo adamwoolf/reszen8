@@ -122,18 +122,20 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
         <div className='collections__cards' ref={carouselRef}>
           {images.map((col) => {
             return (
-              <button onClick={() => clickHandler(col)} className='collections__card' key={col.collectionName}>
-                <h3>{col.collectionName}</h3>
-                <img
-                  className={
-                    selected === col.collectionName
-                      ? "collections__card-image collections__card-image--active"
-                      : "collections__card-image"
-                  }
-                  src={col.image.url}
-                  alt={col.collectionName}
-                />
-              </button>
+              <div className='collections__card-container'>
+                <button onClick={() => clickHandler(col)} className='collections__card' key={col.collectionName}>
+                  <img
+                    className={
+                      selected === col.collectionName
+                        ? "collections__card-image collections__card-image--active"
+                        : "collections__card-image"
+                    }
+                    src={col.image.url}
+                    alt={col.collectionName}
+                  />
+                </button>
+                <h3 className='collections__card-title'>{col.collectionName}</h3>
+              </div>
             );
           })}
         </div>
@@ -151,13 +153,15 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
       {displayCol.length > 0 && (
         <div className='collections__selected'>
           <h3 className='collections__selected-heading'>{selected}</h3>
-          <button
-            disabled={isAdded}
-            onClick={handleAddToJourney}
-            className={!isAdded ? "collections__save-cta" : "collections__save-cta collections__save-cta--disabled"}
-          >
-            {isAdded ? "Added to Your Journey" : "Add to Your Journey"}
-          </button>
+          {currentUser && (
+            <button
+              disabled={isAdded}
+              onClick={handleAddToJourney}
+              className={!isAdded ? "collections__save-cta" : "collections__save-cta collections__save-cta--disabled"}
+            >
+              {isAdded ? "Added to Your Journey" : "Add to Your Journey"}
+            </button>
+          )}
           <button className='collections__close-cta' onClick={() => clickHandler("")}>
             close collection
           </button>

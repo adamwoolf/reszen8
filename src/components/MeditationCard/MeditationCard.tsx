@@ -39,7 +39,7 @@ const MeditationCard = ({
         const [entry] = entries;
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.25 }
+      { threshold: 0.25 },
     );
 
     if (cardRef.current) observer.observe(cardRef.current);
@@ -84,6 +84,8 @@ const MeditationCard = ({
     }
   }, [isVisible, item.audioUrl, item.duration, item.immersive, item.title, item.uid]);
 
+  const lockPlayback = i > 0 && !currentUser;
+
   return (
     <article
       ref={cardRef}
@@ -94,20 +96,33 @@ const MeditationCard = ({
       }
     >
       <div className='publication__card-content'>
-        <div className='publication__card-inner'>
+        <div
+          className={
+            lockPlayback && !currentUser
+              ? "publication__card-inner"
+              : "publication__card-inner publication__card-inner--with-badge"
+          }
+        >
+          {!lockPlayback && !currentUser && <div className='free-preview-badge'>Free Preview</div>}
           <span className='publication__card-title'>{customTitle || item.title}</span>
           {item.immersive && <img alt='immersive-audio-icon' className='immersive-icon' src={immersiveLogo} />}
-          {/* <span style={{ position: "absolute", top: 80, right: 14 }}>
-            <FaCheckCircle color='green' size={17} />
-          </span> */}
+
           <div className='publication__card-divider' />
 
           {item.type && <p className='publication__card-meditation-type'>Meditation Type: {item.type}</p>}
           {item.style && <p className='publication__card-meditation-type'>Meditation Style: {item.style}</p>}
         </div>
         <div className='publication__card-inner'>
-          {item.audioUrl && <AudioPlayer audioUrl={item.audioUrl} isImmersive={item.immersive} />}
-          {!isCollection && (
+          {item.audioUrl && (
+            <AudioPlayer
+              contentType='meditations'
+              locked={lockPlayback}
+              audioUrl={item.audioUrl}
+              isImmersive={item.immersive}
+              item={item}
+            />
+          )}
+          {!isCollection && currentUser && (
             <button
               disabled={hasBeenSaved}
               onClick={() => {
@@ -125,7 +140,7 @@ const MeditationCard = ({
             <Icon type={item.category[0].category} />
           </div>
         )}
-        {currentUser && showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
+        {showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
       </div>
       {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
         <div

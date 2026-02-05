@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./OnboardingHeroStyles.scss";
 import Consult8 from "../Consult8/Consult8";
-import MembershipCta from "../../pages/Memberships/MembershipCta";
 import NewUserPlanPurchaseCta from "../../pages/Memberships/NewUserPlanPurchaseCta";
 import Icon, { getIcon } from "../Icon/Icon";
 import { useSelector } from "react-redux";

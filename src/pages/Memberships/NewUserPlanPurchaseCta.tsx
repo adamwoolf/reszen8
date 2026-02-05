@@ -10,7 +10,7 @@ const NewUserPlanPurchaseCta = ({
   label,
 }: {
   homepage?: boolean;
-  yearlySelected: string;
+  yearlySelected?: string;
   tier?: any;
   label?: string;
 }) => {

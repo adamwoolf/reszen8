@@ -1,45 +1,42 @@
 // server.js
-console.log('Server starting...');
-
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const chatRoutes = require('./routes/chat');
-
-dotenv.config();
+import express from "express";
+import fetch from "node-fetch"; // or use native fetch if Node >= 18
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// CORS configuration
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
+// Your Vimeo personal access token
+const VIMEO_ACCESS_TOKEN = "d1a6be3bac13809016eeae501f79ee1e";
 
-// Middleware
-app.use(cors(corsOptions));
-app.use(express.json());
+if (!VIMEO_ACCESS_TOKEN) {
+  console.error("❌ Please set the VIMEO_ACCESS_TOKEN environment variable!");
+  process.exit(1);
+}
 
-// Routes
-app.use('/api/chat', chatRoutes);
+// Endpoint to get your videos
+app.get("/videos", async (req, res) => {
+  try {
+    const response = await fetch("https://api.vimeo.com/me/videos", {
+      headers: {
+        Authorization: `Bearer ${VIMEO_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-// Basic test endpoint
-app.get('/api/test', (req, res) => {
-  console.log('Test endpoint hit');
-  res.json({ message: 'Basic test endpoint is working!' });
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).send({ error: errorText });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error("Error fetching videos:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
-
-const PORT = process.env.PORT || 3002;
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
-
-console.log('Server setup complete');

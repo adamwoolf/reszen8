@@ -37,7 +37,7 @@ const AccountStatus = ({ user }: { user: User }) => {
   const { days, hours, minutes, seconds } = remaining;
   const hasTime = days + hours + minutes + seconds;
 
-  if (!user?.subscription || user?.subscription?.status === "canceled") return null;
+  // if (!user?.subscription || user?.subscription?.status === "canceled") return null;
   if (user?.subscription?.subscription === "free-trial")
     return (
       <>

@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useCallback, useMemo } from 'react';
-import { toast } from 'react-toastify';
+import React, { createContext, useContext, useReducer, ReactNode, useCallback, useMemo } from "react";
 
 type Product = {
   id: string;
@@ -23,26 +22,29 @@ type BasketState = {
 };
 
 type BasketAction =
-  | { type: 'ADD_ITEM'; payload: Product; quantity?: number; size?: string }
-  | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
-  | { type: 'CLEAR_BASKET' };
+  | { type: "ADD_ITEM"; payload: Product; quantity?: number; size?: string }
+  | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
+  | { type: "CLEAR_BASKET" };
 
-const BasketContext = createContext<{
-  basket: BasketState;
-  addToBasket: (product: Product, quantity?: number, size?: string) => void;
-  removeFromBasket: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearBasket: () => void;
-  getItemCount: () => number;
-  getTotalPrice: () => number;
-} | undefined>(undefined);
+const BasketContext = createContext<
+  | {
+      basket: BasketState;
+      addToBasket: (product: Product, quantity?: number, size?: string) => void;
+      removeFromBasket: (id: string) => void;
+      updateQuantity: (id: string, quantity: number) => void;
+      clearBasket: () => void;
+      getItemCount: () => number;
+      getTotalPrice: () => number;
+    }
+  | undefined
+>(undefined);
 
 const basketReducer = (state: BasketState, action: BasketAction): BasketState => {
   switch (action.type) {
-    case 'ADD_ITEM': {
+    case "ADD_ITEM": {
       const existingItemIndex = state.items.findIndex(
-        (item) => item.product.id === action.payload.id && item.size === action.size
+        (item) => item.product.id === action.payload.id && item.size === action.size,
       );
 
       if (existingItemIndex >= 0) {
@@ -60,7 +62,6 @@ const basketReducer = (state: BasketState, action: BasketAction): BasketState =>
         };
       }
 
-
       const newItem = {
         product: action.payload,
         quantity: action.quantity || 1,
@@ -75,7 +76,7 @@ const basketReducer = (state: BasketState, action: BasketAction): BasketState =>
       };
     }
 
-    case 'REMOVE_ITEM': {
+    case "REMOVE_ITEM": {
       const itemToRemove = state.items.find((_, index) => index === parseInt(action.payload));
       if (!itemToRemove) return state;
 
@@ -86,7 +87,7 @@ const basketReducer = (state: BasketState, action: BasketAction): BasketState =>
         totalPrice: state.totalPrice - itemToRemove.product.price * itemToRemove.quantity,
       };
     }
-    case 'UPDATE_QUANTITY': {
+    case "UPDATE_QUANTITY": {
       const itemToUpdate = state.items[parseInt(action.payload.id)];
       if (!itemToUpdate) return state;
 
@@ -104,7 +105,7 @@ const basketReducer = (state: BasketState, action: BasketAction): BasketState =>
         totalPrice: state.totalPrice + quantityDiff * itemToUpdate.product.price,
       };
     }
-    case 'CLEAR_BASKET':
+    case "CLEAR_BASKET":
       return {
         items: [],
         itemCount: 0,
@@ -123,21 +124,21 @@ export const BasketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   const addToBasket = useCallback((product: Product, quantity: number = 1, size?: string) => {
-    dispatch({ type: 'ADD_ITEM', payload: product, quantity, size });
+    dispatch({ type: "ADD_ITEM", payload: product, quantity, size });
     toast.success(`${product.name} added to basket!`);
   }, []);
 
   const removeFromBasket = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: id });
+    dispatch({ type: "REMOVE_ITEM", payload: id });
   }, []);
 
   const updateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity < 1) return;
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   }, []);
 
   const clearBasket = useCallback(() => {
-    dispatch({ type: 'CLEAR_BASKET' });
+    dispatch({ type: "CLEAR_BASKET" });
   }, []);
 
   const getItemCount = useCallback(() => {
@@ -158,7 +159,7 @@ export const BasketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       getItemCount,
       getTotalPrice,
     }),
-    [basket, addToBasket, removeFromBasket, updateQuantity, clearBasket, getItemCount, getTotalPrice]
+    [basket, addToBasket, removeFromBasket, updateQuantity, clearBasket, getItemCount, getTotalPrice],
   );
 
   return <BasketContext.Provider value={contextValue}>{children}</BasketContext.Provider>;
@@ -167,7 +168,7 @@ export const BasketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 export const useBasket = () => {
   const context = useContext(BasketContext);
   if (context === undefined) {
-    throw new Error('useBasket must be used within a BasketProvider');
+    throw new Error("useBasket must be used within a BasketProvider");
   }
   return context;
 };

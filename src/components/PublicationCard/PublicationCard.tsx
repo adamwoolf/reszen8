@@ -7,9 +7,9 @@ import { marked } from "marked";
 import Icon from "../Icon/Icon";
 import { FaVolumeUp } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { createToast } from "../../store/contentSlice";
+import { createToast, setShowSignupModal } from "../../store/contentSlice";
 
-const PublicationCard = ({ item, showLike = true, onClose }) => {
+const PublicationCard = ({ item, showLike = true, onClose, index }: { index: number }) => {
   const { category } = item;
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser, updateUser } = useAuth();
@@ -55,29 +55,71 @@ const PublicationCard = ({ item, showLike = true, onClose }) => {
         save to Your Journey
       </button>
     );
+
+  const lockCard = index > 0 && !currentUser;
+
+  const onCardClick = () => {
+    onClose?.();
+    if (currentUser) {
+      const userArticles = currentUser?.activity?.articles || [];
+      const articleActivityArray = [
+        ...userArticles,
+        { id: item.uid, category: item.category[0].category, timeStamp: Date.now() },
+      ];
+      updateUser(currentUser?.uid, { activity: { ...currentUser.activity, articles: articleActivityArray } });
+      setCurrentUser({ ...currentUser, activity: { ...currentUser?.activity, articles: articleActivityArray } });
+    }
+  };
   return (
     <article key={item.uid} className='feature-card clickable publication__card'>
       {showLike && currentUser && <LikeCta item={item} id={item.uid} />}
 
-      <Link onClick={() => onClose?.()} className='publication__card-content' to={`/articles/${item.title}`}>
-        <div className='publication__card-inner'>
-          <div className='publication__card-icon-container'>
-            <Icon type={category[0].category} />
-          </div>
-          <span className='publication__card-title'>{item.title}</span>
-          {currentUser && item.audioUrl && (
-            <span className='publication__card-audio-icon'>
-              <FaVolumeUp color='orange' />
-            </span>
-          )}
+      {!lockCard ? (
+        <Link onClick={onCardClick} className='publication__card-content' to={`/articles/${item.title}`}>
+          {!currentUser && <span className='free-preview-badge'>Free Preview</span>}
+          <div
+            className={
+              currentUser ? "publication__card-inner" : "publication__card-inner publication__card-inner--with-badge"
+            }
+          >
+            <div className='publication__card-icon-container'>
+              <Icon type={category[0].category} />
+            </div>
+            <span className='publication__card-title'>{item.title}</span>
+            {currentUser && item.audioUrl && (
+              <span className='publication__card-audio-icon'>
+                <FaVolumeUp color='orange' />
+              </span>
+            )}
 
-          <div className='publication__card-divider' />
-          <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
+            <div className='publication__card-divider' />
+            <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
+          </div>
+          <span className='publication__card-readmore'> read more...</span>
+        </Link>
+      ) : (
+        <div
+          onClick={() => dispatch(setShowSignupModal(true))}
+          style={{ cursor: "pointer" }}
+          className='publication__card-content'
+        >
+          <div className='publication__card-inner'>
+            <div className='publication__card-icon-container'>
+              <Icon type={category[0].category} />
+            </div>
+            <span className='publication__card-title'>{item.title}</span>
+            {currentUser && item.audioUrl && (
+              <span className='publication__card-audio-icon'>
+                <FaVolumeUp color='orange' />
+              </span>
+            )}
+
+            <div className='publication__card-divider' />
+            <span dangerouslySetInnerHTML={{ __html: marked(truncatedBody) }} />
+          </div>
         </div>
-        <span className='publication__card-readmore'> read more...</span>
-        {/* {currentUser && fields.audioFile && <AudioPlayer audioUrl={fields.audioFile.fields.file.url} />} */}
-      </Link>
-      {currentUser && showSaveUI()}
+      )}
+      {currentUser && !lockCard && showSaveUI()}
     </article>
   );
 };

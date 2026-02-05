@@ -101,8 +101,24 @@ const Navbar: React.FC = () => {
                     </NavLink>
                   </li>
                   <li>
+                    <NavLink to='/meditation-library' className={getNavLinkClass}>
+                      Meditations
+                    </NavLink>
+                  </li>
+                  <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/insights' className={getNavLinkClass}>
+                      RESZEN8 Insights
+                    </NavLink>
+                  </li>
+
+                  <li>
+                    <NavLink to='/articles' className={getNavLinkClass}>
+                      Articles
                     </NavLink>
                   </li>
 
@@ -114,21 +130,6 @@ const Navbar: React.FC = () => {
 
                   {(currentUser?.subscription?.active || currentUser?.subscription?.isActiveSub) && (
                     <>
-                      {currentUser?.subscription.subId !== "reszen8-generate" && (
-                        <li>
-                          <NavLink to='/articles' className={getNavLinkClass}>
-                            Articles <span className='nav-link__count'> ({articles?.length ?? ""})</span>
-                          </NavLink>
-                        </li>
-                      )}
-
-                      {currentUser?.subscription.subId !== "reszen8-generate" && (
-                        <li>
-                          <NavLink to='/meditation-library' className={getNavLinkClass}>
-                            Meditations <span className='nav-link__count'> ({staticMeds?.length ?? ""})</span>
-                          </NavLink>
-                        </li>
-                      )}
                       <li>
                         <NavLink to='/journey' className={getNavLinkClass}>
                           Your Journey <span className='nav-link__count'> ({dashboardTotal ?? ""})</span>

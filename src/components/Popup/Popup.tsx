@@ -8,12 +8,14 @@ const Popup = ({
   children,
   fitContent,
   showClose = true,
+  maxWidth,
 }: {
   fitContent?: boolean;
   show: boolean;
   onClose?: () => void;
   children: React.ReactNode;
   showClose?: boolean;
+  maxWidth?: number;
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
@@ -36,7 +38,7 @@ const Popup = ({
       if (!modal) return;
 
       const focusableElements = modal.querySelectorAll<HTMLElement>(
-        'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
 
       const firstElement = focusableElements[0];
@@ -91,7 +93,7 @@ const Popup = ({
   return ReactDOM.createPortal(
     <>
       <div
-        style={fitContent ? { height: "auto", paddingBottom: showClose ? 70 : 30 } : {}}
+        style={fitContent ? { height: "auto", maxWidth, paddingBottom: showClose ? 70 : 30 } : {}}
         onAnimationEnd={handleAnimationEnd}
         className={!leaving ? "popup" : "popup popup--leaving"}
         ref={modalRef}
@@ -106,7 +108,7 @@ const Popup = ({
 
       <div className='popup__backdrop' />
     </>,
-    rootElement
+    rootElement,
   );
 };
 

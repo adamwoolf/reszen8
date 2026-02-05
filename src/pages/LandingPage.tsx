@@ -18,8 +18,9 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     const hasQuery = search.includes("landing=true");
-    console.log(hasQuery);
-    const shouldHide = !!sessionStorage.getItem("hideLandingpage") || hasQuery;
+    const isNotHomepage = location.pathname.length > 1;
+    console.log(isNotHomepage);
+    const shouldHide = !!sessionStorage.getItem("hideLandingpage") || hasQuery || isNotHomepage;
     setShow(!shouldHide);
     dispatch(setLandingPageActive(!shouldHide));
   }, []);

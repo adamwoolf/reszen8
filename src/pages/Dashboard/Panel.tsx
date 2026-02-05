@@ -108,14 +108,12 @@ const Panel = ({
                       <div>
                         <h3>{item.title}</h3>
                         <div>
-                          {/* {item.createdAt && (
-                  <span className='flex items-center'>{new Date(item.createdAt).toLocaleDateString()}</span>
-                )} */}
                           {item.style && <p>{item.style}</p>}
                           {item.willDelete && <p>This item will be deleted: {getDeletionCountdown(item.willDelete)}</p>}
                           {item.createdAt && !item.staticMed && dataKey !== "publications" && (
                             <span className='dashboard__date'>
-                              Created: {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
+                              Created:{" "}
+                              {isToday(item.createdAt) ? "Today" : new Date(item.createdAt).toDateString()}{" "}
                             </span>
                           )}
                         </div>
@@ -129,7 +127,12 @@ const Panel = ({
                       <div className='dashboard-buttons'>
                         {item.audioUrl && dataKey !== "publications" && (
                           <div className='dashboard__audio'>
-                            <AudioPlayer isImmersive={item.immersive} audioUrl={item.audioUrl} />
+                            <AudioPlayer
+                              contentType='meditations'
+                              isImmersive={item.immersive}
+                              audioUrl={item.audioUrl}
+                              item={item}
+                            />
                           </div>
                         )}
                         {dataKey === "publications" && (

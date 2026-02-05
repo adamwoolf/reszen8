@@ -132,9 +132,12 @@ const CreditTopup = () => {
               );
             })}
           </div>
-          <span className='topup__disclaimer'>
-            <sup>*</sup>when compared to 20 token topup
-          </span>
+          <div className='topup__disclaimer-container'>
+            <span className='topup__disclaimer'>
+              <sup>*</sup>when compared to 20 token topup
+            </span>
+            <span className='topup__disclaimer'>Voice only = 2 meditation tokens, Immersive = 3</span>
+          </div>
         </div>
       </Popup>
     </div>

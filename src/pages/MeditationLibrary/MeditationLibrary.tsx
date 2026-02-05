@@ -15,6 +15,7 @@ import Popup from "../../components/Popup/Popup";
 import Collections from "../../components/Collections/Collections";
 import { trackCTA } from "../../utils/analytics";
 import { createToast } from "../../store/contentSlice";
+import LoadingScene from "../../components/LoadingScene/LoadingScene";
 
 type TabType = "meditations" | "ebooks" | "publications";
 
@@ -54,7 +55,7 @@ const DigitalLibrary = () => {
           const cats = pub.category.map((cat) => cat.category.replace(/\s+/g, ""));
           return cats[0].toLowerCase() === word.toLowerCase();
         })
-        .filter((med) => filterByImmersive(med, ImmersiveMeds))
+        .filter((med) => filterByImmersive(med, ImmersiveMeds)),
     );
 
     if (resultsContainer?.current) {
@@ -74,9 +75,9 @@ const DigitalLibrary = () => {
         .filter(
           (pub: Meditation) =>
             pub.content?.toLowerCase().includes(query.toLowerCase()) ||
-            pub.title?.toLowerCase().includes(query.toLowerCase())
+            pub.title?.toLowerCase().includes(query.toLowerCase()),
         )
-        .filter((med) => filterByImmersive(med, ImmersiveMeds))
+        .filter((med) => filterByImmersive(med, ImmersiveMeds)),
     );
   };
 
@@ -124,8 +125,6 @@ const DigitalLibrary = () => {
       <div className='publications__filters'>
         <div className='meditation-library__toggle-container'>
           <ToggleSwitch
-            immersiveMedsCount={libraryMeditations.filter((m) => m.immersive).length}
-            voiceMedsCount={libraryMeditations.filter((m) => !m.immersive).length}
             checked={ImmersiveMeds}
             onChange={(e) => {
               trackCTA(`Immersive Toggle value: ${e}`);
@@ -157,9 +156,11 @@ const DigitalLibrary = () => {
           searchText={searchText}
         />
 
-        <span ref={resultsContainer} className='meditation-library__search-results'>
-          Showing {displayMeds.length} of {libraryMeditations?.length}
-        </span>
+        {libraryMeditations.length > 0 && (
+          <span ref={resultsContainer} className='meditation-library__search-results'>
+            Showing {displayMeds.length} of {libraryMeditations?.length}
+          </span>
+        )}
         {search.length > 0 ||
           (activeFilter && (
             <button className='publications__filter' onClick={showAll}>
@@ -174,6 +175,9 @@ const DigitalLibrary = () => {
       </div>
     );
   };
+
+  if (!libraryMeditations.length) return <LoadingScene />;
+
   return (
     <div className='dashboard-container'>
       <h1 className='page-header'>Meditation Library</h1>
