@@ -1,19 +1,21 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "./YourJourneyPanelStyles.scss";
 import logo from "../../assets/logoNew.png";
+import collections from "../../assets/collections.png";
+import articles from "../../assets/articles.png";
 import { useAuth } from "../../contexts/AuthContext";
 import Icon from "../Icon/Icon";
-import { FaFire, FaFireAlt } from "react-icons/fa";
+import { FaFire } from "react-icons/fa";
 
 const KIPS = [
   { title: "Meditations", activity: "Meditations", image: logo },
-  { title: "Articles", activity: "Articles" },
-  { title: "Collection Meditations", activity: "Collections" },
+  { title: "Articles", activity: "Articles", image: articles },
+  { title: "Collection Meditations", activity: "Collections", image: collections },
 ];
 
 const YourJourneyPanel = () => {
   const { currentUser } = useAuth();
-
+  const [statsToShow, setStatsToShow] = useState(4);
   if (!currentUser || !currentUser?.isGod) return null;
 
   const activity = currentUser?.activity || { meditations: [], collections: [] };
@@ -175,6 +177,8 @@ const YourJourneyPanel = () => {
             {uniqueCatsToList
               ?.map((c) => ({ title: c, percentage: getCatPercentage(c) }))
               .sort((a, b) => b.percentage - a.percentage)
+              .slice(0, statsToShow)
+
               ?.map((cat) => (
                 <li>
                   <div className='journey__stats-list-item'>
@@ -190,6 +194,12 @@ const YourJourneyPanel = () => {
                 </li>
               ))}
           </ul>
+          <button
+            className='journey__stats-cta'
+            onClick={() => setStatsToShow(statsToShow === 4 ? uniqueCatsToList.length - 1 : 4)}
+          >
+            {statsToShow !== 4 ? "show less" : "show more"}
+          </button>
         </div>
       </div>
     </div>
