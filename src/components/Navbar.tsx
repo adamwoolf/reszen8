@@ -16,7 +16,7 @@ import user from "../assets/logoNew.png";
 import ShareCta from "./ShareCta/ShareCta";
 const Navbar: React.FC = () => {
   const auth = useAwsAuth();
-  const { currentUser, setCurrentUser, signOutRedirect, loading } = useAuth();
+  const { currentUser, loading, isEnterprise } = useAuth();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,23 +63,17 @@ const Navbar: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const newTrial = {
-    duration: 7,
-    hasCompletedTrial: false,
-    isActiveSub: true,
-    startDate: Date.now(),
-    subscription: "free-trial",
-    meditationCredits: 8,
-  };
-
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ` : "";
-  if (loading || landingPageActive) return null;
+  if (loading || landingPageActive || (!currentUser && isEnterprise)) return null;
   return (
     <div className='appbar-wrapper'>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
         <div className='navbar-container'>
           <div className='nav-brand'>
-            <NavLink to='/'>RESZEN8</NavLink>
+            <NavLink className='navbar-logo' to='/'>
+              <span className='navbar-brand'>RESZEN8</span>
+              <span className='navbar-tag'>Meditation for Modern Life</span>
+            </NavLink>
           </div>
           {locationAllowed && (
             <>

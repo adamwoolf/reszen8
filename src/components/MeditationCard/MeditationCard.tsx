@@ -7,7 +7,9 @@ import "./MeditationCardStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
 import immersiveLogo from "../../assets/icons/immersiveAudio.png";
 import { trackCTA } from "../../utils/analytics";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaShareAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { createToast } from "../../store/contentSlice";
 
 const INTRO_BUFFER = 6; // 6 seconds ambient intro
 
@@ -31,7 +33,7 @@ const MeditationCard = ({
   const { currentUser } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLElement | null>(null);
-
+  const dispatch = useDispatch();
   // Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -86,6 +88,46 @@ const MeditationCard = ({
 
   const lockPlayback = i > 0 && !currentUser;
 
+  function copyCurrentUrlToClipboard() {
+    const encodedTitle = encodeURI(item.title);
+    const url = `https://reszen8.com/meditation-library/${encodedTitle}`;
+
+    // Use the modern Clipboard API if available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          console.log("URL copied to clipboard:", url);
+        })
+        .catch((err) => {
+          console.error("Failed to copy URL:", err);
+        });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed"; // avoid scrolling to bottom
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const success = document.execCommand("copy");
+        console.log(success ? "URL copied to clipboard" : "Copy failed");
+      } catch (err) {
+        console.error("Fallback copy failed:", err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+  }
+
+  const handleShareClick = () => {
+    copyCurrentUrlToClipboard();
+    dispatch(createToast({ text: `Copied like to ${item.title}`, type: "success" }));
+  };
+
   return (
     <article
       ref={cardRef}
@@ -122,6 +164,9 @@ const MeditationCard = ({
               item={item}
             />
           )}
+          <button onClick={handleShareClick} className='meditation-share-cta'>
+            <FaShareAlt />
+          </button>
           {!isCollection && currentUser && (
             <button
               disabled={hasBeenSaved}

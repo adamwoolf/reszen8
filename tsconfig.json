@@ -12,6 +12,6 @@
     "outDir": "dist", // ✅ Output directory
     "noEmit": true // ✅ Prevent emitting if using Vite
   },
-  "include": ["src"], // ✅ Only include your source
+  "include": ["src", "public/iframeEmbed.js"], // ✅ Only include your source
   "exclude": ["dist", "node_modules"] // ✅ Avoid re-compiling output
 }

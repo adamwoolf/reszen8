@@ -2,8 +2,10 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo } 
 import { User } from "../models";
 import { useAuth as useAwsAuth } from "react-oidc-context";
 import { AWS_DB_ENDPOINT } from "../constants";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
+import { getUser } from "../store/apiUtils";
+import { TENANT_CONFIG } from "../tentantConfig";
 
 interface UserUpdates {
   firstName?: string;
@@ -12,6 +14,7 @@ interface UserUpdates {
   savedItems?: unknown;
   basket?: unknown;
   subscription?: Partial<User["subscription"]>;
+  activity?: unknown;
   [key: string]: unknown;
 }
 
@@ -23,6 +26,7 @@ interface AuthContextType {
   clearError: () => void;
   updateUser: (id: string, update: UserUpdates) => Promise<User | null>;
   signOutRedirect: () => void;
+  isEnterprise: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +38,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const dispatch = useDispatch();
   const awsAuth = useAwsAuth();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [initialized, setInitialized] = useState(false); // Track if initial auth check is complete
@@ -41,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const subscriptionTiers = useSelector((state) => state.content.membershipTiers);
   const clearError = useCallback(() => setError(null), []);
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
-
+  const [isEnterprise, setIsEnterprise] = useState(false);
   // Clear storage when returning from logout
   useEffect(() => {
     const loggingOut = sessionStorage.getItem("logging_out");
@@ -73,9 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const res = await fetch(`${AWS_DB_ENDPOINT}/GetUser?uid=${awsAuth.user.profile.sub}`);
+
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
         setCurrentUser(data);
+        console.log(data);
       } catch (err) {
         setCurrentUser(null);
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch user";
@@ -111,7 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       if (planId && user && (selectedPlan || isTrial)) {
-        console.log("HERE", planId);
         checkoutNewUserPlan(user, selectedPlan, selectedSubData, isTrial);
         sessionStorage.removeItem("pendingPlan");
       }
@@ -146,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user: CognitoUserProfile,
     selectedPlan: SubscriptionPlan,
     selectedSubData: SubscriptionData,
-    trialSignup: boolean
+    trialSignup: boolean,
   ) => {
     if (trialSignup) {
       const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
@@ -241,9 +247,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearError,
       updateUser,
       signOutRedirect,
+      isEnterprise,
     }),
-    [currentUser, loading, error, clearError, updateUser, signOutRedirect]
+    [currentUser, loading, error, clearError, updateUser, signOutRedirect, isEnterprise],
   );
+
+  function decodeJWT(token: string) {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    );
+    return JSON.parse(jsonPayload);
+  }
+
+  function getTenantFromQuery(): string | null {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("tenant");
+  }
+
+  // Enterprise Login
+  useEffect(() => {
+    console.log("hello");
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.origin.includes("stripe")) return;
+      const tenant = getTenantFromQuery() || window.Reszen8Config.tenant; // read on mount
+
+      const config = TENANT_CONFIG[tenant];
+      if (Object.values(config).length) setIsEnterprise(true);
+
+      if (event.data?.type === "AUTH_TOKEN") {
+        if (!config.userLogin) return;
+        const decoded = decodeJWT(event.data.token);
+        const user = await getUser(decoded.uid);
+        if (user) {
+          setCurrentUser(user);
+        }
+        // TODO:
+        // 1. Store token in memory / context
+        // 2. Mark user as authenticatedp
+        // 3. Skip login screen
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    window.parent.postMessage({ type: "IFRAME_READY" }, "*");
+  }, []);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -15,10 +15,15 @@ type PlayerContextType = {
 
 const PlayerContext = createContext<PlayerContextType | null>(null);
 const FADE_BEFORE_END = 3; // seconds before the end to start fading
+const SAMPLE_DURATION = 30; // seconds
+const SAMPLE_FADE_DURATION = 3; // seconds
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const mainRef = useRef<HTMLAudioElement | null>(null);
   const backingRef = useRef<HTMLAudioElement | null>(null);
+  const sampleEndCallbackRef = useRef<(() => void) | null>(null);
+  const isSampleRef = useRef(false);
+  const fadeStartedRef = useRef(false);
 
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -54,42 +59,143 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       }
     }, stepTime);
   }, []);
+
   /** requestAnimationFrame loop to update currentTime smoothly */
+  // const startTimeUpdate = useCallback(() => {
+  //   let fadeTriggered = false;
+
+  //   const update = () => {
+  //     if (mainRef.current && !mainRef.current.paused) {
+  //       const current = mainRef.current.currentTime;
+  //       const total = mainRef.current.duration || 0;
+  //       setCurrentTime(current);
+  //       lastPositionRef.current.main = current;
+  //       lastPositionRef.current.backing = backingRef.current?.currentTime || 0;
+
+  //       // trigger fade a few seconds before end
+  //       if (!fadeTriggered && total > 0 && total - current <= FADE_BEFORE_END) {
+  //         fadeTriggered = true;
+  //         fadeOutBacking();
+  //       }
+
+  //       rafRef.current = requestAnimationFrame(update);
+  //     } else {
+  //       setPlaying(false);
+  //     }
+  //   };
+
+  //   rafRef.current = requestAnimationFrame(update);
+  //   return () => rafRef.current && cancelAnimationFrame(rafRef.current);
+  // }, [fadeOutBacking]);
   const startTimeUpdate = useCallback(() => {
-    let fadeTriggered = false;
-
     const update = () => {
-      if (mainRef.current && !mainRef.current.paused) {
-        const current = mainRef.current.currentTime;
-        const total = mainRef.current.duration || 0;
-        setCurrentTime(current);
-        lastPositionRef.current.main = current;
-        lastPositionRef.current.backing = backingRef.current?.currentTime || 0;
+      if (!mainRef.current || mainRef.current.paused) {
+        setPlaying(false);
+        return;
+      }
 
-        // trigger fade a few seconds before end
-        if (!fadeTriggered && total > 0 && total - current <= FADE_BEFORE_END) {
-          fadeTriggered = true;
-          fadeOutBacking();
+      const current = mainRef.current.currentTime;
+      setCurrentTime(current);
+
+      const totalDuration = mainRef.current.duration || 0;
+
+      // ====== Sample playback logic ======
+      if (isSampleRef.current) {
+        const remaining = SAMPLE_DURATION - current;
+
+        // start fade main + backing
+        if (!fadeStartedRef.current && remaining <= SAMPLE_FADE_DURATION) {
+          fadeStartedRef.current = true;
+
+          const audio = mainRef.current;
+          const steps = 20;
+          const stepTime = (SAMPLE_FADE_DURATION * 1000) / steps;
+          const startVolume = audio.volume;
+          let step = 0;
+
+          const fadeInterval = setInterval(() => {
+            step++;
+            audio.volume = Math.max(startVolume * (1 - step / steps), 0);
+
+            if (backingRef.current) {
+              backingRef.current.volume = Math.max(0.4 * (1 - step / steps), 0);
+            }
+
+            if (step >= steps) clearInterval(fadeInterval);
+          }, stepTime);
         }
 
-        rafRef.current = requestAnimationFrame(update);
-      } else {
-        setPlaying(false);
+        // hard stop at sample duration
+        if (current >= SAMPLE_DURATION) {
+          mainRef.current.pause();
+          mainRef.current.currentTime = 0;
+          mainRef.current.volume = 1;
+
+          if (backingRef.current) {
+            backingRef.current.pause();
+            backingRef.current.currentTime = 0;
+            backingRef.current.volume = 0.4; // reset
+          }
+
+          isSampleRef.current = false;
+          fadeStartedRef.current = false;
+
+          setPlaying(false);
+          setCurrentTime(0);
+
+          sampleEndCallbackRef.current?.();
+          return;
+        }
       }
+
+      // ====== Normal immersive fade logic ======
+      if (!isSampleRef.current && totalDuration > 0 && backingRef.current) {
+        const remaining = totalDuration - current;
+
+        // fade backing track before the end
+        if (!fadeStartedRef.current && remaining <= FADE_BEFORE_END) {
+          fadeStartedRef.current = true;
+
+          const steps = 20;
+          const stepTime = (FADE_BEFORE_END * 1000) / steps;
+          let step = 0;
+          const startVolume = backingRef.current.volume;
+
+          const fadeInterval = setInterval(() => {
+            step++;
+            backingRef.current!.volume = Math.max(startVolume * (1 - step / steps), 0);
+
+            if (step >= steps) clearInterval(fadeInterval);
+          }, stepTime);
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(update);
     };
 
     rafRef.current = requestAnimationFrame(update);
-    return () => rafRef.current && cancelAnimationFrame(rafRef.current);
-  }, [fadeOutBacking]);
+  }, []);
 
   const play = useCallback(
-    (mainUrl: string, backingUrl?: string, isImmersive = false) => {
+    (
+      mainUrl: string,
+      backingUrl?: string,
+      isImmersive = false,
+      options?: {
+        playSample?: boolean;
+        onSampleEnd?: () => void;
+      },
+    ) => {
       if (loading) return;
 
       // Stop previous audio
       mainRef.current?.pause();
       backingRef.current?.pause();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+      isSampleRef.current = !!options?.playSample;
+      sampleEndCallbackRef.current = options?.onSampleEnd ?? null;
+      fadeStartedRef.current = false;
 
       const mainAudio = new Audio(mainUrl);
       mainRef.current = mainAudio;
@@ -127,7 +233,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       setCurrentAudio(mainUrl);
       setPlaying(true);
     },
-    [currentAudio, fadeOutBacking, loading, startTimeUpdate]
+    [currentAudio, fadeOutBacking, loading, startTimeUpdate],
   );
 
   const pause = useCallback(() => {
@@ -175,7 +281,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       currentTime,
       duration,
     }),
-    [currentAudio, playing, loading, currentTime, duration, play, pause, reset, seek]
+    [currentAudio, playing, loading, currentTime, duration, play, pause, reset, seek],
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

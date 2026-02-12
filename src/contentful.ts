@@ -30,12 +30,18 @@ query AllContent {
   membershipPageCollection {
     items { sys { id } title subtitle }
   }
+  enterprisePageCollection {
+    items { sys { id } title subtitle description reasonsList bottomText ctaLabel optionsHeading }
+  }
   
   faqCollection {
     items { sys { id } question answer }
   }
   membershipTierCollection(order: order_ASC) {
     items { sys { id } title price billing description id features order freeTrial badge priceId medCredits yearlyPriceId yearlyPriceDescription yearlyMeditationCredits yearlyId yearlyBilling yearlyPrice  }
+  }
+  enterpriseOptionCollection(order: order_ASC) {
+    items { sys { id } title subtitle price billing description features order bestFor ctaLabel  }
   }
   privacyPolicyCollection {
     items { sys { id } text }
@@ -94,6 +100,10 @@ const getHomePage = async () => {
   const data = await getAllContent();
   return data.homepageCollection.items[0];
 };
+const getEnterprisePage = async () => {
+  const data = await getAllContent();
+  return data.enterprisePageCollection.items[0];
+};
 
 const getMembershipPage = async () => {
   const data = await getAllContent();
@@ -113,6 +123,10 @@ const getFAQs = async () => {
 const getMembershipTiers = async () => {
   const data = await getAllContent();
   return data.membershipTierCollection.items;
+};
+const getEnterpriseOptions = async () => {
+  const data = await getAllContent();
+  return data.enterpriseOptionCollection.items;
 };
 
 const getPrivacyPolicy = async () => {
@@ -148,4 +162,6 @@ export {
   getFAQs,
   getMembershipPage,
   getMembershipTiers,
+  getEnterpriseOptions,
+  getEnterprisePage,
 };

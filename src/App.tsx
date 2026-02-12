@@ -44,6 +44,9 @@ import LocationManager from "./components/LocationManager/LocationManager";
 import LocationBlocked from "./pages/LocationBlocked/LocationBlocked";
 import SignupModal from "./components/SignupModal/SignupModal";
 import Insights from "./pages/Insights/Insights";
+import MeditationPopup from "./components/MeditationPopup/MeditationPopup";
+import Enterprise from "./pages/Enterprise/Enterprise";
+import EnterpriseUserLogin from "./pages/Enterprise/EnterpriseUserLogin";
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
@@ -80,7 +83,7 @@ const UserRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { loading } = useAuth();
+  const { loading, currentUser, isEnterprise } = useAuth();
   const landingPageActive = useSelector((state) => state.content.landingPageActive);
   useAnalytics();
 
@@ -88,6 +91,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   if (loading) return <LoadingScene />;
   if (landingPageActive) return null;
+  // if (isEnterprise && !currentUser) return <EnterpriseUserLogin />;
   return (
     // <ErrorBoundary>
     <div className='app-container'>
@@ -135,6 +139,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SignupModal />
       <FloatingCTA />
       <CookieBanner />
+      <MeditationPopup />
     </div>
     // </ErrorBoundary>
   );
@@ -188,7 +193,25 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
+          path='/enterprise'
+          element={
+            <Layout>
+              <Enterprise />
+            </Layout>
+          }
+        />
+        <Route
           path='/meditation-library'
+          element={
+            // <ProtectedRoute>
+            <Layout>
+              <DigitalLibrary />
+            </Layout>
+            // </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/meditation-library/:title'
           element={
             // <ProtectedRoute>
             <Layout>

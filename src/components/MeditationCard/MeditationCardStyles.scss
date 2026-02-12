@@ -18,3 +18,15 @@
   border-bottom-right-radius: 5px;
   color: var(--bg-color);
 }
+
+.meditation-share-cta {
+  position: absolute;
+  top: 12px;
+  right: 0px;
+  background: none;
+  color: orange;
+
+  &:hover {
+    background: none;
+  }
+}

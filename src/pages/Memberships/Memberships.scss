@@ -5,6 +5,39 @@
   margin-top: 170px;
   padding: 0 2rem;
   color: #e0e0e0;
+  position: relative;
+}
+
+.memberships {
+  &__enterprise-badge {
+    background-color: orange;
+    width: fit-content;
+    color: white;
+    position: absolute;
+    right: 20px;
+    top: -100px;
+    z-index: 2000;
+    border-radius: 10px;
+    padding: 12px;
+
+    &-link {
+      color: white;
+      font-weight: bold;
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    @media (max-width: 768px) {
+      position: relative;
+      margin: auto;
+      margin-top: 400px;
+      right: unset;
+
+      display: block;
+    }
+  }
 }
 
 @media (max-width: 768px) {
@@ -19,6 +52,17 @@
   text-align: center;
   margin-bottom: 3rem;
   padding: 0 1rem;
+
+  @media (min-width: 768px) and (max-width: 1200px) {
+    text-align: left;
+    h1 {
+      font-size: 2rem !important;
+    }
+    h3 {
+      font-size: 1.1rem;
+      max-width: 50%;
+    }
+  }
 }
 .to-basket-link {
   padding: 8px;

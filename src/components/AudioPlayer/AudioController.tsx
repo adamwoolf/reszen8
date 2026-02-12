@@ -19,12 +19,16 @@ const AudioController = ({
   locked = false,
   contentType,
   item,
+  playSample,
+  onSampleEnd,
 }: {
   audioUrl: string;
   isImmersive?: boolean;
   locked?: boolean;
   contentType?: string;
   item?: any;
+  playSample?: boolean;
+  onSampleEnd?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -32,6 +36,7 @@ const AudioController = ({
   const dispatch = useDispatch();
   const cardRef = useRef<HTMLDivElement | null>(null);
   const { currentUser, updateUser, setCurrentUser } = useAuth();
+  const playTimeoutRef = useRef<number | null>(null);
 
   const { currentAudio, playing, play, pause, reset, loading, seek, currentTime } = usePlayer();
 
@@ -68,16 +73,44 @@ const AudioController = ({
     };
   }, [audioUrl, isVisible]);
 
+  // const togglePlayPause = () => {
+  //   if (locked) {
+  //     dispatch(setShowSignupModal(true));
+  //     return;
+  //   }
+  //   trackCTA(`PlayPause-${audioUrl}`);
+  //   if (currentAudio === audioUrl && playing) pause();
+  //   else {
+  //     trackUserActivity();
+  //     setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
+  //   }
+  // };
+
   const togglePlayPause = () => {
     if (locked) {
       dispatch(setShowSignupModal(true));
       return;
     }
+
     trackCTA(`PlayPause-${audioUrl}`);
-    if (currentAudio === audioUrl && playing) pause();
-    else {
+
+    if (currentAudio === audioUrl && playing) {
+      pause();
+    } else {
       trackUserActivity();
-      setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
+
+      // clear any previous timeout just in case
+      if (playTimeoutRef.current) {
+        clearTimeout(playTimeoutRef.current);
+      }
+
+      playTimeoutRef.current = window.setTimeout(() => {
+        play(audioUrl, immersiveUrl, isImmersive, {
+          playSample,
+          onSampleEnd,
+        });
+        playTimeoutRef.current = null; // reset ref
+      }, 300);
     }
   };
 
@@ -113,20 +146,35 @@ const AudioController = ({
 
     if (contentType === "meditations" && !item.collection) {
       const userMeditations = currentUser?.activity?.meditations || [];
-      const meditationActivityArray = [...userMeditations, { id: item.uid, category, duration, timeStamp: Date.now() }];
+      const meditationActivityArray = [
+        ...userMeditations,
+        { id: item.uid, category, duration, timeStamp: Date.now(), isBespoke: !item?.staticMed },
+      ];
       updateUser(currentUser?.uid, { activity: { ...currentUser?.activity, meditations: meditationActivityArray } });
       setCurrentUser({ ...currentUser, activity: { ...currentUser?.activity, meditations: meditationActivityArray } });
     }
 
     if (contentType === "meditations" && item.collection) {
       const userCollections = currentUser?.activity?.collections || [];
-      const meditationActivityArray = [...userCollections, { id: item.uid, category, duration, timeStamp: Date.now() }];
+      const meditationActivityArray = [
+        ...userCollections,
+        { id: item.uid, category, duration, timeStamp: Date.now(), isBespoke: !item?.staticMed },
+      ];
       updateUser(currentUser?.uid, {
         activity: { ...currentUser?.activity, collections: meditationActivityArray },
       });
       setCurrentUser({ ...currentUser, activity: { ...currentUser?.activity, collections: meditationActivityArray } });
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (playTimeoutRef.current) {
+        clearTimeout(playTimeoutRef.current);
+        playTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div style={isLoading ? { pointerEvents: "none" } : {}} className='audio-player__inner' ref={cardRef}>
@@ -167,8 +215,10 @@ const AudioController = ({
           // optional: show temporary progress while dragging
         }}
         onScrubEnd={(time) => {
+          if (playSample) return;
           seek(time); // <-- updates AudioContext audio element
         }}
+        disable={playSample}
       />
     </div>
   );

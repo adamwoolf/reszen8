@@ -28,8 +28,8 @@ const LikeCta = ({
     content === "publications"
       ? "Articles"
       : "meditations" && !item.staticMed
-      ? "User_Bespoke_Meditations"
-      : "Static_Meditations";
+        ? "User_Bespoke_Meditations"
+        : "Static_Meditations";
 
   if (!currentUser || !item?.uid) return null;
 
@@ -86,7 +86,7 @@ const LikeCta = ({
     setLikes(likes + 1);
   };
   return (
-    <div style={{ top: large ? 32 : 12 }} className='likes'>
+    <div style={{ top: large ? 32 : 52 }} className='likes'>
       <button aria-label='like-cta' onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
         <FaHeart
           size={large ? 30 : 15}

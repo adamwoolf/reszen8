@@ -9,7 +9,7 @@
     aspect-ratio: 1/1;
   }
 
-  @media (min-width: 786px) {
+  @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
   }
   @media (min-width: 900px) {
@@ -20,10 +20,25 @@
   }
 }
 
+.video-title {
+  position: absolute;
+  top: 8px;
+  min-height: 32px;
+  left: 4px;
+  background-color: var(--bg-color);
+  color: orange;
+  padding: 4px 6px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  right: 50px;
+}
+
 .video-wrapper {
   width: 100%;
   aspect-ratio: 1 / 1; /* 1:1 square */
   overflow: hidden;
+  position: relative;
 }
 
 .video-wrapper iframe {

@@ -1,0 +1,143 @@
+.enterprise {
+  text-align: center;
+  ul {
+    list-style: none;
+    text-align: left;
+  }
+
+  &__title {
+    margin: 30px;
+  }
+
+  &__description {
+    margin: 20px 0;
+    margin-bottom: 50px;
+  }
+
+  &__options-heading {
+    margin-bottom: 40px;
+    font-weight: 500;
+    letter-spacing: 0.05rem;
+  }
+  &__options-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+    margin-bottom: 60px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  &__option {
+    border: 1px solid orange;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &-header {
+      display: flex;
+      flex-direction: column;
+      min-height: 270px;
+      @media (max-width: 768px) {
+        min-height: unset;
+      }
+    }
+
+    &-inner {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-title {
+      font-size: 1.8rem;
+    }
+    &-subtitle {
+      margin: 20px 0;
+    }
+
+    &-desc {
+      margin-bottom: 20px;
+    }
+
+    &-price {
+      font-weight: bold;
+      color: orange;
+      font-size: 2rem;
+    }
+
+    &-best-for {
+      text-align: left;
+    }
+
+    &-features {
+      border: 1px solid rgba(darkorange, 0.4);
+      border-radius: 10px;
+      margin: 30px 0;
+      padding: 20px;
+
+      &-heading {
+        color: orange;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+    }
+    &-feature {
+      color: orange;
+      margin: 10px 0;
+      display: flex;
+      span {
+        margin-left: 8px;
+        flex: 1;
+      }
+    }
+  }
+
+  &__link {
+    background: orange;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    margin: auto;
+    display: block;
+    max-width: 300px;
+    text-align: center;
+    border-radius: 90px;
+  }
+
+  &__bottom {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    ul {
+      text-align: center;
+      li {
+        margin: 10px;
+      }
+    }
+
+    a {
+      margin: 30px;
+    }
+  }
+
+  &__login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    img {
+      width: 200px;
+      height: 200px;
+      margin: 100px 0;
+    }
+  }
+}

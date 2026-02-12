@@ -44,7 +44,6 @@ const Home: React.FC = () => {
   };
 
   const meditations = useSelector(getStaticMeditations);
-  console.log(meditations.length);
 
   const item = {
     hidden: { opacity: 0, y: 20 },
@@ -55,9 +54,8 @@ const Home: React.FC = () => {
 
   return (
     <div className='home-page'>
-      {/* <Drawing /> */}
       {!currentUser && <OnboardingHero />}
-      {!currentUser?.isGod && <FreeForever />}
+      {!currentUser && <FreeForever />}
       <YourJourneyPanel />
       <CollectionsCarousel />
       <section className='features-section'>

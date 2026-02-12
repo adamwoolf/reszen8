@@ -39,7 +39,7 @@ export default function MembersArea() {
           description: product.description,
           size: product.size,
         },
-        product.quantity
+        product.quantity,
       );
     }
   };
@@ -107,11 +107,11 @@ export default function MembersArea() {
                 <p className='members-area__info'>
                   Email: <span>{currentUser?.email}</span>
                 </p>
-                <div className='members-area__info'>
+                {/* <div className='members-area__info'>
                   <span> Included meditation tokens:</span> <span>{currentUser?.subscription?.meditationCredits}</span>
-                </div>
+                </div> */}
                 <p className='members-area__info'>
-                  Extra meditation tokens: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
+                  Meditation tokens: <span> {currentUser?.subscription?.extraBespokeMeditationCredits}</span>
                 </p>
                 {currentUser?.timeUntilRenewal && !currentUser?.subscription.cancelAtPeriodEnd && (
                   <p className='members-area__info'>Renews in: {currentUser?.timeUntilRenewal}</p>

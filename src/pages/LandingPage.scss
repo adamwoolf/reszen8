@@ -80,7 +80,9 @@ body,
   text-transform: uppercase;
   font-family: "Inter", sans-serif;
   text-shadow: 0 0 15px rgba(192, 160, 101, 0.5);
-  transition: transform 0.3s ease, text-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    text-shadow 0.3s ease;
   position: relative;
 
   &__image {
@@ -88,6 +90,15 @@ body,
     margin-bottom: 30px;
     animation: fadeIn 4s ease-in-out;
     animation-fill-mode: both;
+  }
+
+  &-tag {
+    color: orange;
+    letter-spacing: 0.15rem;
+    text-shadow: 0 0 15px rgba(192, 160, 101, 0.5);
+    transition:
+      transform 0.3s ease,
+      text-shadow 0.3s ease;
   }
 }
 

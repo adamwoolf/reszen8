@@ -4,21 +4,23 @@ import Vimeo from "../../components/Vimeo/Vimeo";
 import Player from "@vimeo/player";
 import "./InsightsStyles.scss";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setVideos } from "../../store/contentSlice";
 const Insights = () => {
-  const [vids, setVids] = useState([]);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const vids = useSelector((state) => state.content?.videos);
   const getVideos = async () => {
     setLoading(true);
     const res = await fetch(`${AWS_DB_ENDPOINT}/getVimeos`);
     const json = await res.json();
-    setVids(json?.data);
     setLoading(false);
+    dispatch(setVideos(json?.data));
   };
 
   useEffect(() => {
-    getVideos();
-  }, []);
+    if (!vids?.length) getVideos();
+  }, [vids]);
 
   if (loading) return <LoadingScene />;
 
@@ -34,7 +36,7 @@ export default Insights;
 const VimeoGallery = ({ videos }: { videos: any[] }) => {
   const playersRef = useRef({}); // store Player instances by video id
   const [playingVideo, setPlayingVideo] = useState(null); // currently playing video id
-  const [activeVid, setActiveVid] = useState("");
+
   const handlePlay = (id) => {
     // Pause the previously playing video
     if (playingVideo && playingVideo !== id && playersRef.current[playingVideo]) {
@@ -53,7 +55,6 @@ const VimeoGallery = ({ videos }: { videos: any[] }) => {
       const j = Math.floor(Math.random() * (i + 1));
       [rest[i], rest[j]] = [rest[j], rest[i]];
     }
-    // return array;
     return [first, ...rest];
   }
 
@@ -64,11 +65,10 @@ const VimeoGallery = ({ videos }: { videos: any[] }) => {
   return (
     <>
       {shuffledVideos.map((video) => {
-        const thumbnailUrl = video.pictures?.sizes?.at(-1)?.link || video.pictures?.base_link;
-
         const id = video.uri.split("/")[2];
         return (
           <div key={id} className='video-wrapper'>
+            <span className='video-title'>{video.name}</span>
             <iframe
               ref={(el) => {
                 if (el && !playersRef.current[id]) {
@@ -78,7 +78,7 @@ const VimeoGallery = ({ videos }: { videos: any[] }) => {
                   playersRef.current[id].on("play", () => handlePlay(id));
                 }
               }}
-              src={`${video.player_embed_url}?api=1&byline=0&portrait=0`}
+              src={`${video.player_embed_url}?api=1&byline=0&portrait=0&title=0`}
               width='400'
               height='400'
               frameBorder='0'

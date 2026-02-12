@@ -10,7 +10,7 @@ import { useAuth as useAWSAuth } from "react-oidc-context";
 import MembershipCta from "./MembershipCta";
 import YearlyUpgrade from "./YearlyUpgrade";
 import { useDispatch, useSelector } from "react-redux";
-import Vimeo from "../../components/Vimeo/Vimeo";
+import { trackCTA } from "../../utils/analytics";
 
 type MembershipTier = {
   id: string;
@@ -97,6 +97,11 @@ const Memberships: React.FC = () => {
         <h1>{content?.title}</h1>
         <h3>{content?.subtitle}</h3>
       </header>
+      <div className='memberships__enterprise-badge'>
+        <Link onClick={() => trackCTA("Enterprise")} to='/enterprise' className='memberships__enterprise-badge-link'>
+          View our Enterprise Solutions
+        </Link>
+      </div>
       <div className='membership-grid'>
         {membershipTiers
           ?.sort((a: any, b: any) => a.order - b.order)

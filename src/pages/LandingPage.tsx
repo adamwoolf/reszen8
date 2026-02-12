@@ -19,7 +19,6 @@ const LandingPage: React.FC = () => {
   useEffect(() => {
     const hasQuery = search.includes("landing=true");
     const isNotHomepage = location.pathname.length > 1;
-    console.log(isNotHomepage);
     const shouldHide = !!sessionStorage.getItem("hideLandingpage") || hasQuery || isNotHomepage;
     setShow(!shouldHide);
     dispatch(setLandingPageActive(!shouldHide));
@@ -54,6 +53,7 @@ const LandingPage: React.FC = () => {
         <h1 className='logo'>
           RESZEN8<sup className='landing-page__sup'>R</sup>
         </h1>
+        <span className='logo-tag'>Meditation for Modern Life</span>
         <p className='click-prompt'>Click to enter</p>
       </button>
     </div>

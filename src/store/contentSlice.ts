@@ -39,6 +39,7 @@ export interface ContentState {
   locationAllowed: boolean;
   meditationThemes: any[];
   showSignupModal: boolean;
+  videos: any[];
 }
 
 export interface AudioObject {
@@ -64,6 +65,7 @@ const initialState: ContentState = {
   locationAllowed: true,
   meditationThemes: [],
   showSignupModal: false,
+  videos: [],
 };
 
 export const contentSlice = createSlice({
@@ -134,10 +136,14 @@ export const contentSlice = createSlice({
     setShowSignupModal: (state, action) => {
       state.showSignupModal = action.payload;
     },
+    setVideos: (state, action) => {
+      state.videos = action.payload;
+    },
   },
 });
 
 export const {
+  setVideos,
   setMeditationThemes,
   setMeditations,
   setArticles,

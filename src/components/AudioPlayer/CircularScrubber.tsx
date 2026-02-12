@@ -1,7 +1,17 @@
 import React, { useState, useRef } from "react";
 import "./AudioPlayerStyles.scss";
 
-const CircularScrubber = ({ radius, stroke, progress, duration, isPlaying, onScrub, onScrubEnd, knobRadius }) => {
+const CircularScrubber = ({
+  radius,
+  stroke,
+  progress,
+  duration,
+  isPlaying,
+  onScrub,
+  onScrubEnd,
+  knobRadius,
+  disable,
+}) => {
   const [dragging, setDragging] = useState(false);
   const [dragProgress, setDragProgress] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -28,6 +38,7 @@ const CircularScrubber = ({ radius, stroke, progress, duration, isPlaying, onScr
   const angleToProgress = (angle: number) => ((angle + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 
   const startDrag = (clientX: number, clientY: number) => {
+    if (disable) return;
     const angle = getAngle(clientX, clientY);
     const newProgress = angleToProgress(angle);
     setDragging(true);

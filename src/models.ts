@@ -44,6 +44,7 @@ interface activityItem {
   category: string;
   duration?: number;
   timeStamp: number;
+  isBespoke?: boolean;
 }
 export interface User {
   uid: string;
@@ -73,6 +74,8 @@ export interface User {
     articles: activityItem[];
     collections?: activityItem[];
   };
+
+  authProvider?: "cognito" | "enterprise";
 }
 
 export interface Meditation {
