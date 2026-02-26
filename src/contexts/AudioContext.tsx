@@ -280,6 +280,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       seek,
       currentTime,
       duration,
+      setCurrentAudio,
     }),
     [currentAudio, playing, loading, currentTime, duration, play, pause, reset, seek],
   );

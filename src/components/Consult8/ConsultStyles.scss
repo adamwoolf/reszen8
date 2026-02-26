@@ -2,6 +2,11 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
   &__container {
     text-align: center;
   }
@@ -22,6 +27,10 @@
     &--selected {
       color: var(--bg-color);
       background: orange;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
     }
   }
 }

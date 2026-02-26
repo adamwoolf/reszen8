@@ -123,18 +123,23 @@ const DigitalLibrary = () => {
   const renderSearch = () => {
     return (
       <div className='publications__filters'>
-        <div className='meditation-library__toggle-container'>
-          <ToggleSwitch
-            checked={ImmersiveMeds}
-            onChange={(e) => {
-              trackCTA(`Immersive Toggle value: ${e}`);
-              setImmersiveMeds(e);
-            }}
-            size='md'
-          />
-          <button className='meditation-library__toggle-container__info-cta' onClick={() => setShowPopup(true)}>
-            <FaInfoCircle />
-          </button>
+        <div className='meditation-library__switches'>
+          <div className='meditation-library__toggle-container'>
+            <ToggleSwitch
+              checked={ImmersiveMeds}
+              onChange={(e) => {
+                trackCTA(`Immersive Toggle value: ${e}`);
+                setImmersiveMeds(e);
+              }}
+              size='md'
+            />
+            <button className='meditation-library__toggle-container__info-cta' onClick={() => setShowPopup(true)}>
+              <FaInfoCircle />
+            </button>
+          </div>
+          <div className='immersive-container'>
+            <ToggleContainer show={ImmersiveMeds} />
+          </div>
         </div>
         <Popup fitContent show={showPopup} onClose={() => setShowPopup(false)}>
           <div className='meditation-library__ai-popup'>
@@ -145,9 +150,7 @@ const DigitalLibrary = () => {
             <p>Voice Only meditations do not have Immersive Audio compatability.</p>
           </div>
         </Popup>
-        <div className='sticky-container'>
-          <ToggleContainer show={ImmersiveMeds} />
-        </div>
+
         <Filters
           placeholder='Type to search meditations'
           filterPubs={filterMeds}
@@ -180,11 +183,11 @@ const DigitalLibrary = () => {
 
   return (
     <div className='dashboard-container'>
-      <h1 className='page-header'>Meditation Library</h1>
+      {/* <h1 className='page-header'>Meditation Library</h1> */}
       <Collections handleClick={setActiveCollection} />
       {!activeCollection && (
         <>
-          <h3 style={{ textAlign: "center", margin: "50px 0" }}>Browse Full Library</h3>
+          <h2 style={{ textAlign: "center", marginTop: 50, fontSize: 30 }}>Meditation Library</h2>
           {renderSearch()}
           {renderTabContent()}
         </>

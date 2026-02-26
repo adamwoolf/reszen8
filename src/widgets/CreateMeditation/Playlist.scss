@@ -1,0 +1,137 @@
+.playlist {
+  background-color: var(--bg-color-light);
+  height: 100%;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid orange;
+
+  h3 {
+    text-align: center;
+    font-size: 1.9rem;
+    margin-top: -70px;
+
+    @media (max-width: 768px) {
+      margin-top: 30px;
+    }
+  }
+
+  &__logo {
+    width: 100px;
+    margin: 20px;
+  }
+
+  &__flip-cta {
+    background: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    svg {
+      color: orange;
+      font-size: 30px;
+    }
+
+    &:hover {
+      background: none;
+    }
+  }
+
+  &__list {
+    height: 450px;
+    overflow: auto;
+    width: 70%;
+    margin: auto;
+    list-style: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
+
+    &--locked {
+      overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+      width: 90%;
+    }
+
+    div {
+      background-color: transparent;
+    }
+    &-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+
+      .audio-player__inner {
+        margin: 20px;
+        margin-left: 50px;
+      }
+
+      &-outer {
+        padding: 25px 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      &-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      &-title {
+        display: block;
+        font-weight: 600;
+        font-size: 1.1rem;
+
+        &--today {
+          color: orange;
+        }
+      }
+      &-type {
+        display: block;
+        font-size: 0.8rem;
+
+        &--today {
+          color: orange;
+          font-weight: bold;
+        }
+      }
+      &-date {
+        display: block;
+        font-weight: 300;
+        opacity: 0.8;
+
+        &--today {
+          color: orange;
+          font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+          position: absolute;
+          top: -10px;
+          left: 0;
+        }
+      }
+      &-cta {
+        background: none;
+
+        &:hover {
+          background: none;
+        }
+      }
+    }
+  }
+
+  &__time {
+    width: 100%;
+    background-color: var(--bg-color) !important;
+    display: flex;
+    justify-content: flex-end;
+    &-inner {
+      background-color: rgba(255, 255, 255, 0.5);
+      height: 4px;
+      display: block;
+      transition: 500ms;
+      border-radius: 10px;
+    }
+  }
+}

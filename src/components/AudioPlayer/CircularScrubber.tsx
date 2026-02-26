@@ -1,6 +1,10 @@
 import React, { useState, useRef } from "react";
 import "./AudioPlayerStyles.scss";
 
+interface Props {
+  small?: boolean;
+}
+
 const CircularScrubber = ({
   radius,
   stroke,
@@ -11,7 +15,8 @@ const CircularScrubber = ({
   onScrubEnd,
   knobRadius,
   disable,
-}) => {
+  small,
+}: Props) => {
   const [dragging, setDragging] = useState(false);
   const [dragProgress, setDragProgress] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -83,7 +88,12 @@ const CircularScrubber = ({
       ref={svgRef}
       width={radius * 2 + stroke * 4}
       height={radius * 2 + stroke * 4}
-      style={{ cursor: isPlaying ? "grab" : "default", overflow: "visible", position: "absolute", top: -45 }}
+      style={{
+        cursor: isPlaying ? "grab" : "default",
+        overflow: "visible",
+        position: "absolute",
+        top: !small ? -45 : -20,
+      }}
       onPointerDown={handlePointerDown} // clicking anywhere starts drag immediately
     >
       <circle stroke='#ff9800' fill='none' cx={cx} cy={cy} r={outerRadius} strokeWidth={stroke} />

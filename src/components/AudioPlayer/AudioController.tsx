@@ -13,6 +13,14 @@ import { setShowSignupModal } from "../../store/contentSlice";
 import { useAuth } from "../../contexts/AuthContext";
 import { categoriser } from "../../Util";
 
+export const formatTime = (time: number) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${minutes}:${seconds}`;
+};
+
 const AudioController = ({
   audioUrl,
   isImmersive,
@@ -21,6 +29,8 @@ const AudioController = ({
   item,
   playSample,
   onSampleEnd,
+  autoPlay,
+  small = false,
 }: {
   audioUrl: string;
   isImmersive?: boolean;
@@ -29,6 +39,8 @@ const AudioController = ({
   item?: any;
   playSample?: boolean;
   onSampleEnd?: () => void;
+  autoPlay?: boolean;
+  small?: boolean;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -73,19 +85,6 @@ const AudioController = ({
     };
   }, [audioUrl, isVisible]);
 
-  // const togglePlayPause = () => {
-  //   if (locked) {
-  //     dispatch(setShowSignupModal(true));
-  //     return;
-  //   }
-  //   trackCTA(`PlayPause-${audioUrl}`);
-  //   if (currentAudio === audioUrl && playing) pause();
-  //   else {
-  //     trackUserActivity();
-  //     setTimeout(() => play(audioUrl, immersiveUrl, isImmersive), 300);
-  //   }
-  // };
-
   const togglePlayPause = () => {
     if (locked) {
       dispatch(setShowSignupModal(true));
@@ -120,6 +119,14 @@ const AudioController = ({
   const progress = Math.min(Math.max(usedTime / safeDuration, 0), 1);
   const countdown = Math.max(duration - usedTime, 0);
 
+  // autoPlay logic
+  useEffect(() => {
+    if (!autoPlay || !isVisible || locked) return;
+    if (currentAudio !== audioUrl || !playing) {
+      togglePlayPause();
+    }
+  }, [audioUrl, autoPlay, isVisible]); // run when audioUrl changes or autoPlay toggled
+
   // reset countdown/duration when track ends
   useEffect(() => {
     if (!isCurrent) return; // only reset for the active track
@@ -131,14 +138,6 @@ const AudioController = ({
       }, 300);
     }
   }, [currentTime, duration, isCurrent, reset]);
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60)
-      .toString()
-      .padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
 
   const trackUserActivity = () => {
     if (!currentUser || !contentType) return;
@@ -182,10 +181,18 @@ const AudioController = ({
         <div className='audio-btn-content'>
           <div className='audio-btn-inner' style={{ backgroundColor: "transparent" }}>
             {isCurrent && playing && <RadiatingWaves />}
-            {countdown > 0 && <span className='audio-player__countdown'>{formatTime(countdown)}</span>}
+            {countdown > 0 && (
+              <span
+                className={
+                  !small ? "audio-player__countdown" : "audio-player__countdown audio-player__countdown--small"
+                }
+              >
+                {formatTime(countdown)}
+              </span>
+            )}
             {(isLoading || (currentAudio === audioUrl && loading)) && <ThreeDotsLoader />}
             {!isLoading && !locked && (
-              <div className='audio-player__icons'>
+              <div className={!small ? "audio-player__icons" : "audio-player__icons audio-player__icons--small"}>
                 <PlayPauseButton isPlaying={playing && isCurrent} />
               </div>
             )}
@@ -199,13 +206,16 @@ const AudioController = ({
       </button>
 
       {isCurrent && currentTime > 0 && !playing && (
-        <button className='audio-player__reset' onClick={reset}>
+        <button
+          className={!small ? "audio-player__reset" : "audio-player__reset audio-player__reset--small"}
+          onClick={reset}
+        >
           Reset
         </button>
       )}
 
       <CircularScrubber
-        radius={65}
+        radius={!small ? 65 : 40}
         stroke={2}
         progress={progress}
         duration={duration}
@@ -219,6 +229,7 @@ const AudioController = ({
           seek(time); // <-- updates AudioContext audio element
         }}
         disable={playSample}
+        small={small}
       />
     </div>
   );

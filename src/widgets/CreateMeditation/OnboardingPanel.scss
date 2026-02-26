@@ -1,0 +1,67 @@
+.onboarding-widget {
+  width: 100%;
+  text-align: center;
+  border: 1px solid orange;
+  position: relative;
+  border-radius: 15px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding-top: 80px;
+  }
+
+  .audio-player__inner {
+    margin: 40px;
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 800ms ease-in-out;
+    animation-fill-mode: both;
+
+    button {
+      margin-top: 20px;
+      width: 200px;
+    }
+
+    &-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      margin: 10px;
+      padding: 5px;
+      position: relative;
+
+      @media (max-width: 768px) {
+        display: block;
+      }
+      &-icon {
+        @media (max-width: 768px) {
+          position: absolute;
+          left: 10px;
+          top: 10px;
+        }
+      }
+      &-audio {
+        @media (max-width: 768px) {
+          position: absolute;
+          right: 0px;
+          top: 0px;
+        }
+      }
+      &-text {
+        @media (max-width: 768px) {
+          margin-top: 120px;
+          display: block;
+          font-size: 0.9rem;
+          position: relative;
+          z-index: 2;
+        }
+      }
+    }
+  }
+}

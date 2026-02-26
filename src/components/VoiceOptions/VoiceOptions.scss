@@ -1,8 +1,18 @@
 .voice-options {
-  margin: 20px 0;
   // background-color: var(--bg-color-lighter);
   border-radius: 12px;
   position: relative;
+
+  &-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      gap: 5px;
+      // grid-template-columns: 1fr;
+    }
+  }
 
   &__title {
     font-size: 16px;
@@ -17,7 +27,9 @@
     right: 0;
     border-radius: 8px;
     background-color: rgba(100, 150, 255, 0.1);
-    transition: transform 0.25s ease, height 0.25s ease;
+    transition:
+      transform 0.25s ease,
+      height 0.25s ease;
     z-index: 0;
     border: 1px solid darkorange;
   }
@@ -32,11 +44,10 @@
     margin: 6px 0;
     transition: background-color 0.2s ease;
     min-height: 50px;
-    width: 100%;
     background: none;
-    border: 1px solid transparent;
+    border: 1px solid rgba(orange, 0.4);
     text-align: left;
-
+    position: relative;
     &:hover {
       background-color: transparent;
       background: none;
@@ -44,6 +55,19 @@
 
     &--left {
       display: flex;
+    }
+
+    &--locked {
+      opacity: 0.6;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    &-lock {
+      color: orange;
+      position: absolute;
+      top: 2px;
+      right: 2px;
     }
 
     &__description {

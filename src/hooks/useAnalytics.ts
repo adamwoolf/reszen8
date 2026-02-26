@@ -13,6 +13,8 @@ export function useAnalytics() {
 
     if (window.gtag) {
       window.gtag("config", GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
         page_path: location.pathname + location.search,
       });
     }

@@ -49,7 +49,7 @@ export default function ToggleSwitch({
 
   return (
     <div className={`toggle-container ${className}`}>
-      {!noLabel && <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>Voice</span>}
+      {!noLabel && <span className={checked ? "toggle-label" : "toggle-label toggle-label--selected"}>Voice only</span>}
       <button
         id={id}
         type='button'

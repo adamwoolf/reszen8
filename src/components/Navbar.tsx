@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
   };
 
   const name = currentUser && currentUser?.firstName ? `${currentUser?.firstName} ` : "";
-  if (loading || landingPageActive || (!currentUser && isEnterprise)) return null;
+  if (loading || (!currentUser && isEnterprise)) return null;
   return (
     <div className='appbar-wrapper'>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
@@ -99,14 +99,14 @@ const Navbar: React.FC = () => {
                       Meditations
                     </NavLink>
                   </li>
-                  <li>
+                  {/* <li>
                     <NavLink to='/bespoke-meditation-generator' className={getNavLinkClass}>
                       Bespoke
                     </NavLink>
-                  </li>
+                  </li> */}
                   <li>
                     <NavLink to='/insights' className={getNavLinkClass}>
-                      RESZEN8 Insights
+                      Insights
                     </NavLink>
                   </li>
 

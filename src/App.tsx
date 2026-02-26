@@ -90,7 +90,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   // return <LoadingScene />;
 
   if (loading) return <LoadingScene />;
-  if (landingPageActive) return null;
+  // if (landingPageActive) return null;
   // if (isEnterprise && !currentUser) return <EnterpriseUserLogin />;
   return (
     // <ErrorBoundary>
@@ -262,10 +262,11 @@ const AnimatedRoutes = () => {
         <Route
           path='/bespoke-meditation-generator'
           element={
+            <Navigate to='/' replace />
             // <ProtectedRoute>
-            <Layout>
-              <AIMeditationGenerator />
-            </Layout>
+            // <Layout>
+            //   <AIMeditationGenerator />
+            // </Layout>
             // </ProtectedRoute>
           }
         />
@@ -378,7 +379,7 @@ function App() {
               <UserManager>
                 <div className='main-content-wrapper'>
                   <Navbar />
-                  <LandingPage />
+                  {/* <LandingPage /> */}
                   <AnimatedRoutes />
                 </div>
               </UserManager>

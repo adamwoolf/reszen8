@@ -10,6 +10,7 @@ import LoadingScene from "../components/LoadingScene/LoadingScene";
 import { useSelector } from "react-redux";
 import { getStaticMeditations } from "../store/contentSelectors";
 import YourJourneyPanel from "../components/YourJourneyPanel/YourJourneyPanel";
+import CreateMeditation from "../widgets/CreateMeditation/CreateMeditation";
 const features = [
   {
     title: "Articles",
@@ -54,8 +55,9 @@ const Home: React.FC = () => {
 
   return (
     <div className='home-page'>
-      {!currentUser && <OnboardingHero />}
-      {!currentUser && <FreeForever />}
+      <CreateMeditation />
+      {/* {!currentUser && <OnboardingHero />} */}
+
       <YourJourneyPanel />
       <CollectionsCarousel />
       <section className='features-section'>
@@ -74,12 +76,12 @@ const Home: React.FC = () => {
               variants={item}
               whileHover={{ y: currentUser || feature.isTrial ? -10 : 0, transition: { duration: 0.2 } }}
               onClick={() =>
-                currentUser?.subscription?.subId === "reszen8-generate" && feature.path === "/articles"
+                feature.path === "/bespoke-meditation-generator" || feature.path === "/journey"
                   ? null
                   : navigate(feature.path)
               }
               style={{
-                cursor: currentUser || feature.isTrial ? "pointer" : "default",
+                cursor: feature.path !== "/bespoke-meditation-generator" ? "pointer" : "default",
                 border: feature.isTrial ? "2px solid #FFA500" : "1px solid rgba(255, 255, 255, 0.1)",
                 position: "relative",
                 overflow: "hidden",
@@ -125,18 +127,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
-const Drawing = () => {
-  const radius = 100;
-  const stroke = 3;
-  // const outerRadius = 200;
-  const innerRadius = 70;
-  const cy = 80;
-  const cx = 80;
-  return (
-    <div className='test-container'>
-      <div className='test' />
-      <div className='test2' />
-    </div>
-  );
-};

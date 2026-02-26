@@ -57,12 +57,18 @@ const Consult8 = ({
   setMeditationType,
   header,
   returnAllTypes,
+  reset,
 }: {
   returnAllTypes: (value: any) => void;
   setMeditationType: (value: string) => void;
   header?: boolean;
+  reset?: boolean;
 }) => {
   const [choices, setChoices] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (reset) setChoices([]);
+  }, [reset]);
 
   const handleClick = (option: string) => {
     trackCTA("Consult8 Mood CTA", option);
@@ -82,7 +88,6 @@ const Consult8 = ({
   return (
     <div className='feelings__container'>
       <Tag>How are you feeling?</Tag>
-      <p>select up to 3 emotions</p>
       <div className='feelings'>
         {feelings.map((f) => (
           <button

@@ -145,7 +145,7 @@ const Dashboard = () => {
             className={`tab-btn ${activeTab === "myMeds" ? "active" : ""}`}
             onClick={() => handleTabClick("myMeds")}
           >
-            Bespoke Meditations
+            My Meditations
             {myMeds?.filter((item) => !item.willDelete).length > 0 && (
               <span className='tab-count'>{myMeds?.filter((item) => !item.willDelete).length}</span>
             )}
@@ -179,7 +179,7 @@ const Dashboard = () => {
       </div>
       <div ref={carouselRef} className='dashboard__content-carousel'>
         {["introMeditations", "collections", "myMeds", "meditations", "publications", "deleted"].map((key) =>
-          renderTabContent(key)
+          renderTabContent(key),
         )}
       </div>
     </div>

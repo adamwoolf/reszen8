@@ -271,7 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Enterprise Login
   useEffect(() => {
-    console.log("hello");
+    if (!window.Reszen8Config) return;
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin.includes("stripe")) return;
       const tenant = getTenantFromQuery() || window.Reszen8Config.tenant; // read on mount

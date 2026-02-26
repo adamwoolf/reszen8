@@ -53,11 +53,20 @@
     color: orange;
     user-select: none;
     pointer-events: none;
+
+    &--small {
+      font-size: 24px;
+    }
   }
 
   &__icons {
     position: absolute;
     top: -5px;
+    background-color: transparent;
+
+    &--small {
+      top: 5px;
+    }
   }
 
   &__reset {
@@ -69,6 +78,11 @@
     bottom: -20px;
     z-index: 300;
     font-size: 14px;
+
+    &--small {
+      font-size: 10px;
+      bottom: -10px;
+    }
 
     &:hover {
       background-color: transparent;
@@ -239,6 +253,7 @@
   position: relative;
   pointer-events: none;
   user-select: none;
+  background-color: transparent;
 
   svg {
     fill: var(--primary-color);

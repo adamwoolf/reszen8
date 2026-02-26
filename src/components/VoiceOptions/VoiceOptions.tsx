@@ -1,22 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./VoiceOptions.scss";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaLock } from "react-icons/fa";
 
 type VoiceOption = {
   id: string;
   label: string;
-  sampleUri: string;
+  sampleUri?: string;
   description?: string;
+  locked?: boolean;
 };
 
 type VoiceOptionsProps = {
   options: VoiceOption[];
   onSelect: (option: VoiceOption) => void;
   selectedId?: string;
+  useLabelForActive?: boolean;
 };
 
-export default function VoiceOptions({ options, onSelect, selectedId }: VoiceOptionsProps) {
+export default function VoiceOptions({ options, onSelect, selectedId, useLabelForActive }: VoiceOptionsProps) {
   const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const optionsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -81,45 +83,47 @@ export default function VoiceOptions({ options, onSelect, selectedId }: VoiceOpt
 
   return (
     <div className='voice-options'>
-      <div ref={highlightRef} className='voice-options__highlight' />
-      {options.map((option, i) => {
-        const selected = selectedId === option.id;
-        const playing = currentPlayingId === option.id;
+      {/* <div ref={highlightRef} className='voice-options__highlight' /> */}
+      <div className='voice-options-inner'>
+        {options.map((option, i) => {
+          const selected = !useLabelForActive ? selectedId === option.id : selectedId === option.label;
+          const playing = currentPlayingId === option.id;
 
-        return (
-          <button
-            ref={(el) => (optionsRef.current[i] = el)}
-            key={option.id}
-            type='button'
-            className={`voice-option ${selected ? "selected" : ""}`}
-            onClick={() => onSelect(option)}
-          >
-            <span className='voice-option--left'>
-              <span className={`radio-circle ${selected ? "checked" : ""}`}>
-                {selected && <span className='inner-circle' />}
+          return (
+            <button
+              ref={(el) => (optionsRef.current[i] = el)}
+              key={option.id}
+              type='button'
+              className={`voice-option ${selected ? "selected" : ""} ${option.locked && "voice-option--locked"}`}
+              onClick={() => onSelect(option)}
+            >
+              {option.locked && <FaLock className='voice-option-lock' />}
+              <span className='voice-option--left'>
+                <span className={`radio-circle ${selected ? "checked" : ""}`}>
+                  {selected && <span className='inner-circle' />}
+                </span>
+                <span className='label'>
+                  {option.label}
+                  {option.description && ":"}
+                  {option.description && <span className='voice-option__description'>{option.description}</span>}
+                </span>
               </span>
-              <span className='label'>
-                {option.label}
-                {option.description && ":"}
-                {option.description && <span className='voice-option__description'>{option.description}</span>}
-
-              </span>
-            </span>
-            {option.sampleUri && (
-              <button
-                type='button'
-                className='play-button'
-                onClick={(e) => {
-                  e.stopPropagation(); // prevent triggering select
-                  playSample(option);
-                }}
-              >
-                {playing ? <FaPause /> : <FaPlay />}
-              </button>
-            )}
-          </button>
-        );
-      })}
+              {option.sampleUri && (
+                <button
+                  type='button'
+                  className='play-button'
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent triggering select
+                    playSample(option);
+                  }}
+                >
+                  {playing ? <FaPause /> : <FaPlay />}
+                </button>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
