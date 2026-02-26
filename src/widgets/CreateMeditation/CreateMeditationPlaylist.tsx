@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import logo from "../../assets/logoNew.png";
-import { FaPause, FaPauseCircle, FaPlayCircle, FaSync } from "react-icons/fa";
+import { FaSync } from "react-icons/fa";
 import AudioController from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 
 import "./Playlist.scss";
-import { getStaticMeditations } from "../../store/contentSelectors";
-import { usePlayer } from "../../contexts/AudioContext";
-import PlaylistItem from "./PlaylistItem";
 
 const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: () => void }) => {
   const meds = useSelector((state) => state.content.meditations);
-  const [selected, setSelected] = useState(null);
-  const immersiveUrl = useSelector((state: any) => state.content?.immersiveEnv?.url);
-
-  const { currentAudio, playing, play, pause, reset, loading, seek, currentTime, setCurrentAudio } = usePlayer();
 
   if (!meds.length) return null;
   return (
@@ -28,7 +21,7 @@ const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: (
       <ul className={flipped ? "playlist__list" : "playlist__list playlist__list--locked"}>
         {[...meds]
           .sort((a, b) => new Date(b?.createdAt).getTime() - new Date(a?.createdAt).getTime())
-          ?.map((med, index) => {
+          ?.map((med) => {
             const date = new Date(med.createdAt);
             const today = new Date();
 
@@ -41,8 +34,7 @@ const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: (
             };
 
             return (
-              <li className='playlist__list-item-outer'>
-                {/* <PlaylistItem audioUrl={med.audioUrl} progress={selected === med ? currentTime : 0} /> */}
+              <li key={med.createdAt} className='playlist__list-item-outer'>
                 <div className='playlist__list-item'>
                   <div>
                     <span
@@ -75,13 +67,6 @@ const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: (
                     >
                       {isSameDay(date, today) ? "Today" : date.toDateString()}
                     </span>
-                    {/* <button onClick={() => togglePlay(med)} className='playlist__list-item-cta'>
-                      {playing && selected === med ? (
-                        <FaPauseCircle color='orange' size={40} />
-                      ) : (
-                        <FaPlayCircle color='orange' size={40} />
-                      )}
-                    </button> */}
                     <AudioController audioUrl={med.audioUrl} isImmersive={med.immersive} small />
                   </div>
                 </div>
