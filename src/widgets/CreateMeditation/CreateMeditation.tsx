@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
-import jordan from "../../assets/audio/Jordan.mp3";
+import jordan from "../../assets/audio/rune.mp3";
 import willow from "../../assets/audio/Willow.mp3";
 import Consult8 from "../../components/Consult8/Consult8";
 import { profanityFilter } from "../../pages/MeditationGenerator/helper";
@@ -53,32 +53,37 @@ const AIMeditationGenerator: React.FC = () => {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [flipped, setFlipped] = useState(false);
   const [allTypes, setAllTypes] = useState([]);
-  const cost = 1;
+
+  const calculateCost = () => {
+    switch (duration) {
+      case "Recharge":
+        return 1;
+      case "Refresh":
+        return 2;
+      case "Relax":
+        return 3;
+      default:
+        return 0;
+    }
+  };
+
+  const cost = calculateCost();
 
   const deductCost = () => {
-    const { subscription } = currentUser || {};
     if (!currentUser) return;
+    const { subscription } = currentUser || {};
+    let includedMeditations = subscription?.meditationCredits || 0;
+    let extraTokens = subscription?.extraBespokeMeditationCredits || 0;
 
-    const availableCredit = subscription?.meditationCredits + (subscription?.extraBespokeMeditationCredits || 0);
-    if (cost > availableCredit) return;
+    if (cost === 1 && includedMeditations) includedMeditations -= cost;
+    if (cost === 1 && !includedMeditations && extraTokens) extraTokens -= cost;
+    if (cost === 2 && extraTokens) extraTokens -= cost;
+    if (cost === 3 && extraTokens) extraTokens -= cost;
 
-    const remainder = subscription?.meditationCredits - cost;
-
-    let planCreditAmount = 0;
-    let splitAmount = 0;
-
-    if (remainder >= 0) planCreditAmount = cost;
-
-    if (remainder <= 0) {
-      planCreditAmount = subscription?.meditationCredits || 0;
-      splitAmount = Math.abs(remainder);
-    }
     const newSubscription = {
       ...currentUser?.subscription,
-      meditationCredits: (currentUser?.subscription?.meditationCredits || 0) - planCreditAmount,
-      extraBespokeMeditationCredits: currentUser?.subscription?.extraBespokeMeditationCredits
-        ? currentUser?.subscription?.extraBespokeMeditationCredits - splitAmount
-        : 0,
+      meditationCredits: includedMeditations,
+      extraBespokeMeditationCredits: extraTokens,
     };
     updateUser(currentUser?.uid, {
       subscription: newSubscription,
@@ -178,27 +183,12 @@ const AIMeditationGenerator: React.FC = () => {
       (currentUser?.subscription?.extraBespokeMeditationCredits || 0) >=
     cost;
 
-  // .filter((item) => {
-  // 99p gets 5 short meditations per month
-  // sub gets 10 short meditations per month
-  // cannot use free 'credits' towards extra ones
-  // trial cannot purchase packs
-
-  // WHEN SPENDING TOKENS
-  // short: 1 med: 2, long: 3
-
-  // when someone buys tokens - short ones still come off their included ones.
-
-  // monthly membership is 10 creds per month
-  //   if (item === "Recharge") return true;
-  //   if (currentUser?.subscription?.extraBespokeMeditationCredits > 2) return true;
-  // })
   const includedMeds = currentUser?.subscription?.meditationCredits || 0;
   const medTokens = currentUser?.subscription?.extraBespokeMeditationCredits || 0;
 
   const getSizeIsLocked = (value: string): boolean => {
     if (value === "Recharge" && !includedMeds && !medTokens) return true;
-    if (value === "Refresh" || (value === "Relax" && !medTokens)) return true;
+    if ((value === "Refresh" || value === "Relax") && !medTokens) return true;
     if (value === "Refresh" && medTokens < 2) return true;
     if (value === "Relax" && medTokens < 3) return true;
 
@@ -278,13 +268,13 @@ const AIMeditationGenerator: React.FC = () => {
                         label: value === "Recharge" ? "Short" : value === "Refresh" ? "Med" : "Long",
                       }))}
                     />
-                    <small className='create-widget-disclaimer'>
+                    {/* <small className='create-widget-disclaimer'>
                       Short meditations will deduct from your included meditations, and thereafter from any extra tokens
                       you may have purchased.
                     </small>
                     <small className='create-widget-disclaimer'>
                       When using tokens: Short:1 token, Medium: 2 and Long: 3
-                    </small>
+                    </small> */}
                   </div>
                 </div>
                 <div>

@@ -202,6 +202,9 @@ const MeditationCard = ({
           <button onClick={() => handleDelete(item.firebaseId)} style={{ background: "red" }}>
             delete
           </button>
+          {/* <audio controls>
+            <source src={item.audioUrl} />
+          </audio> */}
         </div>
       )}
     </article>

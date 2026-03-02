@@ -14,7 +14,7 @@ import { profanityFilter } from "./helper";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
-import jordan from "../../assets/audio/Jordan.mp3";
+import jordan from "../../assets/audio/rune.mp3";
 import willow from "../../assets/audio/Willow.mp3";
 import Consult8 from "../../components/Consult8/Consult8";
 
@@ -131,11 +131,11 @@ const AIMeditationGenerator: React.FC = () => {
         voice.id,
         title,
         immersive,
-        content
+        content,
       );
       if (!result) {
         dispatch(
-          createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" })
+          createToast({ text: "We were unable to generate your meditation. Please try again later.", type: "error" }),
         );
         throw new Error("Failed to generate meditation");
       }

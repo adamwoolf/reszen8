@@ -20,11 +20,11 @@ const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: (
       <h3>Your Meditations</h3>
       <ul className={flipped ? "playlist__list" : "playlist__list playlist__list--locked"}>
         {[...meds]
+          .filter((med) => !med.willDelete)
           .sort((a, b) => new Date(b?.createdAt).getTime() - new Date(a?.createdAt).getTime())
           ?.map((med) => {
             const date = new Date(med.createdAt);
             const today = new Date();
-
             const isSameDay = (d1, d2) => {
               return (
                 d1.getFullYear() === d2.getFullYear() &&

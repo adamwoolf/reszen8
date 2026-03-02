@@ -32,7 +32,6 @@ const CheckoutForm = () => {
     const item = items?.[0]?.product;
     setWaiting(true);
 
-    console.log("MODE", items);
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,6 +42,7 @@ const CheckoutForm = () => {
         lastName: surName,
         uid: currentUser?.uid,
         planId: item.priceId,
+        description: item.description,
         metadata: { uid: currentUser?.uid },
         lineItems: [{ priceId: item.priceId, quantity: 1 }], // 👈 send array of line items
         subscription: {
@@ -51,8 +51,9 @@ const CheckoutForm = () => {
       }),
     });
 
+    console.log(res);
     const data = await res.json();
-
+    console.log(data);
     await updateUser(currentUser?.uid, { basket: [] });
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });

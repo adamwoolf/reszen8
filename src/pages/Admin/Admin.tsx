@@ -68,7 +68,7 @@ const Admin: React.FC = () => {
         firstName,
         surName,
         email,
-      }))
+      })),
     );
   };
 
@@ -178,7 +178,7 @@ const Admin: React.FC = () => {
         immersive,
         introMed,
         collection,
-        episode
+        episode,
       );
 
       console.log("Static generated");
@@ -206,7 +206,7 @@ const Admin: React.FC = () => {
         voiceCode,
         meditationType,
         practiceType,
-        immersive
+        immersive,
       );
       dispatch(createToast({ text: `${title} Generated Successfully.`, type: "success" }));
     } catch (error) {
@@ -216,7 +216,7 @@ const Admin: React.FC = () => {
   };
 
   return (
-    <div className='ai-meditation-generator'>
+    <div className='ai-meditation-generator admin'>
       {isGenerating && <LoadingScene />}
 
       {/* STATIC MED GEN  */}

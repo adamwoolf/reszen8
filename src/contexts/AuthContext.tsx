@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const selectedPlan = subscriptionTiers?.find((tier) => tier.id === planId);
 
       const selectedSubData = {
-        hasCompletedTrial: true,
+        hasCompletedTrial: isTrial ? false : true,
         meditationCredits: selectedPlan?.medCredits || selectedPlan?.meditationCredits,
         size: selectedPlan?.billing,
         subId: selectedPlan?.id,
@@ -148,49 +148,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     extraBespokeMeditationCredits: number;
   }
 
+  //
+
   const checkoutNewUserPlan = async (
     user: CognitoUserProfile,
     selectedPlan: SubscriptionPlan,
     selectedSubData: SubscriptionData,
     trialSignup: boolean,
   ) => {
-    if (trialSignup) {
-      const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "payment",
-          email: user.email,
-          firstName: user.given_name,
-          lastName: user.family_name,
-          uid: user.sub,
-          metadata: { uid: currentUser?.uid },
-          lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
-          subscription: selectedSubData,
-          planId: selectedPlan.priceId,
-        }),
-      });
-      const data = await res.json();
-      const stripe = await stripePromise;
-      await stripe?.redirectToCheckout({ sessionId: data.sessionId });
-      return;
-    }
-    console.log(selectedSubData);
+    const mode = trialSignup ? "payment" : "subscription";
+
+    const body = {
+      mode,
+      email: user.email,
+      firstName: user.given_name,
+      lastName: user.family_name,
+      uid: user.sub,
+      metadata: {
+        uid: user.sub,
+        planName: selectedPlan.title,
+        meditationCredits: trialSignup ? "5" : "10",
+      },
+      lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
+      subscription: selectedSubData,
+      planId: trialSignup ? "free-trial" : selectedPlan.priceId,
+    };
+
     const res = await fetch(`${AWS_DB_ENDPOINT}/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mode: "subscription",
-        email: user.email,
-        firstName: user.given_name,
-        lastName: user.family_name,
-        uid: user.sub,
-        metadata: { uid: currentUser?.uid },
-        lineItems: [{ price: selectedPlan.priceId, quantity: 1 }],
-        subscription: selectedSubData,
-        planId: selectedPlan.priceId,
-      }),
+      body: JSON.stringify(body),
     });
+
     const data = await res.json();
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });
