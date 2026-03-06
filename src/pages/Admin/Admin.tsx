@@ -19,7 +19,7 @@ import { profanityFilter } from "./helper";
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import "./AdminStyles.scss";
-import { AWS_DB_ENDPOINT } from "../../constants";
+import { AWS_DB_ENDPOINT, voiceCodes } from "../../constants";
 import DownloadsPanel from "./DownloadsPanel";
 
 interface MeditationState {
@@ -62,45 +62,6 @@ const Admin: React.FC = () => {
   const [voiceRate, setVoiceRate] = useState(0);
   const [voicePitch, setVoicePitch] = useState(0);
   const [voiceStyleDegree, setVoiceStyleDegree] = useState(0);
-
-  const voiceCodes = {
-    "en-GB-SoniaNeural": {
-      code: "en-GB-SoniaNeural",
-      name: "en-GB-SoniaNeural",
-      rate: -6,
-      pitch: 0,
-      styleDegree: 1.15,
-    },
-    "en-GB-LibbyNeural": {
-      code: "en-GB-LibbyNeural",
-      name: "en-GB-LibbyNeural",
-      rate: -7,
-      pitch: -0.3,
-      styleDegree: 1.1,
-    },
-    "en-GB-RyanNeural": {
-      code: "en-GB-RyanNeural",
-      name: "en-GB-RyanNeural",
-      rate: -5,
-      pitch: -0.3,
-      styleDegree: 1.05,
-    },
-    "en-GB-OliviaNeural": { code: "en-GB-OliviaNeural", name: "Willow", rate: -4, pitch: -0.3, styleDegree: 1.05 },
-    "en-GB-OllieMultilingualNeural": {
-      code: "en-GB-OllieMultilingualNeural",
-      name: "Rune",
-      rate: -6,
-      pitch: 0,
-      styleDegree: 1.1,
-    },
-    "en-GB-BellaNeural": {
-      code: "en-GB-BellaNeural",
-      name: "OpenAI Article Woman",
-      rate: -6,
-      pitch: -0.3,
-      styleDegree: 1,
-    },
-  };
 
   useEffect(() => {
     const { rate, pitch, styleDegree } = voiceCodes[voiceCode as keyof typeof voiceCodes] || {};

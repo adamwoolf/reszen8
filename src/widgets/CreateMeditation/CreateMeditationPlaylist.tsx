@@ -5,6 +5,7 @@ import AudioController from "../../components/AudioPlayer/AudioController";
 import { useSelector } from "react-redux";
 
 import "./Playlist.scss";
+import AmbientEnv from "../../components/AmbientEnv/AmbientEnv";
 
 const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: () => void }) => {
   const meds = useSelector((state) => state.content.meditations);
@@ -17,7 +18,10 @@ const CreateMeditationPlaylist = ({ flip, flipped }: { flipped: boolean; flip: (
       <button className='playlist__flip-cta' onClick={flip}>
         <FaSync />
       </button>
-      <h3>Your Meditations</h3>
+      <div className='playlist__header-container'>
+        <h3>Your Meditations</h3>
+        <AmbientEnv />
+      </div>
       <ul className={flipped ? "playlist__list" : "playlist__list playlist__list--locked"}>
         {[...meds]
           .filter((med) => !med.willDelete)

@@ -30,6 +30,9 @@ export const generateMeditation = async (
   title: string,
   immersive: boolean,
   script?: any,
+  voiceRate?: number,
+  voicePitch?: number,
+  voiceStyleDegree?: number,
 ) => {
   try {
     // const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
@@ -47,6 +50,9 @@ export const generateMeditation = async (
         title,
         immersive,
         script,
+        voiceRate,
+        voicePitch,
+        voiceStyleDegree,
       },
 
       { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 },

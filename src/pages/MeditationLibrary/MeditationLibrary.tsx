@@ -30,9 +30,12 @@ const DigitalLibrary = () => {
     ?.filter((med) => !med.introMed)
     .filter((med) => !med.collection);
 
+  const showGodControls = useSelector((state) => state.content.showGodControls);
+
   const [meditations, setMeditations] = useState([]);
   const [displayMeds, setDisplayMeds] = useState([]);
   const resultsContainer = useRef<HTMLDivElement>();
+  const [allowDel, setAllowDel] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -99,7 +102,13 @@ const DigitalLibrary = () => {
               return med.verified;
             })
             ?.map((item, i) => (
-              <MeditationCard key={`meditation-card-${i}`} handleAddItem={handleAddItem} item={item} i={i} />
+              <MeditationCard
+                showDelete={allowDel}
+                key={`meditation-card-${i}`}
+                handleAddItem={handleAddItem}
+                item={item}
+                i={i}
+              />
             ))}
         </div>
       </div>
@@ -170,9 +179,10 @@ const DigitalLibrary = () => {
               Show all
             </button>
           ))}
-        {currentUser && currentUser.isGod && !window.location.href.includes("hideGodControls") && (
+        {showGodControls && currentUser && currentUser.isGod && !window.location.href.includes("hideGodControls") && (
           <div style={{ display: "flex" }}>
             <button onClick={showNonVerified}>Only Non-verified</button>
+            <button onClick={() => setAllowDel(!allowDel)}>Show Delete</button>
           </div>
         )}
       </div>
@@ -184,7 +194,7 @@ const DigitalLibrary = () => {
   return (
     <div className='dashboard-container'>
       {/* <h1 className='page-header'>Meditation Library</h1> */}
-      <Collections handleClick={setActiveCollection} />
+      <Collections showDelete={allowDel} handleClick={setActiveCollection} />
       {!activeCollection && (
         <>
           <h2 style={{ textAlign: "center", marginTop: 50, fontSize: 30 }}>Meditation Library</h2>

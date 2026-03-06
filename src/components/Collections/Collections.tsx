@@ -17,7 +17,7 @@ interface CollectionImage {
   order?: number;
 }
 
-const Collections = ({ handleClick }: { handleClick?: (value: string) => void }) => {
+const Collections = ({ handleClick, showDelete }: { showDelete?: boolean; handleClick?: (value: string) => void }) => {
   const { addItem } = useSavedItems();
   const { currentUser } = useAuth();
 
@@ -175,6 +175,7 @@ const Collections = ({ handleClick }: { handleClick?: (value: string) => void })
 
             return (
               <MeditationCard
+                showDelete={showDelete}
                 key={`${med.collection}-${med.episode}-${index}`}
                 customTitle={
                   med.episode !== "0"

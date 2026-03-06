@@ -12,8 +12,6 @@ import { Link } from "react-router-dom";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { trackCTA } from "../../utils/analytics";
 import VoiceOptions from "../../components/VoiceOptions/VoiceOptions";
-import jordan from "../../assets/audio/rune.mp3";
-import willow from "../../assets/audio/Willow.mp3";
 import Consult8 from "../../components/Consult8/Consult8";
 import { profanityFilter } from "../../pages/MeditationGenerator/helper";
 import logo from "../../assets/logoNew.png";
@@ -21,6 +19,7 @@ import FlippableCard from "../../components/FlippableCard/FlippableCard";
 import CreateMeditationPlaylist from "./CreateMeditationPlaylist";
 import CreateMeditationOnboarding from "./CreateMeditationOnboarding";
 import { FaLock } from "react-icons/fa";
+import { voiceCodes } from "../../constants";
 
 interface MeditationState {
   title: string;
@@ -30,18 +29,19 @@ interface MeditationState {
   isImmersive: boolean;
 }
 
-const voiceOptionsArray = [
-  { id: "en-GB-OliviaNeural", label: "Willow", sampleUri: willow },
-  { id: "en-GB-OllieMultilingualNeural", label: "Rune", sampleUri: jordan },
-];
-
 const AIMeditationGenerator: React.FC = () => {
   // State management
   const [meditationType, setMeditationType] = useState("Mindfulness");
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [practiceType, setPracticeType] = useState(PracticeTypes[0].name);
   const allowedValues = Object.keys(mapDurationToWords);
+  const voiceOptionsArray = Object.values(voiceCodes)
+    ?.slice(0, 2)
+    .map((voice) => ({ ...voice, label: voice.name, id: voice.code }));
   const [voice, setVoice] = useState(voiceOptionsArray[0]);
+  const [rate, setRate] = useState(0);
+  const [pitch, setPitch] = useState(0);
+  const [styleDegree, setStyleDegree] = useState(0);
   const [duration, setDuration] = useState(allowedValues[0]);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -66,6 +66,13 @@ const AIMeditationGenerator: React.FC = () => {
         return 0;
     }
   };
+
+  useEffect(() => {
+    const { rate: vRate, pitch: vPitch, styleDegree: vStyleDeg } = voice || {};
+    setRate(vRate);
+    setPitch(vPitch);
+    setStyleDegree(vStyleDeg);
+  }, [voice]);
 
   const cost = calculateCost();
 
@@ -145,10 +152,13 @@ const AIMeditationGenerator: React.FC = () => {
         selectedLanguage,
         practiceType,
         currentUser?.uid || "anonymous",
-        voice.id,
+        voice.code,
         title,
         immersive,
         content,
+        rate,
+        pitch,
+        styleDegree,
       );
       if (!result) {
         dispatch(

@@ -17,10 +17,11 @@
   &__text {
     display: flex;
     flex-direction: column;
-
+    max-width: 150px;
     @media (min-width: 768px) {
       flex-direction: row;
       align-items: center;
+      max-width: unset;
     }
   }
 }

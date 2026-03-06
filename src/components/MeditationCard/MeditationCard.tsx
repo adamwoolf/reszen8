@@ -21,6 +21,7 @@ const MeditationCard = ({
   customTitle,
   customImage,
   isCollection,
+  showDelete,
 }: {
   handleAddItem?: (item: any) => void;
   showLike?: boolean;
@@ -29,6 +30,7 @@ const MeditationCard = ({
   customTitle?: string;
   customImage?: string | boolean;
   isCollection?: boolean;
+  showDelete?: boolean;
 }) => {
   const { currentUser } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
@@ -187,7 +189,15 @@ const MeditationCard = ({
         )}
         {showLike && <LikeCta item={item} id={item.uid} content='meditations' />}
       </div>
-      {currentUser && currentUser.isGod && !item.verified && item.staticMed && (
+      {showDelete && currentUser && currentUser?.isGod && (
+        <button
+          style={{ position: "absolute", background: "red", top: 4, left: 4 }}
+          onClick={() => handleDelete(item.firebaseId)}
+        >
+          X
+        </button>
+      )}
+      {currentUser && currentUser?.isGod && !item.verified && item.staticMed && (
         <div
           style={{
             position: "absolute",
