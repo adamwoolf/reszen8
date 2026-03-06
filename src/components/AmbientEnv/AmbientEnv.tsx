@@ -11,6 +11,8 @@ const Envs = [
   { name: "Warm", url: "/audio/space.mp3" },
   { name: "Ocean", url: "/audio/ocean.mp3" },
   { name: "Rain", url: "/audio/rain.mp3" },
+  { name: "Breathing", url: "/audio/exhale.mp3" },
+  { name: "Tranquility", url: "/audio/tranquil.mp3" },
   { name: "None", url: "" },
 ];
 

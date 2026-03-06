@@ -29,7 +29,7 @@ export const generateMeditation = async (
   voiceCode = "en-GB-BellaNeural",
   title: string,
   immersive: boolean,
-  script?: any
+  script?: any,
 ) => {
   try {
     // const endpoint = `${AWS_DB_ENDPOINT}/generateMeditation`;
@@ -49,7 +49,7 @@ export const generateMeditation = async (
         script,
       },
 
-      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 }
+      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 },
     );
 
     console.log("MEDITATION", meditation);
@@ -77,7 +77,7 @@ export const generateScript = async (
   language: string = "en",
   practiceType: string,
   title: string,
-  immersive: boolean
+  immersive: boolean,
 ) => {
   try {
     // const endpoint = `${AWS_DB_ENDPOINT}/generateScript`;
@@ -93,7 +93,7 @@ export const generateScript = async (
         title,
         immersive,
       },
-      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 }
+      { headers: { "Content-Type": "application/json" }, timeout: 120000, validateStatus: (status) => status < 500 },
     );
 
     console.log("SCRIPT", script);
@@ -112,7 +112,7 @@ export const generateArticleWithAudio = async (
   voiceCode = "en-GB-BellaNeural",
   meditationType: string,
   practiceType: string,
-  immersive: boolean
+  immersive: boolean,
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -148,7 +148,10 @@ export const generateStaticMedFromScript = async (
   immersive: boolean,
   introMed?: boolean,
   collection?: string,
-  episode?: string
+  episode?: string,
+  voiceRate?: number,
+  voicePitch?: number,
+  voiceStyleDegree?: number,
 ) => {
   try {
     // Generate audio via Azure TTS
@@ -170,13 +173,16 @@ export const generateStaticMedFromScript = async (
         introMed,
         collection,
         episode,
+        voiceRate,
+        voicePitch,
+        voiceStyleDegree,
       },
       {
         headers: { "Content-Type": "application/json" },
         timeout: 300000, // 5 minutes
 
         validateStatus: (status) => status < 500,
-      }
+      },
     );
 
     return uploadResponse;

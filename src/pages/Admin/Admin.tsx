@@ -20,6 +20,7 @@ import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import "./AdminStyles.scss";
 import { AWS_DB_ENDPOINT } from "../../constants";
+import DownloadsPanel from "./DownloadsPanel";
 
 interface MeditationState {
   title: string;
@@ -58,6 +59,62 @@ const Admin: React.FC = () => {
   const [script, setScript] = useState("");
   const [formattedArticle, setFormattedArticle] = useState("");
   const [voiceCode, setVoiceCode] = useState("en-GB-BellaNeural");
+  const [voiceRate, setVoiceRate] = useState(0);
+  const [voicePitch, setVoicePitch] = useState(0);
+  const [voiceStyleDegree, setVoiceStyleDegree] = useState(0);
+
+  const voiceCodes = {
+    "en-GB-SoniaNeural": {
+      code: "en-GB-SoniaNeural",
+      name: "en-GB-SoniaNeural",
+      rate: -6,
+      pitch: 0,
+      styleDegree: 1.15,
+    },
+    "en-GB-LibbyNeural": {
+      code: "en-GB-LibbyNeural",
+      name: "en-GB-LibbyNeural",
+      rate: -7,
+      pitch: -0.3,
+      styleDegree: 1.1,
+    },
+    "en-GB-RyanNeural": {
+      code: "en-GB-RyanNeural",
+      name: "en-GB-RyanNeural",
+      rate: -5,
+      pitch: -0.3,
+      styleDegree: 1.05,
+    },
+    "en-GB-OliviaNeural": { code: "en-GB-OliviaNeural", name: "Willow", rate: -4, pitch: -0.3, styleDegree: 1.05 },
+    "en-GB-OllieMultilingualNeural": {
+      code: "en-GB-OllieMultilingualNeural",
+      name: "Rune",
+      rate: -6,
+      pitch: 0,
+      styleDegree: 1.1,
+    },
+    "en-GB-BellaNeural": {
+      code: "en-GB-BellaNeural",
+      name: "OpenAI Article Woman",
+      rate: -6,
+      pitch: -0.3,
+      styleDegree: 1,
+    },
+  };
+
+  useEffect(() => {
+    const { rate, pitch, styleDegree } = voiceCodes[voiceCode as keyof typeof voiceCodes] || {};
+
+    if (rate) {
+      setVoicePitch(pitch);
+      setVoiceRate(rate);
+      setVoiceStyleDegree(styleDegree);
+    } else {
+      setVoicePitch(0);
+      setVoiceRate(0);
+      setVoiceStyleDegree(0);
+    }
+  }, [voiceCode]);
 
   const getAllUsers = async () => {
     const data = await fetch(`${AWS_DB_ENDPOINT}/getUsers`);
@@ -169,7 +226,7 @@ const Admin: React.FC = () => {
     setIsGenerating(true);
     console.log(textToSend);
     try {
-      await generateStaticMedFromScript(
+      const res = await generateStaticMedFromScript(
         title,
         meditationType,
         practiceType,
@@ -179,9 +236,12 @@ const Admin: React.FC = () => {
         introMed,
         collection,
         episode,
+        voiceRate,
+        voicePitch,
+        voiceStyleDegree,
       );
 
-      console.log("Static generated");
+      console.log("Static generated", res);
       dispatch(createToast({ text: `${title} Generated Successfully.`, type: "success" }));
 
       getStaticMeditations().then((data) => {
@@ -265,12 +325,36 @@ const Admin: React.FC = () => {
 
           <div className='form-group form-group-block'>
             <label>Voice code</label>
+            <div className='voice-select-ctas'>
+              {Object.values(voiceCodes).map((code) => (
+                <button
+                  className={voiceCode === code.code ? "voice-select-cta--selected" : "voice-select-cta"}
+                  onClick={() => setVoiceCode(code.code)}
+                >
+                  {code.name}
+                </button>
+              ))}
+            </div>
             <input
               className='admin__input'
               value={voiceCode}
               placeholder='Enter voice code'
               onChange={(e) => setVoiceCode(e.target.value)}
             />
+          </div>
+          <div className='form-group form-group-block voice-meta-inputs'>
+            <div>
+              <label>Voice Rate</label>
+              <input type='number' onChange={(e) => setVoiceRate(e.target.value)} value={voiceRate} />
+            </div>
+            <div>
+              <label>Voice Pitch</label>
+              <input type='number' onChange={(e) => setVoicePitch(e.target.value)} value={voicePitch} />
+            </div>
+            <div>
+              <label>Voice Style Degree</label>
+              <input type='number' onChange={(e) => setVoiceStyleDegree(e.target.value)} value={voiceStyleDegree} />
+            </div>
           </div>
           <div className='form-grid'>
             {contentType === "meditation" && (
@@ -401,6 +485,7 @@ const Admin: React.FC = () => {
           </div>
         </div>
       )}
+      <DownloadsPanel />
     </div>
   );
 };

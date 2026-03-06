@@ -9,12 +9,14 @@ import "./LikeCtaStyles.scss";
 interface Like {
   id: string;
   likes: number;
+  publicationCard?: boolean;
 }
 const LikeCta = ({
   id,
   large = false,
   content = "publications",
   item,
+  publicationCard,
 }: {
   id: string;
   large?: boolean;
@@ -86,7 +88,7 @@ const LikeCta = ({
     setLikes(likes + 1);
   };
   return (
-    <div style={{ top: large ? 32 : 52 }} className='likes'>
+    <div style={{ top: publicationCard ? 20 : large ? 32 : 52 }} className='likes'>
       <button aria-label='like-cta' onClick={() => toggleFavourite(id)} className='publication__heart-cta'>
         <FaHeart
           size={large ? 30 : 15}

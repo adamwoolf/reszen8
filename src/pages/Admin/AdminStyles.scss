@@ -2,11 +2,50 @@
   padding-top: 40px;
   &__input {
     color: black;
-    background-color: white;
+    background-color: white !important;
     display: block;
+    width: 100%;
   }
 
   .form-group {
     margin-top: 20px !important;
   }
+}
+
+.voice-select-ctas {
+  display: flex;
+}
+
+.voice-select-cta {
+  width: fit-content;
+  background: none;
+  border: 1px solid orange;
+  margin: 0 4px;
+  &--selected {
+    background: orange;
+    border: 1px solid orange;
+    margin: 0 4px;
+  }
+}
+
+.downloads-panel {
+  margin-top: 60px;
+  border-top: 1px solid orange;
+  padding: 60px 0;
+
+  th,
+  td {
+    padding: 15px;
+  }
+  input {
+    background-color: white;
+    color: black;
+    width: 80%;
+  }
+}
+
+.voice-meta-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }

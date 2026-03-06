@@ -18,7 +18,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   const [filter, setFilter] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
-  const meditations = useSelector(getStaticMeds);
+  const meditations = useSelector(getStaticMeds)?.filter((med) => med.verified);
   const publications = useSelector(getPublicationsWithCategories);
   const [bespokeMeds, setBespokeMeds] = useState([]);
   const { savedItems } = useSavedItems();
@@ -33,7 +33,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
     const ms = dashboardMeditations.filter(
       (med) =>
         med.content?.toLowerCase().includes(query?.toLowerCase()) ||
-        med.title.toLowerCase().includes(query?.toLowerCase())
+        med.title.toLowerCase().includes(query?.toLowerCase()),
     );
     setMeds(ms);
     if (!currentUser) return;
@@ -41,7 +41,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
     const filtered = myMs.filter(
       (med) =>
         med.content?.toLowerCase().includes(query?.toLowerCase()) ||
-        med.title.toLowerCase().includes(query?.toLowerCase())
+        med.title.toLowerCase().includes(query?.toLowerCase()),
     );
     setBespokeMeds(filtered);
   };
@@ -52,7 +52,7 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
 
     const ms = meditations.filter(
       (m: any) =>
-        m.content?.toLowerCase().includes(query.toLowerCase()) || m.title?.toLowerCase().includes(query.toLowerCase())
+        m.content?.toLowerCase().includes(query.toLowerCase()) || m.title?.toLowerCase().includes(query.toLowerCase()),
     );
 
     setResults(pubs);

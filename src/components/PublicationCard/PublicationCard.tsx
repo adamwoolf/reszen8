@@ -72,7 +72,7 @@ const PublicationCard = ({ item, showLike = true, onClose, index }: { index: num
   };
   return (
     <article key={item.uid} className='feature-card clickable publication__card'>
-      {showLike && currentUser && <LikeCta item={item} id={item.uid} />}
+      {showLike && currentUser && <LikeCta publicationCard item={item} id={item.uid} />}
 
       {!lockCard ? (
         <Link onClick={onCardClick} className='publication__card-content' to={`/articles/${item.title}`}>

@@ -75,10 +75,23 @@ const AIMeditationGenerator: React.FC = () => {
     let includedMeditations = subscription?.meditationCredits || 0;
     let extraTokens = subscription?.extraBespokeMeditationCredits || 0;
 
-    if (cost === 1 && includedMeditations) includedMeditations -= cost;
-    if (cost === 1 && !includedMeditations && extraTokens) extraTokens -= cost;
-    if (cost === 2 && extraTokens) extraTokens -= cost;
-    if (cost === 3 && extraTokens) extraTokens -= cost;
+    if (currentUser?.isGod) {
+      if (cost === 1 && includedMeditations) includedMeditations -= cost;
+      if (cost === 1 && !includedMeditations && extraTokens) {
+        includedMeditations = 10;
+        extraTokens -= cost;
+      }
+      if (cost === 1 && !includedMeditations && !extraTokens) extraTokens = 25;
+      if (cost === 2 && extraTokens >= cost) extraTokens -= cost;
+      if (cost === 2 && extraTokens === 0) extraTokens = 25;
+      if (cost === 3 && extraTokens >= cost) extraTokens -= cost;
+      if (cost === 3 && extraTokens < cost) extraTokens -= 25;
+    } else {
+      if (cost === 1 && includedMeditations) includedMeditations -= cost;
+      if (cost === 1 && !includedMeditations && extraTokens) extraTokens -= cost;
+      if (cost === 2 && extraTokens) extraTokens -= cost;
+      if (cost === 3 && extraTokens) extraTokens -= cost;
+    }
 
     const newSubscription = {
       ...currentUser?.subscription,
@@ -98,6 +111,7 @@ const AIMeditationGenerator: React.FC = () => {
   const checkCredits = async () => {
     if (!currentUser) return;
     const user = await getUser(currentUser.uid);
+    if (currentUser.isGod) return true;
 
     setCurrentUser(user);
     const { meditationCredits, extraBespokeMeditationCredits } = user?.subscription || {};

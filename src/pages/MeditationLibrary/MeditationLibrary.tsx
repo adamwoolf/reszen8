@@ -170,7 +170,7 @@ const DigitalLibrary = () => {
               Show all
             </button>
           ))}
-        {currentUser && currentUser.isGod && (
+        {currentUser && currentUser.isGod && !window.location.href.includes("hideGodControls") && (
           <div style={{ display: "flex" }}>
             <button onClick={showNonVerified}>Only Non-verified</button>
           </div>
