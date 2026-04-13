@@ -38,7 +38,7 @@ const OnboardingHero = () => {
           <h3>Meditation, tuned to how you feel</h3>
           <p>Here's how RESZEN8 can support you</p>
           {Object.keys(getIcon)
-            .filter((key) => key !== "Uncategorized")
+            .filter((key) => key !== "Other")
             .filter((key) => category.map((cat) => cat.replace(/\s+/g, "").toLowerCase()).includes(key.toLowerCase()))
             .map((icon) => {
               const text = themes.find(

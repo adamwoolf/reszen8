@@ -14,7 +14,6 @@ import ToggleContainer from "./ToggleContainer";
 import Popup from "../../components/Popup/Popup";
 import Collections from "../../components/Collections/Collections";
 import { trackCTA } from "../../utils/analytics";
-import { createToast } from "../../store/contentSlice";
 import LoadingScene from "../../components/LoadingScene/LoadingScene";
 
 type TabType = "meditations" | "ebooks" | "publications";
@@ -28,7 +27,7 @@ const DigitalLibrary = () => {
   const { addItem } = useSavedItems();
   const libraryMeditations = useSelector(getStaticMeds)
     ?.filter((med) => !med.introMed)
-    .filter((med) => !med.collection);
+    .filter((med) => !med.hidden);
 
   const showGodControls = useSelector((state) => state.content.showGodControls);
 
@@ -46,9 +45,9 @@ const DigitalLibrary = () => {
       setMeditations(libraryMeditations.filter((med) => filterByImmersive(med, ImmersiveMeds)));
   }, [libraryMeditations]);
 
-  useEffect(() => {
-    setDisplayMeds(meditations);
-  }, [meditations]);
+  // useEffect(() => {
+  //   setDisplayMeds(meditations);
+  // }, [meditations]);
 
   const filterMeds = (word: string) => {
     setActiveFilter(word);
@@ -84,10 +83,10 @@ const DigitalLibrary = () => {
     );
   };
 
-  const showAll = () => {
-    setSearch("");
-    setDisplayMeds(libraryMeditations);
-  };
+  // const showAll = () => {
+  //   setSearch("");
+  //   // setDisplayMeds(libraryMeditations);
+  // };
 
   const handleAddItem = (item: any) => {
     addItem(item);
@@ -97,14 +96,14 @@ const DigitalLibrary = () => {
       <div className='dashboard-content'>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {displayMeds
-            .filter((med) => {
+            .filter((med: Meditation) => {
               if (currentUser?.isGod) return true;
               return med.verified;
             })
-            ?.map((item, i) => (
+            ?.map((item: Meditation, i: number) => (
               <MeditationCard
                 showDelete={allowDel}
-                key={`meditation-card-${i}`}
+                key={`meditation-card-${item.uid}`}
                 handleAddItem={handleAddItem}
                 item={item}
                 i={i}
@@ -120,13 +119,13 @@ const DigitalLibrary = () => {
     setDisplayMeds(libraryMeditations.filter((m) => m.staticMed && !m.verified));
   };
 
-  useEffect(() => {
-    if (ImmersiveMeds) {
-      setDisplayMeds(libraryMeditations.filter((m) => m.immersive));
-    } else {
-      setDisplayMeds(libraryMeditations.filter((m) => !m.immersive));
-    }
-  }, [ImmersiveMeds]);
+  // useEffect(() => {
+  //   if (ImmersiveMeds) {
+  //     setDisplayMeds(libraryMeditations.filter((m) => m.immersive));
+  //   } else {
+  //     setDisplayMeds(libraryMeditations.filter((m) => !m.immersive));
+  //   }
+  // }, [ImmersiveMeds]);
   const [showPopup, setShowPopup] = useState(false);
 
   const renderSearch = () => {
@@ -168,17 +167,17 @@ const DigitalLibrary = () => {
           searchText={searchText}
         />
 
-        {libraryMeditations.length > 0 && (
+        {displayMeds.length > 0 && (
           <span ref={resultsContainer} className='meditation-library__search-results'>
-            Showing {displayMeds.length} of {libraryMeditations?.length}
+            {displayMeds.length} results
           </span>
         )}
-        {search.length > 0 ||
+        {/* {search.length > 0 ||
           (activeFilter && (
             <button className='publications__filter' onClick={showAll}>
               Show all
             </button>
-          ))}
+          ))} */}
         {showGodControls && currentUser && currentUser.isGod && !window.location.href.includes("hideGodControls") && (
           <div style={{ display: "flex" }}>
             <button onClick={showNonVerified}>Only Non-verified</button>
@@ -200,6 +199,17 @@ const DigitalLibrary = () => {
           <h2 style={{ textAlign: "center", marginTop: 50, fontSize: 30 }}>Meditation Library</h2>
           {renderSearch()}
           {renderTabContent()}
+          {displayMeds.length > 0 && (
+            <div className='back-to-top'>
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0 });
+                }}
+              >
+                back to top
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

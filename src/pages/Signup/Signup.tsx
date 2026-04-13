@@ -9,6 +9,7 @@ import { useAuth } from "react-oidc-context";
 import ThreeDotsLoader from "../../components/ThreeDotsLoads";
 import { trackCTA } from "../../utils/analytics";
 import Checkbox from "../../components/Checkbox/Checkbox";
+import { COUNTRIES } from "../../constants";
 
 const client = new CognitoIdentityProviderClient({ region: "eu-north-1" });
 
@@ -125,27 +126,27 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-<div className="signup-form__columns" >
-  <div className="signup-form__columns__column" >
-            <label className='signup-form-label'>First Name</label>
-            <input
-              className='signup-form__input'
-              placeholder='Enter First Name'
-              value={givenName}
-              onChange={(e) => setGivenName(e.target.value)}
-              required
-            />
-            </div>
-<div className="signup-form__columns__column" >
-            <label className='signup-form-label'>Family Name</label>
-            <input
-              className='signup-form__input'
-              placeholder='Enter Family Name'
-              value={familyName}
-              onChange={(e) => setFamilyName(e.target.value)}
-              required
-            />
-            </div>
+            <div className='signup-form__columns'>
+              <div className='signup-form__columns__column'>
+                <label className='signup-form-label'>First Name</label>
+                <input
+                  className='signup-form__input'
+                  placeholder='Enter First Name'
+                  value={givenName}
+                  onChange={(e) => setGivenName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className='signup-form__columns__column'>
+                <label className='signup-form-label'>Family Name</label>
+                <input
+                  className='signup-form__input'
+                  placeholder='Enter Family Name'
+                  value={familyName}
+                  onChange={(e) => setFamilyName(e.target.value)}
+                  required
+                />
+              </div>
             </div>
 
             <label className='signup-form-label'>Password</label>
@@ -171,6 +172,15 @@ export default function Signup({ planId, tier, onSuccess }: SignupProps) {
               <label className='signup-form-label'>I confirm that I live in the UK</label>
               <Checkbox checked={country === "GB"} size={32} onChange={handleCountryCheck} />
             </div>
+            {/* <div>
+              <label className='signup-form-label'>Choose your location</label>
+
+              <select onChange={(e) => setCountry(e.target.value)}>
+                {COUNTRIES.map((c) => (
+                  <option value={c.code}>{c.name}</option>
+                ))}
+              </select>
+            </div> */}
           </>
         )}
 

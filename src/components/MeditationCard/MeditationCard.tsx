@@ -55,7 +55,7 @@ const MeditationCard = ({
 
   const hasBeenSaved = currentUser?.savedItems?.meditations?.some((m) => m.uid === item.uid);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
     await fetch(`${AWS_DB_ENDPOINT}/deleteStaticMed`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },

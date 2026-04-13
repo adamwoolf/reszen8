@@ -82,6 +82,11 @@ const Navbar: React.FC = () => {
                   <Search />
                 </div>
               )}
+              {currentUser && (
+                <div className='navbar-share-cta--mobile'>
+                  <ShareCta />
+                </div>
+              )}
               <div className='nav-sections'>
                 <ul className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
                   <li>
@@ -183,7 +188,9 @@ const Navbar: React.FC = () => {
                   <span className='user-address'>{name}</span>
                 </NavLink>
               )}
-              <ShareCta />
+              <div className='navbar-share-cta--desktop'>
+                <ShareCta />
+              </div>
             </span>
           </div>
         )}

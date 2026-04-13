@@ -62,7 +62,7 @@ const AccountStatus = ({ user }: { user: User }) => {
   return (
     <>
       {/* <span className={`account-status-message`}>Active {user.subscription.planSize}</span> */}
-      <div className=''>
+      <div className='credit-info'>
         <div className='credit-info__text'>
           <div>
             <span style={{ color: "orange" }}>

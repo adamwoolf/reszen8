@@ -7,7 +7,7 @@ const Filters = ({ placeholder, searchText, filterPubs, activeFilter, search }) 
     <div className='publications__filters'>
       <div className='publications__tiles'>
         {Object.keys(getIcon)
-          .filter((key) => key !== "Uncategorized")
+          .filter((key) => key !== "Other")
           .map((icon) => (
             <button
               key={icon}

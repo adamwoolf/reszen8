@@ -35,28 +35,30 @@
       margin: 10px;
       padding: 5px;
       position: relative;
+      justify-content: space-between;
 
       @media (max-width: 768px) {
-        display: block;
+        // display: block;
+        flex-direction: column;
+        padding: 0 20px;
       }
       &-icon {
         @media (max-width: 768px) {
-          position: absolute;
+          // position: absolute;
           left: 10px;
           top: 10px;
         }
       }
       &-audio {
         @media (max-width: 768px) {
-          position: absolute;
+          // position: absolute;
           right: 0px;
           top: 0px;
         }
       }
       &-text {
         @media (max-width: 768px) {
-          margin-top: 120px;
-          display: block;
+          // margin-top: 120px;
           font-size: 0.9rem;
           position: relative;
           z-index: 2;

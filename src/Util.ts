@@ -158,7 +158,7 @@ export const categoriser = (text: string) => {
   scores = scores.filter((s) => s.score > 0);
 
   if (scores.length === 0) {
-    return [{ category: "Uncategorized", confidence: 0 }];
+    return [{ category: "Other", confidence: 0 }];
   }
 
   // Sort by score descending

@@ -51,9 +51,7 @@ const CheckoutForm = () => {
       }),
     });
 
-    console.log(res);
     const data = await res.json();
-    console.log(data);
     await updateUser(currentUser?.uid, { basket: [] });
     const stripe = await stripePromise;
     await stripe?.redirectToCheckout({ sessionId: data.sessionId });

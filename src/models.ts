@@ -88,6 +88,10 @@ export interface Meditation {
   content: string;
   likes?: number;
   category?: any[];
+  hidden?: boolean;
+  uid: string;
+  verified?: boolean;
+  staticMed?: boolean;
 }
 
 export interface Publication {

@@ -1,0 +1,43 @@
+// @import "../../variables.scss";
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+
+  &--toggle-button {
+    cursor: pointer;
+    transition: 300ms;
+    margin-right: 8px;
+  }
+
+  &--dark {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    color: orange;
+    background: var(--bg-color-light);
+    border: 1px solid transparent;
+
+    &:hover {
+      background: var(--bg-color-light);
+      border: 1px solid rgba(orange, 0.3);
+    }
+  }
+}
+
+.accordion-content {
+  overflow: hidden;
+  transition: 200ms;
+}
+
+.accordion-open {
+  transition: 200ms;
+}

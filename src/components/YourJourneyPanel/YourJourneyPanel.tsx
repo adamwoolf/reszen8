@@ -231,7 +231,7 @@ const YourJourneyPanel = () => {
   // ---------------- RENDER ----------------
 
   if (!currentUser || !allActivity?.length) return null;
-
+  console.log(uniqueCatsToList);
   return (
     <div className='journey'>
       <h2 className='journey__title'>Your RESZEN8 Journey</h2>
@@ -297,7 +297,7 @@ const YourJourneyPanel = () => {
                   <div className='journey__stats-list-item'>
                     <div className='journey__stats-list-item-text'>
                       <Icon type={cat.title} />
-                      <span>{cat.title}</span>
+                      <span>{cat.title !== "Uncategorized" ? cat.title : "Other"}</span>
                     </div>
                     <span>{cat.percentage}%</span>
                   </div>

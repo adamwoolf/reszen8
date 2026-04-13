@@ -18,7 +18,9 @@ const Search = ({ text, dashboard }: { dashboard?: boolean; text?: string }) => 
   const [filter, setFilter] = useState("");
   const [results, setResults] = useState<Publication[]>([]);
   const [meds, setMeds] = useState<Meditation[]>([]);
-  const meditations = useSelector(getStaticMeds)?.filter((med) => med.verified);
+  const meditations = useSelector(getStaticMeds)
+    ?.filter((med) => med.verified)
+    .filter((med) => !med.hidden);
   const publications = useSelector(getPublicationsWithCategories);
   const [bespokeMeds, setBespokeMeds] = useState([]);
   const { savedItems } = useSavedItems();

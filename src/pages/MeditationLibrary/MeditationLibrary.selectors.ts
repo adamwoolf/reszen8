@@ -13,6 +13,6 @@ export const getStaticMeds = createSelector(getStaticMeditations, (staticMs): Me
       category: categoriser(`${staticMs[key].title} - ${staticMs[key].content}`),
     };
   });
-
-  return [...staticMeds].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  return staticMeds;
+  // return [...staticMeds].sort((a, b) => (b.likes || 0) - (a.likes || 0));
 });

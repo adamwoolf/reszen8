@@ -31,9 +31,9 @@ const CreateMeditationOnboarding = ({ types = [], flip }: { types: any[]; flip: 
       <h3>Meditation, tuned to how you feel</h3>
       <p>Here's how RESZEN8 can support you</p>
       {Object.keys(getIcon)
-        .filter((key) => key !== "Uncategorized")
+        .filter((key) => key !== "Other")
         .filter((key) => types?.map((cat) => cat.replace(/\s+/g, "").toLowerCase()).includes(key.toLowerCase()))
-        .slice(0, 3)
+        .slice(0, 1)
         .map((icon, index) => {
           const text = themes.find(
             (theme) => theme.title.replace(/\s+/g, "")?.toLowerCase() === icon.toLowerCase(),

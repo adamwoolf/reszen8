@@ -22,7 +22,9 @@ const Collections = ({ handleClick, showDelete }: { showDelete?: boolean; handle
   const { currentUser } = useAuth();
 
   const [displayCol, setDisplayCol] = useState("");
-  const collections = useSelector(getStaticMeds).filter((med) => med.collection);
+  const collections = useSelector(getStaticMeds)
+    .filter((med) => med.collection)
+    .filter((med) => !med.hidden);
   const [images, setImages] = useState<CollectionImage[]>([]);
 
   const headerRef = useRef<HTMLDivElement>(null);

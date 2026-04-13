@@ -67,7 +67,7 @@ const initialState: ContentState = {
   meditationThemes: [],
   showSignupModal: false,
   videos: [],
-  showGodControls: false,
+  showGodControls: true,
 };
 
 export const contentSlice = createSlice({

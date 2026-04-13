@@ -20,17 +20,13 @@
 
   <body>
     <h2>Parent App (Intranet)</h2>
-    <div id="reszen8"></div>
-    <!-- <script src="iframeEmbed.js"></script> -->
-    <script src="https://reszen8.com/iframeEmbed.js"></script>
+    <div id="quality"></div>
+    <script src="https://quality-practice.com/iframeEmbed.js"></script>
 
     <script>
-      const mockToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbnRlcnByaXNlLTEyMyIsInVpZCI6IjgwM2M0OWFjLTIwNjEtNzAxMi1iZDc3LTA3NWM0ZGJiODU4YiIsImVtYWlsIjoiamFuZS5kb2VAYWNtZS5jb20iLCJmaXJzdE5hbWUiOiJKYW5lIiwic3VyTmFtZSI6IkRvZSIsInRlbmFudCI6ImFjbWUiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTY3MDAwMDAwMCwiZXhwIjoxNjcwMDAzNjAwfQ.4eWl0zS4Cv0IFl39hDIXTppOZ2IMLAl4x7Hn1_YJNNw";
-      Reszen8Embed({
-        containerId: "reszen8",
-        tenant: "acme",
-        token: mockToken,
+      qualityPractice({
+        containerId: "quality",
+        tenant: "ACME_UNI",
       });
     </script>
   </body>

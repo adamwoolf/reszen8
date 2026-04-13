@@ -41,7 +41,10 @@
         cursor: not-allowed;
       }
     }
-
+    select {
+      color: orange;
+      margin-left: 12px;
+    }
     &__columns {
       display: grid;
       grid-template-columns: 1fr 1fr;

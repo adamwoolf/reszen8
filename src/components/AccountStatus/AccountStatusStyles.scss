@@ -12,16 +12,21 @@
 .credit-info {
   display: flex;
   align-items: center;
+  width: 210px;
   margin-top: 0px;
+  // position: absolute;
+  // top: 8px;
+  @media (min-width: 768px) {
+    width: unset;
+  }
 
   &__text {
     display: flex;
     flex-direction: column;
-    max-width: 150px;
+    font-size: 0.7rem;
     @media (min-width: 768px) {
       flex-direction: row;
       align-items: center;
-      max-width: unset;
     }
   }
 }

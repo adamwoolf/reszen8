@@ -11,6 +11,7 @@ import Relationships from "../../assets/icons/Relationships.png";
 import Resilience from "../../assets/icons/Resilience.png";
 import StressRelief from "../../assets/icons/Stress_Relief.png";
 import Trauma from "../../assets/icons/Trauma.png";
+import logo from "../../assets/logoNew.png";
 import "./IconStyles.scss";
 
 export const getIcon = {
@@ -26,7 +27,8 @@ export const getIcon = {
   Anger,
   AnxietyRelief,
   Trauma,
-  Uncategorized: Mindfulness,
+  Other: Mindfulness,
+  Uncategorized: logo,
 };
 
 const Icon = ({ type, large, gridItem }: { type: string; large?: boolean; gridItem?: boolean }) => {
@@ -34,7 +36,7 @@ const Icon = ({ type, large, gridItem }: { type: string; large?: boolean; gridIt
     <div className='icon__container'>
       <img
         alt={`category-filter-icon--${type}`}
-        className={!large ? "icon" : "icon icon--large"}
+        className={type === "Uncategorized" ? "logo-icon" : !large ? "icon" : "icon icon--large"}
         src={getIcon[type?.replace(/\s+/g, "")]}
       />
     </div>

@@ -312,6 +312,7 @@ const AnimatedRoutes = () => {
             // </ProtectedRoute>
           }
         />
+
         <Route
           path='/location-blocked'
           element={
